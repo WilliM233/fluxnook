@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -12,4 +6,121 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum MediaFormat {
+  // Movie Formats
+  blu_ray
+  dvd
+  uhd_4k
+  vhs
+  laserdisc
+  digital
+
+  // Book Formats
+  hardcover
+  paperback
+  mass_market
+  special_edition
+}
+
+enum ItemCondition {
+  mint
+  excellent
+  good
+  fair
+  poor
+}
+
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  username    String   @unique
+  displayName String?
+  avatarUrl   String?
+  birthday    DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  collectionItems CollectionItem[]
+  reviews         Review[]
+
+  @@map("users")
+}
+
+model Movie {
+  id            String   @id @default(uuid())
+  title         String
+  originalTitle String?
+  year          Int?
+  director      String?
+  runtime       Int?
+  synopsis      String?
+  posterUrl     String?
+  cast          Json?
+  genres        Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  collectionItems CollectionItem[]
+
+  @@map("movies")
+}
+
+model Book {
+  id            String   @id @default(uuid())
+  openLibraryId String?  @unique
+  isbn          String?  @unique
+  title         String
+  author        String?
+  publisher     String?
+  yearPublished Int?
+  genres        Json?
+  description   String?
+  coverUrl      String?
+  pageCount     Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  collectionItems CollectionItem[]
+
+  @@map("books")
+}
+
+model CollectionItem {
+  id        String         @id @default(uuid())
+  userId    String
+  movieId   String?
+  bookId    String?
+  format    MediaFormat?
+  condition ItemCondition?
+  edition   String?
+  notes     String?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie   Movie?  @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  book    Book?   @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  reviews Review[]
+
+  @@unique([userId, movieId])
+  @@unique([userId, bookId])
+  @@map("collection_items")
+}
+
+model Review {
+  id               String    @id @default(uuid())
+  userId           String
+  collectionItemId String
+  rating           Float?
+  reviewText       String?
+  consumedDate     DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  collectionItem CollectionItem @relation(fields: [collectionItemId], references: [id], onDelete: Cascade)
+
+  @@map("reviews")
 }
