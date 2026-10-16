@@ -2,7 +2,7 @@ import { apiError } from "@/lib/api/errors";
 import { createClient } from "@/lib/supabase/server";
 import { magicLinkRequestSchema } from "./schema";
 
-/** Emails a sign-in link. New addresses get an account on first click. */
+/** Emails a sign-in link. Asking with a new address creates its account, before any click. */
 export async function POST(request: Request) {
   // JSON only. A page on another site can post text/plain or a form without a
   // preflight, which would let it start a sign-in in a visitor's browser for a
