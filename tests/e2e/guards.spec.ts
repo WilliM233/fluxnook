@@ -7,3 +7,8 @@ test("api/v1/me is 401 without a session", async ({ request }) => {
     error: { code: "unauthorized" },
   });
 });
+
+test("/nook redirects to / without a session", async ({ page }) => {
+  await page.goto("/nook");
+  await expect(page).toHaveURL("/");
+});
