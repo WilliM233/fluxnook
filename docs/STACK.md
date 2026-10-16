@@ -24,6 +24,8 @@ Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js fil
 | shadcn | 4.22.0 | The component CLI, and `shadcn/tailwind.css`, which `globals.css` imports |
 | tw-animate-css | 1.4.0 | Animations; `globals.css` imports it for shadcn |
 | zod | 4.6.7 | Validation at the `/api/v1` edge, requests and responses |
+| @supabase/supabase-js | 2.118.0 | Supabase Auth: magic links, sessions, `getUser()` |
+| @supabase/ssr | 0.12.7 | Supabase's cookie-session helper for the App Router: the server client and the session-refresh proxy |
 | drizzle-orm | 0.45.4 | Table definitions in `src/db/schema.ts`; `drizzle-orm/supabase` for `auth.users`. 1.0 is still a release candidate |
 
 ## devDependencies
