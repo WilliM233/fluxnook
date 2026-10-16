@@ -9,7 +9,7 @@ A hosted media nook: films, TV, books, comics, games in one place, organized int
 ## Session start
 
 1. `git status --short` and `git branch --show-current`. A dirty tree or a `chapter/*` branch means a chapter is mid-flight: open its plan in `docs/plans/` and read its History before saying anything.
-2. Read the open issue for the chapter. The issue is the spec; the plan file is the working copy.
+2. Read the chapter's plan in `docs/plans/`. If its header still says `#<n>`, open the issue first: body is section 0 plus a link to the plan, milestone is the Volume, label `chapter`; write the number into the header and commit `docs: link ch <vol>.<n> plan to issue`. The issue is the spec; the plan file is the working copy. Nothing is spawned without one.
 3. Say in one line what step you're on and what its observable is.
 
 ## Working a chapter

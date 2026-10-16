@@ -18,9 +18,9 @@ How a chapter gets built. One copy lives here; the Nookkeeper's seat mirrors it 
 
 | Seat | Who | Does one thing |
 |---|---|---|
-| Nookkeeper | Product owner; the Cowork project session | Spec and feasibility, plan review, PR review, sign-off, runs the Afterword |
+| Nookkeeper | Product owner; the Cowork project session | Spec and feasibility, plan review, PR review, sign-off, runs the Afterword. Cannot write to GitHub |
 | Cartographer | Architect subagent (`.claude/agents/cartographer.md`) | Census of what exists, the plan, the Stop-for-L list. Never writes app code |
-| Binder | Claude Code main session (`CLAUDE.md`) | Builds the plan step by step, spawns the other agents one at a time, opens the PR |
+| Binder | Claude Code main session (`CLAUDE.md`) | Opens the chapter issue, builds the plan step by step, spawns the other agents one at a time, opens the PR. Never merges or closes |
 | Raccoon | QA subagent, fresh context (`.claude/agents/raccoon.md`) | Diff vs plan, the Rummage, the failing tests. Never fixes what it finds |
 | Scribe | Docs subagent, fresh context (`.claude/agents/scribe.md`) | README, docs, the release note. Reads the diff and the plan, never the Binder's summary |
 | L | The human | Design calls, Stop-for-L answers, the Browse, PR review, the merge |
@@ -30,7 +30,7 @@ Subagents run one at a time, never concurrently. Five seats is the ceiling until
 ## A chapter's life
 
 0. **Pick.** The next chapter in the open Volume on the Roadmap. Design talk between L and the Nookkeeper; every call lands in the Roadmap's Calls list with its reason.
-1. **Spec.** Nookkeeper writes Plan sections 0 and 1 (spec, acceptance lines, feasibility read against the repo, Hands line, Browse line) and opens the issue. The issue body is the spec; the plan file is the working copy.
+1. **Spec.** Nookkeeper writes Plan sections 0 and 1 (spec, acceptance lines, feasibility read against the repo, Hands line, Browse line) into `docs/plans/`. The Binder opens the issue from the plan at its next session start: body is section 0 plus a link to the plan, milestone is the Volume, label `chapter`; then writes the number into the plan header. No agent is spawned for a chapter without an open issue.
 2. **Map.** Binder spawns the Cartographer on the issue. Cartographer writes sections 2 and 3 (census, steps with observables) and the Stop-for-L list. L answers Stop-for-L; Nookkeeper reviews the plan against the spec: every call kept, no scope added, observables match acceptance lines. Reply is `Approved` or a list of changes tied to spec lines. The Cartographer is re-engaged only to restructure.
 3. **Build.** Binder works the steps on `chapter/<vol>.<n>-<slug>` off `dev`. Each step ends at its observable. A side find is a Deferrals line on the plan, never a step.
 4. **Rummage.** Binder spawns the Raccoon with the diff and the plan. Raccoon writes section 4: findings (blocking, should, note) and the Rummage. Blocking findings are fixed in the chapter. Every Rummage line becomes a test; Binder watches each fail before it passes.
@@ -53,7 +53,7 @@ Subagents run one at a time, never concurrently. Five seats is the ceiling until
 - Conventional commits: `feat`, `fix`, `chore`, `docs`, `ci`, `test`, `refactor`. Scope is the area (`shelves`, `providers/tmdb`, `schema`). Body says why, not what.
 - No commit without a chapter. Hotfixes are a one-step chapter with a Browse line.
 - A chapter with no PR (Chapter 0.1 was one) is tagged by hand on its commit.
-- The Nookkeeper's seat cannot write to GitHub. It hands L a script or a command block for any issue, branch, label or milestone change, and never reports a GitHub write as done until L confirms it.
+- The Nookkeeper's seat cannot write to GitHub. The Binder opens issues and PRs; L merges PRs and closes issues; anything else (labels, milestones, protection) is a command block the Nookkeeper hands L. The Nookkeeper never reports a GitHub write as done until L or the Binder confirms it.
 
 ## Tests and CI
 
@@ -75,6 +75,8 @@ At each sign-off the Nookkeeper answers two questions in one line each, filed on
 Names are the vocabulary above and nothing is renamed to sound serious. Release notes are written for the people who'll use the nook, in plain words. The Raccoon's findings may be a little smug. The Scribe's may not.
 
 ## History
+
+- 2026-10-16 The Binder opens the chapter issue from the plan file (Ch 0.2, caught by the Binder before spawning). Merging and closing stay with L
 
 - 2026-10-16 Ch 0.1 Afterword. Worked: one script for the reset, protection rejected a real push. Didn't: PO seat has no GitHub write, three command blocks assumed a main checkout. Changes: the two Git lines above; .gitattributes committed. Pilot: no Cartographer or Raccoon this chapter, no score
 
