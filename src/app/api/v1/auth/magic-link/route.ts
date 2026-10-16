@@ -4,6 +4,19 @@ import { magicLinkRequestSchema } from "./schema";
 
 /** Emails a sign-in link. New addresses get an account on first click. */
 export async function POST(request: Request) {
+  // JSON only. A page on another site can post text/plain or a form without a
+  // preflight, which would let it start a sign-in in a visitor's browser for a
+  // link mailed to someone else (login CSRF). application/json can't cross
+  // origins without a preflight, and this app answers none.
+  const mediaType = request.headers.get("content-type")?.split(";")[0].trim();
+  if (mediaType?.toLowerCase() !== "application/json") {
+    return apiError(
+      415,
+      "unsupported_media_type",
+      "Send the request as application/json.",
+    );
+  }
+
   const body: unknown = await request.json().catch(() => null);
   const parsed = magicLinkRequestSchema.safeParse(body);
   if (!parsed.success) {
