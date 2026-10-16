@@ -22,7 +22,10 @@ max_rows = 1000
 # `postgres` are reachable through the Data API roles (`anon`, `authenticated`, `service_role`)
 # without explicit GRANTs, matching the cloud default. Set to `false` to require explicit GRANTs
 # instead. Left unset, a fresh project falls back to `true`.
-# auto_expose_new_tables = true
+# Off on purpose (ch 0.2 S6): with RLS off, default grants would let the publishable key read and
+# write new tables through GraphQL even with `public` out of `schemas`. App tables get no anon or
+# authenticated grants; the app reaches them through /api/v1.
+auto_expose_new_tables = false
 
 [api.tls]
 # Enable HTTPS endpoints locally using a self-signed certificate.
