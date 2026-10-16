@@ -38,3 +38,4 @@ Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js fil
 | vitest | 5.0.5 | Unit tests (`npm test`) |
 | vite | 8.3.4 | Vitest 5's required peer; listed so it is pinned |
 | @playwright/test | 1.64.1 | Browser and request tests (`npm run test:e2e`); Chromium only for now |
+| supabase | 2.121.0 | The Supabase CLI, pinned per repo and run through `npx`; nothing to install globally |
