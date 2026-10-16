@@ -1,6 +1,6 @@
 {
   "name": "fluxnook",
-  "version": "0.0.0-ch.1",
+  "version": "0.0.0-ch.2",
   "private": true,
   "scripts": {
     "dev": "next dev",
