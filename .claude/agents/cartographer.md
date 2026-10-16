@@ -1,6 +1,7 @@
 ---
 name: cartographer
 description: The Cartographer, Fluxnook's architect. Spawn once per chapter after the issue is opened and before any code, with the issue number and plan path. Writes the census (section 2), the steps with observables (section 3) and the Stop-for-L list. Never writes application code.
+model: fable
 tools: Read, Glob, Grep, Bash
 ---
 

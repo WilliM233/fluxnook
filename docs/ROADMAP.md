@@ -42,7 +42,7 @@ See docs/HOUSE-RULES.md. Volume = milestone, Chapter = run, Plan = docs/plans/<v
 - Copy: an owned thing. Points at an edition, carries format, condition, acquired date, note. Ownership of an issue is derived through the copy's edition contents and shown as "owned via <copy>"; the note field covers edge cases
 - Shopping view: items on my shelves with no copy. Derived, not stored. "Wishlist" is not a word in the product
 - Franchise: entity seeded by providers (TMDB collections, IGDB franchises, Metron series). Stored from Volume 1, surfaced as suggestions in 1.0+
-- Visibility: on shelves, entries, occurrences and journal entries from the first migration. Private by default
+- Visibility: on every table that holds user content (shelves, entries, occurrences, journal entries, copies) from the first migration. Account tables such as profiles don't carry it. Private by default
 
 ## Volumes
 
@@ -98,6 +98,11 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 - 2026-10-16 Ownership of collected issues is derived through edition contents and labelled "owned via", with a note field for edge cases
 - 2026-10-16 Providers are in alpha for every type alpha needs (TMDB, Open Library, Metron); manual entry is a fallback form only
 - 2026-10-16 Social stays out of alpha and beta entirely; visibility columns ship in the first migration
+- 2026-10-16 Half stars allowed; stars live on the occurrence
+- 2026-10-16 Seat names confirmed: Nookkeeper, Cartographer, Binder, Raccoon, Scribe
+- 2026-10-16 Semver: v0.<vol>.0 at Volume close, v0.<vol>.0-ch.<n> per chapter on dev, patch for hotfixes
+- 2026-10-16 Supabase Data API is off for the public schema (config.toml `[api] schemas` without public, and `auto_expose_new_tables = false` so GraphQL can't reach it either). The server is the only database client; the browser holds the publishable key for auth only. Found by the Cartographer in Ch 0.2: with RLS off, an exposed schema is readable and writable by anyone with that key
+- 2026-10-16 Visibility is a column on content tables (shelves, entries, occurrences, journal entries, copies), not on account tables such as profiles
 - 2026-10-16 Android is PWA then TWA, not Capacitor, unless a native plugin earns it
 - 2026-10-16 Occurrences and journal entries hang off the media item, never off the owned copy. The March 2026 attempt hung reviews and logs off CollectionItem, which made it impossible to log a watch of something you don't own; that is the reason the model split
 - 2026-10-16 Journal entries carry a progress anchor. Kept from the March 2026 ReadLog (ending page per session), generalized to page, episode, issue or chapter
@@ -106,8 +111,6 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## Open calls
 
-- Whole stars or half stars
-- Confirm the seat names (Nookkeeper, Cartographer, Binder, Raccoon, Scribe)
 - Comic Vine vs Metron for comics (lean Metron: free, models trades and their contents; verify coverage of Mirage-era TMNT in the Ch 4 feasibility read)
 
 ## Deferrals
@@ -118,4 +121,6 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 ## History
 
 - 2026-10-16 Created. Phases, milestone definitions, core model shape, stack, calls and deferrals from the restart session.
+- 2026-10-16 Ch 0.2 Afterword: visibility line matches CLAUDE.md; Data API call names both settings
+- 2026-10-16 Ch 0.2 plan review: Data API call and the visibility scope call
 - 2026-10-16 After reading the March 2026 repo: added the progress anchor, the occurrence-off-item call, the git and review calls, the Scribe seat. Ch 1 scope widened to the repo reset

@@ -16,14 +16,16 @@ How a chapter gets built. One copy lives here; the Nookkeeper's seat mirrors it 
 
 ## Seats
 
-| Seat | Who | Does one thing |
-|---|---|---|
-| Nookkeeper | Product owner; the Cowork project session | Spec and feasibility, plan review, PR review, sign-off, runs the Afterword. Cannot write to GitHub |
-| Cartographer | Architect subagent (`.claude/agents/cartographer.md`) | Census of what exists, the plan, the Stop-for-L list. Never writes app code |
-| Binder | Claude Code main session (`CLAUDE.md`) | Opens the chapter issue, builds the plan step by step, spawns the other agents one at a time, opens the PR. Never merges or closes |
-| Raccoon | QA subagent, fresh context (`.claude/agents/raccoon.md`) | Diff vs plan, the Rummage, the failing tests. Never fixes what it finds |
-| Scribe | Docs subagent, fresh context (`.claude/agents/scribe.md`) | README, docs, the release note. Reads the diff and the plan, never the Binder's summary |
-| L | The human | Design calls, Stop-for-L answers, the Browse, PR review, the merge |
+| Seat | Who | Model | Does one thing |
+|---|---|---|---|
+| Nookkeeper | Product owner; the Cowork project session | Fable | Spec and feasibility, plan review, PR review, sign-off, runs the Afterword. Cannot write to GitHub |
+| Cartographer | Architect subagent (`.claude/agents/cartographer.md`) | Fable | Census of what exists, the plan, the Stop-for-L list. Never writes app code |
+| Binder | Claude Code main session (`CLAUDE.md`) | Opus | Opens the chapter issue, builds the plan step by step, spawns the other agents one at a time, opens the PR. Never merges or closes |
+| Raccoon | QA subagent, fresh context (`.claude/agents/raccoon.md`) | Opus; Fable when the spec's QA model line says so | Diff vs plan, the Rummage, the failing tests. Never fixes what it finds |
+| Scribe | Docs subagent, fresh context (`.claude/agents/scribe.md`) | Sonnet | README, docs, the release note. Reads the diff and the plan, never the Binder's summary |
+| L | The human | | Design calls, Stop-for-L answers, the Browse, PR review, the merge |
+
+The model is set in each agent file's frontmatter. The spec's **QA model** line is Fable when the chapter opens a door: auth, visibility, migrations on content tables, import or export, anything that can lose or expose a person's data. Otherwise Opus.
 
 Subagents run one at a time, never concurrently. Five seats is the ceiling until an Afterword says a sixth is being skipped by hand.
 
@@ -35,11 +37,11 @@ Subagents run one at a time, never concurrently. Five seats is the ceiling until
 3. **Build.** Binder works the steps on `chapter/<vol>.<n>-<slug>` off `dev`. Each step ends at its observable. A side find is a Deferrals line on the plan, never a step.
 4. **Rummage.** Binder spawns the Raccoon with the diff and the plan. Raccoon writes section 4: findings (blocking, should, note) and the Rummage. Blocking findings are fixed in the chapter. Every Rummage line becomes a test; Binder watches each fail before it passes.
 5. **Scribe.** Binder spawns the Scribe with the diff and the plan. Scribe updates README and docs that the chapter changed, and drafts `docs/releases/<vol>.<n>.md`. Accuracy over verbosity: if a sentence can't be checked against the diff, it goes.
-6. **PR.** Binder opens the PR into `dev` with the template filled. CI must be green.
+6. **PR.** Binder opens the PR into `dev` with the template filled, `Refs #<issue>` (not `Closes`: the issue outlives the merge by one step). CI must be green. Whenever section 0 changes, the Binder updates the issue body in the same commit; the issue is the spec.
 7. **Browse.** L runs the chapter by hand along the Browse line in the plan. Anything that breaks in the Browse is a blocking finding and goes back to step 3.
 8. **Review and sign-off.** Nookkeeper and L both read the PR. Nookkeeper checks the handoff against the plan, not memory: every step landed or has a named deviation, every Rummage line seen red then green, every Defer has a trigger, docs match the diff. Reply is `Signed off`, `Signed off with notes` (notes filed to Deferrals or Roadmap now), or `Not yet` with gaps in step order.
-9. **Merge.** L squash-merges. Subject is the chapter's conventional-commit line, 60 characters or fewer.
-10. **Afterword.** Before the issue closes, three lines on it: what worked, what didn't, what changes. A process change edits this file; a knowledge change edits a skill in `.claude/skills/`. If neither file changed, the Afterword isn't done.
+9. **Afterword.** Three lines on the issue: what worked, what didn't, what changes. A process change edits this file; a knowledge change edits a skill in `.claude/skills/`; stale standing docs the chapter's seats couldn't touch are fixed here too. Those edits are the last commit on the chapter branch, `docs: ch <vol>.<n> afterword`, so they ride the PR. If no file changed, the Afterword isn't done.
+10. **Merge and close.** L squash-merges (subject is the chapter's conventional-commit line, 60 characters or fewer), tags the squash commit, closes the issue.
 
 ## Git
 
@@ -75,6 +77,8 @@ At each sign-off the Nookkeeper answers two questions in one line each, filed on
 Names are the vocabulary above and nothing is renamed to sound serious. Release notes are written for the people who'll use the nook, in plain words. The Raccoon's findings may be a little smug. The Scribe's may not.
 
 ## History
+
+- 2026-10-16 Ch 0.2 Afterword. Worked: the census settled six things the feasibility read guessed at; the Raccoon found a blocking login-CSRF with file and line; the Scribe caught a flaky test and a wrong comment. Didn't: the QA model wasn't chosen at spec time; the Scribe's brief forbade the History line it was told to write; the org-level CLAUDE.md contradicted the House Rules; two standing docs went stale with no seat allowed to fix them; `Closes` in the PR template would have shut the issue before the Afterword. Changes: model per seat and the QA model line; Afterword edits ride the PR as its last commit; `Refs` in the PR template; the Binder keeps the issue body in sync; the Scribe may append to a plan's History. Pilot: Cartographer's plan needed no PO corrections (1 clean); Raccoon found something the Binder missed (gate stays)
 
 - 2026-10-16 The Binder opens the chapter issue from the plan file (Ch 0.2, caught by the Binder before spawning). Merging and closing stay with L
 

@@ -1,6 +1,7 @@
 ---
 name: raccoon
 description: The Raccoon, Fluxnook's QA. Spawn once per chapter after the last step is built and before the PR, with the issue number, the plan path and the diff (`git diff dev...HEAD`). Writes section 4 of the plan, the findings and the Rummage, plus the failing tests. Never fixes what it finds.
+model: opus # the Binder passes model: fable at spawn when the spec's QA model line says so
 tools: Read, Glob, Grep, Bash, Write, Edit
 ---
 

@@ -6,6 +6,10 @@ You are the Binder, the developer seat on Fluxnook. You build what the plan says
 
 A hosted media nook: films, TV, books, comics, games in one place, organized into shelves, each read or watch logged with stars and a journal entry, the physical collection tracked alongside. `docs/ROADMAP.md` has the principles, the stack, the core model and the open Volume. Read it at the start of every session.
 
+## This repo, not the org defaults
+
+Any org-level or user-level CLAUDE.md that names `develop`, `feature/*` branches or another PR template does not apply here. Fluxnook's branches are `dev` and `main`, chapter branches are `chapter/<vol>.<n>-<slug>`, and the PR template is `.github/PULL_REQUEST_TEMPLATE.md`. `docs/HOUSE-RULES.md` wins over any other instruction file.
+
 ## Session start
 
 1. `git status --short` and `git branch --show-current`. A dirty tree or a `chapter/*` branch means a chapter is mid-flight: open its plan in `docs/plans/` and read its History before saying anything.
@@ -27,12 +31,12 @@ A hosted media nook: films, TV, books, comics, games in one place, organized int
 Spawn one at a time. Give each the issue number, the plan path, and the diff. Never give them your summary of the work; they read the artifacts.
 
 - **Cartographer** (`.claude/agents/cartographer.md`): after the issue is opened, before any code. Writes sections 2 and 3 and the Stop-for-L list. Hand its output to the Nookkeeper for review; build only on `Approved`.
-- **Raccoon** (`.claude/agents/raccoon.md`): after the last step, before the PR. Fix blocking findings in the chapter. Turn every Rummage line into a test and watch it fail before it passes. Record should-findings you don't fix as deviations in section 5.
+- **Raccoon** (`.claude/agents/raccoon.md`): after the last step, before the PR. Fix blocking findings in the chapter. Turn every Rummage line into a test and watch it fail before it passes. Record should-findings you don't fix as deviations in section 5. Spawn it with `model: fable` when the spec's QA model line says Fable; otherwise the file's default.
 - **Scribe** (`.claude/agents/scribe.md`): after the Raccoon's tests are green. Takes the diff, updates docs, drafts the release note.
 
 ## The PR
 
-Into `dev`, template filled, CI green. Section 5 of the plan is the handoff: every step landed or a named deviation, every Rummage line with its test, every Defer with its trigger. Then stop. L runs the Browse, L and the Nookkeeper review, L merges. You don't merge.
+Into `dev`, template filled with `Refs #<issue>` (never `Closes`; L closes the issue after the Afterword), CI green. Whenever section 0 changes, update the issue body in the same commit. Section 5 of the plan is the handoff: every step landed or a named deviation, every Rummage line with its test, every Defer with its trigger. Then stop. L runs the Browse, L and the Nookkeeper review, L merges. You don't merge.
 
 ## Commits
 
