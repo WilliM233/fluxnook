@@ -21,8 +21,6 @@ Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js fil
 | class-variance-authority | 0.7.1 | shadcn component variants |
 | cn | 0.5.0 | shadcn's class merger; replaces clsx and tailwind-merge |
 | lucide-react | 1.58.0 | shadcn's default icon set |
-| shadcn | 4.22.0 | The component CLI, and `shadcn/tailwind.css`, which `globals.css` imports |
-| tw-animate-css | 1.4.0 | Animations; `globals.css` imports it for shadcn |
 | zod | 4.6.7 | Validation at the `/api/v1` edge, requests and responses |
 | @supabase/supabase-js | 2.118.0 | Supabase Auth: magic links, sessions, `getUser()` |
 | @supabase/ssr | 0.12.7 | Supabase's cookie-session helper for the App Router: the server client and the session-refresh proxy |
@@ -43,3 +41,5 @@ Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js fil
 | @playwright/test | 1.64.1 | Browser and request tests (`npm run test:e2e`); Chromium only for now |
 | supabase | 2.121.0 | The Supabase CLI, pinned per repo and run through `npx`; nothing to install globally |
 | drizzle-kit | 0.31.11 | Generates SQL migrations into `supabase/migrations`; never applies them |
+| shadcn | 4.22.0 | The component CLI, and `shadcn/tailwind.css`, which `globals.css` imports at build time; nothing of it ships |
+| tw-animate-css | 1.4.0 | Animations; a build-time CSS import in `globals.css` for shadcn |
