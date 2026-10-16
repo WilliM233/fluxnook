@@ -16,39 +16,46 @@ How a chapter gets built. One copy lives here; the Nookkeeper's seat mirrors it 
 
 ## Seats
 
-| Seat | Who | Does one thing |
-|---|---|---|
-| Nookkeeper | Product owner; the Cowork project session | Spec and feasibility, plan review, PR review, sign-off, runs the Afterword |
-| Cartographer | Architect subagent (`.claude/agents/cartographer.md`) | Census of what exists, the plan, the Stop-for-L list. Never writes app code |
-| Binder | Claude Code main session (`CLAUDE.md`) | Builds the plan step by step, spawns the other agents one at a time, opens the PR |
-| Raccoon | QA subagent, fresh context (`.claude/agents/raccoon.md`) | Diff vs plan, the Rummage, the failing tests. Never fixes what it finds |
-| Scribe | Docs subagent, fresh context (`.claude/agents/scribe.md`) | README, docs, the release note. Reads the diff and the plan, never the Binder's summary |
-| L | The human | Design calls, Stop-for-L answers, the Browse, PR review, the merge |
+| Seat | Who | Model | Does one thing |
+|---|---|---|---|
+| Nookkeeper | Product owner; the Cowork project session | Fable | Spec and feasibility, plan review, PR review, sign-off, runs the Afterword. Cannot write to GitHub |
+| Cartographer | Architect subagent (`.claude/agents/cartographer.md`) | Fable | Census of what exists, the plan, the Stop-for-L list. Never writes app code |
+| Binder | Claude Code main session (`CLAUDE.md`) | Opus | Opens the chapter issue, builds the plan step by step, spawns the other agents one at a time, opens the PR. Never merges or closes |
+| Raccoon | QA subagent, fresh context (`.claude/agents/raccoon.md`) | Opus; Fable when the spec's QA model line says so | Diff vs plan, the Rummage, the failing tests. Never fixes what it finds |
+| Scribe | Docs subagent, fresh context (`.claude/agents/scribe.md`) | Sonnet | README, docs, the release note. Reads the diff and the plan, never the Binder's summary |
+| L | The human | | Design calls, Stop-for-L answers, the Browse, PR review, the merge |
+
+The model is set in each agent file's frontmatter. The spec's **QA model** line is Fable when the chapter opens a door: auth, visibility, migrations on content tables, import or export, anything that can lose or expose a person's data. Otherwise Opus.
 
 Subagents run one at a time, never concurrently. Five seats is the ceiling until an Afterword says a sixth is being skipped by hand.
 
 ## A chapter's life
 
 0. **Pick.** The next chapter in the open Volume on the Roadmap. Design talk between L and the Nookkeeper; every call lands in the Roadmap's Calls list with its reason.
-1. **Spec.** Nookkeeper writes Plan sections 0 and 1 (spec, acceptance lines, feasibility read against the repo, Hands line, Browse line) and opens the issue. The issue body is the spec; the plan file is the working copy.
+1. **Spec.** Nookkeeper writes Plan sections 0 and 1 (spec, acceptance lines, feasibility read against the repo, Hands line, Browse line) into `docs/plans/`. The Binder opens the issue from the plan at its next session start: body is section 0 plus a link to the plan, milestone is the Volume, label `chapter`; then writes the number into the plan header. No agent is spawned for a chapter without an open issue.
 2. **Map.** Binder spawns the Cartographer on the issue. Cartographer writes sections 2 and 3 (census, steps with observables) and the Stop-for-L list. L answers Stop-for-L; Nookkeeper reviews the plan against the spec: every call kept, no scope added, observables match acceptance lines. Reply is `Approved` or a list of changes tied to spec lines. The Cartographer is re-engaged only to restructure.
 3. **Build.** Binder works the steps on `chapter/<vol>.<n>-<slug>` off `dev`. Each step ends at its observable. A side find is a Deferrals line on the plan, never a step.
 4. **Rummage.** Binder spawns the Raccoon with the diff and the plan. Raccoon writes section 4: findings (blocking, should, note) and the Rummage. Blocking findings are fixed in the chapter. Every Rummage line becomes a test; Binder watches each fail before it passes.
 5. **Scribe.** Binder spawns the Scribe with the diff and the plan. Scribe updates README and docs that the chapter changed, and drafts `docs/releases/<vol>.<n>.md`. Accuracy over verbosity: if a sentence can't be checked against the diff, it goes.
-6. **PR.** Binder opens the PR into `dev` with the template filled. CI must be green.
+6. **PR.** Binder opens the PR into `dev` with the template filled, `Refs #<issue>` (not `Closes`: the issue outlives the merge by one step). CI must be green. Whenever section 0 changes, the Binder updates the issue body in the same commit; the issue is the spec.
 7. **Browse.** L runs the chapter by hand along the Browse line in the plan. Anything that breaks in the Browse is a blocking finding and goes back to step 3.
 8. **Review and sign-off.** Nookkeeper and L both read the PR. Nookkeeper checks the handoff against the plan, not memory: every step landed or has a named deviation, every Rummage line seen red then green, every Defer has a trigger, docs match the diff. Reply is `Signed off`, `Signed off with notes` (notes filed to Deferrals or Roadmap now), or `Not yet` with gaps in step order.
-9. **Merge.** L squash-merges. Subject is the chapter's conventional-commit line, 60 characters or fewer.
-10. **Afterword.** Before the issue closes, three lines on it: what worked, what didn't, what changes. A process change edits this file; a knowledge change edits a skill in `.claude/skills/`. If neither file changed, the Afterword isn't done.
+9. **Afterword.** Three lines on the issue: what worked, what didn't, what changes. A process change edits this file; a knowledge change edits a skill in `.claude/skills/`; stale standing docs the chapter's seats couldn't touch are fixed here too. Those edits are the last commit on the chapter branch, `docs: ch <vol>.<n> afterword`, so they ride the PR. If no file changed, the Afterword isn't done.
+10. **Merge and close.** L squash-merges (subject is the chapter's conventional-commit line, 60 characters or fewer), tags the squash commit, closes the issue.
 
 ## Git
 
 - `main` is the released product. `dev` is the open Volume. Neither takes a direct push.
 - Chapter branches: `chapter/<vol>.<n>-<slug>`, off `dev`, squash-merged by PR.
-- Volume close: PR `dev` to `main`, merge commit, tag `v<major>.<vol>`. Volume 0 tags `v0.0`, alpha `v0.1`, beta `v0.2`, 1.0 `v1.0`.
+- Volume close: PR `dev` to `main`, merge commit, tag `v0.<vol>.0`. Volume 0 is `v0.0.0`, alpha `v0.1.0`, beta `v0.2.0`, 1.0 `v1.0.0`.
+- Chapter merge into `dev`: tag `v0.<vol>.0-ch.<n>` on the squash commit, so every chapter has a version. Pre-release suffix keeps them ordered before the Volume close.
+- Hotfix on `main`: patch bump, `v0.<vol>.1`, `v0.<vol>.2`, then merged back to `dev`.
+- `package.json` version is the current tag; the Scribe bumps it in the chapter that earns it.
 - A `test` branch is added only when a test environment exists that previews don't cover. Until then, Vercel preview per PR is the test environment.
 - Conventional commits: `feat`, `fix`, `chore`, `docs`, `ci`, `test`, `refactor`. Scope is the area (`shelves`, `providers/tmdb`, `schema`). Body says why, not what.
 - No commit without a chapter. Hotfixes are a one-step chapter with a Browse line.
+- A chapter with no PR (Chapter 0.1 was one) is tagged by hand on its commit.
+- The Nookkeeper's seat cannot write to GitHub. The Binder opens issues and PRs; L merges PRs and closes issues; anything else (labels, milestones, protection) is a command block the Nookkeeper hands L. The Nookkeeper never reports a GitHub write as done until L or the Binder confirms it.
 
 ## Tests and CI
 
@@ -71,4 +78,11 @@ Names are the vocabulary above and nothing is renamed to sound serious. Release 
 
 ## History
 
+- 2026-10-16 Ch 0.2 Afterword. Worked: the census settled six things the feasibility read guessed at; the Raccoon found a blocking login-CSRF with file and line; the Scribe caught a flaky test and a wrong comment. Didn't: the QA model wasn't chosen at spec time; the Scribe's brief forbade the History line it was told to write; the org-level CLAUDE.md contradicted the House Rules; two standing docs went stale with no seat allowed to fix them; `Closes` in the PR template would have shut the issue before the Afterword. Changes: model per seat and the QA model line; Afterword edits ride the PR as its last commit; `Refs` in the PR template; the Binder keeps the issue body in sync; the Scribe may append to a plan's History. Pilot: Cartographer's plan needed no PO corrections (1 clean); Raccoon found something the Binder missed (gate stays)
+
+- 2026-10-16 The Binder opens the chapter issue from the plan file (Ch 0.2, caught by the Binder before spawning). Merging and closing stay with L
+
+- 2026-10-16 Ch 0.1 Afterword. Worked: one script for the reset, protection rejected a real push. Didn't: PO seat has no GitHub write, three command blocks assumed a main checkout. Changes: the two Git lines above; .gitattributes committed. Pilot: no Cartographer or Raccoon this chapter, no score
+
+- 2026-10-16 Semver: chapters are pre-release tags on dev, Volume close is the minor, hotfixes are the patch
 - 2026-10-16 Created from the Flux Labs pipeline for the Volume 0 restart. Added the Scribe seat, the Browse, the Afterword, and the two-branch git model.
