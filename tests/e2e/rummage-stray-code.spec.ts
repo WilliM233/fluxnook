@@ -6,5 +6,8 @@ import { expect, test } from "@playwright/test";
 // Today that renders a blank sign-in form: no session, no word about the link.
 test("a link that lands on /?code= says it didn't work", async ({ page }) => {
   await page.goto("/?code=stray-code-from-site-url-fallback");
-  await expect(page.getByRole("alert")).toContainText("link didn't work");
+  // Filtered: Next's route announcer is also role="alert", and empty.
+  await expect(
+    page.getByRole("alert").filter({ hasText: "link didn't work" }),
+  ).toBeVisible();
 });
