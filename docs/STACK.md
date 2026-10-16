@@ -23,6 +23,7 @@ Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js fil
 | lucide-react | 1.58.0 | shadcn's default icon set |
 | shadcn | 4.22.0 | The component CLI, and `shadcn/tailwind.css`, which `globals.css` imports |
 | tw-animate-css | 1.4.0 | Animations; `globals.css` imports it for shadcn |
+| zod | 4.6.7 | Validation at the `/api/v1` edge, requests and responses |
 
 ## devDependencies
 
@@ -34,3 +35,6 @@ Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js fil
 | tailwindcss | 4.3.3 | Styling |
 | @tailwindcss/turbopack | 4.3.3 | Tailwind's loader for Turbopack; Next 16.4 has no PostCSS config |
 | @biomejs/biome | 2.5.15 | Lint and format, one tool (`npm run lint`) |
+| vitest | 5.0.5 | Unit tests (`npm test`) |
+| vite | 8.3.4 | Vitest 5's required peer; listed so it is pinned |
+| @playwright/test | 1.64.1 | Browser and request tests (`npm run test:e2e`); Chromium only for now |
