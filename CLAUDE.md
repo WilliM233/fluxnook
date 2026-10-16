@@ -19,7 +19,7 @@ A hosted media nook: films, TV, books, comics, games in one place, organized int
 - Stop-for-L items are design. If you hit a question only L can answer and it isn't on the list, stop and ask; do not pick for them.
 - Migrations are plain SQL under `supabase/migrations` written through Drizzle. Every migration is reversible or says why it isn't.
 - API mutations are route handlers under `src/app/api/v1`, Zod-validated at the edge. No server actions for mutations.
-- Visibility is a column on every table that holds user content: shelves, entries, occurrences, journal entries, copies. Account tables (profiles) don't carry it.
+- Visibility is a column on every table that holds user content: shelves, entries, occurrences, journal entries, copies. Account tables (profiles) don't carry it. Private by default.
 - No new dependency without a line in the plan saying why and what it replaces.
 
 ## The other seats
