@@ -45,10 +45,15 @@ Subagents run one at a time, never concurrently. Five seats is the ceiling until
 
 - `main` is the released product. `dev` is the open Volume. Neither takes a direct push.
 - Chapter branches: `chapter/<vol>.<n>-<slug>`, off `dev`, squash-merged by PR.
-- Volume close: PR `dev` to `main`, merge commit, tag `v<major>.<vol>`. Volume 0 tags `v0.0`, alpha `v0.1`, beta `v0.2`, 1.0 `v1.0`.
+- Volume close: PR `dev` to `main`, merge commit, tag `v0.<vol>.0`. Volume 0 is `v0.0.0`, alpha `v0.1.0`, beta `v0.2.0`, 1.0 `v1.0.0`.
+- Chapter merge into `dev`: tag `v0.<vol>.0-ch.<n>` on the squash commit, so every chapter has a version. Pre-release suffix keeps them ordered before the Volume close.
+- Hotfix on `main`: patch bump, `v0.<vol>.1`, `v0.<vol>.2`, then merged back to `dev`.
+- `package.json` version is the current tag; the Scribe bumps it in the chapter that earns it.
 - A `test` branch is added only when a test environment exists that previews don't cover. Until then, Vercel preview per PR is the test environment.
 - Conventional commits: `feat`, `fix`, `chore`, `docs`, `ci`, `test`, `refactor`. Scope is the area (`shelves`, `providers/tmdb`, `schema`). Body says why, not what.
 - No commit without a chapter. Hotfixes are a one-step chapter with a Browse line.
+- A chapter with no PR (Chapter 0.1 was one) is tagged by hand on its commit.
+- The Nookkeeper's seat cannot write to GitHub. It hands L a script or a command block for any issue, branch, label or milestone change, and never reports a GitHub write as done until L confirms it.
 
 ## Tests and CI
 
@@ -71,4 +76,7 @@ Names are the vocabulary above and nothing is renamed to sound serious. Release 
 
 ## History
 
+- 2026-10-16 Ch 0.1 Afterword. Worked: one script for the reset, protection rejected a real push. Didn't: PO seat has no GitHub write, three command blocks assumed a main checkout. Changes: the two Git lines above; .gitattributes committed. Pilot: no Cartographer or Raccoon this chapter, no score
+
+- 2026-10-16 Semver: chapters are pre-release tags on dev, Volume close is the minor, hotfixes are the patch
 - 2026-10-16 Created from the Flux Labs pipeline for the Volume 0 restart. Added the Scribe seat, the Browse, the Afterword, and the two-branch git model.
