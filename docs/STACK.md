@@ -17,6 +17,12 @@ Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js fil
 |---|---|---|
 | next | 16.4.2 | The app: App Router pages and route handlers under `/api/v1` |
 | react, react-dom | 19.3.1 | Next 16's peer |
+| @base-ui/react | 1.9.0 | Primitives under shadcn's default style (`base-nova`) |
+| class-variance-authority | 0.7.1 | shadcn component variants |
+| cn | 0.5.0 | shadcn's class merger; replaces clsx and tailwind-merge |
+| lucide-react | 1.58.0 | shadcn's default icon set |
+| shadcn | 4.22.0 | The component CLI, and `shadcn/tailwind.css`, which `globals.css` imports |
+| tw-animate-css | 1.4.0 | Animations; `globals.css` imports it for shadcn |
 
 ## devDependencies
 
