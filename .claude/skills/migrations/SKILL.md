@@ -18,7 +18,7 @@ description: How Fluxnook writes and applies database migrations with Drizzle an
 
 ## Every file opens with its reversal
 
-The Supabase CLI has no down migrations. Each file starts with a comment saying what it is and a `-- Down:` block holding the SQL that undoes it, in order. If it can't be undone, the header says why. Before committing, run the down SQL inside `begin; ... rollback;` against local to see it works.
+The Supabase CLI has no down migrations. Each file starts with a comment saying what it is and a `-- Down:` block holding the SQL that undoes it, in order. If a later migration depends on it (a trigger inserting into its table), the header names which Down must run first. If it can't be undone, the header says why. Before committing, run the down SQL inside `begin; ... rollback;` against local to see it works.
 
 ## Applying locally
 
