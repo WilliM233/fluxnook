@@ -1,4 +1,4 @@
-import { apiError } from "@/lib/api/errors";
+import { apiError, noStore } from "@/lib/api/errors";
 import { createClient } from "@/lib/supabase/server";
 import { meResponseSchema } from "./schema";
 
@@ -16,5 +16,6 @@ export async function GET() {
 
   return Response.json(
     meResponseSchema.parse({ id: user.id, email: user.email }),
+    { headers: noStore },
   );
 }
