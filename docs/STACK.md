@@ -40,6 +40,7 @@ Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js fil
 | vite | 8.3.4 | Vitest 5's required peer; listed so it is pinned |
 | @playwright/test | 1.64.1 | Browser and request tests (`npm run test:e2e`); Chromium only for now |
 | supabase | 2.121.0 | The Supabase CLI, pinned per repo and run through `npx`; nothing to install globally |
+| postgres | 3.4.9 | Test-only Postgres driver for `tests/db` (`npm run test:db`); not the app's runtime client. Over `pg`: no `@types` package, and it is the driver `drizzle-orm/postgres-js` takes |
 | drizzle-kit | 0.31.11 | Generates SQL migrations into `supabase/migrations`; never applies them |
 | shadcn | 4.22.0 | The component CLI, and `shadcn/tailwind.css`, which `globals.css` imports at build time; nothing of it ships |
 | tw-animate-css | 1.4.0 | Animations; a build-time CSS import in `globals.css` for shadcn |

@@ -10,6 +10,7 @@
     "format": "biome format --write",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
+    "test:db": "vitest run --config vitest.db.config.ts",
     "test:e2e": "playwright test",
     "db:generate": "drizzle-kit generate",
     "db:check": "node scripts/db-check.mjs"
@@ -35,6 +36,7 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "drizzle-kit": "0.31.11",
+    "postgres": "3.4.9",
     "shadcn": "4.22.0",
     "supabase": "2.121.0",
     "tailwindcss": "4.3.3",
