@@ -98,7 +98,7 @@ describe("fixture", () => {
     expect(fixture.safeParse(data).success).toBe(true);
   });
 
-  it("rejects a provider it doesn't know and accepts none", () => {
+  it("rejects a provider it doesn't know and accepts none on a non-provider id", () => {
     const data = sample();
     const unknown = {
       ...data.items[0],
@@ -107,7 +107,10 @@ describe("fixture", () => {
     expect(
       fixture.safeParse({ ...data, items: [unknown, data.items[1]] }).success,
     ).toBe(false);
-    const none = { ...data.items[0], providers: {} };
+    // A letterboxd: id must carry its URL (R8); an id from a source with no
+    // provider, as Chapter 5's works will be, may carry none.
+    const none = { ...data.items[0], id: "king:carrie-1974", providers: {} };
+    data.shelves[0].entries[0].item = "king:carrie-1974";
     expect(
       fixture.safeParse({ ...data, items: [none, data.items[1]] }).success,
     ).toBe(true);

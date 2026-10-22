@@ -18,11 +18,21 @@ const itemId = z
     "item ids are <source>:<key>",
   );
 
+// https only: the loader turns these into links, and z.url() alone takes
+// javascript: and file:.
+const httpsUrl = z.url({ protocol: /^https$/ });
+
+// An id whose source is a provider names the same thing as that provider's
+// URL, so the loader can't key one film and link to another.
+const providerUrl = {
+  letterboxd: (key: string) => `https://boxd.it/${key}`,
+};
+
 const itemCore = z.strictObject({
   id: itemId,
   title: z.string().min(1),
   year: z.number().int(),
-  providers: z.partialRecord(z.enum(["letterboxd"]), z.url()),
+  providers: z.partialRecord(z.enum(["letterboxd"]), httpsUrl),
   source_note: z.string(),
 });
 
@@ -38,7 +48,7 @@ const entry = z.strictObject({
 const shelf = z.strictObject({
   name: z.string().min(1),
   date: z.iso.date(),
-  url: z.url(),
+  url: httpsUrl,
   description: z.string(),
   entries: z.array(entry),
 });
@@ -47,7 +57,7 @@ export const fixture = z
   .strictObject({ items: z.array(item), shelves: z.array(shelf) })
   .superRefine((file, ctx) => {
     const ids = new Set<string>();
-    file.items.forEach(({ id }, i) => {
+    file.items.forEach(({ id, providers }, i) => {
       if (ids.has(id)) {
         ctx.addIssue({
           code: "custom",
@@ -56,6 +66,18 @@ export const fixture = z
         });
       }
       ids.add(id);
+      const [source, key] = id.split(":");
+      if (source in providerUrl) {
+        const provider = source as keyof typeof providerUrl;
+        const expected = providerUrl[provider](key);
+        if (providers[provider] !== expected) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["items", i, "providers", provider],
+            message: `item ${id} should link to ${expected}`,
+          });
+        }
+      }
     });
     file.shelves.forEach((s, si) => {
       s.entries.forEach(({ item: id, position }, ei) => {
@@ -64,6 +86,16 @@ export const fixture = z
             code: "custom",
             path: ["shelves", si, "entries", ei, "item"],
             message: `entry ${position} points at ${id}, which is not an item in this file`,
+          });
+        }
+        // Gaps are fine; repeats and steps back would make position order
+        // and array order disagree.
+        const previous = s.entries[ei - 1]?.position;
+        if (previous !== undefined && position <= previous) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["shelves", si, "entries", ei, "position"],
+            message: `entry ${position} comes after entry ${previous}; positions must increase`,
           });
         }
       });
