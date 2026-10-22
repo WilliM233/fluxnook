@@ -38,7 +38,7 @@ Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js fil
 | @biomejs/biome | 2.5.15 | Lint and format, one tool (`npm run lint`) |
 | vitest | 5.0.5 | Unit tests (`npm test`) |
 | vite | 8.3.4 | Vitest 5's required peer; listed so it is pinned |
-| @playwright/test | 1.64.1 | Browser and request tests (`npm run test:e2e`); Chromium only for now |
+| @playwright/test | 1.64.1 | Browser and request tests (`npm run test:e2e`); Chromium by default, all three browsers with `PLAYWRIGHT_ALL_BROWSERS=1` |
 | supabase | 2.121.0 | The Supabase CLI, pinned per repo and run through `npx`; nothing to install globally |
 | postgres | 3.4.9 | Test-only Postgres driver for `tests/db` (`npm run test:db`); not the app's runtime client. Over `pg`: no `@types` package, and it is the driver `drizzle-orm/postgres-js` takes |
 | drizzle-kit | 0.31.11 | Generates SQL migrations into `supabase/migrations`; never applies them |
