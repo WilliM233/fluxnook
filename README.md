@@ -32,9 +32,29 @@ Things that trip people up:
 | `npm run dev` | The app at http://localhost:3000 |
 | `npm run lint` | Biome, lint and format check |
 | `npm run typecheck` | `next typegen`, then `tsc --noEmit`. Route types are generated, so plain `tsc` fails on a fresh clone |
-| `npm test` | Vitest, `tests/unit` |
-| `npm run test:e2e` | Playwright, Chromium, `tests/e2e`. Run `npx playwright install chromium` once first. Needs the Supabase stack up; starts `npm run dev` or reuses one on :3000. One test turns `pg_graphql` on in the local database and off again |
+| `npm test` | Vitest, `tests/unit`. No stack needed; takes about 10 s |
+| `npm run test:db` | Vitest, `tests/db`, straight to Postgres through `DATABASE_URL`. Needs the Supabase stack up and `.env.local` |
+| `npm run test:e2e` | Playwright, Chromium, `tests/e2e`. Run `npx playwright install chromium` once first. Needs the Supabase stack up; starts `npm run dev` or reuses one on :3000. One test turns `pg_graphql` on in the local database and off again. `PLAYWRIGHT_ALL_BROWSERS=1` adds Firefox and WebKit (`npx playwright install firefox webkit` once) and runs one worker |
+| `npm run db:check` | Fails when `src/db/schema.ts` and `supabase/migrations` disagree. Writes nothing to the repo |
+| `npm run check` | The six gates CI runs, in order, stopping at the first red: lint, typecheck, test, db:check, test:db, test:e2e. Needs the stack up |
 | `npm run db:generate -- --name=<change>` | drizzle-kit writes a migration into `supabase/migrations`. Read `.claude/skills/migrations/SKILL.md` first |
+
+## CI
+
+Every PR into `dev` or `main`, and every push to `dev`, runs workflow `CI` (`.github/workflows/ci.yml`). It has six jobs, named as their npm scripts: `lint`, `typecheck`, `test`, `db:check`, `test:db`, `test:e2e`. `test:db` and `test:e2e` each start their own Supabase stack in the runner. `test:e2e` builds the app and runs it with `next start` on Chromium only. No secrets are used: `.env.example` is copied to `.env.local`.
+
+`npm run check` runs the same six gates locally.
+
+When a check is red:
+
+- Open the job's log. The failing gate's own output is there.
+- A red `test:e2e` also uploads a `playwright-report` artifact, with traces.
+- A red `db:check` prints the SQL a migration would need, or drizzle-kit's error. A rename needs answering in a terminal: run `npm run db:generate -- --name=<what_changed>` and answer it.
+- A job that fails while pulling Supabase images with `toomanyrequests` hit a registry rate limit, not your change. Re-run the job.
+
+Workflow `Nightly` runs the whole Playwright suite on `dev` at 04:17 UTC, one job per browser (Chromium, Firefox, WebKit). Start it by hand from the Actions tab or with `gh workflow run nightly.yml --ref dev`. It does not run on PRs.
+
+Tests that sign in should import `test` and `expect` from `tests/e2e/harness/signed-in`. The session is on `page` and `page.request`; Playwright's built-in `request` is signed out.
 
 ## Where things are
 
@@ -43,7 +63,10 @@ Things that trip people up:
 - `src/proxy.ts`: refreshes the session on every request except Next's assets and image files
 - `src/db/schema.ts`: Drizzle table definitions
 - `supabase/`: local stack config and migrations
-- `tests/unit`, `tests/e2e`: Vitest and Playwright
+- `tests/unit`, `tests/db`, `tests/e2e`: Vitest, Vitest against Postgres, and Playwright
+- `tests/e2e/harness`: `signedIn`, a Playwright fixture that gives a spec a page signed in as a brand-new user. Its doc comment is the contract
+- `scripts/db-check.mjs`: the script behind `npm run db:check`
+- `.github/`: the workflows and the two composite actions they share
 
 ## Docs
 

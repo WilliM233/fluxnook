@@ -19,7 +19,8 @@ Any org-level or user-level CLAUDE.md that names `develop`, `feature/*` branches
 ## Working a chapter
 
 - Steps come from Plan section 3. You do not add, reorder or skip steps. A side find is a line under Deferrals on the plan with a trigger, never a step.
-- Each step ends at its observable. State it, show it, move on.
+- Each step ends at its observable. State it, show it, move on. Stop only for a Stop-for-L, a deviation that needs a call, or a red you can't fix inside the plan; otherwise run through to the handoff.
+- Comment on the issue at each seat handoff (plan approved, Rummage done, PR ready). The issue is the chapter's log.
 - Stop-for-L items are design. If you hit a question only L can answer and it isn't on the list, stop and ask; do not pick for them.
 - Migrations are plain SQL under `supabase/migrations` written through Drizzle. Every migration is reversible or says why it isn't.
 - API mutations are route handlers under `src/app/api/v1`, Zod-validated at the edge. No server actions for mutations.
@@ -36,7 +37,7 @@ Spawn one at a time. Give each the issue number, the plan path, and the diff. Ne
 
 ## The PR
 
-Into `dev`, template filled with `Refs #<issue>` (never `Closes`; L closes the issue after the Afterword), CI green. Whenever section 0 changes, update the issue body in the same commit. Section 5 of the plan is the handoff: every step landed or a named deviation, every Rummage line with its test, every Defer with its trigger. Then stop. L runs the Browse, L and the Nookkeeper review, L merges. You don't merge.
+Opened as a draft as soon as a workflow needs an event; marked ready after the Scribe, template filled, `Closes #<issue>` (the Afterword is your last commit, so the merge closes the issue), CI green. Whenever section 0 changes, update the issue body in the same commit. Section 5 of the plan is the handoff: every step landed or a named deviation, every Rummage line with its test, every Defer with its trigger. Then stop. L runs the Browse, L and the Nookkeeper review, L merges. You don't merge.
 
 ## Commits
 
