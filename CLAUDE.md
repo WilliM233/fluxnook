@@ -20,6 +20,7 @@ Any org-level or user-level CLAUDE.md that names `develop`, `feature/*` branches
 
 - Steps come from Plan section 3. You do not add, reorder or skip steps. A side find is a line under Deferrals on the plan with a trigger, never a step.
 - Each step ends at its observable. State it, show it, move on. Stop only for a Stop-for-L, a deviation that needs a call, or a red you can't fix inside the plan; otherwise run through to the handoff.
+- Read every gate unpiped. `npm run lint | tail -1` hides the error and the exit code; a green you didn't see isn't one (Ch 0.4).
 - Comment on the issue at each seat handoff (plan approved, Rummage done, PR ready). The issue is the chapter's log.
 - Stop-for-L items are design. If you hit a question only L can answer and it isn't on the list, stop and ask; do not pick for them.
 - Migrations are plain SQL under `supabase/migrations` written through Drizzle. Every migration is reversible or says why it isn't.

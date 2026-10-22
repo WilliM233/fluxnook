@@ -1,6 +1,6 @@
 # Raw fixture inputs
 
-Raw files are exports and sheets kept exactly as their source wrote them, and they are never edited by hand. Git normalizes CRLF to LF on commit; nothing else changes.
+Raw files are exports and sheets kept exactly as their source wrote them, and they are never edited by hand. Git normalizes CRLF to LF on commit; nothing else changes. On a Windows checkout `git ls-files --eol` may show a file as `w/crlf` or `w/lf` depending on how it was last written (a `git checkout --` renormalizes it); that's git, not an edit, and the builder reads both.
 
 A wrong value in a raw file is fixed by a re-export or by a later chapter's reconciliation, never by an edit here.
 
