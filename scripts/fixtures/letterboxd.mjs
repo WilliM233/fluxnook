@@ -26,12 +26,12 @@ export function letterboxdList(text, rawPath) {
       );
     }
   };
+  // Digits only: Number() alone reads " " as 0 and "0x7B8" as 1976.
   const integer = (index, name, value) => {
-    const number = Number(value);
-    if (value === "" || !Number.isInteger(number)) {
+    if (!/^\d+$/.test(value)) {
       fail(index, `${name} ${JSON.stringify(value)} is not a whole number`);
     }
-    return number;
+    return Number(value);
   };
 
   const records = parseCsv(text);
@@ -41,12 +41,17 @@ export function letterboxdList(text, rawPath) {
   expectRecord(1, LIST_HEADER);
   expectRecord(3, []);
   expectRecord(4, FILM_HEADER);
-  const [date, name, tags, url, description] = records[2] ?? [];
+  const list = records[2] ?? [];
+  if (list.length !== LIST_HEADER.length) {
+    fail(2, `expected ${LIST_HEADER.length} fields, found ${list.length}`);
+  }
+  const [date, name, tags, url, description] = list;
   // A3 has no place for tags; refusing them beats dropping them.
   if (tags !== "") fail(2, `Tags ${JSON.stringify(tags)} has nowhere to go`);
 
   const rows = records.slice(5);
   while (rows.length > 0 && rows.at(-1).length === 0) rows.pop();
+  if (rows.length === 0) fail(5, "the list has no films");
 
   const items = new Map();
   const entries = rows.map((row, offset) => {
@@ -59,15 +64,23 @@ export function letterboxdList(text, rawPath) {
     if (!key)
       fail(index, `URL ${JSON.stringify(filmUrl)} is not a boxd.it link`);
     const id = `letterboxd:${key}`;
-    if (!items.has(id)) {
-      items.set(id, {
-        id,
-        type: "film",
-        title,
-        year: integer(index, "Year", yearText),
-        providers: { letterboxd: filmUrl },
-        source_note: note,
-      });
+    const item = {
+      id,
+      type: "film",
+      title,
+      year: integer(index, "Year", yearText),
+      providers: { letterboxd: filmUrl },
+      source_note: note,
+    };
+    // The same film twice is two entries and one item, so the rows must agree.
+    const seen = items.get(id);
+    if (!seen) {
+      items.set(id, item);
+    } else if (!isDeepStrictEqual(seen, item)) {
+      fail(
+        index,
+        `${filmUrl} is listed again with a different Name, Year or Description`,
+      );
     }
     return { item: id, position: integer(index, "Position", positionText) };
   });
