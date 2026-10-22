@@ -1,0 +1,12 @@
+name: install
+description: Node from .nvmrc and a clean npm ci. Every job runs this after checkout.
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version-file: .nvmrc
+        cache: npm
+    - run: npm ci
+      shell: bash

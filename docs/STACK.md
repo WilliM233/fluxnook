@@ -6,7 +6,7 @@ Every version in `package.json` is exact (`.npmrc` has `save-exact=true`). This 
 
 | Tool | Version | Why |
 |---|---|---|
-| Node | 22.15.0 | The runtime the versions below were pinned against; meets Next 16 (>=20.9) |
+| Node | 22.15.0 (`.nvmrc`) | The runtime the versions below were pinned against; meets Next 16 (>=20.9). CI reads `.nvmrc` |
 | Docker Desktop | any current | The Supabase CLI runs the local stack in containers |
 
 Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js files in Chapter 0.2.
@@ -43,3 +43,15 @@ Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js fil
 | drizzle-kit | 0.31.11 | Generates SQL migrations into `supabase/migrations`; never applies them |
 | shadcn | 4.22.0 | The component CLI, and `shadcn/tailwind.css`, which `globals.css` imports at build time; nothing of it ships |
 | tw-animate-css | 1.4.0 | Animations; a build-time CSS import in `globals.css` for shadcn |
+
+## GitHub Actions
+
+Pinned to a commit SHA, not a tag: a tag can be moved after the fact, a commit can't. The tag rides in a comment beside each `uses:` so a reader knows what the SHA is.
+
+| Action or runner | Version | SHA | Why |
+|---|---|---|---|
+| `ubuntu-24.04` | runner | | Named, not `ubuntu-latest`, so the image moves only when this row does. Has Docker for the Supabase stack |
+| actions/checkout | v7.0.1 | `3d3c42e5aac5ba805825da76410c181273ba90b1` | Checks out the repo in every job |
+| actions/setup-node | v7.1.0 | `949feb2413d6458794dcd2491c4babbbce0c15c1` | Node from `.nvmrc`, with npm's cache, in `.github/actions/install` |
+| actions/cache | v6.1.0 | `55cc8345863c7cc4c66a329aec7e433d2d1c52a9` | Playwright's browsers between runs, keyed on `package-lock.json` |
+| actions/upload-artifact | v7.0.2 | `cf430e030ddbb5b0abf93d22962f4752f3646cd9` | The Playwright HTML report when an e2e job fails |
