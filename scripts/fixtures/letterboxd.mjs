@@ -56,7 +56,8 @@ export function letterboxdList(text, rawPath) {
     }
     const [positionText, title, yearText, filmUrl, note] = row;
     const key = BOXD.exec(filmUrl)?.[1];
-    if (!key) fail(index, `URL ${JSON.stringify(filmUrl)} is not a boxd.it link`);
+    if (!key)
+      fail(index, `URL ${JSON.stringify(filmUrl)} is not a boxd.it link`);
     const id = `letterboxd:${key}`;
     if (!items.has(id)) {
       items.set(id, {
