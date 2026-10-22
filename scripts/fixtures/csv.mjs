@@ -47,6 +47,11 @@ export function parseCsv(input) {
     } else if (char === '"' && state === "start") {
       state = "quoted";
       emptyLine = false;
+    } else if (char === '"') {
+      // RFC 4180 has no quote inside an unquoted field; it's a broken export.
+      throw new Error(
+        `CSV: a quote inside an unquoted field at character ${i}`,
+      );
     } else {
       field += char;
       state = "plain";
