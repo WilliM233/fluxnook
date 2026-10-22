@@ -1,0 +1,868 @@
+{
+  "items": [
+    {
+      "id": "letterboxd:20ZQ",
+      "providers": {
+        "letterboxd": "https://boxd.it/20ZQ"
+      },
+      "source_note": "Novel: Carrie (1974)",
+      "title": "Carrie",
+      "type": "film",
+      "year": 1976
+    },
+    {
+      "id": "letterboxd:20ZG",
+      "providers": {
+        "letterboxd": "https://boxd.it/20ZG"
+      },
+      "source_note": "Novel: Carrie (1974)",
+      "title": "The Rage: Carrie 2",
+      "type": "film",
+      "year": 1999
+    },
+    {
+      "id": "letterboxd:20Zw",
+      "providers": {
+        "letterboxd": "https://boxd.it/20Zw"
+      },
+      "source_note": "Novel: Carrie (1974)",
+      "title": "Carrie",
+      "type": "film",
+      "year": 2002
+    },
+    {
+      "id": "letterboxd:4kC2",
+      "providers": {
+        "letterboxd": "https://boxd.it/4kC2"
+      },
+      "source_note": "Novel: Carrie (1974)",
+      "title": "Carrie",
+      "type": "film",
+      "year": 2013
+    },
+    {
+      "id": "letterboxd:1U58",
+      "providers": {
+        "letterboxd": "https://boxd.it/1U58"
+      },
+      "source_note": "Novel: Salem's Lot (1975)",
+      "title": "Salem's Lot",
+      "type": "film",
+      "year": 1979
+    },
+    {
+      "id": "letterboxd:1r4U",
+      "providers": {
+        "letterboxd": "https://boxd.it/1r4U"
+      },
+      "source_note": "Novel: Salem's Lot (1975)",
+      "title": "A Return to Salem's Lot",
+      "type": "film",
+      "year": 1987
+    },
+    {
+      "id": "letterboxd:19SC",
+      "providers": {
+        "letterboxd": "https://boxd.it/19SC"
+      },
+      "source_note": "Novel: Salem's Lot (1975)",
+      "title": "Salem's Lot",
+      "type": "film",
+      "year": 2004
+    },
+    {
+      "id": "letterboxd:xQHw",
+      "providers": {
+        "letterboxd": "https://boxd.it/xQHw"
+      },
+      "source_note": "Novel: Salem's Lot (1975)\nShort Story: Jerusalem's Lot, Night Shift (1977)",
+      "title": "Chapelwaite",
+      "type": "film",
+      "year": 2021
+    },
+    {
+      "id": "letterboxd:sqU0",
+      "providers": {
+        "letterboxd": "https://boxd.it/sqU0"
+      },
+      "source_note": "Novel: Salem's Lot (1975)",
+      "title": "Salem's Lot",
+      "type": "film",
+      "year": 2024
+    },
+    {
+      "id": "letterboxd:29Nu",
+      "providers": {
+        "letterboxd": "https://boxd.it/29Nu"
+      },
+      "source_note": "Novel: The Shining (1977)",
+      "title": "The Shining",
+      "type": "film",
+      "year": 1980
+    },
+    {
+      "id": "letterboxd:3AKk",
+      "providers": {
+        "letterboxd": "https://boxd.it/3AKk"
+      },
+      "source_note": "Novel: The Shining (1977)",
+      "title": "The Shining",
+      "type": "film",
+      "year": 1997
+    },
+    {
+      "id": "letterboxd:1FzW",
+      "providers": {
+        "letterboxd": "https://boxd.it/1FzW"
+      },
+      "source_note": "Short Story: Graveyard Shift, Night Shift (1977)",
+      "title": "Graveyard Shift",
+      "type": "film",
+      "year": 1990
+    },
+    {
+      "id": "letterboxd:hAqs",
+      "providers": {
+        "letterboxd": "https://boxd.it/hAqs"
+      },
+      "source_note": "Short Story: Night Surf, Night Shift (1977)",
+      "title": "Night Surf",
+      "type": "film",
+      "year": 2002
+    },
+    {
+      "id": "letterboxd:geFS",
+      "providers": {
+        "letterboxd": "https://boxd.it/geFS"
+      },
+      "source_note": "Short Story: I am the Doorway, Night Shift (1977)",
+      "title": "I Am the Doorway",
+      "type": "film",
+      "year": 2017
+    },
+    {
+      "id": "letterboxd:flFe",
+      "providers": {
+        "letterboxd": "https://boxd.it/flFe"
+      },
+      "source_note": "Short Story: I am the Doorway, Night Shift (1977)",
+      "title": "I Am the Doorway",
+      "type": "film",
+      "year": 2015
+    },
+    {
+      "id": "letterboxd:jXi6",
+      "providers": {
+        "letterboxd": "https://boxd.it/jXi6"
+      },
+      "source_note": "Short Story: I am the Doorway, Night Shift (1977)",
+      "title": "I Am the Doorway",
+      "type": "film",
+      "year": 2018
+    },
+    {
+      "id": "letterboxd:1PU6",
+      "providers": {
+        "letterboxd": "https://boxd.it/1PU6"
+      },
+      "source_note": "Short Story: The Mangler, Night Shift (1977)",
+      "title": "The Mangler",
+      "type": "film",
+      "year": 1995
+    },
+    {
+      "id": "letterboxd:1s0u",
+      "providers": {
+        "letterboxd": "https://boxd.it/1s0u"
+      },
+      "source_note": "Short Story: The Mangler, Night Shift (1977)",
+      "title": "The Mangler 2",
+      "type": "film",
+      "year": 2002
+    },
+    {
+      "id": "letterboxd:1p6k",
+      "providers": {
+        "letterboxd": "https://boxd.it/1p6k"
+      },
+      "source_note": "Short Story: The Mangler, Night Shift (1977)",
+      "title": "The Mangler Reborn",
+      "type": "film",
+      "year": 2005
+    },
+    {
+      "id": "letterboxd:4dQ2",
+      "providers": {
+        "letterboxd": "https://boxd.it/4dQ2"
+      },
+      "source_note": "Short Story: The Boogeyman, Night Shift (1977)",
+      "title": "The Boogeyman",
+      "type": "film",
+      "year": 1982
+    },
+    {
+      "id": "letterboxd:7ota",
+      "providers": {
+        "letterboxd": "https://boxd.it/7ota"
+      },
+      "source_note": "Short Story: The Boogeyman, Night Shift (1977)",
+      "title": "The Boogeyman",
+      "type": "film",
+      "year": 2012
+    },
+    {
+      "id": "letterboxd:jnna",
+      "providers": {
+        "letterboxd": "https://boxd.it/jnna"
+      },
+      "source_note": "Short Story: The Boogeyman, Night Shift (1977)",
+      "title": "The Boogeyman",
+      "type": "film",
+      "year": 2023
+    },
+    {
+      "id": "letterboxd:1XnO",
+      "providers": {
+        "letterboxd": "https://boxd.it/1XnO"
+      },
+      "source_note": "Short Story: Trucks, Night Shift (1977)",
+      "title": "Maximum Overdrive",
+      "type": "film",
+      "year": 1986
+    },
+    {
+      "id": "letterboxd:1Jd6",
+      "providers": {
+        "letterboxd": "https://boxd.it/1Jd6"
+      },
+      "source_note": "Short Story: Trucks, Night Shift (1977)",
+      "title": "Trucks",
+      "type": "film",
+      "year": 1997
+    },
+    {
+      "id": "letterboxd:1r0S",
+      "providers": {
+        "letterboxd": "https://boxd.it/1r0S"
+      },
+      "source_note": "Short Story: Sometimes They Come Back, Night Shift (1977)",
+      "title": "Sometimes They Come Back",
+      "type": "film",
+      "year": 1991
+    },
+    {
+      "id": "letterboxd:1r0I",
+      "providers": {
+        "letterboxd": "https://boxd.it/1r0I"
+      },
+      "source_note": "Short Story: Sometimes They Come Back, Night Shift (1977)",
+      "title": "Sometimes They Come Back... Again",
+      "type": "film",
+      "year": 1996
+    },
+    {
+      "id": "letterboxd:1r0y",
+      "providers": {
+        "letterboxd": "https://boxd.it/1r0y"
+      },
+      "source_note": "Short Story: Sometimes They Come Back, Night Shift (1977)",
+      "title": "Sometimes They Come Back... for More",
+      "type": "film",
+      "year": 1998
+    },
+    {
+      "id": "letterboxd:1VYI",
+      "providers": {
+        "letterboxd": "https://boxd.it/1VYI"
+      },
+      "source_note": "Short Story: Quitters, Inc, Night Shift (1977)\nShort Story: The Ledge, Night Shift (1977)",
+      "title": "Cat's Eye",
+      "type": "film",
+      "year": 1985
+    },
+    {
+      "id": "letterboxd:8Gm4",
+      "providers": {
+        "letterboxd": "https://boxd.it/8Gm4"
+      },
+      "source_note": "Short Story: The Lawnmower Man, Night Shift (1977)",
+      "title": "The Lawnmower Man",
+      "type": "film",
+      "year": 1987
+    },
+    {
+      "id": "letterboxd:1WVK",
+      "providers": {
+        "letterboxd": "https://boxd.it/1WVK"
+      },
+      "source_note": "Short Story: The Lawnmower Man, Night Shift (1977)",
+      "title": "The Lawnmower Man",
+      "type": "film",
+      "year": 1992
+    },
+    {
+      "id": "letterboxd:1TE2",
+      "providers": {
+        "letterboxd": "https://boxd.it/1TE2"
+      },
+      "source_note": "Short Story: The Lawnmower Man, Night Shift (1977)",
+      "title": "Lawnmower Man 2: Beyond Cyberspace",
+      "type": "film",
+      "year": 1996
+    },
+    {
+      "id": "letterboxd:HAvu",
+      "providers": {
+        "letterboxd": "https://boxd.it/HAvu"
+      },
+      "source_note": "Short Story: I Know What You Need, Night Shift (1977)",
+      "title": "I Know What You Need",
+      "type": "film",
+      "year": 2023
+    },
+    {
+      "id": "letterboxd:b64",
+      "providers": {
+        "letterboxd": "https://boxd.it/b64"
+      },
+      "source_note": "Short Story: Children of the Corn, Night Shift (1977)",
+      "title": "Disciples of the Crow",
+      "type": "film",
+      "year": 1983
+    },
+    {
+      "id": "letterboxd:1ViW",
+      "providers": {
+        "letterboxd": "https://boxd.it/1ViW"
+      },
+      "source_note": "Short Story: Children of the Corn, Night Shift (1977)",
+      "title": "Children of the Corn",
+      "type": "film",
+      "year": 1984
+    },
+    {
+      "id": "letterboxd:1vco",
+      "providers": {
+        "letterboxd": "https://boxd.it/1vco"
+      },
+      "source_note": "Short Story: Children of the Corn, Night Shift (1977)",
+      "title": "Children of the Corn II: The Final Sacrifice",
+      "type": "film",
+      "year": 1992
+    },
+    {
+      "id": "letterboxd:1vce",
+      "providers": {
+        "letterboxd": "https://boxd.it/1vce"
+      },
+      "source_note": "Short Story: Children of the Corn, Night Shift (1977)",
+      "title": "Children of the Corn III: Urban Harvest",
+      "type": "film",
+      "year": 1995
+    },
+    {
+      "id": "letterboxd:1vc4",
+      "providers": {
+        "letterboxd": "https://boxd.it/1vc4"
+      },
+      "source_note": "Short Story: Children of the Corn, Night Shift (1977)",
+      "title": "Children of the Corn IV: The Gathering",
+      "type": "film",
+      "year": 1996
+    },
+    {
+      "id": "letterboxd:1vbU",
+      "providers": {
+        "letterboxd": "https://boxd.it/1vbU"
+      },
+      "source_note": "Short Story: Children of the Corn, Night Shift (1977)",
+      "title": "Children of the Corn V: Fields of Terror",
+      "type": "film",
+      "year": 1998
+    },
+    {
+      "id": "letterboxd:1vbK",
+      "providers": {
+        "letterboxd": "https://boxd.it/1vbK"
+      },
+      "source_note": "Short Story: Children of the Corn, Night Shift (1977)",
+      "title": "Children of the Corn 666: Isaac's Return",
+      "type": "film",
+      "year": 1999
+    },
+    {
+      "id": "letterboxd:1vbA",
+      "providers": {
+        "letterboxd": "https://boxd.it/1vbA"
+      },
+      "source_note": "Short Story: Children of the Corn, Night Shift (1977)",
+      "title": "Children of the Corn: Revelation",
+      "type": "film",
+      "year": 2001
+    },
+    {
+      "id": "letterboxd:1vbq",
+      "providers": {
+        "letterboxd": "https://boxd.it/1vbq"
+      },
+      "source_note": "Short Story: Children of the Corn, Night Shift (1977)",
+      "title": "Children of the Corn",
+      "type": "film",
+      "year": 2009
+    },
+    {
+      "id": "letterboxd:2tbA",
+      "providers": {
+        "letterboxd": "https://boxd.it/2tbA"
+      },
+      "source_note": "Short Story: Children of the Corn, Night Shift (1977)",
+      "title": "Children of the Corn: Genesis",
+      "type": "film",
+      "year": 2011
+    },
+    {
+      "id": "letterboxd:fRHw",
+      "providers": {
+        "letterboxd": "https://boxd.it/fRHw"
+      },
+      "source_note": "Short Story: Children of the Corn, Night Shift (1977)",
+      "title": "Children of the Corn: Runaway",
+      "type": "film",
+      "year": 2018
+    },
+    {
+      "id": "letterboxd:qd8o",
+      "providers": {
+        "letterboxd": "https://boxd.it/qd8o"
+      },
+      "source_note": "Short Story: Children of the Corn, Night Shift (1977)",
+      "title": "Children of the Corn",
+      "type": "film",
+      "year": 2020
+    },
+    {
+      "id": "letterboxd:i9gC",
+      "providers": {
+        "letterboxd": "https://boxd.it/i9gC"
+      },
+      "source_note": "Short Story: The Last Rung on the Ladder, Night Shift (1977)",
+      "title": "The Last Rung on the Ladder",
+      "type": "film",
+      "year": 1987
+    },
+    {
+      "id": "letterboxd:sKEG",
+      "providers": {
+        "letterboxd": "https://boxd.it/sKEG"
+      },
+      "source_note": "Short Story: The Man Who Loved Flowers, Night Shift (1977)",
+      "title": "The Man Who Loved Flowers",
+      "type": "film",
+      "year": 2010
+    },
+    {
+      "id": "letterboxd:EqiO",
+      "providers": {
+        "letterboxd": "https://boxd.it/EqiO"
+      },
+      "source_note": "Short Story: The Man Who Loved Flowers, Night Shift (1977)",
+      "title": "The Man Who Loved Flowers",
+      "type": "film",
+      "year": 2018
+    },
+    {
+      "id": "letterboxd:EqoM",
+      "providers": {
+        "letterboxd": "https://boxd.it/EqoM"
+      },
+      "source_note": "Short Story: The Man Who Loved Flowers, Night Shift (1977)",
+      "title": "The Man Who Loved Flowers",
+      "type": "film",
+      "year": 2017
+    },
+    {
+      "id": "letterboxd:9qQ",
+      "providers": {
+        "letterboxd": "https://boxd.it/9qQ"
+      },
+      "source_note": "Short Story: The Woman in the Room, Night Shift (1977)",
+      "title": "The Woman in the Room",
+      "type": "film",
+      "year": 1983
+    },
+    {
+      "id": "letterboxd:1PZU",
+      "providers": {
+        "letterboxd": "https://boxd.it/1PZU"
+      },
+      "source_note": "Novel: The Stand (1978)",
+      "title": "The Stand",
+      "type": "film",
+      "year": 1994
+    },
+    {
+      "id": "letterboxd:rHIe",
+      "providers": {
+        "letterboxd": "https://boxd.it/rHIe"
+      },
+      "source_note": "Novel: The Stand (1978)",
+      "title": "The Stand",
+      "type": "film",
+      "year": 2020
+    },
+    {
+      "id": "letterboxd:mic8",
+      "providers": {
+        "letterboxd": "https://boxd.it/mic8"
+      },
+      "source_note": "",
+      "title": "The Long Walk",
+      "type": "film",
+      "year": 2025
+    },
+    {
+      "id": "letterboxd:1U6g",
+      "providers": {
+        "letterboxd": "https://boxd.it/1U6g"
+      },
+      "source_note": "Novel: The Dead Zone (1979)",
+      "title": "The Dead Zone",
+      "type": "film",
+      "year": 1983
+    },
+    {
+      "id": "letterboxd:bR0O",
+      "providers": {
+        "letterboxd": "https://boxd.it/bR0O"
+      },
+      "source_note": "Novel: The Dead Zone (1979)",
+      "title": "The Dead Zone",
+      "type": "film",
+      "year": 2002
+    },
+    {
+      "id": "letterboxd:1TII",
+      "providers": {
+        "letterboxd": "https://boxd.it/1TII"
+      },
+      "source_note": "Novel: Firestarter (1979)",
+      "title": "Firestarter",
+      "type": "film",
+      "year": 1984
+    },
+    {
+      "id": "letterboxd:1EwC",
+      "providers": {
+        "letterboxd": "https://boxd.it/1EwC"
+      },
+      "source_note": "Novel: Firestarter (1979)",
+      "title": "Firestarter: Rekindled",
+      "type": "film",
+      "year": 2002
+    },
+    {
+      "id": "letterboxd:jnA4",
+      "providers": {
+        "letterboxd": "https://boxd.it/jnA4"
+      },
+      "source_note": "Novel: Firestarter (1979)",
+      "title": "Firestarter",
+      "type": "film",
+      "year": 2022
+    },
+    {
+      "id": "letterboxd:22r2",
+      "providers": {
+        "letterboxd": "https://boxd.it/22r2"
+      },
+      "source_note": "Novella: The Mist (1980)",
+      "title": "The Mist",
+      "type": "film",
+      "year": 2007
+    },
+    {
+      "id": "letterboxd:1W8o",
+      "providers": {
+        "letterboxd": "https://boxd.it/1W8o"
+      },
+      "source_note": "Novel: Cujo (1981)",
+      "title": "Cujo",
+      "type": "film",
+      "year": 1983
+    },
+    {
+      "id": "letterboxd:bU66",
+      "providers": {
+        "letterboxd": "https://boxd.it/bU66"
+      },
+      "source_note": "Series: The Dark Tower (1981)",
+      "title": "The Dark Tower",
+      "type": "film",
+      "year": 2017
+    },
+    {
+      "id": "letterboxd:29q6",
+      "providers": {
+        "letterboxd": "https://boxd.it/29q6"
+      },
+      "source_note": "Bachman Novel: The Running Man (1981)",
+      "title": "The Running Man",
+      "type": "film",
+      "year": 1987
+    }
+  ],
+  "shelves": [
+    {
+      "date": "2024-04-01",
+      "description": "Previously just a list of Night Shift adaptations.\n\nAttempting to put all Stephen King movies in chronological release order of the books to movies.\n\nList grows as I read Stephen King in publication order.",
+      "entries": [
+        {
+          "item": "letterboxd:20ZQ",
+          "position": 1
+        },
+        {
+          "item": "letterboxd:20ZG",
+          "position": 2
+        },
+        {
+          "item": "letterboxd:20Zw",
+          "position": 3
+        },
+        {
+          "item": "letterboxd:4kC2",
+          "position": 4
+        },
+        {
+          "item": "letterboxd:1U58",
+          "position": 5
+        },
+        {
+          "item": "letterboxd:1r4U",
+          "position": 6
+        },
+        {
+          "item": "letterboxd:19SC",
+          "position": 7
+        },
+        {
+          "item": "letterboxd:xQHw",
+          "position": 8
+        },
+        {
+          "item": "letterboxd:sqU0",
+          "position": 9
+        },
+        {
+          "item": "letterboxd:29Nu",
+          "position": 10
+        },
+        {
+          "item": "letterboxd:3AKk",
+          "position": 11
+        },
+        {
+          "item": "letterboxd:1FzW",
+          "position": 12
+        },
+        {
+          "item": "letterboxd:hAqs",
+          "position": 13
+        },
+        {
+          "item": "letterboxd:geFS",
+          "position": 14
+        },
+        {
+          "item": "letterboxd:flFe",
+          "position": 15
+        },
+        {
+          "item": "letterboxd:jXi6",
+          "position": 16
+        },
+        {
+          "item": "letterboxd:1PU6",
+          "position": 17
+        },
+        {
+          "item": "letterboxd:1s0u",
+          "position": 18
+        },
+        {
+          "item": "letterboxd:1p6k",
+          "position": 19
+        },
+        {
+          "item": "letterboxd:4dQ2",
+          "position": 20
+        },
+        {
+          "item": "letterboxd:7ota",
+          "position": 21
+        },
+        {
+          "item": "letterboxd:jnna",
+          "position": 22
+        },
+        {
+          "item": "letterboxd:1XnO",
+          "position": 23
+        },
+        {
+          "item": "letterboxd:1Jd6",
+          "position": 24
+        },
+        {
+          "item": "letterboxd:1r0S",
+          "position": 25
+        },
+        {
+          "item": "letterboxd:1r0I",
+          "position": 26
+        },
+        {
+          "item": "letterboxd:1r0y",
+          "position": 27
+        },
+        {
+          "item": "letterboxd:1VYI",
+          "position": 28
+        },
+        {
+          "item": "letterboxd:8Gm4",
+          "position": 29
+        },
+        {
+          "item": "letterboxd:1WVK",
+          "position": 30
+        },
+        {
+          "item": "letterboxd:1TE2",
+          "position": 31
+        },
+        {
+          "item": "letterboxd:HAvu",
+          "position": 32
+        },
+        {
+          "item": "letterboxd:b64",
+          "position": 33
+        },
+        {
+          "item": "letterboxd:1ViW",
+          "position": 34
+        },
+        {
+          "item": "letterboxd:1vco",
+          "position": 35
+        },
+        {
+          "item": "letterboxd:1vce",
+          "position": 36
+        },
+        {
+          "item": "letterboxd:1vc4",
+          "position": 37
+        },
+        {
+          "item": "letterboxd:1vbU",
+          "position": 38
+        },
+        {
+          "item": "letterboxd:1vbK",
+          "position": 39
+        },
+        {
+          "item": "letterboxd:1vbA",
+          "position": 40
+        },
+        {
+          "item": "letterboxd:1vbq",
+          "position": 41
+        },
+        {
+          "item": "letterboxd:2tbA",
+          "position": 42
+        },
+        {
+          "item": "letterboxd:fRHw",
+          "position": 43
+        },
+        {
+          "item": "letterboxd:qd8o",
+          "position": 44
+        },
+        {
+          "item": "letterboxd:i9gC",
+          "position": 45
+        },
+        {
+          "item": "letterboxd:sKEG",
+          "position": 46
+        },
+        {
+          "item": "letterboxd:EqiO",
+          "position": 47
+        },
+        {
+          "item": "letterboxd:EqoM",
+          "position": 48
+        },
+        {
+          "item": "letterboxd:9qQ",
+          "position": 49
+        },
+        {
+          "item": "letterboxd:1PZU",
+          "position": 50
+        },
+        {
+          "item": "letterboxd:rHIe",
+          "position": 51
+        },
+        {
+          "item": "letterboxd:mic8",
+          "position": 52
+        },
+        {
+          "item": "letterboxd:1U6g",
+          "position": 53
+        },
+        {
+          "item": "letterboxd:bR0O",
+          "position": 54
+        },
+        {
+          "item": "letterboxd:1TII",
+          "position": 55
+        },
+        {
+          "item": "letterboxd:1EwC",
+          "position": 56
+        },
+        {
+          "item": "letterboxd:jnA4",
+          "position": 57
+        },
+        {
+          "item": "letterboxd:22r2",
+          "position": 58
+        },
+        {
+          "item": "letterboxd:1W8o",
+          "position": 59
+        },
+        {
+          "item": "letterboxd:bU66",
+          "position": 60
+        },
+        {
+          "item": "letterboxd:29q6",
+          "position": 61
+        }
+      ],
+      "name": "Stephen King Watch List",
+      "url": "https://boxd.it/upKRw"
+    }
+  ]
+}
