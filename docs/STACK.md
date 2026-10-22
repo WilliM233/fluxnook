@@ -54,5 +54,5 @@ Pinned to a commit SHA, not a tag: a tag can be moved after the fact, a commit c
 | `ubuntu-24.04` | runner | | Named, not `ubuntu-latest`, so the image moves only when this row does. Has Docker for the Supabase stack |
 | actions/checkout | v7.0.1 | `3d3c42e5aac5ba805825da76410c181273ba90b1` | Checks out the repo in every job |
 | actions/setup-node | v7.1.0 | `949feb2413d6458794dcd2491c4babbbce0c15c1` | Node from `.nvmrc`, with npm's cache, in `.github/actions/install` |
-| actions/cache | v6.1.0 | `55cc8345863c7cc4c66a329aec7e433d2d1c52a9` | Playwright's browsers between runs, keyed on `package-lock.json` |
+| actions/cache | v6.1.0 | `55cc8345863c7cc4c66a329aec7e433d2d1c52a9` | Playwright's browsers between runs, keyed on the browser and `package-lock.json` |
 | actions/upload-artifact | v7.0.2 | `cf430e030ddbb5b0abf93d22962f4752f3646cd9` | The Playwright HTML report when an e2e job fails |
