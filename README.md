@@ -36,6 +36,7 @@ Things that trip people up:
 | `npm run test:db` | Vitest, `tests/db`, straight to Postgres through `DATABASE_URL`. Needs the Supabase stack up and `.env.local` |
 | `npm run test:e2e` | Playwright, Chromium, `tests/e2e`. Run `npx playwright install chromium` once first. Needs the Supabase stack up; starts `npm run dev` or reuses one on :3000. One test turns `pg_graphql` on in the local database and off again. `PLAYWRIGHT_ALL_BROWSERS=1` adds Firefox and WebKit (`npx playwright install firefox webkit` once) and runs one worker |
 | `npm run db:check` | Fails when `src/db/schema.ts` and `supabase/migrations` disagree. Writes nothing to the repo |
+| `npm run fixtures:build` | Rebuilds `supabase/seed/fixtures/*.json` from `supabase/seed/raw`. Deterministic. Plain Node, no stack needed |
 | `npm run check` | The six gates CI runs, in order, stopping at the first red: lint, typecheck, test, db:check, test:db, test:e2e. Needs the stack up |
 | `npm run db:generate -- --name=<change>` | drizzle-kit writes a migration into `supabase/migrations`. Read `.claude/skills/migrations/SKILL.md` first |
 
@@ -52,9 +53,23 @@ When a check is red:
 - A red `db:check` prints the SQL a migration would need, or drizzle-kit's error. A rename needs answering in a terminal: run `npm run db:generate -- --name=<what_changed>` and answer it.
 - A job that fails while pulling Supabase images with `toomanyrequests` hit a registry rate limit, not your change. Re-run the job.
 
-Workflow `Nightly` runs the whole Playwright suite on `dev` at 04:17 UTC, one job per browser (Chromium, Firefox, WebKit). Start it by hand from the Actions tab or with `gh workflow run nightly.yml --ref dev`. It does not run on PRs.
+Workflow `Nightly` runs the whole Playwright suite on `dev` at 04:17 UTC, one job per browser (Chromium, Firefox, WebKit). Its browser install step is capped at 10 minutes. Start it by hand from the Actions tab or with `gh workflow run nightly.yml --ref dev`. It does not run on PRs.
 
 Tests that sign in should import `test` and `expect` from `tests/e2e/harness/signed-in`. The session is on `page` and `page.request`; Playwright's built-in `request` is signed out.
+
+## Fixtures
+
+`supabase/seed` holds the acceptance data every later chapter is checked against. Today that is L's Stephen King watch list from Letterboxd: 61 films and one shelf.
+
+- `supabase/seed/raw/<source>/`: exports exactly as their source wrote them. Never edit one by hand. Each has a row in `supabase/seed/raw/README.md`.
+- `supabase/seed/fixtures/<name>.json`: generated, committed, never edited. `npm run fixtures:build` writes it. A second run leaves `git status` clean.
+- `src/fixtures/shape.ts`: the Zod shape of a fixture file. Item ids are `<source>:<key>`; the King films are `letterboxd:<boxd key>`.
+
+`npm test` goes red when a fixture disagrees with the shape or with a fresh build of its raw file (`tests/unit/fixtures.test.ts`). The fresh build goes to `node_modules/.cache/fixtures`; no test writes to the repo.
+
+The build stops, naming the raw file and record, when an export changed shape: different headers, a non-empty `Tags`, a URL that isn't `https://boxd.it/<key>`, a Year or Position that isn't a whole number, a film listed twice with different data, or a list with no films. It never drops a row quietly. A hand-edited raw file shows up as a red byte compare, not as a fix.
+
+Adding a raw file: put it under `supabase/seed/raw/<source>/`, add its row to `supabase/seed/raw/README.md`, add a `SOURCES` line in `scripts/fixtures-build.mjs` (and `scripts/fixtures/<source>.mjs` if the source is new), run `npm run fixtures:build`, and commit the raw file and its JSON together. The CSV reader is `scripts/fixtures/csv.mjs`, written in-repo; no package was added.
 
 ## Where things are
 
@@ -63,9 +78,12 @@ Tests that sign in should import `test` and `expect` from `tests/e2e/harness/sig
 - `src/proxy.ts`: refreshes the session on every request except Next's assets and image files
 - `src/db/schema.ts`: Drizzle table definitions
 - `supabase/`: local stack config and migrations
+- `supabase/seed`: raw exports and the fixtures built from them. See Fixtures
+- `src/fixtures/shape.ts`: the Zod shape of a fixture file
 - `tests/unit`, `tests/db`, `tests/e2e`: Vitest, Vitest against Postgres, and Playwright
 - `tests/e2e/harness`: `signedIn`, a Playwright fixture that gives a spec a page signed in as a brand-new user. Its doc comment is the contract
 - `scripts/db-check.mjs`: the script behind `npm run db:check`
+- `scripts/fixtures-build.mjs`, `scripts/fixtures/`: the script behind `npm run fixtures:build`, its CSV reader and the Letterboxd list builder
 - `.github/`: the workflows and the two composite actions they share
 
 ## Docs
