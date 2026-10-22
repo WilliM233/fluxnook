@@ -74,8 +74,10 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-chromium-${{ hashFiles('package-lock.json') }}
-      # The runner's apt mirror can crawl; a capped red beats an hour of waiting.
-      - run: npx playwright install --with-deps chromium
+      # No --with-deps: the image already has Chromium's libraries, and the
+      # apt mirror behind that flag stalled this step. The nightly keeps it for
+      # Firefox and WebKit. A capped red still beats an hour of waiting.
+      - run: npx playwright install chromium
         timeout-minutes: 5
       - run: npm run build
       - run: npm run test:e2e
