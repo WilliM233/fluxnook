@@ -27,7 +27,11 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ matrix.browser }}-${{ hashFiles('package-lock.json') }}
+      # --with-deps stays: Firefox and WebKit need libraries the image doesn't
+      # ship. Its apt mirror sat past the job cap once (2026-10-22, WebKit);
+      # a capped step reads as what it is.
       - run: npx playwright install --with-deps ${{ matrix.browser }}
+        timeout-minutes: 10
       - run: npm run build
       - run: npm run test:e2e -- --project=${{ matrix.browser }}
         env:

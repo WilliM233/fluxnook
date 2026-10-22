@@ -51,8 +51,8 @@ Exit: a user exists, logs in locally, sees an empty nook. The team can run a cha
 - Ch 1: Repo reset, House Rules, CLAUDE.md, the agent briefs, plan template, PR and issue templates. Done, v0.0.0-ch.1
 - Ch 2: Scaffold the stack, Supabase local, auth, the empty nook page. Done, v0.0.0-ch.2 (#50, PR #51)
 - Ch 3: CI and the test harness: Actions on every PR, Supabase local in the runner, Playwright through the mail catcher, a signed-in test fixture, a database test, nightly full Playwright on dev. Done, v0.0.0-ch.3 (#52, PR #53)
-- Ch 4: Fixtures, films: the fixture convention (raw export in, script, normalized JSON out, Zod shape checked in CI) built on the King Letterboxd list, the flattest of the three inputs. Next
-- Ch 5: Fixtures, books: the King works from the list's descriptions, in publication order, with adaptation-of and contained-in (story inside Night Shift) relations
+- Ch 4: Fixtures, films: the fixture convention (raw export in, script, normalized JSON out, Zod shape checked in CI) built on the King Letterboxd list, the flattest of the three inputs. Done, v0.0.0-ch.4 (#54, PR #55)
+- Ch 5: Fixtures, books: the King works from the list's descriptions, in publication order, with adaptation-of and contained-in (story inside Night Shift) relations. Next
 - Ch 6: Fixtures, comics: the TMNT Mirage tab as series, issues, collected editions with contents, owned-via and read flags
 - Fixtures are data files until Volume 1 Ch 1 adds the tables; loading them is an acceptance line of that chapter
 
@@ -133,6 +133,7 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## History
 
+- 2026-10-22 Ch 0.4 closed; Ch 0.5 is next. Item ids are `<source>:<key>` (`letterboxd:20ZQ`), which Ch 0.5, 0.6 and the Volume 1 loader inherit
 - 2026-10-22 Ch 0.3 closed; Ch 0.4 is next. Two calls added from the Afterword
 - 2026-10-22 Ch 0.3 design talk. Fixtures become data files and split into one chapter per media type (Ch 4 films, 5 books, 6 comics); Volume 0 exit widened; six calls added. Ch 0.3 spec written, docs/plans/0.3-ci-harness.md
 - 2026-10-16 Created. Phases, milestone definitions, core model shape, stack, calls and deferrals from the restart session.
