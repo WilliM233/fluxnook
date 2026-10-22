@@ -3,7 +3,7 @@ import { type APIRequestContext, expect } from "@playwright/test";
 // The local stack's mail catcher, `[local_smtp] port` in supabase/config.toml.
 const MAILPIT = "http://127.0.0.1:54324";
 
-type SearchResult = { messages: { ID: string }[] };
+type SearchResult = { messages: { ID: string; To: { Address: string }[] }[] };
 
 /**
  * The sign-in link from the newest mail to `email`, polled for up to ten
@@ -21,7 +21,11 @@ export async function waitForMagicLink(
     .poll(
       async () => {
         const result: SearchResult = await (await request.get(search)).json();
-        id = result.messages[0]?.ID ?? "";
+        // `to:` matches substrings, so mail to x<email> would answer too.
+        id =
+          result.messages.find((message) =>
+            message.To.some((to) => to.Address === email),
+          )?.ID ?? "";
         return id;
       },
       { message: `no mail to ${email} in Mailpit`, timeout: 10_000 },

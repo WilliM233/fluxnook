@@ -9,6 +9,10 @@ import { waitForMagicLink } from "./mailpit";
  * costs about a second per test and needs the local stack up (`npx supabase
  * start`, Mailpit on 54324). Nothing is shared between tests.
  *
+ * The session lives on this page's context: call the API with
+ * `page.request`. Playwright's built-in `request` fixture is a separate
+ * context and is signed out.
+ *
  *   import { expect, test } from "./harness/signed-in";
  *
  *   test("my shelf starts empty", async ({ signedIn: { page, email } }) => {
