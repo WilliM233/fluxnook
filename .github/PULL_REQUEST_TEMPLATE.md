@@ -1,8 +1,8 @@
 ## Chapter
 
-Refs #<issue>. Plan: `docs/plans/<vol>.<n>-<slug>.md`
+Closes #<issue>. Plan: `docs/plans/<vol>.<n>-<slug>.md`
 
-`Refs`, not `Closes`: `dev` is the default branch, so `Closes` would shut the issue on merge. L closes it after the Afterword.
+`Closes`: the Afterword lands as the branch's last commit, so the merge closes the issue, and the keyword is what links this PR on the issue's Development panel.
 
 ## Handoff
 

@@ -14,7 +14,7 @@ description: How Fluxnook writes and applies database migrations with Drizzle an
 - Table changes: edit `src/db/schema.ts`, then `npm run db:generate -- --name=<what_changed>`.
 - Hand SQL (triggers, functions, grants): `npm run db:generate -- --custom --name=<what_it_does>`, then fill the empty file. Going through `--custom` keeps drizzle's journal in step.
 - Never `drizzle-kit migrate` or `drizzle-kit push`. They keep a second ledger the Supabase CLI doesn't know about.
-- `npx drizzle-kit check` and a second `db:generate` reporting no changes mean schema and SQL agree.
+- `npm run db:check` is the proof that schema and SQL agree: `drizzle-kit check` on the snapshots, then a `generate` against a copy under `node_modules/.cache` that must write nothing. It never writes to the repo; CI runs it on every PR.
 
 ## Every file opens with its reversal
 

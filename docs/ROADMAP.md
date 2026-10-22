@@ -50,8 +50,8 @@ See docs/HOUSE-RULES.md. Volume = milestone, Chapter = run, Plan = docs/plans/<v
 Exit: a user exists, logs in locally, sees an empty nook. The team can run a chapter end to end, CI gates every PR, and the three fixtures validate in CI.
 - Ch 1: Repo reset, House Rules, CLAUDE.md, the agent briefs, plan template, PR and issue templates. Done, v0.0.0-ch.1
 - Ch 2: Scaffold the stack, Supabase local, auth, the empty nook page. Done, v0.0.0-ch.2 (#50, PR #51)
-- Ch 3: CI and the test harness: Actions on every PR, Supabase local in the runner, Playwright through the mail catcher, a signed-in test fixture, a database test, nightly full Playwright on dev. Next; plan at docs/plans/0.3-ci-harness.md
-- Ch 4: Fixtures, films: the fixture convention (raw export in, script, normalized JSON out, Zod shape checked in CI) built on the King Letterboxd list, the flattest of the three inputs
+- Ch 3: CI and the test harness: Actions on every PR, Supabase local in the runner, Playwright through the mail catcher, a signed-in test fixture, a database test, nightly full Playwright on dev. Done, v0.0.0-ch.3 (#52, PR #53)
+- Ch 4: Fixtures, films: the fixture convention (raw export in, script, normalized JSON out, Zod shape checked in CI) built on the King Letterboxd list, the flattest of the three inputs. Next
 - Ch 5: Fixtures, books: the King works from the list's descriptions, in publication order, with adaptation-of and contained-in (story inside Night Shift) relations
 - Ch 6: Fixtures, comics: the TMNT Mirage tab as series, issues, collected editions with contents, owned-via and read flags
 - Fixtures are data files until Volume 1 Ch 1 adds the tables; loading them is an acceptance line of that chapter
@@ -95,6 +95,8 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## Calls made (with reason)
 
+- 2026-10-22 `Closes #<issue>` in the PR, not `Refs`. The Afterword is the branch's last commit, so closing on merge is right and saves L a step; and only a closing keyword links the PR in the issue's Development panel, which `Refs` never does
+- 2026-10-22 L bookends every chapter: opens the branch and makes the first commit (the spec), runs the Browse, checks CI, merges. The Binder opens the issue and keeps it as the chapter's log; the Nookkeeper reviews the plan and the handoff, not each step
 - 2026-10-22 Fixtures are data files, not rows. No content table exists until Volume 1 Ch 1, so `supabase/seed/` holds normalized JSON with a Zod shape checked in CI, and the loader is a Volume 1 Ch 1 acceptance line. The shape gets fitted to real data before the schema is drawn, not after
 - 2026-10-22 One fixture chapter per media type (films, books, comics): the types behave differently and each deserves its own attention. The convention lands with films, the flattest input; books adds the relations; comics adds editions and contents
 - 2026-10-22 Raw exports are taken as they are: the Letterboxd King list (its four questionable years included) and the hand-collected TMNT sheet. Reconciliation waits for the provider import in Volume 1, which is where the data would get corrected anyway. The King list is the book list: every film's description names the work it adapts
@@ -131,6 +133,7 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## History
 
+- 2026-10-22 Ch 0.3 closed; Ch 0.4 is next. Two calls added from the Afterword
 - 2026-10-22 Ch 0.3 design talk. Fixtures become data files and split into one chapter per media type (Ch 4 films, 5 books, 6 comics); Volume 0 exit widened; six calls added. Ch 0.3 spec written, docs/plans/0.3-ci-harness.md
 - 2026-10-16 Created. Phases, milestone definitions, core model shape, stack, calls and deferrals from the restart session.
 - 2026-10-16 Ch 0.2 closed; Ch 0.3 is next
