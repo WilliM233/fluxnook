@@ -212,6 +212,7 @@ export function mirageTab(text, rawPath) {
   const sections = [];
   const gaps = [];
   const recordOf = new Map();
+  const repeatable = new Set();
   const backups = [];
   const collected = new Map();
   const occurrences = [];
@@ -244,12 +245,18 @@ export function mirageTab(text, rawPath) {
       }
       if (vol) volume = vol[1];
       if (volume === undefined) fail("is a header before any Volume <n>");
-      const rule = RULES[Issue];
-      const run = SERIES[`${volume}|${Issue}`];
+      // Own keys only: `toString` is not a section (Ch 0.6 R1).
+      const rule = Object.hasOwn(RULES, Issue) ? RULES[Issue] : undefined;
+      const runKey = `${volume}|${Issue}`;
+      const run = Object.hasOwn(SERIES, runKey) ? SERIES[runKey] : undefined;
       if (!rule || (rule.read === numbered && !run)) {
         fail(`header ${JSON.stringify(Issue)} in Volume ${volume} has no rule`);
       }
-      section = { name: `Volume ${volume} · ${Issue}`, rule, run, entries: [] };
+      const name = `Volume ${volume} · ${Issue}`;
+      const twin = sections.find((s) => s.name === name);
+      if (twin)
+        fail(`repeats the section ${name}; record ${twin.record} opened it`);
+      section = { name, record: i, rule, run, entries: [] };
       sections.push(section);
       continue;
     }
@@ -274,12 +281,15 @@ export function mirageTab(text, rawPath) {
     if (tail === "" || row.key === "") fail("gives an empty id");
     let id = `manual:tmnt-mirage-${row.key}-${tail}`;
     if (recordOf.has(id)) {
-      if (!repeats) {
+      // Only a row repeated inside a section that allows it takes a suffix;
+      // a repeat across sections would be a silent fork (Ch 0.6 R2).
+      if (!repeats || !repeatable.has(id)) {
         fail(`is ${id} again; record ${recordOf.get(id)} is the first`);
       }
       id = `${id}-r${i}`;
     }
     recordOf.set(id, i);
+    if (repeats) repeatable.add(id);
 
     const date = readDate(row.date);
     items.push({
@@ -310,7 +320,9 @@ export function mirageTab(text, rawPath) {
   // Hosts resolve after the walk, so a backup may come before its issue. A
   // host is a Vol 1 issue only when the cell is exactly that issue's name and
   // the sheet lists it (A6); any other cell, reprints and listed rows of
-  // other sections included, is an anthology of that exact text (Q2).
+  // other sections included, is an anthology of that exact text (Q2). It is
+  // dated from its first dated backup; an undated backup is its own gap and
+  // dates nothing, and a host no backup dates is a gap too (Ch 0.6 R3, R4).
   const anthologies = new Map();
   const relations = backups.map(({ id, host, date, cell, record }) => {
     const issue = /^Teenage Mutant Ninja Turtles #(\d+)$/.exec(host);
@@ -318,8 +330,7 @@ export function mirageTab(text, rawPath) {
     if (listed && recordOf.has(listed)) {
       return { type: "contained-in", from: id, to: listed };
     }
-    const seen = anthologies.get(host);
-    if (seen === undefined) {
+    if (!anthologies.has(host)) {
       const hostId = `manual:tmnt-mirage-host-${slug(host)}`;
       if (recordOf.has(hostId)) {
         failAt(record)(
@@ -327,31 +338,35 @@ export function mirageTab(text, rawPath) {
         );
       }
       recordOf.set(hostId, record);
-      anthologies.set(host, {
-        record,
-        item: {
-          id: hostId,
-          type: "comic",
-          title: host,
-          ...date,
-          source_date: cell,
-          source_note: "",
-          providers: {},
-          form: "anthology",
-          series: null,
-          series_kind: null,
-          number: null,
-        },
-      });
-    } else if (seen.item.year !== date.year) {
-      failAt(record)(
-        `host ${JSON.stringify(host)} is dated ${date.year} here and ${seen.item.year} at record ${seen.record}`,
-      );
+      anthologies.set(host, { id: hostId, first: { date, cell } });
     }
+    const anthology = anthologies.get(host);
+    if (date.year !== null) {
+      if (anthology.dated === undefined) {
+        anthology.dated = { date, cell, record };
+      } else if (anthology.dated.date.year !== date.year) {
+        failAt(record)(
+          `host ${JSON.stringify(host)} is dated ${date.year} here and ${anthology.dated.date.year} at record ${anthology.dated.record}`,
+        );
+      }
+    }
+    return { type: "contained-in", from: id, to: anthology.id };
+  });
+  const hosts = [...anthologies].map(([host, { id, first, dated }]) => {
+    const { date, cell } = dated ?? first;
+    if (date.year === null) gaps.push({ item: id, reason: "no readable year" });
     return {
-      type: "contained-in",
-      from: id,
-      to: anthologies.get(host).item.id,
+      id,
+      type: "comic",
+      title: host,
+      ...date,
+      source_date: cell,
+      source_note: "",
+      providers: {},
+      form: "anthology",
+      series: null,
+      series_kind: null,
+      number: null,
     };
   });
 
@@ -380,11 +395,7 @@ export function mirageTab(text, rawPath) {
   }));
 
   return {
-    items: [
-      ...items,
-      ...[...anthologies.values()].map(({ item }) => item),
-      ...collections,
-    ],
+    items: [...items, ...hosts, ...collections],
     shelves: [
       {
         name: SHELF_NAME,

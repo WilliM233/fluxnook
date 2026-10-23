@@ -40,6 +40,12 @@ function counts(data) {
 }
 
 export function buildFixtures(sources, { rawDir, outDir }) {
+  // A second line with the same `out` would silently replace the first.
+  const outs = sources.map(({ out }) => out);
+  const twice = outs.find((out, i) => outs.indexOf(out) !== i);
+  if (twice !== undefined) {
+    throw new Error(`${twice}: two SOURCES lines write it`);
+  }
   const built = sources.map((source) => {
     const rawPath = `${rawDir}/${source.raw}`;
     // Two fixtures can share a raw file, so an error names the one being built.

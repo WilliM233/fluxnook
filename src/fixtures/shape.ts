@@ -13,15 +13,16 @@
 import { z } from "zod";
 
 // <source>:<key>, so ids from different sources can't collide and each one
-// says where it came from.
+// says where it came from. `edition` is not a source: that prefix is an
+// edition's, so the two kinds of id can't be mistaken either way.
 const itemId = z
   .string()
   .regex(
-    /^[a-z][a-z0-9-]*:[A-Za-z0-9][A-Za-z0-9._-]*$/,
-    "item ids are <source>:<key>",
+    /^(?!edition:)[a-z][a-z0-9-]*:[A-Za-z0-9][A-Za-z0-9._-]*$/,
+    "item ids are <source>:<key>, and edition: is an edition's",
   );
 
-// An edition id would pass as an item id, so it is told apart by its prefix.
+// The prefix tells an edition id from an item id.
 const editionId = z
   .string()
   .regex(
