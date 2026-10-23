@@ -17,6 +17,7 @@
  * same work, stops the build naming the record and the line.
  */
 import { letterboxdList } from "./letterboxd.mjs";
+import { slug } from "./slug.mjs";
 
 const LINE =
   /^(Novel|Short Story|Novella|Series|Bachman Novel): (.+) \((\d{4})\)$/;
@@ -30,18 +31,6 @@ const FORMS = {
 const SHELF_NAME = "Stephen King, publication order";
 const SHELF_DESCRIPTION =
   "The works the list's notes name, less the stories (reached through Night Shift), by the year the notes give and then by the position of the first film whose first note line names the work or its collection.";
-
-// Accents and apostrophes go first, so Été is ete and Salem's Lot is
-// salems-lot, not t and salem-s-lot.
-function slug(text) {
-  return text
-    .normalize("NFD")
-    .replace(/\p{M}/gu, "")
-    .replace(/['’]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
 
 function parseLine(line, fail) {
   const match = LINE.exec(line);

@@ -3,24 +3,9 @@ import { describe, expect, it } from "vitest";
 import { fixture } from "@/fixtures/shape";
 import { parseCsv } from "../../scripts/fixtures/csv.mjs";
 import { letterboxdList } from "../../scripts/fixtures/letterboxd.mjs";
+import { exportOf, LIST_ROW } from "./fixtures/helpers";
 
 // Ch 0.4 Rummage. Each test names its line in the plan's section 4b.
-
-const LIST_HEADER = "Date,Name,Tags,URL,Description";
-const LIST_ROW = "2024-04-01,X,,https://boxd.it/upKRw,d";
-const FILM_HEADER = "Position,Name,Year,URL,Description";
-
-function exportOf(films: string[], listRow = LIST_ROW): string {
-  return [
-    "Letterboxd list export v7",
-    LIST_HEADER,
-    listRow,
-    "",
-    FILM_HEADER,
-    ...films,
-    "",
-  ].join("\n");
-}
 
 function sample() {
   return {

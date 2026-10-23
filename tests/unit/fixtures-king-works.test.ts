@@ -1,21 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { kingWorks } from "../../scripts/fixtures/king-works.mjs";
+import { exportOf } from "./fixtures/helpers";
 
 // The works builder on small inline exports. A film at row i is record i + 5.
 
 const RAW = "raw/king.csv";
-
-function exportOf(films: string[]): string {
-  return [
-    "Letterboxd list export v7",
-    "Date,Name,Tags,URL,Description",
-    "2024-04-01,X,,https://boxd.it/upKRw,d",
-    "",
-    "Position,Name,Year,URL,Description",
-    ...films,
-    "",
-  ].join("\n");
-}
 
 // Every note is quoted, so a comma or a line break stays inside it.
 function film(position: number, key: string, note: string): string {
