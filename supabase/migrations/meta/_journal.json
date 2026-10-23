@@ -15,6 +15,13 @@
       "when": 1792182031063,
       "tag": "20261016202031_profiles_on_signup",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792784879713,
+      "tag": "20261023194759_catalog",
+      "breakpoints": true
     }
   ]
 }
