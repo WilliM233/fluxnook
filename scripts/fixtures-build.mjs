@@ -8,15 +8,22 @@
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { kingWorks } from "./fixtures/king-works.mjs";
 import { letterboxdList } from "./fixtures/letterboxd.mjs";
 
 const RAW = "supabase/seed/raw";
-// One line per raw file. Chapters 0.5 and 0.6 add theirs.
+// One line per fixture; a raw file may feed more than one. Chapter 0.6 adds
+// the Mirage tab.
 const SOURCES = [
   {
     raw: "letterboxd/stephen-king-watch-list.csv",
     out: "king-films.json",
     build: letterboxdList,
+  },
+  {
+    raw: "letterboxd/stephen-king-watch-list.csv",
+    out: "king-books.json",
+    build: kingWorks,
   },
 ];
 
