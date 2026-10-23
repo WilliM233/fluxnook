@@ -46,7 +46,7 @@ Conventional commits, subject 60 or fewer, body says why. One squash commit per 
 
 ## The dev box
 
-L runs Git Bash (MINGW64) on Windows; every command block for L is Git Bash, never PowerShell. Never `git checkout --` or reset a file with uncommitted work in it; commit or stash first (Ch 0.5 lost fixes to a revert). Bash heredocs on this machine mangle backslashes; write a scripted edit to a file with your file tools, not a heredoc.
+L runs Git Bash (MINGW64) on Windows; every command block for L is Git Bash, never PowerShell. Never `git checkout --` or reset a file with uncommitted work in it; commit or stash first (Ch 0.5 lost fixes to a revert). Bash heredocs on this machine mangle backslashes; write a scripted edit to a file with your file tools, not a heredoc. A Browse command is pasted into an interactive shell: no `!` inside double quotes (history expansion eats it; Ch 0.6 lost a red to `Mousers!`), use single quotes or leave the character out.
 
 ## Tone
 
