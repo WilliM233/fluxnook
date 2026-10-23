@@ -154,6 +154,26 @@ describe("content tables", () => {
     ).toHaveLength(0);
   });
 
+  it("an update moves updated_at and leaves created_at, on every table but profiles", async () => {
+    const [{ id }] = await sql`
+      insert into shelves (owner, name, created_at, updated_at)
+      values (${owner}, 'Stamped', '2000-01-01', '2000-01-01') returning id`;
+    const [row] = await sql`
+      update shelves set name = 'Restamped' where id = ${id}
+      returning created_at, updated_at`;
+    expect(row.created_at.getUTCFullYear()).toBe(2000);
+    expect(row.updated_at.getUTCFullYear()).toBeGreaterThan(2000);
+
+    const missing = await sql`
+      select c.table_name from information_schema.columns c
+      where c.table_schema = 'public' and c.column_name = 'updated_at'
+        and not exists (
+          select 1 from pg_trigger t
+          where t.tgrelid = ('public.' || c.table_name)::regclass
+            and t.tgname = c.table_name || '_updated_at')`;
+    expect(missing.map((r) => r.table_name)).toEqual([]);
+  });
+
   // Last: it takes the user.
   it("a profile delete takes every content row it owns and no catalog row", async () => {
     await sql`delete from profiles where id = ${owner}`;
