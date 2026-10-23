@@ -128,7 +128,9 @@ export const items = pgTable(
     check("items_type", oneOf(t.type, itemTypes)),
     check(
       "items_form_per_type",
-      sql`(${t.type} = 'film' and ${t.form} is null) or (${t.type} = 'book' and ${oneOf(t.form, bookForms)}) or (${t.type} = 'comic' and ${oneOf(t.form, comicForms)})`,
+      // `form in (...)` is null for a null form, and a null check passes, so
+      // the book and comic arms say not null out loud (Ch 1.1 B1).
+      sql`(${t.type} = 'film' and ${t.form} is null) or (${t.type} = 'book' and ${t.form} is not null and ${oneOf(t.form, bookForms)}) or (${t.type} = 'comic' and ${t.form} is not null and ${oneOf(t.form, comicForms)})`,
     ),
     check(
       "items_released",

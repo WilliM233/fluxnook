@@ -1,6 +1,6 @@
 -- updated_at: one function keeps updated_at on every Ch 1.1 table. profiles has no
 -- updated_at (Deferral), so no trigger there.
--- Down (first; the content and catalog Downs follow):
+-- Down (after 20261023203115_items_form_required's; the content and catalog Downs follow):
 --   drop trigger if exists items_updated_at on public.items;
 --   drop trigger if exists item_books_updated_at on public.item_books;
 --   drop trigger if exists item_comics_updated_at on public.item_comics;
