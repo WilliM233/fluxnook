@@ -53,7 +53,7 @@ Exit: a user exists, logs in locally, sees an empty nook. The team can run a cha
 - Ch 3: CI and the test harness: Actions on every PR, Supabase local in the runner, Playwright through the mail catcher, a signed-in test fixture, a database test, nightly full Playwright on dev. Done, v0.0.0-ch.3 (#52, PR #53)
 - Ch 4: Fixtures, films: the fixture convention (raw export in, script, normalized JSON out, Zod shape checked in CI) built on the King Letterboxd list, the flattest of the three inputs. Done, v0.0.0-ch.4 (#54, PR #55)
 - Ch 5: Fixtures, books: the King works from the list's descriptions, in publication order, with adaptation-of and contained-in (story inside Night Shift) relations. Done, v0.0.0-ch.5 (#56, PR #57)
-- Ch 6: Fixtures, comics: the TMNT Mirage tab as series, issues, collected editions with contents, owned-via and read flags. Next
+- Ch 6: Fixtures, comics: the TMNT Mirage tab as series, issues, collected editions with contents, owned-via and read flags. Done, v0.0.0-ch.6 (#58, PR #59)
 - Fixtures are data files until Volume 1 Ch 1 adds the tables; loading them is an acceptance line of that chapter
 
 ### Volume 1: Alpha
@@ -95,6 +95,13 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## Calls made (with reason)
 
+- 2026-10-23 A shelf's `url` is optional. The TMNT sheet is private and has no public link; the shape asks for a URL only where one exists (Ch 0.6 Q1)
+- 2026-10-23 A backup's host resolves only to a listed Vol 1 Main issue named exactly `Teenage Mutant Ninja Turtles #<n>`; any other host cell becomes an anthology item even when it matches a listed row's title, so seven comics exist twice until Metron reconciles them in Volume 1 Ch 4. Cells are never read past their literal text (Ch 0.6 Q2)
+- 2026-10-23 Comic forms use collectors' words: `issue` (single/floppy), `one-shot`, `backup` (a short printed inside another comic), `collected` (a trade, hardcover or omnibus as a work), `anthology` (a host book that isn't the run's own). Edition formats `floppy`, `tpb`, `hardcover`, `omnibus`. Series kinds `ongoing`, `micro-series`, `mini-series`, `crossover`, `tie-in`, `minor`. Story arcs and runs-by-creative-team wait for Metron
+- 2026-10-23 A collected edition is a `collected` work with an edition (its printing) and contents on the edition; owning it is a copy of that edition. Ownership of the issues it collects is derived through contents ("owned via"), never written as contained-in. Narrative containment (a backup inside an issue) is contained-in; physical collection is edition contents. The TMNT Ultimate Collections are the first data under the rule
+- 2026-10-23 A backup story is contained-in its host; a host the sheet doesn't list as an issue becomes an `anthology` item from the cell text, reprints included, until Metron can resolve printings (Volume 1 Ch 4)
+- 2026-10-23 Read flags from a sheet are occurrences (`done`, no date), never a property of the copy or the shelf entry
+- 2026-10-23 A tab of the TMNT sheet is a run, and a run is a shelf with the tab's sections; the hand-made tab is taken as it is, section rules declared per chapter, cells never corrected
 - 2026-10-23 A work carries its original publication date; an edition carries its own (a book first published in 1892, the copy in hand from 1998). A fixture's `year` on a book is the work's year as the note gives it, and a second year for the same title stops the build; edition dates wait for editions (Volume 1 Ch 1) and provider dates (Ch 3). From the Ch 0.5 Raccoon's S2: without the rule a year typo silently forked a work into two shelf entries
 - 2026-10-23 A short story is a `book` item with a `form` (novel, novella, collection, story, series), not its own type; Night Shift is a `collection` item its stories are contained-in. One type, form is metadata
 - 2026-10-23 "Series: The Dark Tower (1981)" is a `book` with form `series` until the franchise entity exists in Volume 1; as-is rules out turning it into The Gunslinger
@@ -141,6 +148,8 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## History
 
+- 2026-10-23 Ch 0.6 closed; Volume 0's exit is met (a user logs in and sees an empty nook, CI gates every PR, three fixtures validate in CI). Next: the `dev` to `main` close PR and `v0.0.0`, then Volume 1 Ch 1
+- 2026-10-23 Ch 0.6 design talk: five calls on comic forms, the edition model, backups, read flags and runs. Ch 0.6 spec written, docs/plans/0.6-fixtures-comics.md; last chapter of Volume 0
 - 2026-10-23 Ch 0.5 closed; Ch 0.6 is next. Edition-date call added from the Afterword
 - 2026-10-23 Ch 0.5 design talk: eight calls on works, ids, relations and the books shelf; the fixture-order open call closed (films landed first). Ch 0.5 spec written, docs/plans/0.5-fixtures-books.md
 - 2026-10-22 Ch 0.4 closed; Ch 0.5 is next. Item ids are `<source>:<key>` (`letterboxd:20ZQ`), which Ch 0.5, 0.6 and the Volume 1 loader inherit

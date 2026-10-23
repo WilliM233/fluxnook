@@ -3,22 +3,11 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { kingWorks } from "../../scripts/fixtures/king-works.mjs";
+import { exportOf } from "./fixtures/helpers";
 
 // Ch 0.5 Rummage. Each test names its line in the plan's section 4b.
 
 const RAW = "raw/king.csv";
-
-function exportOf(rows: string[]): string {
-  return [
-    "Letterboxd list export v7",
-    "Date,Name,Tags,URL,Description",
-    "2024-04-01,X,,https://boxd.it/upKRw,d",
-    "",
-    "Position,Name,Year,URL,Description",
-    ...rows,
-    "",
-  ].join("\n");
-}
 
 // Film i (from 1) has key k<i> and is record i + 4.
 function build(notes: string[]) {

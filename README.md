@@ -59,26 +59,34 @@ Tests that sign in should import `test` and `expect` from `tests/e2e/harness/sig
 
 ## Fixtures
 
-`supabase/seed` holds the acceptance data every later chapter is checked against. Today that is L's Stephen King watch list from Letterboxd, built into two files from the one raw CSV: `king-films.json` (61 films, one shelf) and `king-books.json` (27 book items, 78 relations, one shelf, one gap).
+`supabase/seed` holds the acceptance data every later chapter is checked against. Today that is L's Stephen King watch list from Letterboxd, built into two files from the one raw CSV: `king-films.json` (61 films, one shelf) and `king-books.json` (27 book items, 78 relations, one shelf, one gap); and the Mirage tab of L's TMNT sheet, `tmnt-mirage.json` (366 comics, 47 relations, 5 editions, 5 copies, 26 occurrences, one shelf of 14 sections, 9 gaps).
 
 - `supabase/seed/raw/<source>/`: exports exactly as their source wrote them. Never edit one by hand. Each has a row in `supabase/seed/raw/README.md`.
 - `supabase/seed/fixtures/<name>.json`: generated, committed, never edited. `npm run fixtures:build` writes it. A second run leaves `git status` clean.
 - `src/fixtures/shape.ts`: the Zod shape of a fixture file. Item ids are `<source>:<key>`; the King films are `letterboxd:<boxd key>`. An item with no provider is `manual:<slug>-<year>` with `providers: {}` (`manual:salems-lot-1975`; apostrophes and accents are dropped from the slug).
 
-Items are a `film` or a `book`. A book has an `author` and a `form`: `novel`, `novella`, `collection`, `story` or `series`. A short story is a book with form `story`; Night Shift is the `collection` its 16 stories are in. The King notes name the works; `scripts/fixtures/king-works.mjs` reads them out of the films' `source_note`s.
+Items are a `film`, a `book` or a `comic`. A book has an `author` and a `form`: `novel`, `novella`, `collection`, `story` or `series`. A short story is a book with form `story`; Night Shift is the `collection` its 16 stories are in. The King notes name the works; `scripts/fixtures/king-works.mjs` reads them out of the films' `source_note`s.
+
+A comic has a `form`: `issue`, `one-shot`, `backup` (a short printed inside another comic), `collected` (a trade or hardcover as a work) or `anthology` (a host the run doesn't list as its own). It also has `series`, `series_kind` (`ongoing`, `micro-series`, `mini-series`, `crossover`, `tie-in`, `minor`), `number`, an optional `month`, and `source_date`, the sheet's date cell verbatim. `year` can be null on a comic and nowhere else; a row or anthology with no year is a `gaps` line, while an Ultimate Collection's year is its edition's, which the sheet doesn't hold. The sheet's columns mean different things in different sections, so `scripts/fixtures/mirage-tab.mjs` has one rule per section header. Its ids are `manual:tmnt-mirage-v1-7` for a numbered row, `manual:tmnt-mirage-<section>-<title>` otherwise, `manual:tmnt-mirage-host-<cell>` for an anthology and `manual:tmnt-ultimate-collection-<n>`. The two `Savage Dragon #2` rows are two items; the later id ends in `-r212`, its record number.
 
 A file may also carry:
 
 - `relations`: `{ type, from, to }`, `type` being `adaptation-of` (from the adaptation to its source) or `contained-in` (from the part to the whole). Either end may be an item in another file: `king-books.json` holds the relations, and its `adaptation-of` ones start in `king-films.json`.
-- `gaps`: `{ item, reason }`, an item the raw file gave nothing to build from. Recorded, not filled in, and not a relation. Today: The Long Walk (`letterboxd:mic8`), "no source note".
+- `gaps`: `{ item, reason }`, an item the raw file gave nothing to build from. Recorded, not filled in, and not a relation. Today: The Long Walk (`letterboxd:mic8`), "no source note", and the nine undated Supplemental/Crossover rows, "no readable year".
 
-Both read as empty when absent. A work has one year, the one its note gives; a second year for the same title stops the build.
+- `editions`: `{ id, item, format, contents }`. `id` is `edition:<key>`, `item` is the work it prints (in the same file), `format` is `floppy`, `tpb`, `hardcover` or `omnibus`, `contents` the items it collects. An edition id never passes as an item id.
+- `copies`: `{ edition, note }`, a copy of an edition.
+- `occurrences`: `{ item, status }`, `status` being `done`.
 
-`npm test` goes red when a fixture disagrees with the shape or with a fresh build of its raw file (`tests/unit/fixtures.test.ts`). The same file checks every fixture together: no id is defined in two files, and every relation endpoint, shelf entry and gap names an item in some file. The shape alone can't see across files. The fresh build goes to `node_modules/.cache/fixtures`; no test writes to the repo.
+All of these read as empty when absent. A shelf has `entries` or `sections` (`{ name, entries }`, positions restarting in each), never both; its `url` is optional, and the Mirage shelf has none because the sheet is private. A work has one year, the one its note gives; a second year for the same title stops the build.
 
-The build stops, naming the raw file and record, when an export changed shape: different headers, a non-empty `Tags`, a URL that isn't `https://boxd.it/<key>`, a Year or Position that isn't a whole number, a film listed twice with different data, or a list with no films. The books build also stops, naming the fixture, raw file, record and note line, on a note line it can't read, a story with no collection, two lines that disagree about one work or its year, a line repeated within one note, or a shelf work no first note line names. It never drops a row quietly. A hand-edited raw file shows up as a red byte compare, not as a fix.
+Owned via: an issue listed in an edition's `contents` is owned through the copy of that edition. That is never written as `contained-in`, which is for a backup inside its host. Read is an occurrence and is never derived from a copy.
 
-Adding a raw file: put it under `supabase/seed/raw/<source>/`, add its row to `supabase/seed/raw/README.md`, add a `SOURCES` line in `scripts/fixtures-build.mjs` per fixture (a raw file may feed more than one; builders live in `scripts/fixtures/<name>.mjs`, and a new source needs its own), run `npm run fixtures:build`, and commit the raw file and its JSON together. The CSV reader is `scripts/fixtures/csv.mjs`, written in-repo; no package was added.
+`npm test` goes red when a fixture disagrees with the shape or with a fresh build of its raw file (`tests/unit/fixtures.test.ts`). The same file checks every fixture together: no id is defined in two files, and every relation endpoint, shelf entry (flat or in a section) and gap names an item in some file, every edition content, copy and occurrence resolves, and no edition id is defined twice. The shape alone can't see across files. The fresh build goes to `node_modules/.cache/fixtures`; no test writes to the repo.
+
+The build stops, naming the raw file and record, when an export changed shape: different headers, a non-empty `Tags`, a URL that isn't `https://boxd.it/<key>`, a Year or Position that isn't a whole number, a film listed twice with different data, or a list with no films. The Mirage build stops, naming the fixture, raw file and record, on a section header it has no rule for (or one repeated in a volume), a row its section's rule can't read, an `Owned` and `Format` that disagree, or an id that repeats outside Supplemental/Crossover. A date with no year does not stop it; that is a gap. The books build also stops, naming the fixture, raw file, record and note line, on a note line it can't read, a story with no collection, two lines that disagree about one work or its year, a line repeated within one note, or a shelf work no first note line names. No fixture is written until every fixture has built, and two `SOURCES` lines with one `out` stop the build. It never drops a row quietly. A hand-edited raw file shows up as a red byte compare, not as a fix.
+
+Adding a raw file: put it under `supabase/seed/raw/<source>/`, add its row to `supabase/seed/raw/README.md`, add a `SOURCES` line in `scripts/fixtures-build.mjs` per fixture (a raw file may feed more than one; builders live in `scripts/fixtures/<name>.mjs`, and a new source needs its own; each `out` must be new), run `npm run fixtures:build`, and commit the raw file and its JSON together. From a Google Sheet, export one tab per file (File > Download > Comma-separated values) under `google-sheets/`; a new tab needs its own section rules. The CSV reader is `scripts/fixtures/csv.mjs`, written in-repo; no package was added.
 
 ## Where things are
 
@@ -89,10 +97,10 @@ Adding a raw file: put it under `supabase/seed/raw/<source>/`, add its row to `s
 - `supabase/`: local stack config and migrations
 - `supabase/seed`: raw exports and the fixtures built from them. See Fixtures
 - `src/fixtures/shape.ts`: the Zod shape of a fixture file
-- `tests/unit`, `tests/db`, `tests/e2e`: Vitest, Vitest against Postgres, and Playwright
+- `tests/unit`, `tests/db`, `tests/e2e`: Vitest, Vitest against Postgres, and Playwright. `tests/unit/fixtures/helpers.ts` holds `exportOf()` and `sheetOf()`, inline raw files for builder tests
 - `tests/e2e/harness`: `signedIn`, a Playwright fixture that gives a spec a page signed in as a brand-new user. Its doc comment is the contract
 - `scripts/db-check.mjs`: the script behind `npm run db:check`
-- `scripts/fixtures-build.mjs`, `scripts/fixtures/`: the script behind `npm run fixtures:build`, its CSV reader, the Letterboxd list builder and the King works builder
+- `scripts/fixtures-build.mjs`, `scripts/fixtures/`: the script behind `npm run fixtures:build`, the build loop (`build.mjs`), the CSV reader, `slug.mjs` (one rule for every `manual:` id), and the three builders: Letterboxd list, King works and Mirage tab
 - `.github/`: the workflows and the two composite actions they share
 
 ## Docs

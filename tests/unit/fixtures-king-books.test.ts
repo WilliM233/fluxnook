@@ -173,10 +173,10 @@ describe("king-books.json", () => {
     // One sentence: a single full stop, at the end.
     expect(shelf.description.split(".")).toHaveLength(2);
     expect(shelf.description.endsWith(".")).toBe(true);
-    expect(shelf.entries.map(({ position }) => position)).toEqual([
+    expect((shelf.entries ?? []).map(({ position }) => position)).toEqual([
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
     ]);
-    expect(shelf.entries.map(({ item }) => item)).toEqual([
+    expect((shelf.entries ?? []).map(({ item }) => item)).toEqual([
       "manual:carrie-1974",
       "manual:salems-lot-1975",
       "manual:the-shining-1977",
