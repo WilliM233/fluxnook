@@ -18,7 +18,7 @@ Any org-level or user-level CLAUDE.md that names `develop`, `feature/*` branches
 
 ## Working a chapter
 
-- Steps come from Plan section 3. You do not add, reorder or skip steps. A side find is a line under Deferrals on the plan with a trigger, never a step.
+- Steps come from Plan section 3. You do not add, reorder or skip steps. A step's Does, Touches, Observable and Tests are the contract; its How is advisory, and you may improve on it without a deviation line when the observable is unchanged. A side find is a line under Deferrals on the plan with a trigger, never a step.
 - Each step ends at its observable. State it, show it, move on. Stop only for a Stop-for-L, a deviation that needs a call, or a red you can't fix inside the plan; otherwise run through to the handoff.
 - Read every gate unpiped. `npm run lint | tail -1` hides the error and the exit code; a green you didn't see isn't one (Ch 0.4).
 - Comment on the issue at each seat handoff (plan approved, Rummage done, PR ready). The issue is the chapter's log.
@@ -38,11 +38,15 @@ Spawn one at a time. Give each the issue number, the plan path, and the diff. Ne
 
 ## The PR
 
-Opened as a draft as soon as a workflow needs an event; marked ready after the Scribe, template filled, `Closes #<issue>` (the Afterword is your last commit, so the merge closes the issue), CI green. Whenever section 0 changes, update the issue body in the same commit. Section 5 of the plan is the handoff: every step landed or a named deviation, every Rummage line with its test, every Defer with its trigger. Then stop. L runs the Browse, L and the Nookkeeper review, L merges. You don't merge.
+Opened as a draft as soon as a workflow needs an event; marked ready after the Scribe, template filled, `Closes #<issue>` (the Afterword is your last commit, so the merge closes the issue), CI green. Whenever section 0 changes, update the issue body in the same commit. Section 5 of the plan is the handoff: every step landed or a named deviation, every Rummage line with its test, every Defer with its trigger, and the Browse as a block of Git Bash commands with the expected output under each, written from section 0's Browse line and run once in Git Bash before the PR goes ready; the PR body's Browse section is that block. At the Afterword commit, fill the PR's Review line from the plan's History. Then stop. L runs the Browse, L and the Nookkeeper review, L merges. You don't merge.
 
 ## Commits
 
 Conventional commits, subject 60 or fewer, body says why. One squash commit per chapter on merge; on the branch, commit per step so the review can follow the plan. End commit bodies with the attribution lines your harness supplies.
+
+## The dev box
+
+L runs Git Bash (MINGW64) on Windows; every command block for L is Git Bash, never PowerShell. Never `git checkout --` or reset a file with uncommitted work in it; commit or stash first (Ch 0.5 lost fixes to a revert). Bash heredocs on this machine mangle backslashes; write a scripted edit to a file with your file tools, not a heredoc.
 
 ## Tone
 

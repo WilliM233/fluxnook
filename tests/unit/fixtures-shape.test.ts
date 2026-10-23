@@ -20,6 +20,16 @@ function sample() {
         providers: { letterboxd: "https://boxd.it/b2" },
         source_note: "Novel: The Shining (1977)",
       },
+      {
+        id: "manual:carrie-1974",
+        type: "book",
+        form: "novel",
+        author: "Stephen King",
+        title: "Carrie",
+        year: 1974,
+        providers: {},
+        source_note: "Novel: Carrie (1974)",
+      },
     ],
     shelves: [
       {
@@ -33,6 +43,14 @@ function sample() {
         ],
       },
     ],
+    relations: [
+      {
+        type: "adaptation-of",
+        from: "letterboxd:a1",
+        to: "manual:carrie-1974",
+      },
+    ],
+    gaps: [{ item: "letterboxd:b2", reason: "no source note" }],
   };
 }
 
@@ -40,6 +58,12 @@ function messages(data: unknown): string {
   const result = fixture.safeParse(data);
   expect(result.success).toBe(false);
   return (result.error?.issues ?? []).map((issue) => issue.message).join("\n");
+}
+
+function paths(data: unknown): PropertyKey[][] {
+  const result = fixture.safeParse(data);
+  expect(result.success).toBe(false);
+  return (result.error?.issues ?? []).map((issue) => issue.path);
 }
 
 describe("fixture", () => {
@@ -78,7 +102,7 @@ describe("fixture", () => {
 
   it("rejects a type with no variant", () => {
     const data = sample();
-    data.items[0].type = "book";
+    data.items[0].type = "comic";
     expect(fixture.safeParse(data).success).toBe(false);
   });
 
@@ -109,8 +133,8 @@ describe("fixture", () => {
     ).toBe(false);
     // A letterboxd: id must carry its URL (R8); an id from a source with no
     // provider, as Chapter 5's works will be, may carry none.
-    const none = { ...data.items[0], id: "king:carrie-1974", providers: {} };
-    data.shelves[0].entries[0].item = "king:carrie-1974";
+    const none = { ...data.items[0], id: "manual:carrie-1974", providers: {} };
+    data.shelves[0].entries[0].item = "manual:carrie-1974";
     expect(
       fixture.safeParse({ ...data, items: [none, data.items[1]] }).success,
     ).toBe(true);
@@ -120,5 +144,85 @@ describe("fixture", () => {
     const data = sample();
     data.shelves[0].date = "2024-4-1";
     expect(fixture.safeParse(data).success).toBe(false);
+  });
+
+  it("accepts a book, relations and gaps, and keeps them", () => {
+    const data = sample();
+    const result = fixture.safeParse(data);
+    expect(result.success).toBe(true);
+    expect(result.data?.relations).toEqual(data.relations);
+    expect(result.data?.gaps).toEqual(data.gaps);
+  });
+
+  it("rejects a book form it doesn't know, at that item's path", () => {
+    const data = sample();
+    const poem = { ...data.items[2], form: "poem" };
+    expect(
+      paths({ ...data, items: [data.items[0], data.items[1], poem] }),
+    ).toContainEqual(["items", 2, "form"]);
+  });
+
+  it("rejects a book with no author, at that item's path", () => {
+    const data = sample();
+    const { author: _, ...anonymous } = data.items[2];
+    expect(
+      paths({ ...data, items: [data.items[0], data.items[1], anonymous] }),
+    ).toContainEqual(["items", 2, "author"]);
+  });
+
+  it("rejects a film that carries a form", () => {
+    const data = sample();
+    const film = { ...data.items[0], form: "novel" };
+    expect(
+      fixture.safeParse({ ...data, items: [film, data.items[1]] }).success,
+    ).toBe(false);
+  });
+
+  it("rejects a relation type it doesn't know, at that relation's path", () => {
+    const data = sample();
+    const relation = { ...data.relations[0], type: "based-on" };
+    expect(paths({ ...data, relations: [relation] })).toContainEqual([
+      "relations",
+      0,
+      "type",
+    ]);
+  });
+
+  it("rejects a relation endpoint that isn't an item id", () => {
+    const data = sample();
+    const relation = { ...data.relations[0], from: "carrie" };
+    expect(paths({ ...data, relations: [relation] })).toContainEqual([
+      "relations",
+      0,
+      "from",
+    ]);
+  });
+
+  it("rejects a gap with no reason", () => {
+    const data = sample();
+    const gap = { ...data.gaps[0], reason: "" };
+    expect(paths({ ...data, gaps: [gap] })).toContainEqual([
+      "gaps",
+      0,
+      "reason",
+    ]);
+  });
+
+  it("reads a file with no relations or gaps as empty ones", () => {
+    const { relations: _, gaps: __, ...data } = sample();
+    const result = fixture.safeParse(data);
+    expect(result.success).toBe(true);
+    expect(result.data?.relations).toEqual([]);
+    expect(result.data?.gaps).toEqual([]);
+  });
+
+  // Relations may point into another fixture file; tests/unit/fixtures.test.ts
+  // resolves them over every file together.
+  it("leaves a relation endpoint in no item of this file to the cross-file test", () => {
+    const data = sample();
+    const relation = { ...data.relations[0], to: "manual:nowhere-1900" };
+    expect(fixture.safeParse({ ...data, relations: [relation] }).success).toBe(
+      true,
+    );
   });
 });

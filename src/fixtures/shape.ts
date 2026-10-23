@@ -1,10 +1,10 @@
 /**
  * The shape of a fixture file under `supabase/seed/fixtures/`.
  *
- * A fixture is media items and the shelves that point at them, built from a
- * raw export by `npm run fixtures:build`. `tests/unit/fixtures.test.ts` holds
- * every fixture to this shape; the Volume 1 Ch 1 loader reads it to fill the
- * tables. A chapter that brings a new media type adds its variant to `item`
+ * A fixture is media items, the shelves that point at them and the relations
+ * between them, built from a raw export by `npm run fixtures:build`.
+ * `tests/unit/fixtures.test.ts` holds every fixture to this shape; the
+ * Volume 1 Ch 1 loader reads it to fill the tables. A chapter that brings a new media type adds its variant to `item`
  * and its provider names to `providers`.
  */
 import { z } from "zod";
@@ -38,7 +38,14 @@ const itemCore = z.strictObject({
 
 const film = itemCore.extend({ type: z.literal("film") });
 
-export const item = z.discriminatedUnion("type", [film]);
+// A story is a book with form `story`, not a type of its own (Ch 0.5).
+const book = itemCore.extend({
+  type: z.literal("book"),
+  form: z.enum(["novel", "novella", "collection", "story", "series"]),
+  author: z.string().min(1),
+});
+
+export const item = z.discriminatedUnion("type", [film, book]);
 
 const entry = z.strictObject({
   item: itemId,
@@ -53,8 +60,29 @@ const shelf = z.strictObject({
   entries: z.array(entry),
 });
 
+// The name fixes the direction: adaptation-of runs from the adaptation to its
+// source, contained-in from the part to the whole. Either end may be an item
+// in another fixture file; tests/unit/fixtures.test.ts resolves them over
+// every file together.
+const relation = z.strictObject({
+  type: z.enum(["adaptation-of", "contained-in"]),
+  from: itemId,
+  to: itemId,
+});
+
+// An item the raw file gave nothing to build from, recorded rather than
+// filled in.
+const gap = z.strictObject({ item: itemId, reason: z.string().min(1) });
+
+// relations and gaps default to empty, so a file with neither (king-films)
+// doesn't carry two empty keys.
 export const fixture = z
-  .strictObject({ items: z.array(item), shelves: z.array(shelf) })
+  .strictObject({
+    items: z.array(item),
+    shelves: z.array(shelf),
+    relations: z.array(relation).default([]),
+    gaps: z.array(gap).default([]),
+  })
   .superRefine((file, ctx) => {
     const ids = new Set<string>();
     file.items.forEach(({ id, providers }, i) => {
@@ -103,3 +131,4 @@ export const fixture = z
   });
 
 export type Fixture = z.infer<typeof fixture>;
+export type Relation = z.infer<typeof relation>;

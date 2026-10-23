@@ -14,11 +14,11 @@ Closes #<issue>. Plan: `docs/plans/<vol>.<n>-<slug>.md`
 
 ## Browse
 
-Browse line from section 0, with what L saw.
+Section 5's Browse block: Git Bash commands with the expected output under each. L pastes what differed, if anything, below it.
 
 ## Review
 
-- Nookkeeper: Signed off / Signed off with notes / Not yet
+- Nookkeeper: <Signed off / Signed off with notes / Not yet, from the plan's History, filled by the Binder at the Afterword commit>
 - L: merge
 
 ## Afterword

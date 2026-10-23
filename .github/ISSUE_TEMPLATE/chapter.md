@@ -15,6 +15,10 @@ labels: chapter
 
 **Browse.**
 
+**QA model.** Opus
+
+**Pilot.**
+
 **Out of scope.**
 
 Plan file: `docs/plans/<vol>.<n>-<slug>.md`

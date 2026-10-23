@@ -8,15 +8,22 @@
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { kingWorks } from "./fixtures/king-works.mjs";
 import { letterboxdList } from "./fixtures/letterboxd.mjs";
 
 const RAW = "supabase/seed/raw";
-// One line per raw file. Chapters 0.5 and 0.6 add theirs.
+// One line per fixture; a raw file may feed more than one. Chapter 0.6 adds
+// the Mirage tab.
 const SOURCES = [
   {
     raw: "letterboxd/stephen-king-watch-list.csv",
     out: "king-films.json",
     build: letterboxdList,
+  },
+  {
+    raw: "letterboxd/stephen-king-watch-list.csv",
+    out: "king-books.json",
+    build: kingWorks,
   },
 ];
 
@@ -49,7 +56,13 @@ try {
   mkdirSync(out, { recursive: true });
   for (const source of SOURCES) {
     const rawPath = `${RAW}/${source.raw}`;
-    const data = source.build(readFileSync(rawPath, "utf8"), rawPath);
+    // Two fixtures can share a raw file, so an error names the one being built.
+    let data;
+    try {
+      data = source.build(readFileSync(rawPath, "utf8"), rawPath);
+    } catch (error) {
+      throw new Error(`${source.out}: ${error.message}`);
+    }
     writeFileSync(join(out, source.out), serializeFixture(data), "utf8");
     console.log(
       `wrote ${out}/${source.out} (${data.items.length} items, ${data.shelves.length} shelves)`,
