@@ -7,10 +7,11 @@
  */
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { authUsers } from "drizzle-orm/supabase";
 import type { Db } from "@/db/client";
 import {
+  copies,
   editionContents,
   editionSources,
   editions,
@@ -19,7 +20,11 @@ import {
   itemRelations,
   itemSources,
   items,
+  occurrences,
   profiles,
+  shelfEntries,
+  shelfSections,
+  shelves,
 } from "@/db/schema";
 import { type Fixture, fixture } from "./shape";
 
@@ -258,6 +263,118 @@ export async function loadFixtures(db: Db, options: LoadOptions) {
       for (const gap of data.gaps) log(`  gap ${gap.item}: ${gap.reason}`);
     }
 
-    await loadCatalog(tx, fixtures, log);
+    // Before any write, so a refusal leaves the catalog as it was too.
+    const replaced = await clearContent(tx, userId, options);
+
+    const ids = await loadCatalog(tx, fixtures, log);
+    const written = await loadContent(tx, userId, fixtures, ids);
+    log(
+      `content ${replaced ? "replaced " : ""}for ${options.email}: ${written.shelves} shelves, ${written.sections} sections, ${written.entries} entries, ${written.occurrences} occurrences, ${written.copies} copies`,
+    );
   });
+}
+
+// Content has no natural key to upsert on, so it loads only into a user who
+// has none; --replace empties the user first. The cascades take sections,
+// entries and journal entries with their parents.
+async function clearContent(tx: Tx, userId: string, options: LoadOptions) {
+  const [held] = await tx
+    .select({
+      shelves: sql<number>`(select count(*)::int from ${shelves} where ${shelves.owner} = ${userId})`,
+      occurrences: sql<number>`(select count(*)::int from ${occurrences} where ${occurrences.owner} = ${userId})`,
+      copies: sql<number>`(select count(*)::int from ${copies} where ${copies.owner} = ${userId})`,
+    })
+    .from(profiles)
+    .where(eq(profiles.id, userId));
+  if (held.shelves + held.occurrences + held.copies === 0) return false;
+  if (!options.replace) {
+    throw new LoadError(
+      `${options.email} already has ${held.shelves} shelves, ${held.occurrences} occurrences, ${held.copies} copies; pass --replace to clear them first`,
+    );
+  }
+  await tx.delete(shelves).where(eq(shelves.owner, userId));
+  await tx.delete(occurrences).where(eq(occurrences.owner, userId));
+  await tx.delete(copies).where(eq(copies.owner, userId));
+  return true;
+}
+
+async function loadContent(
+  tx: Tx,
+  owner: string,
+  fixtures: Named[],
+  ids: Awaited<ReturnType<typeof loadCatalog>>,
+) {
+  const item = (id: string) => ids.itemIds.get(id) as string;
+  const written = {
+    shelves: 0,
+    sections: 0,
+    entries: 0,
+    occurrences: 0,
+    copies: 0,
+  };
+
+  for (const { data } of fixtures) {
+    for (const shelf of data.shelves) {
+      const [{ id: shelfId }] = await tx
+        .insert(shelves)
+        .values({
+          owner,
+          name: shelf.name,
+          description: shelf.description,
+          sourceUrl: shelf.url ?? null,
+          // A fixture shelf's date is when the list was made (Ch 1.1 call).
+          createdAt: new Date(`${shelf.date}T00:00:00Z`),
+        })
+        .returning({ id: shelves.id });
+      written.shelves++;
+
+      // A flat shelf is one unnamed group whose entries carry no section.
+      const groups: {
+        name: string | null;
+        entries: { item: string; position: number }[];
+      }[] = shelf.sections ?? [{ name: null, entries: shelf.entries ?? [] }];
+      for (const [index, section] of groups.entries()) {
+        let sectionId: string | null = null;
+        if (section.name !== null) {
+          [{ id: sectionId }] = await tx
+            .insert(shelfSections)
+            .values({ shelf: shelfId, name: section.name, position: index + 1 })
+            .returning({ id: shelfSections.id });
+          written.sections++;
+        }
+        if (section.entries.length === 0) continue;
+        await tx.insert(shelfEntries).values(
+          section.entries.map((entry) => ({
+            shelf: shelfId,
+            section: sectionId,
+            item: item(entry.item),
+            position: entry.position,
+          })),
+        );
+        written.entries += section.entries.length;
+      }
+    }
+
+    if (data.copies.length > 0) {
+      await tx.insert(copies).values(
+        data.copies.map((copy) => ({
+          owner,
+          edition: ids.editionIds.get(copy.edition) as string,
+          note: copy.note,
+        })),
+      );
+      written.copies += data.copies.length;
+    }
+    if (data.occurrences.length > 0) {
+      await tx.insert(occurrences).values(
+        data.occurrences.map((occurrence) => ({
+          owner,
+          item: item(occurrence.item),
+          status: occurrence.status,
+        })),
+      );
+      written.occurrences += data.occurrences.length;
+    }
+  }
+  return written;
 }
