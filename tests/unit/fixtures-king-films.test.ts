@@ -66,7 +66,7 @@ describe("king-films.json", () => {
   });
 
   it("has 61 entries in list order, one per film", () => {
-    const { entries } = king.shelves[0];
+    const entries = king.shelves[0].entries ?? [];
     expect(entries.map((entry) => entry.position)).toEqual(
       Array.from({ length: 61 }, (_, i) => i + 1),
     );

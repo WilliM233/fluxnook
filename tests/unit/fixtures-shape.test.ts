@@ -54,6 +54,112 @@ function sample() {
   };
 }
 
+type Loose = Record<string, unknown>;
+type Entry = { item: string; position: number };
+
+// A comics file with one of each collection piece, kept apart from sample()
+// because several tests above rebuild items from sample()'s first three.
+function comics(): {
+  items: Loose[];
+  shelves: (Loose & { sections?: { name: string; entries: Entry[] }[] })[];
+  relations: Loose[];
+  editions: { id: string; item: string; format: string; contents: string[] }[];
+  copies: Loose[];
+  occurrences: Loose[];
+} {
+  const comic = {
+    type: "comic",
+    year: 1986,
+    source_date: "March, 1986",
+    source_note: "",
+    providers: {},
+    series: null,
+    series_kind: null,
+    number: null,
+  };
+  return {
+    items: [
+      {
+        ...comic,
+        id: "manual:tmnt-mirage-v1-1",
+        title: "The Turtles' Origin is Told",
+        form: "issue",
+        year: 1984,
+        month: 5,
+        source_date: "May, 1984",
+        series: "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+        series_kind: "ongoing",
+        number: 1,
+      },
+      {
+        ...comic,
+        id: "manual:tmnt-mirage-backup-you-had-to-be-there",
+        title: "You Had to Be There",
+        form: "backup",
+      },
+      {
+        ...comic,
+        id: "manual:tmnt-mirage-host-shell-shock",
+        title: "Shell Shock",
+        form: "anthology",
+        year: 1989,
+        month: 12,
+        source_date: "December, 1989",
+      },
+      {
+        ...comic,
+        id: "manual:tmnt-ultimate-collection-1",
+        title: "Ultimate Collection 1",
+        form: "collected",
+        year: null,
+        source_date: "",
+      },
+    ],
+    shelves: [
+      {
+        name: "TMNT, the Mirage run",
+        date: "2026-10-23",
+        url: "https://example.com/sheet",
+        description: "Two sections.",
+        sections: [
+          {
+            name: "Volume 1 · Main Series",
+            entries: [{ item: "manual:tmnt-mirage-v1-1", position: 1 }],
+          },
+          {
+            name: "Volume 1 · Short Stories",
+            entries: [
+              {
+                item: "manual:tmnt-mirage-backup-you-had-to-be-there",
+                position: 1,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    relations: [
+      {
+        type: "contained-in",
+        from: "manual:tmnt-mirage-backup-you-had-to-be-there",
+        to: "manual:tmnt-mirage-v1-1",
+      },
+    ],
+    editions: [
+      {
+        id: "edition:tmnt-ultimate-collection-1-hardcover",
+        item: "manual:tmnt-ultimate-collection-1",
+        format: "hardcover",
+        contents: ["manual:tmnt-mirage-v1-1"],
+      },
+    ],
+    copies: [
+      { edition: "edition:tmnt-ultimate-collection-1-hardcover", note: "" },
+    ],
+    occurrences: [{ item: "manual:tmnt-mirage-v1-1", status: "done" }],
+  };
+}
+
 function messages(data: unknown): string {
   const result = fixture.safeParse(data);
   expect(result.success).toBe(false);
@@ -102,7 +208,7 @@ describe("fixture", () => {
 
   it("rejects a type with no variant", () => {
     const data = sample();
-    data.items[0].type = "comic";
+    data.items[0].type = "game";
     expect(fixture.safeParse(data).success).toBe(false);
   });
 
@@ -224,5 +330,181 @@ describe("fixture", () => {
     expect(fixture.safeParse({ ...data, relations: [relation] }).success).toBe(
       true,
     );
+  });
+});
+
+describe("fixture, comics and the collection", () => {
+  it("accepts comics, editions, copies and occurrences, and keeps them", () => {
+    const data = comics();
+    const result = fixture.safeParse(data);
+    expect(result.success, result.error?.message).toBe(true);
+    expect(result.data?.editions).toEqual(data.editions);
+    expect(result.data?.copies).toEqual(data.copies);
+    expect(result.data?.occurrences).toEqual(data.occurrences);
+  });
+
+  it("rejects a comic form it doesn't know, at that item's path", () => {
+    const data = comics();
+    data.items[0].form = "floppy";
+    expect(paths(data)).toContainEqual(["items", 0, "form"]);
+  });
+
+  it("allows a null year on a comic and nowhere else", () => {
+    const data = comics();
+    data.items[0].year = null;
+    expect(fixture.safeParse(data).success).toBe(true);
+    const films = sample();
+    const undated = { ...films.items[0], year: null };
+    expect(
+      fixture.safeParse({ ...films, items: [undated, films.items[1]] }).success,
+    ).toBe(false);
+  });
+
+  it("takes a month of 1 to 12, or none", () => {
+    for (const month of [0, 13]) {
+      const data = comics();
+      data.items[0].month = month;
+      expect(paths(data), String(month)).toContainEqual(["items", 0, "month"]);
+    }
+    const data = comics();
+    const { month: _, ...monthless } = data.items[0];
+    const result = fixture.safeParse({
+      ...data,
+      items: [monthless, ...data.items.slice(1)],
+    });
+    expect(result.success).toBe(true);
+    expect(result.data?.items[0]).not.toHaveProperty("month");
+  });
+
+  it("rejects a series kind it doesn't know and a number that isn't one", () => {
+    const kind = comics();
+    kind.items[0].series_kind = "arc";
+    expect(paths(kind)).toContainEqual(["items", 0, "series_kind"]);
+    const number = comics();
+    number.items[0].number = "7";
+    expect(paths(number)).toContainEqual(["items", 0, "number"]);
+  });
+
+  it("rejects a comic with no source_date", () => {
+    const data = comics();
+    const { source_date: _, ...undated } = data.items[1];
+    expect(
+      paths({
+        ...data,
+        items: [data.items[0], undated, ...data.items.slice(2)],
+      }),
+    ).toContainEqual(["items", 1, "source_date"]);
+  });
+
+  it("rejects an edition format it doesn't know, at that edition's path", () => {
+    const data = comics();
+    data.editions[0].format = "paperback";
+    expect(paths(data)).toContainEqual(["editions", 0, "format"]);
+  });
+
+  it("rejects an edition id that isn't edition:<key>", () => {
+    const data = comics();
+    data.editions[0].id = "manual:x";
+    expect(paths(data)).toContainEqual(["editions", 0, "id"]);
+  });
+
+  it("rejects an edition of an item not in this file, naming it", () => {
+    const data = comics();
+    data.editions[0].item = "manual:tmnt-ultimate-collection-9";
+    expect(messages(data)).toContain("manual:tmnt-ultimate-collection-9");
+  });
+
+  it("rejects contents that repeat an id or name the edition's own item, and an edition id twice", () => {
+    const repeated = comics();
+    repeated.editions[0].contents.push("manual:tmnt-mirage-v1-1");
+    expect(messages(repeated)).toContain("manual:tmnt-mirage-v1-1");
+    const itself = comics();
+    itself.editions[0].contents.push("manual:tmnt-ultimate-collection-1");
+    expect(messages(itself)).toContain("manual:tmnt-ultimate-collection-1");
+    const twice = comics();
+    twice.editions.push({ ...twice.editions[0], contents: [] });
+    expect(messages(twice)).toContain(
+      "edition:tmnt-ultimate-collection-1-hardcover",
+    );
+  });
+
+  it("rejects a copy with a key the shape doesn't name, and takes an empty note", () => {
+    const data = comics();
+    data.copies[0] = { ...data.copies[0], condition: "fine" };
+    expect(fixture.safeParse(data).success).toBe(false);
+    expect(fixture.safeParse(comics()).data?.copies[0].note).toBe("");
+  });
+
+  it("rejects an occurrence status it doesn't know", () => {
+    const data = comics();
+    data.occurrences[0].status = "reading";
+    expect(paths(data)).toContainEqual(["occurrences", 0, "status"]);
+  });
+
+  it("rejects a shelf with both entries and sections, or neither", () => {
+    const both = comics();
+    both.shelves[0].entries = [
+      { item: "manual:tmnt-mirage-v1-1", position: 1 },
+    ];
+    expect(messages(both)).toContain("entries or sections");
+    const neither = comics();
+    delete neither.shelves[0].sections;
+    expect(messages(neither)).toContain("entries or sections");
+  });
+
+  it("wants positions increasing within a section, restarting across them", () => {
+    const data = comics();
+    expect(fixture.safeParse(data).success).toBe(true);
+    const [main] = data.shelves[0].sections ?? [];
+    main.entries.push({
+      item: "manual:tmnt-mirage-host-shell-shock",
+      position: 2,
+    });
+    expect(fixture.safeParse(data).success).toBe(true);
+    main.entries[1].position = 1;
+    expect(messages(data)).toContain("positions must increase");
+  });
+
+  it("rejects two sections with one name, naming it", () => {
+    const data = comics();
+    const sections = data.shelves[0].sections ?? [];
+    sections[1].name = sections[0].name;
+    expect(messages(data)).toContain("Volume 1 · Main Series");
+  });
+
+  it("rejects a section entry that is no item in this file, naming it and the section", () => {
+    const data = comics();
+    const sections = data.shelves[0].sections ?? [];
+    sections[1].entries[0].item = "manual:tmnt-mirage-v1-999";
+    const message = messages(data);
+    expect(message).toContain("manual:tmnt-mirage-v1-999");
+    expect(message).toContain("Volume 1 · Short Stories");
+  });
+
+  it("rejects a relation from an id to itself, and the same relation twice", () => {
+    const self = comics();
+    self.relations[0].to = self.relations[0].from;
+    expect(paths(self)).toContainEqual(["relations", 0]);
+    const twice = comics();
+    twice.relations.push({ ...twice.relations[0] });
+    expect(paths(twice)).toContainEqual(["relations", 1]);
+  });
+
+  it("reads a file with no editions, copies or occurrences as empty ones", () => {
+    const result = fixture.safeParse(sample());
+    expect(result.success).toBe(true);
+    expect(result.data?.editions).toEqual([]);
+    expect(result.data?.copies).toEqual([]);
+    expect(result.data?.occurrences).toEqual([]);
+  });
+
+  // Like relations, these may point into another file; the cross-file test
+  // resolves them.
+  it("leaves contents, copies and occurrences outside this file to the cross-file test", () => {
+    const data = comics();
+    data.editions[0].contents = ["manual:nowhere-1900"];
+    data.copies[0].edition = "edition:nowhere";
+    data.occurrences[0].item = "manual:nowhere-1900";
+    expect(fixture.safeParse(data).success).toBe(true);
   });
 });

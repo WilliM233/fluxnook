@@ -98,7 +98,7 @@ describe("across files", () => {
   it("every shelf entry is an item in some file", () => {
     const lines = parsed.flatMap(({ name, data }) =>
       data.shelves.flatMap((shelf) =>
-        shelf.entries.flatMap(({ item, position }) =>
+        (shelf.entries ?? []).flatMap(({ item, position }) =>
           missing(item).map(
             (line) => `${name}: ${shelf.name} entry ${position}: ${line}`,
           ),
