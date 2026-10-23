@@ -1,0 +1,6964 @@
+{
+  "copies": [
+    {
+      "edition": "edition:tmnt-ultimate-collection-1-hardcover",
+      "note": ""
+    },
+    {
+      "edition": "edition:tmnt-ultimate-collection-2-hardcover",
+      "note": ""
+    },
+    {
+      "edition": "edition:tmnt-ultimate-collection-3-hardcover",
+      "note": ""
+    },
+    {
+      "edition": "edition:tmnt-ultimate-collection-4-hardcover",
+      "note": ""
+    },
+    {
+      "edition": "edition:tmnt-ultimate-collection-5-hardcover",
+      "note": ""
+    }
+  ],
+  "editions": [
+    {
+      "contents": [
+        "manual:tmnt-mirage-v1-1",
+        "manual:tmnt-mirage-v1-2",
+        "manual:tmnt-mirage-v1-3",
+        "manual:tmnt-mirage-v1-4",
+        "manual:tmnt-mirage-v1-5",
+        "manual:tmnt-mirage-v1-6",
+        "manual:tmnt-mirage-v1-7",
+        "manual:tmnt-mirage-micro-raphael-me-myself-and-i"
+      ],
+      "format": "hardcover",
+      "id": "edition:tmnt-ultimate-collection-1-hardcover",
+      "item": "manual:tmnt-ultimate-collection-1"
+    },
+    {
+      "contents": [
+        "manual:tmnt-mirage-v1-8",
+        "manual:tmnt-mirage-v1-9",
+        "manual:tmnt-mirage-v1-10",
+        "manual:tmnt-mirage-v1-11",
+        "manual:tmnt-mirage-micro-michelangelo-the-christmas-aliens",
+        "manual:tmnt-mirage-micro-donatello-kirby-and-the-warp-crystal",
+        "manual:tmnt-mirage-micro-leonardo-what-goes-around-comes-around"
+      ],
+      "format": "hardcover",
+      "id": "edition:tmnt-ultimate-collection-2-hardcover",
+      "item": "manual:tmnt-ultimate-collection-2"
+    },
+    {
+      "contents": [
+        "manual:tmnt-mirage-v1-12",
+        "manual:tmnt-mirage-v1-14",
+        "manual:tmnt-mirage-v1-15",
+        "manual:tmnt-mirage-v1-17",
+        "manual:tmnt-mirage-v1-19",
+        "manual:tmnt-mirage-v1-20",
+        "manual:tmnt-mirage-v1-21"
+      ],
+      "format": "hardcover",
+      "id": "edition:tmnt-ultimate-collection-3-hardcover",
+      "item": "manual:tmnt-ultimate-collection-3"
+    },
+    {
+      "contents": [
+        "manual:tmnt-mirage-v1-48",
+        "manual:tmnt-mirage-v1-49",
+        "manual:tmnt-mirage-v1-50",
+        "manual:tmnt-mirage-v1-51",
+        "manual:tmnt-mirage-v1-52",
+        "manual:tmnt-mirage-v1-53",
+        "manual:tmnt-mirage-v1-54",
+        "manual:tmnt-mirage-v1-55"
+      ],
+      "format": "hardcover",
+      "id": "edition:tmnt-ultimate-collection-4-hardcover",
+      "item": "manual:tmnt-ultimate-collection-4"
+    },
+    {
+      "contents": [
+        "manual:tmnt-mirage-v1-56",
+        "manual:tmnt-mirage-v1-57",
+        "manual:tmnt-mirage-v1-58",
+        "manual:tmnt-mirage-v1-59",
+        "manual:tmnt-mirage-v1-60",
+        "manual:tmnt-mirage-v1-61",
+        "manual:tmnt-mirage-v1-62"
+      ],
+      "format": "hardcover",
+      "id": "edition:tmnt-ultimate-collection-5-hardcover",
+      "item": "manual:tmnt-ultimate-collection-5"
+    }
+  ],
+  "gaps": [
+    {
+      "item": "manual:tmnt-mirage-savage-dragon-2",
+      "reason": "no readable year"
+    },
+    {
+      "item": "manual:tmnt-mirage-savage-dragon-2-r212",
+      "reason": "no readable year"
+    },
+    {
+      "item": "manual:tmnt-mirage-savage-dragon-41",
+      "reason": "no readable year"
+    },
+    {
+      "item": "manual:tmnt-mirage-crossover-the-savage-dragon-destroyer-duck-issue-1",
+      "reason": "no readable year"
+    },
+    {
+      "item": "manual:tmnt-mirage-shattered-image-2",
+      "reason": "no readable year"
+    },
+    {
+      "item": "manual:tmnt-mirage-crossover-gen-13-vol-2-13b",
+      "reason": "no readable year"
+    },
+    {
+      "item": "manual:tmnt-mirage-mars-attacks-image-1",
+      "reason": "no readable year"
+    },
+    {
+      "item": "manual:tmnt-mirage-big-bang-comics-10",
+      "reason": "no readable year"
+    },
+    {
+      "item": "manual:tmnt-mirage-crossover-teenage-mutant-ninja-turtles-savage-dragon-playmates-pack-in-comic",
+      "reason": "no readable year"
+    }
+  ],
+  "items": [
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-1",
+      "month": 5,
+      "number": 1,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "May, 1984",
+      "source_note": "",
+      "title": "The Turtles' Origin is Told",
+      "type": "comic",
+      "year": 1984
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-2",
+      "month": 10,
+      "number": 2,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "October, 1984",
+      "source_note": "",
+      "title": "TMNT vs. the Mousers",
+      "type": "comic",
+      "year": 1984
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-3",
+      "month": 3,
+      "number": 3,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "March, 1985",
+      "source_note": "",
+      "title": "The Great Chase",
+      "type": "comic",
+      "year": 1985
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-4",
+      "month": 6,
+      "number": 4,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "June, 1985",
+      "source_note": "",
+      "title": "Rescuing Master Splinter",
+      "type": "comic",
+      "year": 1985
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-5",
+      "month": 10,
+      "number": 5,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "October, 1985",
+      "source_note": "",
+      "title": "Teaming Up with Fugitoid",
+      "type": "comic",
+      "year": 1985
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-6",
+      "month": 2,
+      "number": 6,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "February, 1986",
+      "source_note": "",
+      "title": "The Triceraton Homeworld",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-7",
+      "month": 3,
+      "number": 7,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "March, 1986",
+      "source_note": "",
+      "title": "All is Revealed",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-8",
+      "month": 7,
+      "number": 8,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "July, 1986",
+      "source_note": "",
+      "title": "Team Up with Cerebus",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-9",
+      "month": 9,
+      "number": 9,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "September, 1986",
+      "source_note": "",
+      "title": "The Passing",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-10",
+      "month": 4,
+      "number": 10,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "April, 1987",
+      "source_note": "",
+      "title": "Silent Partner",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-11",
+      "month": 6,
+      "number": 11,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "June, 1987",
+      "source_note": "",
+      "title": "True Stories",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-12",
+      "month": 9,
+      "number": 12,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "September, 1987",
+      "source_note": "",
+      "title": "Survivalists",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-13",
+      "month": 2,
+      "number": 13,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "February, 1988",
+      "source_note": "",
+      "title": "The People's Choice",
+      "type": "comic",
+      "year": 1988
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-14",
+      "month": 5,
+      "number": 14,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "May, 1988",
+      "source_note": "",
+      "title": "The Unmentionables",
+      "type": "comic",
+      "year": 1988
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-15",
+      "month": 8,
+      "number": 15,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "August, 1988",
+      "source_note": "",
+      "title": "Dome Doom!",
+      "type": "comic",
+      "year": 1988
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-16",
+      "month": 7,
+      "number": 16,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "July, 1988",
+      "source_note": "",
+      "title": "A Teenage Mutant Ninja Turtles Story",
+      "type": "comic",
+      "year": 1988
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-17",
+      "month": 11,
+      "number": 17,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "November, 1988",
+      "source_note": "",
+      "title": "Distractions",
+      "type": "comic",
+      "year": 1988
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-18",
+      "month": 2,
+      "number": 18,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "February, 1989",
+      "source_note": "",
+      "title": "The Shell of the Dragon",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-19",
+      "month": 3,
+      "number": 19,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "March, 1989",
+      "source_note": "",
+      "title": "Return to New York, Book One",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-20",
+      "month": 4,
+      "number": 20,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "April, 1989",
+      "source_note": "",
+      "title": "Return to New York, Book Two",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-21",
+      "month": 5,
+      "number": 21,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "May, 1989",
+      "source_note": "",
+      "title": "Return to New York, Book Three",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-22",
+      "month": 6,
+      "number": 22,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "June, 1989",
+      "source_note": "",
+      "title": "The Time Traveler Returns",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-23",
+      "month": 7,
+      "number": 23,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "July, 1989",
+      "source_note": "",
+      "title": "Totally Hacked!",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-24",
+      "month": 8,
+      "number": 24,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "August, 1989",
+      "source_note": "",
+      "title": "Down to the River",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-25",
+      "month": 9,
+      "number": 25,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "September, 1989",
+      "source_note": "",
+      "title": "River Hymn",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-26",
+      "month": 10,
+      "number": 26,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "October, 1989",
+      "source_note": "",
+      "title": "Old Man River",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-27",
+      "month": 11,
+      "number": 27,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "November, 1989",
+      "source_note": "",
+      "title": "Dreams of Stone",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-28",
+      "month": 2,
+      "number": 28,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "February, 1990",
+      "source_note": "",
+      "title": "Sons of the Silent Age",
+      "type": "comic",
+      "year": 1990
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-29",
+      "month": 3,
+      "number": 29,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "March, 1990",
+      "source_note": "",
+      "title": "Men of Shadow",
+      "type": "comic",
+      "year": 1990
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-30",
+      "month": 4,
+      "number": 30,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "April, 1990",
+      "source_note": "",
+      "title": "Sky Highway",
+      "type": "comic",
+      "year": 1990
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-31",
+      "month": 7,
+      "number": 31,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "July, 1990",
+      "source_note": "",
+      "title": "Souls Winter",
+      "type": "comic",
+      "year": 1990
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-32",
+      "month": 8,
+      "number": 32,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "August, 1990",
+      "source_note": "",
+      "title": "Egyptian Adventure",
+      "type": "comic",
+      "year": 1990
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-33",
+      "month": 6,
+      "number": 33,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "June, 1990",
+      "source_note": "",
+      "title": "Turtles Take Time",
+      "type": "comic",
+      "year": 1990
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-34",
+      "month": 9,
+      "number": 34,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "September, 1990",
+      "source_note": "",
+      "title": "Toitle Anxiety",
+      "type": "comic",
+      "year": 1990
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-35",
+      "month": 3,
+      "number": 35,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "March, 1991",
+      "source_note": "",
+      "title": "Souls Withering...",
+      "type": "comic",
+      "year": 1991
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-36",
+      "month": 8,
+      "number": 36,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "August, 1991",
+      "source_note": "",
+      "title": "Souls End",
+      "type": "comic",
+      "year": 1991
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-37",
+      "month": 6,
+      "number": 37,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "June, 1991",
+      "source_note": "",
+      "title": "Twilight of the Ring",
+      "type": "comic",
+      "year": 1991
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-38",
+      "month": 7,
+      "number": 38,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "July, 1991",
+      "source_note": "",
+      "title": "Spaced Out!, Part 1",
+      "type": "comic",
+      "year": 1991
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-39",
+      "month": 9,
+      "number": 39,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "September, 1991",
+      "source_note": "",
+      "title": "Spaced Out!, Part 2",
+      "type": "comic",
+      "year": 1991
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-40",
+      "month": 10,
+      "number": 40,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "October, 1991",
+      "source_note": "",
+      "title": "Spaced Out!, Part 3",
+      "type": "comic",
+      "year": 1991
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-41",
+      "month": 11,
+      "number": 41,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "November, 1991",
+      "source_note": "",
+      "title": "Turtle Dreams",
+      "type": "comic",
+      "year": 1991
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-42",
+      "month": 12,
+      "number": 42,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "December, 1991",
+      "source_note": "",
+      "title": "Juliet's Revenge",
+      "type": "comic",
+      "year": 1991
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-43",
+      "month": 1,
+      "number": 43,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "January, 1992",
+      "source_note": "",
+      "title": "Halls of Lost Legends",
+      "type": "comic",
+      "year": 1992
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-44",
+      "month": 2,
+      "number": 44,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "February, 1992",
+      "source_note": "",
+      "title": "The Violent Underground",
+      "type": "comic",
+      "year": 1992
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-45",
+      "month": 3,
+      "number": 45,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "March, 1992",
+      "source_note": "",
+      "title": "Leatherhead, Too",
+      "type": "comic",
+      "year": 1992
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-46",
+      "month": 4,
+      "number": 46,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "April, 1992",
+      "source_note": "",
+      "title": "Masks",
+      "type": "comic",
+      "year": 1992
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-47",
+      "month": 5,
+      "number": 47,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "May, 1992",
+      "source_note": "",
+      "title": "Masks, Part II",
+      "type": "comic",
+      "year": 1992
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-48",
+      "month": 6,
+      "number": 48,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "June, 1992",
+      "source_note": "",
+      "title": "Shades of Gray",
+      "type": "comic",
+      "year": 1992
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-49",
+      "month": 7,
+      "number": 49,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "July, 1992",
+      "source_note": "",
+      "title": "Ripplings",
+      "type": "comic",
+      "year": 1992
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-50",
+      "month": 8,
+      "number": 50,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "August, 1992",
+      "source_note": "",
+      "title": "City at War, Part 1 of 13",
+      "type": "comic",
+      "year": 1992
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-51",
+      "month": 9,
+      "number": 51,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "September, 1992",
+      "source_note": "",
+      "title": "City at War, Part 2 of 13",
+      "type": "comic",
+      "year": 1992
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-52",
+      "month": 10,
+      "number": 52,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "October, 1992",
+      "source_note": "",
+      "title": "City at War, Part 3 of 13",
+      "type": "comic",
+      "year": 1992
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-53",
+      "month": 11,
+      "number": 53,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "November, 1992",
+      "source_note": "",
+      "title": "City at War, Part 4 of 13",
+      "type": "comic",
+      "year": 1992
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-54",
+      "month": 12,
+      "number": 54,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "December, 1992",
+      "source_note": "",
+      "title": "City at War, Part 5 of 13",
+      "type": "comic",
+      "year": 1992
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-55",
+      "month": 1,
+      "number": 55,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "January, 1993",
+      "source_note": "",
+      "title": "City at War, Part 6 of 13",
+      "type": "comic",
+      "year": 1993
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-56",
+      "month": 2,
+      "number": 56,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "February, 1993",
+      "source_note": "",
+      "title": "City at War, Part 7 of 13",
+      "type": "comic",
+      "year": 1993
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-57",
+      "month": 3,
+      "number": 57,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "March, 1993",
+      "source_note": "",
+      "title": "City at War, Part 8 of 13",
+      "type": "comic",
+      "year": 1993
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-58",
+      "month": 4,
+      "number": 58,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "April, 1993",
+      "source_note": "",
+      "title": "City at War, Part 9 of 13",
+      "type": "comic",
+      "year": 1993
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-59",
+      "month": 5,
+      "number": 59,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "May, 1993",
+      "source_note": "",
+      "title": "City at War, Part 10 of 13",
+      "type": "comic",
+      "year": 1993
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-60",
+      "month": 6,
+      "number": 60,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "June, 1993",
+      "source_note": "",
+      "title": "City at War, Part 11 of 13",
+      "type": "comic",
+      "year": 1993
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-61",
+      "month": 7,
+      "number": 61,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "July, 1993",
+      "source_note": "",
+      "title": "City at War, Part 12 of 13",
+      "type": "comic",
+      "year": 1993
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v1-62",
+      "month": 8,
+      "number": 62,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "series_kind": "ongoing",
+      "source_date": "August, 1993",
+      "source_note": "",
+      "title": "City at War, Part 13 of 13",
+      "type": "comic",
+      "year": 1993
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-micro-raphael-me-myself-and-i",
+      "month": 4,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "micro-series",
+      "source_date": "April, 1985",
+      "source_note": "",
+      "title": "Raphael: Me, Myself and I",
+      "type": "comic",
+      "year": 1985
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-micro-michelangelo-the-christmas-aliens",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "micro-series",
+      "source_date": "December, 1985",
+      "source_note": "",
+      "title": "Michelangelo: The Christmas Aliens",
+      "type": "comic",
+      "year": 1985
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-micro-donatello-kirby-and-the-warp-crystal",
+      "month": 5,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "micro-series",
+      "source_date": "May, 1986",
+      "source_note": "",
+      "title": "Donatello: Kirby and the Warp Crystal",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-micro-leonardo-what-goes-around-comes-around",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "micro-series",
+      "source_date": "December, 1986",
+      "source_note": "",
+      "title": "Leonardo: What Goes Around... ...Comes Around!",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-micro-fugitoid-the-fugitoids-origin",
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "micro-series",
+      "source_date": "1985",
+      "source_note": "",
+      "title": "Fugitoid: The Fugitoid's Origin",
+      "type": "comic",
+      "year": 1985
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v1-1",
+      "month": 5,
+      "number": 1,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles",
+      "series_kind": "ongoing",
+      "source_date": "May, 1987",
+      "source_note": "",
+      "title": "A Tale of the Teenage Mutant Ninja Turtles",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v1-2",
+      "month": 7,
+      "number": 2,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles",
+      "series_kind": "ongoing",
+      "source_date": "July, 1987",
+      "source_note": "",
+      "title": "Nobody's Fool!",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v1-3",
+      "month": 10,
+      "number": 3,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles",
+      "series_kind": "ongoing",
+      "source_date": "October, 1987",
+      "source_note": "",
+      "title": "All Hallow's Thieves",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v1-4",
+      "month": 1,
+      "number": 4,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles",
+      "series_kind": "ongoing",
+      "source_date": "January, 1988",
+      "source_note": "",
+      "title": "I, Monster",
+      "type": "comic",
+      "year": 1988
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v1-5",
+      "month": 5,
+      "number": 5,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles",
+      "series_kind": "ongoing",
+      "source_date": "May, 1988",
+      "source_note": "",
+      "title": "Complete Carnage and Radical",
+      "type": "comic",
+      "year": 1988
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v1-6",
+      "month": 8,
+      "number": 6,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles",
+      "series_kind": "ongoing",
+      "source_date": "August, 1988",
+      "source_note": "",
+      "title": "Leatherhead",
+      "type": "comic",
+      "year": 1988
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v1-7",
+      "month": 8,
+      "number": 7,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles",
+      "series_kind": "ongoing",
+      "source_date": "August, 1989",
+      "source_note": "",
+      "title": "The Return of Savanti Romero!",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-dont-judge-a-book",
+      "month": 11,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "November, 1985",
+      "source_note": "",
+      "title": "Don't Judge a Book...",
+      "type": "comic",
+      "year": 1985
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-you-had-to-be-there",
+      "month": 3,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "March, 1986",
+      "source_note": "",
+      "title": "You Had to Be There",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-dants-fever",
+      "month": 5,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "May, 1986",
+      "source_note": "",
+      "title": "D'Ants Fever",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-new-york-ninja",
+      "month": 6,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "June, 1986",
+      "source_note": "",
+      "title": "New York Ninja",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-the-road-trip",
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "1986",
+      "source_note": "",
+      "title": "The Road Trip",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-the-tmnt-by-fred-hembeck",
+      "month": 10,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "October 1986",
+      "source_note": "",
+      "title": "The TMNT by Fred Hembeck",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-complete-carnage-an-radical",
+      "month": 11,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "November, 1986",
+      "source_note": "",
+      "title": "Complete Carnage an' Radical",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-new-comic-day",
+      "month": 11,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "November, 1986",
+      "source_note": "",
+      "title": "New Comic Day",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-night-life",
+      "month": 11,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "November, 1986",
+      "source_note": "",
+      "title": "Night Life",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-crazy-man",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 1986",
+      "source_note": "",
+      "title": "Crazy Man",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-technofear",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 1986",
+      "source_note": "",
+      "title": "Technofear",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-terror-by-transmat",
+      "month": 5,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "May, 1987",
+      "source_note": "",
+      "title": "Terror by Transmat!",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-the-survival-game",
+      "month": 5,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "May, 1987",
+      "source_note": "",
+      "title": "The Survival Game",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-word-warriors",
+      "month": 7,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "July, 1987",
+      "source_note": "",
+      "title": "Word Warriors",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-the-howl",
+      "month": 9,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "September, 1987",
+      "source_note": "",
+      "title": "The Howl",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-turtle-soup-and-rabbit-stew",
+      "month": 9,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "September, 1987",
+      "source_note": "",
+      "title": "Turtle Soup and Rabbit Stew",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-fun-with-guns",
+      "month": 11,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "November, 1987",
+      "source_note": "",
+      "title": "Fun with Guns",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-ghouls-night-out",
+      "month": 11,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "November, 1987",
+      "source_note": "",
+      "title": "Ghouls Night Out",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-the-lesson-a-tale-of-the-triceraton-marines",
+      "month": 11,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "November, 1987",
+      "source_note": "",
+      "title": "The Lesson: A Tale of the Triceraton Marines",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-49th-street-stompers",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 1987",
+      "source_note": "",
+      "title": "49th Street Stompers",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-its-a-gas",
+      "month": 5,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "May, 1988",
+      "source_note": "",
+      "title": "It's a Gas",
+      "type": "comic",
+      "year": 1988
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-the-crossing",
+      "month": 8,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "August, 1988",
+      "source_note": "",
+      "title": "The Crossing",
+      "type": "comic",
+      "year": 1988
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-choices",
+      "month": 9,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "September, 1988",
+      "source_note": "",
+      "title": "Choices",
+      "type": "comic",
+      "year": 1988
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-not-one-word",
+      "month": 11,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "November, 1988",
+      "source_note": "",
+      "title": "Not One Word!",
+      "type": "comic",
+      "year": 1988
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-king-for-a-day",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 1988",
+      "source_note": "",
+      "title": "King for a Day",
+      "type": "comic",
+      "year": 1988
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-casey-jones-private-eye",
+      "month": 11,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "November, 1989",
+      "source_note": "",
+      "title": "Casey Jones, Private Eye",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-bottoming-out",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 1989",
+      "source_note": "",
+      "title": "Bottoming Out",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-junk-man",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 1989",
+      "source_note": "",
+      "title": "Junk Man",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-meanwhile-1-000-000-b-c",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 1989",
+      "source_note": "",
+      "title": "Meanwhile... 1,000,000 B.C.",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-the-treaty",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 1989",
+      "source_note": "",
+      "title": "The Treaty",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-o-deed",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 1989",
+      "source_note": "",
+      "title": "O-Deed",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-a-splinter-in-the-eye-of-god",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 1989",
+      "source_note": "",
+      "title": "A Splinter in the Eye of God?",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-untitled-nobody-story",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 1989",
+      "source_note": "",
+      "title": "Untitled Nobody Story",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-a-christmas-carol",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 1990",
+      "source_note": "",
+      "title": "A Christmas Carol",
+      "type": "comic",
+      "year": 1990
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-rockin-rollin-miner-ants-feat-the-tmnt",
+      "month": 10,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "October, 1991",
+      "source_note": "",
+      "title": "Rockin’ Rollin’ Miner Ants (feat. The TMNT)",
+      "type": "comic",
+      "year": 1991
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-old-times",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 1992",
+      "source_note": "",
+      "title": "Old Times",
+      "type": "comic",
+      "year": 1992
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-teenage-mutant-ninja-turtles-fox-box-comic",
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "2003",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (Fox Box comic)",
+      "type": "comic",
+      "year": 2003
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-digital-webbing-presents-tmnt",
+      "month": 7,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "July, 2005",
+      "source_note": "",
+      "title": "Digital Webbing Presents TMNT",
+      "type": "comic",
+      "year": 2005
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-the-paradox-of-chudnovsky",
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "2007",
+      "source_note": "",
+      "title": "The Paradox of Chudnovsky",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-spinal-tapped",
+      "month": 11,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "November, 2007",
+      "source_note": "",
+      "title": "Spinal Tapped",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-life-on-earth",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 2008",
+      "source_note": "",
+      "title": "Life on Earth",
+      "type": "comic",
+      "year": 2008
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-teenage-mutant-ninja-turtles-smash-up-pack-in-comic",
+      "month": 9,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "September 22, 2009",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles: Smash-Up pack-in comic",
+      "type": "comic",
+      "year": 2009
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-ready-set-go",
+      "month": 5,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "May 23, 2012",
+      "source_note": "",
+      "title": "Ready Set Go!",
+      "type": "comic",
+      "year": 2012
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-night-of-the-ninja-girl",
+      "month": 5,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "May 21, 2014",
+      "source_note": "",
+      "title": "Night of the Ninja Girl",
+      "type": "comic",
+      "year": 2014
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-mirage-1-story",
+      "month": 7,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "July 10, 2024",
+      "source_note": "",
+      "title": "Mirage 1 Story",
+      "type": "comic",
+      "year": 2024
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-monsters",
+      "month": 7,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "July 10, 2024",
+      "source_note": "",
+      "title": "Monsters",
+      "type": "comic",
+      "year": 2024
+    },
+    {
+      "form": "backup",
+      "id": "manual:tmnt-mirage-backup-gang-wars",
+      "month": 7,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "July 10, 2024",
+      "source_note": "",
+      "title": "Gang Wars",
+      "type": "comic",
+      "year": 2024
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-gobbledygook-vol-2-1",
+      "month": 12,
+      "number": 1,
+      "providers": {},
+      "series": "Gobbledygook (Vol. 2)",
+      "series_kind": "minor",
+      "source_date": "December, 1986",
+      "source_note": "",
+      "title": "Gobbledygook (Vol. 2) #1",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-turtle-soup-vol-1-1",
+      "month": 9,
+      "number": 1,
+      "providers": {},
+      "series": "Turtle Soup (Vol. 1)",
+      "series_kind": "minor",
+      "source_date": "September, 1987",
+      "source_note": "",
+      "title": "Turtle Soup (Vol. 1) #1",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-grunts-1",
+      "month": 11,
+      "number": 1,
+      "providers": {},
+      "series": "Grunts",
+      "series_kind": "minor",
+      "source_date": "November, 1987",
+      "source_note": "",
+      "title": "Grunts #1",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-gizmo-and-the-fugitoid-1",
+      "month": 6,
+      "number": 1,
+      "providers": {},
+      "series": "Gizmo and the Fugitoid",
+      "series_kind": "minor",
+      "source_date": "June, 1989",
+      "source_note": "",
+      "title": "Gizmo and the Fugitoid #1",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-gizmo-and-the-fugitoid-2",
+      "month": 7,
+      "number": 2,
+      "providers": {},
+      "series": "Gizmo and the Fugitoid",
+      "series_kind": "minor",
+      "source_date": "July, 1989",
+      "source_note": "",
+      "title": "Gizmo and the Fugitoid #2",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-minor-mirage-mini-comics",
+      "month": 11,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "minor",
+      "source_date": "November, 1989",
+      "source_note": "",
+      "title": "Mirage Mini Comics",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-minor-shell-shock",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "minor",
+      "source_date": "December, 1989",
+      "source_note": "",
+      "title": "Shell Shock",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-minor-green-grey-sponge-suit-sushi-turtles",
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "minor",
+      "source_date": "1990",
+      "source_note": "",
+      "title": "Green-Grey Sponge-Suit Sushi Turtles!",
+      "type": "comic",
+      "year": 1990
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-minor-teenage-mutant-ninja-turtles-challenges",
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "minor",
+      "source_date": "1991",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles: Challenges",
+      "type": "comic",
+      "year": 1991
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-turtle-soup-vol-2-1",
+      "month": 11,
+      "number": 1,
+      "providers": {},
+      "series": "Turtle Soup (vol. 2)",
+      "series_kind": "minor",
+      "source_date": "November, 1991",
+      "source_note": "",
+      "title": "Turtle Soup (vol. 2) #1",
+      "type": "comic",
+      "year": 1991
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-turtle-soup-vol-2-2",
+      "month": 12,
+      "number": 2,
+      "providers": {},
+      "series": "Turtle Soup (vol. 2)",
+      "series_kind": "minor",
+      "source_date": "December, 1991",
+      "source_note": "",
+      "title": "Turtle Soup (vol. 2) #2",
+      "type": "comic",
+      "year": 1991
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-turtle-soup-vol-2-3",
+      "month": 1,
+      "number": 3,
+      "providers": {},
+      "series": "Turtle Soup (vol. 2)",
+      "series_kind": "minor",
+      "source_date": "January, 1991",
+      "source_note": "",
+      "title": "Turtle Soup (vol. 2) #3",
+      "type": "comic",
+      "year": 1991
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-turtle-soup-vol-2-4",
+      "month": 2,
+      "number": 4,
+      "providers": {},
+      "series": "Turtle Soup (vol. 2)",
+      "series_kind": "minor",
+      "source_date": "February, 1991",
+      "source_note": "",
+      "title": "Turtle Soup (vol. 2) #4",
+      "type": "comic",
+      "year": 1991
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-minor-times-pipeline",
+      "month": 9,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "minor",
+      "source_date": "September, 1992",
+      "source_note": "",
+      "title": "Times Pipeline",
+      "type": "comic",
+      "year": 1992
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-minor-the-haunted-pizza",
+      "month": 10,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "minor",
+      "source_date": "October, 1992",
+      "source_note": "",
+      "title": "The Haunted Pizza",
+      "type": "comic",
+      "year": 1992
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-plastron-cafe-1",
+      "month": 12,
+      "number": 1,
+      "providers": {},
+      "series": "Plastron Cafe",
+      "series_kind": "minor",
+      "source_date": "December, 1992",
+      "source_note": "",
+      "title": "Plastron Cafe #1",
+      "type": "comic",
+      "year": 1992
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-plastron-cafe-2",
+      "month": 2,
+      "number": 2,
+      "providers": {},
+      "series": "Plastron Cafe",
+      "series_kind": "minor",
+      "source_date": "February, 1993",
+      "source_note": "",
+      "title": "Plastron Cafe #2",
+      "type": "comic",
+      "year": 1993
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-plastron-cafe-3",
+      "month": 5,
+      "number": 3,
+      "providers": {},
+      "series": "Plastron Cafe",
+      "series_kind": "minor",
+      "source_date": "May, 1993",
+      "source_note": "",
+      "title": "Plastron Cafe #3",
+      "type": "comic",
+      "year": 1993
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-plastron-cafe-4",
+      "month": 7,
+      "number": 4,
+      "providers": {},
+      "series": "Plastron Cafe",
+      "series_kind": "minor",
+      "source_date": "July, 1993",
+      "source_note": "",
+      "title": "Plastron Cafe #4",
+      "type": "comic",
+      "year": 1993
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-minor-the-maltese-turtle",
+      "month": 1,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "minor",
+      "source_date": "January, 1993",
+      "source_note": "",
+      "title": "The Maltese Turtle",
+      "type": "comic",
+      "year": 1993
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v2-1",
+      "month": 10,
+      "number": 1,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "October, 1993",
+      "source_note": "",
+      "title": "Memories of the Future",
+      "type": "comic",
+      "year": 1993
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v2-2",
+      "month": 12,
+      "number": 2,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "December, 1993",
+      "source_note": "",
+      "title": "Winds of Change",
+      "type": "comic",
+      "year": 1993
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v2-3",
+      "month": 2,
+      "number": 3,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "February, 1994",
+      "source_note": "",
+      "title": "Evolution",
+      "type": "comic",
+      "year": 1994
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v2-4",
+      "month": 4,
+      "number": 4,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "April, 1994",
+      "source_note": "",
+      "title": "Intruders",
+      "type": "comic",
+      "year": 1994
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v2-5",
+      "month": 6,
+      "number": 5,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "June, 1994",
+      "source_note": "",
+      "title": "Death Race",
+      "type": "comic",
+      "year": 1994
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v2-6",
+      "month": 8,
+      "number": 6,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "August, 1994",
+      "source_note": "",
+      "title": "Killer on the Loose",
+      "type": "comic",
+      "year": 1994
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v2-7",
+      "month": 10,
+      "number": 7,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "October, 1994",
+      "source_note": "",
+      "title": "Confrontations",
+      "type": "comic",
+      "year": 1994
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v2-8",
+      "month": 11,
+      "number": 8,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "November, 1994",
+      "source_note": "",
+      "title": "Face Off",
+      "type": "comic",
+      "year": 1994
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v2-9",
+      "month": 12,
+      "number": 9,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "December, 1994",
+      "source_note": "",
+      "title": "Victory?",
+      "type": "comic",
+      "year": 1994
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v2-10",
+      "month": 8,
+      "number": 10,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "August, 1995",
+      "source_note": "",
+      "title": "Descending into D.A.R.P.A.",
+      "type": "comic",
+      "year": 1995
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v2-11",
+      "month": 9,
+      "number": 11,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "September, 1995",
+      "source_note": "",
+      "title": "The Rescue",
+      "type": "comic",
+      "year": 1995
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v2-12",
+      "month": 9,
+      "number": 12,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "September, 1995",
+      "source_note": "",
+      "title": "The Escape",
+      "type": "comic",
+      "year": 1995
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v2-13",
+      "month": 10,
+      "number": 13,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "October, 1995",
+      "source_note": "",
+      "title": "The Battle",
+      "type": "comic",
+      "year": 1995
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-teenage-mutant-ninja-turtles-flaming-carrot-1",
+      "month": 11,
+      "number": 1,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles & Flaming Carrot",
+      "series_kind": "minor",
+      "source_date": "November, 1993",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles & Flaming Carrot #1",
+      "type": "comic",
+      "year": 1993
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-teenage-mutant-ninja-turtles-flaming-carrot-2",
+      "month": 12,
+      "number": 2,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles & Flaming Carrot",
+      "series_kind": "minor",
+      "source_date": "December, 1993",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles & Flaming Carrot #2",
+      "type": "comic",
+      "year": 1993
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-teenage-mutant-ninja-turtles-flaming-carrot-3",
+      "month": 1,
+      "number": 3,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles & Flaming Carrot",
+      "series_kind": "minor",
+      "source_date": "January, 1994",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles & Flaming Carrot #3",
+      "type": "comic",
+      "year": 1994
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-teenage-mutant-ninja-turtles-flaming-carrot-4",
+      "month": 2,
+      "number": 4,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles & Flaming Carrot",
+      "series_kind": "minor",
+      "source_date": "February, 1994",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles & Flaming Carrot #4",
+      "type": "comic",
+      "year": 1994
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-minor-north-by-downeast-part-1-of-2",
+      "month": 5,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "minor",
+      "source_date": "May, 1994",
+      "source_note": "",
+      "title": "North by Downeast, part 1 of 2",
+      "type": "comic",
+      "year": 1994
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-minor-north-by-downeast-the-conclusion",
+      "month": 5,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "minor",
+      "source_date": "May, 1994",
+      "source_note": "",
+      "title": "North by Downeast: The Conclusion",
+      "type": "comic",
+      "year": 1994
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-casey-jones-raphael-bodycount-1",
+      "month": 10,
+      "number": 1,
+      "providers": {},
+      "series": "Casey Jones & Raphael Bodycount",
+      "series_kind": "minor",
+      "source_date": "October, 1994",
+      "source_note": "",
+      "title": "Casey Jones & Raphael Bodycount #1",
+      "type": "comic",
+      "year": 1994
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-the-savage-dragon-tmnt-1",
+      "month": 9,
+      "number": 1,
+      "providers": {},
+      "series": "The Savage Dragon / TMNT",
+      "series_kind": "minor",
+      "source_date": "September, 1993",
+      "source_note": "",
+      "title": "The Savage Dragon / TMNT #1",
+      "type": "comic",
+      "year": 1993
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tmnt-the-savage-dragon-1",
+      "month": 8,
+      "number": 1,
+      "providers": {},
+      "series": "TMNT / The Savage Dragon",
+      "series_kind": "minor",
+      "source_date": "August, 1995",
+      "source_note": "",
+      "title": "TMNT / The Savage Dragon #1",
+      "type": "comic",
+      "year": 1995
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-1",
+      "month": 6,
+      "number": 1,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "June, 1996",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1996
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-2",
+      "month": 7,
+      "number": 2,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "July, 1996",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1996
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-3",
+      "month": 9,
+      "number": 3,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "September, 1996",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1996
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-4",
+      "month": 10,
+      "number": 4,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "October, 1996",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1996
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-5",
+      "month": 12,
+      "number": 5,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "December, 1996",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1996
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-6",
+      "month": 1,
+      "number": 6,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "January, 1997",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1997
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-7",
+      "month": 2,
+      "number": 7,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "February, 1997",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1997
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-8",
+      "month": 4,
+      "number": 8,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "April, 1997",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1997
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-9",
+      "month": 5,
+      "number": 9,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "May, 1997",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1997
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-10",
+      "month": 7,
+      "number": 10,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "July, 1997",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1997
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-11",
+      "month": 10,
+      "number": 11,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "October, 1997",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1997
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-12",
+      "month": 12,
+      "number": 12,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "December, 1997",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1997
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-13",
+      "month": 2,
+      "number": 13,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "February, 1998",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1998
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-14",
+      "month": 4,
+      "number": 14,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "April, 1998",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1998
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-15",
+      "month": 5,
+      "number": 15,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "May, 1998",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1998
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-16",
+      "month": 7,
+      "number": 16,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "July, 1998",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1998
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-17",
+      "month": 9,
+      "number": 17,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "September, 1998",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1998
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-18",
+      "month": 10,
+      "number": 18,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "October, 1998",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1998
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-19",
+      "month": 1,
+      "number": 19,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "January, 1999",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1999
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-20",
+      "month": 3,
+      "number": 20,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "March, 1999",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1999
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-21",
+      "month": 5,
+      "number": 21,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "May, 1999",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1999
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-22",
+      "month": 7,
+      "number": 22,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "July, 1999",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1999
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v3-23",
+      "month": 10,
+      "number": 23,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "series_kind": "ongoing",
+      "source_date": "October, 1999",
+      "source_note": "",
+      "title": "Untitled",
+      "type": "comic",
+      "year": 1999
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-bodycount-1",
+      "month": 3,
+      "number": 1,
+      "providers": {},
+      "series": "Bodycount",
+      "series_kind": "mini-series",
+      "source_date": "March, 1996",
+      "source_note": "",
+      "title": "Bodycount #1",
+      "type": "comic",
+      "year": 1996
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-bodycount-2",
+      "month": 4,
+      "number": 2,
+      "providers": {},
+      "series": "Bodycount",
+      "series_kind": "mini-series",
+      "source_date": "April, 1996",
+      "source_note": "",
+      "title": "Bodycount #2",
+      "type": "comic",
+      "year": 1996
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-bodycount-3",
+      "month": 5,
+      "number": 3,
+      "providers": {},
+      "series": "Bodycount",
+      "series_kind": "mini-series",
+      "source_date": "May, 1996",
+      "source_note": "",
+      "title": "Bodycount #3",
+      "type": "comic",
+      "year": 1996
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-bodycount-4",
+      "month": 7,
+      "number": 4,
+      "providers": {},
+      "series": "Bodycount",
+      "series_kind": "mini-series",
+      "source_date": "July, 1996",
+      "source_note": "",
+      "title": "Bodycount #4",
+      "type": "comic",
+      "year": 1996
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-savage-dragon-2",
+      "number": 2,
+      "providers": {},
+      "series": "Savage Dragon",
+      "series_kind": "crossover",
+      "source_date": "",
+      "source_note": "",
+      "title": "Savage Dragon #2",
+      "type": "comic",
+      "year": null
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-savage-dragon-2-r212",
+      "number": 2,
+      "providers": {},
+      "series": "Savage Dragon",
+      "series_kind": "crossover",
+      "source_date": "",
+      "source_note": "#22",
+      "title": "Savage Dragon #2",
+      "type": "comic",
+      "year": null
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-savage-dragon-41",
+      "number": 41,
+      "providers": {},
+      "series": "Savage Dragon",
+      "series_kind": "crossover",
+      "source_date": "",
+      "source_note": "",
+      "title": "Savage Dragon #41",
+      "type": "comic",
+      "year": null
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-crossover-the-savage-dragon-destroyer-duck-issue-1",
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "crossover",
+      "source_date": "",
+      "source_note": "",
+      "title": "The Savage Dragon - Destroyer Duck issue 1",
+      "type": "comic",
+      "year": null
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-shattered-image-2",
+      "number": 2,
+      "providers": {},
+      "series": "Shattered Image",
+      "series_kind": "crossover",
+      "source_date": "",
+      "source_note": "",
+      "title": "Shattered Image #2",
+      "type": "comic",
+      "year": null
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-crossover-gen-13-vol-2-13b",
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "crossover",
+      "source_date": "",
+      "source_note": "",
+      "title": "Gen 13(Vol.2) #13B",
+      "type": "comic",
+      "year": null
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-mars-attacks-image-1",
+      "number": 1,
+      "providers": {},
+      "series": "Mars Attacks Image",
+      "series_kind": "crossover",
+      "source_date": "",
+      "source_note": "",
+      "title": "Mars Attacks Image #1",
+      "type": "comic",
+      "year": null
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-big-bang-comics-10",
+      "number": 10,
+      "providers": {},
+      "series": "Big Bang Comics",
+      "series_kind": "crossover",
+      "source_date": "",
+      "source_note": "",
+      "title": "Big Bang Comics #10",
+      "type": "comic",
+      "year": null
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-crossover-teenage-mutant-ninja-turtles-savage-dragon-playmates-pack-in-comic",
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "crossover",
+      "source_date": "",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles/Savage Dragon Playmates pack-in comic",
+      "type": "comic",
+      "year": null
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-1",
+      "month": 1,
+      "number": 1,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "January, 2002",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 1",
+      "type": "comic",
+      "year": 2002
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-2",
+      "month": 3,
+      "number": 2,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "March, 2002",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles issue 2 (volume 4)",
+      "type": "comic",
+      "year": 2002
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-3",
+      "month": 4,
+      "number": 3,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "April, 2002",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 3",
+      "type": "comic",
+      "year": 2002
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-4",
+      "month": 6,
+      "number": 4,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "June, 2002",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 4",
+      "type": "comic",
+      "year": 2002
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-5",
+      "month": 8,
+      "number": 5,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "August, 2002",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 5",
+      "type": "comic",
+      "year": 2002
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-6",
+      "month": 10,
+      "number": 6,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "October, 2002",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 6",
+      "type": "comic",
+      "year": 2002
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-7",
+      "month": 12,
+      "number": 7,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "December, 2002",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 7",
+      "type": "comic",
+      "year": 2002
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-8",
+      "month": 2,
+      "number": 8,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "February, 2003",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 8",
+      "type": "comic",
+      "year": 2003
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-9",
+      "month": 4,
+      "number": 9,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "April, 2003",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 9",
+      "type": "comic",
+      "year": 2003
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-10",
+      "month": 6,
+      "number": 10,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "June, 2003",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 10",
+      "type": "comic",
+      "year": 2003
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-11",
+      "month": 8,
+      "number": 11,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "August, 2003",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 11",
+      "type": "comic",
+      "year": 2003
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-12",
+      "month": 10,
+      "number": 12,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "October, 2003",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 12",
+      "type": "comic",
+      "year": 2003
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-13",
+      "month": 12,
+      "number": 13,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "December, 2003",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 13",
+      "type": "comic",
+      "year": 2003
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-14",
+      "month": 2,
+      "number": 14,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "February, 2004",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 14",
+      "type": "comic",
+      "year": 2004
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-15",
+      "month": 4,
+      "number": 15,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "April, 2004",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 15",
+      "type": "comic",
+      "year": 2004
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-16",
+      "month": 6,
+      "number": 16,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "June, 2004",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 16",
+      "type": "comic",
+      "year": 2004
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-17",
+      "month": 8,
+      "number": 17,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "August, 2004",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 17",
+      "type": "comic",
+      "year": 2004
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-18",
+      "month": 10,
+      "number": 18,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "October, 2004",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 18",
+      "type": "comic",
+      "year": 2004
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-19",
+      "month": 12,
+      "number": 19,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "December, 2004",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 19",
+      "type": "comic",
+      "year": 2004
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-20",
+      "month": 2,
+      "number": 20,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "February, 2005",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 20",
+      "type": "comic",
+      "year": 2005
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-21",
+      "month": 4,
+      "number": 21,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "April, 2005",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 21",
+      "type": "comic",
+      "year": 2005
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-22",
+      "month": 6,
+      "number": 22,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "June, 2005",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 22",
+      "type": "comic",
+      "year": 2005
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-23",
+      "month": 8,
+      "number": 23,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "August, 2005",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 23",
+      "type": "comic",
+      "year": 2005
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-24",
+      "month": 10,
+      "number": 24,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "October, 2005",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 24",
+      "type": "comic",
+      "year": 2005
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-25",
+      "month": 12,
+      "number": 25,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "December, 2005",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 25",
+      "type": "comic",
+      "year": 2005
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-26",
+      "month": 2,
+      "number": 26,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "February, 2006",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 26",
+      "type": "comic",
+      "year": 2006
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-27",
+      "month": 4,
+      "number": 27,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "April, 2006",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 27",
+      "type": "comic",
+      "year": 2006
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-28",
+      "month": 6,
+      "number": 28,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "June, 2006",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 28",
+      "type": "comic",
+      "year": 2006
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-29",
+      "month": 4,
+      "number": 29,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "April, 2008",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 29",
+      "type": "comic",
+      "year": 2008
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-30",
+      "month": 5,
+      "number": 30,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "May, 2009",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 30",
+      "type": "comic",
+      "year": 2009
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-31",
+      "month": 10,
+      "number": 31,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "October, 2010 (online) 1",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 31",
+      "type": "comic",
+      "year": 2010
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-v4-32",
+      "month": 5,
+      "number": 32,
+      "providers": {},
+      "series": "Teenage Mutant Ninja Turtles (Mirage) Vol. 4",
+      "series_kind": "ongoing",
+      "source_date": "May, 2014 (online) [1]",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles (vol 4) 32",
+      "type": "comic",
+      "year": 2014
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-1",
+      "month": 1,
+      "number": 1,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "January 2004",
+      "source_note": "",
+      "title": "Not Forgotten",
+      "type": "comic",
+      "year": 2004
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-2",
+      "month": 3,
+      "number": 2,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "March 2004",
+      "source_note": "",
+      "title": "Seeds of Destruction",
+      "type": "comic",
+      "year": 2004
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-3",
+      "month": 5,
+      "number": 3,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "May 2004",
+      "source_note": "",
+      "title": "The Worms of Madness, Part 1 & \"Green\"",
+      "type": "comic",
+      "year": 2004
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-4",
+      "month": 6,
+      "number": 4,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "June 2004",
+      "source_note": "",
+      "title": "The Worms of Madness, Part 2 & \"The Grape\"",
+      "type": "comic",
+      "year": 2004
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-5",
+      "month": 9,
+      "number": 5,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "September 2004",
+      "source_note": "",
+      "title": "Blind Faith (Tales issue)",
+      "type": "comic",
+      "year": 2004
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-6",
+      "month": 11,
+      "number": 6,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "November 2004",
+      "source_note": "",
+      "title": "Scars & \"The Raisin'\"",
+      "type": "comic",
+      "year": 2004
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-7",
+      "month": 1,
+      "number": 7,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "January 2005",
+      "source_note": "",
+      "title": "Darkness Weaves",
+      "type": "comic",
+      "year": 2005
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-8",
+      "month": 2,
+      "number": 8,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "February 2005",
+      "source_note": "",
+      "title": "Virus & \"The Risen\"",
+      "type": "comic",
+      "year": 2005
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-9",
+      "month": 3,
+      "number": 9,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "March 2005",
+      "source_note": "",
+      "title": "The Path & \"Community Service\"",
+      "type": "comic",
+      "year": 2005
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-10",
+      "month": 4,
+      "number": 10,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "April 2005",
+      "source_note": "",
+      "title": "Kaddish & \"The Question\"",
+      "type": "comic",
+      "year": 2005
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-11",
+      "month": 5,
+      "number": 11,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "May 2005",
+      "source_note": "",
+      "title": "The Quick and the Dead",
+      "type": "comic",
+      "year": 2005
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-12",
+      "month": 6,
+      "number": 12,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "June 2005",
+      "source_note": "",
+      "title": "Paris Nocturne",
+      "type": "comic",
+      "year": 2005
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-13",
+      "month": 7,
+      "number": 13,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "July 2005",
+      "source_note": "",
+      "title": "Loops, Part 1",
+      "type": "comic",
+      "year": 2005
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-14",
+      "month": 8,
+      "number": 14,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "August 2005",
+      "source_note": "",
+      "title": "Loops, Part 2 & \"First Mud\"",
+      "type": "comic",
+      "year": 2005
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-15",
+      "month": 9,
+      "number": 15,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "September 2005",
+      "source_note": "",
+      "title": "Hell's Blacktop & \"Apocalypse Vow\"",
+      "type": "comic",
+      "year": 2005
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-16",
+      "month": 10,
+      "number": 16,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "October 2005",
+      "source_note": "",
+      "title": "Sins of the Past",
+      "type": "comic",
+      "year": 2005
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-17",
+      "month": 11,
+      "number": 17,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "November 2005",
+      "source_note": "",
+      "title": "Wrong Turn",
+      "type": "comic",
+      "year": 2005
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-18",
+      "month": 12,
+      "number": 18,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "December 2005",
+      "source_note": "",
+      "title": "The Blue Hole & \"Altered Fates\"",
+      "type": "comic",
+      "year": 2005
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-19",
+      "month": 1,
+      "number": 19,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "January 2006",
+      "source_note": "",
+      "title": "A Ghost Story",
+      "type": "comic",
+      "year": 2006
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-20",
+      "month": 2,
+      "number": 20,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "February 2006",
+      "source_note": "",
+      "title": "The Trophy, \"The Cure\" & \"The Rippling\"",
+      "type": "comic",
+      "year": 2006
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-21",
+      "month": 3,
+      "number": 21,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "March 2006",
+      "source_note": "",
+      "title": "A (Bull) Wrinkle in Time",
+      "type": "comic",
+      "year": 2006
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-22",
+      "month": 4,
+      "number": 22,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "April 2006",
+      "source_note": "",
+      "title": "Change of Power",
+      "type": "comic",
+      "year": 2006
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-23",
+      "month": 5,
+      "number": 23,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "May 2006",
+      "source_note": "",
+      "title": "Attack of the Replicants",
+      "type": "comic",
+      "year": 2006
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-24",
+      "month": 6,
+      "number": 24,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "June 2006",
+      "source_note": "",
+      "title": "Rock of Ages",
+      "type": "comic",
+      "year": 2006
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-25",
+      "month": 7,
+      "number": 25,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "July 2006",
+      "source_note": "",
+      "title": "Kung-Fu Theatre, \"My Hero!\" & \"The Doors of Deception\"",
+      "type": "comic",
+      "year": 2006
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-26",
+      "month": 8,
+      "number": 26,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "August 2006",
+      "source_note": "",
+      "title": "The Value of Gold",
+      "type": "comic",
+      "year": 2006
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-27",
+      "month": 9,
+      "number": 27,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "September 2006",
+      "source_note": "",
+      "title": "White Horses",
+      "type": "comic",
+      "year": 2006
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-28",
+      "month": 10,
+      "number": 28,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "October 2006",
+      "source_note": "",
+      "title": "Shanghaied & \"Channeling\"",
+      "type": "comic",
+      "year": 2006
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-29",
+      "month": 11,
+      "number": 29,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "November 2006",
+      "source_note": "",
+      "title": "Soul Survivor",
+      "type": "comic",
+      "year": 2006
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-30",
+      "month": 12,
+      "number": 30,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "December 2006",
+      "source_note": "",
+      "title": "Circle of Darkness & \"The Mother of All Anger\"",
+      "type": "comic",
+      "year": 2006
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-31",
+      "month": 1,
+      "number": 31,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "January 2007",
+      "source_note": "",
+      "title": "Reflections",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-32",
+      "month": 2,
+      "number": 32,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "February 2007",
+      "source_note": "",
+      "title": "The Eye of Aga-Moo-Tou",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-33",
+      "month": 4,
+      "number": 33,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "April 2007",
+      "source_note": "",
+      "title": "The Bait & \"Credo\"",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-34",
+      "month": 5,
+      "number": 34,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "May 2007",
+      "source_note": "",
+      "title": "Splinter Cell",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-35",
+      "month": 6,
+      "number": 35,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "June 2007",
+      "source_note": "",
+      "title": "The Pantheon & \"Secret Spirit\"",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-36",
+      "month": 7,
+      "number": 36,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "July 2007",
+      "source_note": "",
+      "title": "To Serve and Protect",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-37",
+      "month": 8,
+      "number": 37,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "August 2007",
+      "source_note": "",
+      "title": "Casey in Point",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-38",
+      "month": 9,
+      "number": 38,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "September 2007",
+      "source_note": "",
+      "title": "Triptyche & \"Awww... Rats!\"",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-39",
+      "month": 10,
+      "number": 39,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "October 2007",
+      "source_note": "",
+      "title": "What Wolves Wear",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-40",
+      "month": 11,
+      "number": 40,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "November 2007",
+      "source_note": "",
+      "title": "Silent Night",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-41",
+      "month": 12,
+      "number": 41,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "December 2007",
+      "source_note": "",
+      "title": "Swan Song & \"Fathers and Daughters\"",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-42",
+      "month": 1,
+      "number": 42,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "January 2008",
+      "source_note": "",
+      "title": "The Curious Case of Mr. Jones",
+      "type": "comic",
+      "year": 2008
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-43",
+      "month": 2,
+      "number": 43,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "February 2008",
+      "source_note": "",
+      "title": "The Proposal",
+      "type": "comic",
+      "year": 2008
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-44",
+      "month": 3,
+      "number": 44,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "March 2008",
+      "source_note": "",
+      "title": "The Amulet & \"The Lessons\"",
+      "type": "comic",
+      "year": 2008
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-45",
+      "month": 4,
+      "number": 45,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "April 2008",
+      "source_note": "",
+      "title": "Rocks",
+      "type": "comic",
+      "year": 2008
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-46",
+      "month": 5,
+      "number": 46,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "May 2008",
+      "source_note": "",
+      "title": "Temps",
+      "type": "comic",
+      "year": 2008
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-47",
+      "month": 7,
+      "number": 47,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "July 2008",
+      "source_note": "",
+      "title": "The Secret Origins of the Super Turtles!!!",
+      "type": "comic",
+      "year": 2008
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-48",
+      "month": 7,
+      "number": 48,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "July 2008",
+      "source_note": "",
+      "title": "The Decider! & \"One's Shadow!\"",
+      "type": "comic",
+      "year": 2008
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-49",
+      "month": 8,
+      "number": 49,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "August 2008",
+      "source_note": "",
+      "title": "Mined Games",
+      "type": "comic",
+      "year": 2008
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-50",
+      "month": 9,
+      "number": 50,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "September 2008",
+      "source_note": "",
+      "title": "World's Deadliest & \"Threads\"",
+      "type": "comic",
+      "year": 2008
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-51",
+      "month": 10,
+      "number": 51,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "October 2008",
+      "source_note": "",
+      "title": "Night of the Living Gingerbread",
+      "type": "comic",
+      "year": 2008
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-52",
+      "month": 11,
+      "number": 52,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "November 2008",
+      "source_note": "",
+      "title": "The Crystal at the Heart of the World & \"The Mission\"",
+      "type": "comic",
+      "year": 2008
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-53",
+      "month": 12,
+      "number": 53,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "December 2008",
+      "source_note": "",
+      "title": "Alien Invaders, \"This Mortal Shell\" & \"Ghosts of Christmas Past\"",
+      "type": "comic",
+      "year": 2008
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-54",
+      "month": 1,
+      "number": 54,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "January 2009",
+      "source_note": "",
+      "title": "Mere Appendix",
+      "type": "comic",
+      "year": 2009
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-55",
+      "month": 2,
+      "number": 55,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "February 2009",
+      "source_note": "",
+      "title": "Day in the Life",
+      "type": "comic",
+      "year": 2009
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-56",
+      "month": 3,
+      "number": 56,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "March 2009",
+      "source_note": "",
+      "title": "Hun",
+      "type": "comic",
+      "year": 2009
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-57",
+      "month": 4,
+      "number": 57,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "April 2009",
+      "source_note": "",
+      "title": "Gangs All Here",
+      "type": "comic",
+      "year": 2009
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-58",
+      "month": 5,
+      "number": 58,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "May 2009",
+      "source_note": "",
+      "title": "All Tomorrow's Yesterdays",
+      "type": "comic",
+      "year": 2009
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-59",
+      "month": 6,
+      "number": 59,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "June 2009",
+      "source_note": "",
+      "title": "Exposé",
+      "type": "comic",
+      "year": 2009
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-60",
+      "month": 7,
+      "number": 60,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "July 2009",
+      "source_note": "",
+      "title": "Nobody Does It Better",
+      "type": "comic",
+      "year": 2009
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-61",
+      "month": 8,
+      "number": 61,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "August 2009",
+      "source_note": "",
+      "title": "Sometimes They Come Back",
+      "type": "comic",
+      "year": 2009
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-62",
+      "month": 9,
+      "number": 62,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "September 2009",
+      "source_note": "",
+      "title": "Adventures in Bunnysitting",
+      "type": "comic",
+      "year": 2009
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-63",
+      "month": 10,
+      "number": 63,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "October 2009",
+      "source_note": "",
+      "title": "Monster Island",
+      "type": "comic",
+      "year": 2009
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-64",
+      "month": 11,
+      "number": 64,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "November 2009",
+      "source_note": "",
+      "title": "The Burning Man",
+      "type": "comic",
+      "year": 2009
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-65",
+      "month": 12,
+      "number": 65,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "December 2009",
+      "source_note": "",
+      "title": "Cold, Cold Ice",
+      "type": "comic",
+      "year": 2009
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-66",
+      "month": 1,
+      "number": 66,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "January 2010",
+      "source_note": "",
+      "title": "There's No Place Like Home",
+      "type": "comic",
+      "year": 2010
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-67",
+      "month": 2,
+      "number": 67,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "February 2010",
+      "source_note": "",
+      "title": "Schooled",
+      "type": "comic",
+      "year": 2010
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-68",
+      "month": 3,
+      "number": 68,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "March 2010",
+      "source_note": "",
+      "title": "Heroes in a Half Cell & \"A Klunk Adventure\"",
+      "type": "comic",
+      "year": 2010
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-69",
+      "month": 4,
+      "number": 69,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "April 2010",
+      "source_note": "",
+      "title": "Dark Shadows",
+      "type": "comic",
+      "year": 2010
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-v2-70",
+      "month": 5,
+      "number": 70,
+      "providers": {},
+      "series": "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "series_kind": "ongoing",
+      "source_date": "May 2010",
+      "source_note": "",
+      "title": "Zog",
+      "type": "comic",
+      "year": 2010
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-of-leonardo-blind-sight-1",
+      "month": 6,
+      "number": 1,
+      "providers": {},
+      "series": "Tales of Leonardo: Blind Sight",
+      "series_kind": "mini-series",
+      "source_date": "June, 2006",
+      "source_note": "",
+      "title": "Tales of Leonardo: Blind Sight #1",
+      "type": "comic",
+      "year": 2006
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-of-leonardo-blind-sight-2",
+      "month": 7,
+      "number": 2,
+      "providers": {},
+      "series": "Tales of Leonardo: Blind Sight",
+      "series_kind": "mini-series",
+      "source_date": "July, 2006",
+      "source_note": "",
+      "title": "Tales of Leonardo: Blind Sight #2",
+      "type": "comic",
+      "year": 2006
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-of-leonardo-blind-sight-3",
+      "month": 8,
+      "number": 3,
+      "providers": {},
+      "series": "Tales of Leonardo: Blind Sight",
+      "series_kind": "mini-series",
+      "source_date": "August, 2006",
+      "source_note": "",
+      "title": "Tales of Leonardo: Blind Sight #3",
+      "type": "comic",
+      "year": 2006
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-tales-of-leonardo-blind-sight-4",
+      "month": 9,
+      "number": 4,
+      "providers": {},
+      "series": "Tales of Leonardo: Blind Sight",
+      "series_kind": "mini-series",
+      "source_date": "September, 2006",
+      "source_note": "",
+      "title": "Tales of Leonardo: Blind Sight #4",
+      "type": "comic",
+      "year": 2006
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-raphael-bad-moon-rising-1",
+      "month": 7,
+      "number": 1,
+      "providers": {},
+      "series": "Raphael: Bad Moon Rising",
+      "series_kind": "mini-series",
+      "source_date": "July, 2007",
+      "source_note": "",
+      "title": "Raphael: Bad Moon Rising #1",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-raphael-bad-moon-rising-2",
+      "month": 8,
+      "number": 2,
+      "providers": {},
+      "series": "Raphael: Bad Moon Rising",
+      "series_kind": "mini-series",
+      "source_date": "August, 2007",
+      "source_note": "",
+      "title": "Raphael: Bad Moon Rising #2",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-raphael-bad-moon-rising-3",
+      "month": 9,
+      "number": 3,
+      "providers": {},
+      "series": "Raphael: Bad Moon Rising",
+      "series_kind": "mini-series",
+      "source_date": "September, 2007",
+      "source_note": "",
+      "title": "Raphael: Bad Moon Rising #3",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-raphael-bad-moon-rising-4",
+      "month": 11,
+      "number": 4,
+      "providers": {},
+      "series": "Raphael: Bad Moon Rising",
+      "series_kind": "mini-series",
+      "source_date": "November, 2007",
+      "source_note": "",
+      "title": "Raphael: Bad Moon Rising #4",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-michelangelo-the-third-kind-1",
+      "month": 9,
+      "number": 1,
+      "providers": {},
+      "series": "Michelangelo: The Third Kind",
+      "series_kind": "mini-series",
+      "source_date": "September, 2008",
+      "source_note": "",
+      "title": "Michelangelo: The Third Kind, part 1",
+      "type": "comic",
+      "year": 2008
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-michelangelo-the-third-kind-2",
+      "month": 10,
+      "number": 2,
+      "providers": {},
+      "series": "Michelangelo: The Third Kind",
+      "series_kind": "mini-series",
+      "source_date": "October, 2008",
+      "source_note": "",
+      "title": "Michelangelo: The Third Kind, part 2",
+      "type": "comic",
+      "year": 2008
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-michelangelo-the-third-kind-3",
+      "month": 11,
+      "number": 3,
+      "providers": {},
+      "series": "Michelangelo: The Third Kind",
+      "series_kind": "mini-series",
+      "source_date": "November, 2008",
+      "source_note": "",
+      "title": "Michelangelo: The Third Kind, part 3",
+      "type": "comic",
+      "year": 2008
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-michelangelo-the-third-kind-4",
+      "month": 12,
+      "number": 4,
+      "providers": {},
+      "series": "Michelangelo: The Third Kind",
+      "series_kind": "mini-series",
+      "source_date": "December, 2008",
+      "source_note": "",
+      "title": "Michelangelo: The Third Kind, part 4",
+      "type": "comic",
+      "year": 2008
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-donatello-the-brain-thief-1",
+      "month": 9,
+      "number": 1,
+      "providers": {},
+      "series": "Donatello: The Brain Thief",
+      "series_kind": "mini-series",
+      "source_date": "September, 2009",
+      "source_note": "",
+      "title": "Donatello: The Brain Thief, part 1",
+      "type": "comic",
+      "year": 2009
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-donatello-the-brain-thief-2",
+      "month": 10,
+      "number": 2,
+      "providers": {},
+      "series": "Donatello: The Brain Thief",
+      "series_kind": "mini-series",
+      "source_date": "October, 2009",
+      "source_note": "",
+      "title": "Donatello: The Brain Thief, part 2",
+      "type": "comic",
+      "year": 2009
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-donatello-the-brain-thief-3",
+      "month": 11,
+      "number": 3,
+      "providers": {},
+      "series": "Donatello: The Brain Thief",
+      "series_kind": "mini-series",
+      "source_date": "November, 2009",
+      "source_note": "",
+      "title": "Donatello: The Brain Thief, part 3",
+      "type": "comic",
+      "year": 2009
+    },
+    {
+      "form": "issue",
+      "id": "manual:tmnt-mirage-donatello-the-brain-thief-4",
+      "month": 12,
+      "number": 4,
+      "providers": {},
+      "series": "Donatello: The Brain Thief",
+      "series_kind": "mini-series",
+      "source_date": "December, 2009",
+      "source_note": "",
+      "title": "Donatello: The Brain Thief, part 4",
+      "type": "comic",
+      "year": 2009
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-tie-in-teenage-mutant-ninja-turtles-the-movie",
+      "month": 6,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "tie-in",
+      "source_date": "June, 1990",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles - The Movie",
+      "type": "comic",
+      "year": 1990
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-tie-in-teenage-mutant-ninja-turtles-the-secret-of-the-ooze-the-official-movie-adaptation",
+      "month": 8,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "tie-in",
+      "source_date": "August, 1991",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles • The Secret of the Ooze • The Official Movie Adaptation",
+      "type": "comic",
+      "year": 1991
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-tie-in-teenage-mutant-ninja-turtles-iii-the-turtles-are-back-in-time-see-the-list-of-tmnt-archie-comics",
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "tie-in",
+      "source_date": "Summer 1993",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles III - The Turtles Are Back... In Time! (see the List of TMNT Archie comics)",
+      "type": "comic",
+      "year": 1993
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-tie-in-disposable-heroes",
+      "month": 3,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "tie-in",
+      "source_date": "March, 2007",
+      "source_note": "",
+      "title": "Disposable Heroes",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-tie-in-the-continuing-story-of-cowabunga-carl",
+      "month": 3,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "tie-in",
+      "source_date": "March, 2007",
+      "source_note": "",
+      "title": "The Continuing Story of Cowabunga Carl",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-tie-in-strangers-in-the-night",
+      "month": 3,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "tie-in",
+      "source_date": "March, 2007",
+      "source_note": "",
+      "title": "Strangers in the Night",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-tie-in-bungle-in-the-jungle",
+      "month": 3,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "tie-in",
+      "source_date": "March, 2007",
+      "source_note": "",
+      "title": "Bungle in the Jungle",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-tie-in-five-to-one",
+      "month": 3,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "tie-in",
+      "source_date": "March, 2007",
+      "source_note": "",
+      "title": "Five to One",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "one-shot",
+      "id": "manual:tmnt-mirage-tie-in-tmnt-movie-adaptation",
+      "month": 4,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": "tie-in",
+      "source_date": "April, 2007",
+      "source_note": "",
+      "title": "TMNT Movie Adaptation",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-other-strangeness",
+      "month": 11,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "November, 1985",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles & Other Strangeness",
+      "type": "comic",
+      "year": 1985
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-grimjack-26",
+      "month": 5,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "May, 1986",
+      "source_note": "",
+      "title": "Grimjack #26",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-adventures",
+      "month": 6,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "June, 1986",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles Adventures!",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-anything-goes-5",
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "1986",
+      "source_note": "",
+      "title": "Anything Goes! #5",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-2-3rd-print",
+      "month": 10,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "October 1986",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles #2 (3rd print)",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-3-2nd-print",
+      "month": 11,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "November, 1986",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles #3 (2nd print)",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-book-i",
+      "month": 11,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "November, 1986",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles: Book I",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-gobbledygook-vol-2-1",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 1986",
+      "source_note": "",
+      "title": "Gobbledygook (vol. 2) #1",
+      "type": "comic",
+      "year": 1986
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-the-teenage-mutant-ninja-turtles-guide-to-the-universe",
+      "month": 5,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "May, 1987",
+      "source_note": "",
+      "title": "The Teenage Mutant Ninja Turtles' Guide to the Universe",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-4-2nd-print",
+      "month": 5,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "May, 1987",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles #4 (2nd print)",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-quest-for-dreams-lost-one-shot",
+      "month": 7,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "July, 1987",
+      "source_note": "",
+      "title": "Quest For Dreams Lost one-shot",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-turtle-soup-vol-1-1",
+      "month": 9,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "September, 1987",
+      "source_note": "",
+      "title": "Turtle Soup (vol. 1) #1",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-raphael-2nd-print",
+      "month": 11,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "November, 1987",
+      "source_note": "",
+      "title": "Raphael (2nd print)",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-5-2nd-print",
+      "month": 11,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "November, 1987",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles #5 (2nd print)",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-grunts-1",
+      "month": 11,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "November, 1987",
+      "source_note": "",
+      "title": "Grunts #1",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-book-iii",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 1987",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles: Book III",
+      "type": "comic",
+      "year": 1987
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-6-2nd-print",
+      "month": 5,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "May, 1988",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles #6 (2nd print)",
+      "type": "comic",
+      "year": 1988
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-usagi-yojimbo-vol-1-10",
+      "month": 8,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "August, 1988",
+      "source_note": "",
+      "title": "Usagi Yojimbo (Vol. 1) #10",
+      "type": "comic",
+      "year": 1988
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-the-puma-blues-20",
+      "month": 9,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "September, 1988",
+      "source_note": "",
+      "title": "The Puma Blues #20",
+      "type": "comic",
+      "year": 1988
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-1-5th-print",
+      "month": 11,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "November, 1988",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles #1 (5th print)",
+      "type": "comic",
+      "year": 1988
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-the-collected-gizmo",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 1988",
+      "source_note": "",
+      "title": "The Collected Gizmo",
+      "type": "comic",
+      "year": 1988
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-mirage-mini-comics",
+      "month": 11,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "November, 1989",
+      "source_note": "",
+      "title": "Mirage Mini Comics",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-shell-shock",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 1989",
+      "source_note": "",
+      "title": "Shell Shock",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-tales-of-the-teenage-mutant-ninja-turtles-tpb",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 1989",
+      "source_note": "",
+      "title": "Tales of the Teenage Mutant Ninja Turtles TPB",
+      "type": "comic",
+      "year": 1989
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-michaelangelo-2nd-print",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 1990",
+      "source_note": "",
+      "title": "Michaelangelo (2nd print)",
+      "type": "comic",
+      "year": 1990
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-plastron-cafe-1",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 1992",
+      "source_note": "",
+      "title": "Plastron Cafe #1",
+      "type": "comic",
+      "year": 1992
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-toys-r-us-fox-box-package",
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "2003",
+      "source_note": "",
+      "title": "Toys 'r' Us Fox Box package",
+      "type": "comic",
+      "year": 2003
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-digital-webbing-presents-24",
+      "month": 7,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "July, 2005",
+      "source_note": "",
+      "title": "Digital Webbing Presents #24",
+      "type": "comic",
+      "year": 2005
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-tortugas-ninja-vol-2",
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "2007",
+      "source_note": "",
+      "title": "Tortugas Ninja Vol. 2",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-tales-of-the-teenage-mutant-ninja-turtles-tpb-2nd-print",
+      "month": 11,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "November, 2007",
+      "source_note": "",
+      "title": "Tales of the Teenage Mutant Ninja Turtles TPB (2nd print)",
+      "type": "comic",
+      "year": 2007
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-michelangelo-the-third-kind-issue-4",
+      "month": 12,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "December, 2008",
+      "source_note": "",
+      "title": "Michelangelo: The Third Kind issue 4",
+      "type": "comic",
+      "year": 2008
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-smash-up-video-game-for-nintendo-wii",
+      "month": 9,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "September 22, 2009",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles Smash-Up video game for Nintendo Wii",
+      "type": "comic",
+      "year": 2009
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-hero-comics-2012",
+      "month": 5,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "May 23, 2012",
+      "source_note": "",
+      "title": "Hero Comics 2012",
+      "type": "comic",
+      "year": 2012
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-30th-anniversary-special",
+      "month": 5,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "May 21, 2014",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles 30th Anniversary Special",
+      "type": "comic",
+      "year": 2014
+    },
+    {
+      "form": "anthology",
+      "id": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-40th-anniversary-comics-celebration",
+      "month": 7,
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "July 10, 2024",
+      "source_note": "",
+      "title": "Teenage Mutant Ninja Turtles 40th Anniversary Comics Celebration",
+      "type": "comic",
+      "year": 2024
+    },
+    {
+      "form": "collected",
+      "id": "manual:tmnt-ultimate-collection-1",
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "",
+      "source_note": "",
+      "title": "Ultimate Collection 1",
+      "type": "comic",
+      "year": null
+    },
+    {
+      "form": "collected",
+      "id": "manual:tmnt-ultimate-collection-2",
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "",
+      "source_note": "",
+      "title": "Ultimate Collection 2",
+      "type": "comic",
+      "year": null
+    },
+    {
+      "form": "collected",
+      "id": "manual:tmnt-ultimate-collection-3",
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "",
+      "source_note": "",
+      "title": "Ultimate Collection 3",
+      "type": "comic",
+      "year": null
+    },
+    {
+      "form": "collected",
+      "id": "manual:tmnt-ultimate-collection-4",
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "",
+      "source_note": "",
+      "title": "Ultimate Collection 4",
+      "type": "comic",
+      "year": null
+    },
+    {
+      "form": "collected",
+      "id": "manual:tmnt-ultimate-collection-5",
+      "number": null,
+      "providers": {},
+      "series": null,
+      "series_kind": null,
+      "source_date": "",
+      "source_note": "",
+      "title": "Ultimate Collection 5",
+      "type": "comic",
+      "year": null
+    }
+  ],
+  "occurrences": [
+    {
+      "item": "manual:tmnt-mirage-v1-1",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-v1-2",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-v1-3",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-v1-4",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-v1-5",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-v1-6",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-v1-7",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-v1-8",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-v1-9",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-v1-10",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-v1-11",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-v1-12",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-v1-13",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-v1-14",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-v1-15",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-v1-16",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-v1-17",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-v1-18",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-v1-19",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-v1-20",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-v1-21",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-v1-22",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-micro-raphael-me-myself-and-i",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-micro-michelangelo-the-christmas-aliens",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-micro-donatello-kirby-and-the-warp-crystal",
+      "status": "done"
+    },
+    {
+      "item": "manual:tmnt-mirage-micro-leonardo-what-goes-around-comes-around",
+      "status": "done"
+    }
+  ],
+  "relations": [
+    {
+      "from": "manual:tmnt-mirage-backup-dont-judge-a-book",
+      "to": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-other-strangeness",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-you-had-to-be-there",
+      "to": "manual:tmnt-mirage-v1-7",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-dants-fever",
+      "to": "manual:tmnt-mirage-host-grimjack-26",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-new-york-ninja",
+      "to": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-adventures",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-the-road-trip",
+      "to": "manual:tmnt-mirage-host-anything-goes-5",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-the-tmnt-by-fred-hembeck",
+      "to": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-2-3rd-print",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-complete-carnage-an-radical",
+      "to": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-3-2nd-print",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-new-comic-day",
+      "to": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-book-i",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-night-life",
+      "to": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-book-i",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-crazy-man",
+      "to": "manual:tmnt-mirage-host-gobbledygook-vol-2-1",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-technofear",
+      "to": "manual:tmnt-mirage-host-gobbledygook-vol-2-1",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-terror-by-transmat",
+      "to": "manual:tmnt-mirage-host-the-teenage-mutant-ninja-turtles-guide-to-the-universe",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-the-survival-game",
+      "to": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-4-2nd-print",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-word-warriors",
+      "to": "manual:tmnt-mirage-host-quest-for-dreams-lost-one-shot",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-the-howl",
+      "to": "manual:tmnt-mirage-host-turtle-soup-vol-1-1",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-turtle-soup-and-rabbit-stew",
+      "to": "manual:tmnt-mirage-host-turtle-soup-vol-1-1",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-fun-with-guns",
+      "to": "manual:tmnt-mirage-host-raphael-2nd-print",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-ghouls-night-out",
+      "to": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-5-2nd-print",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-the-lesson-a-tale-of-the-triceraton-marines",
+      "to": "manual:tmnt-mirage-host-grunts-1",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-49th-street-stompers",
+      "to": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-book-iii",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-its-a-gas",
+      "to": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-6-2nd-print",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-the-crossing",
+      "to": "manual:tmnt-mirage-host-usagi-yojimbo-vol-1-10",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-choices",
+      "to": "manual:tmnt-mirage-host-the-puma-blues-20",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-not-one-word",
+      "to": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-1-5th-print",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-king-for-a-day",
+      "to": "manual:tmnt-mirage-host-the-collected-gizmo",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-casey-jones-private-eye",
+      "to": "manual:tmnt-mirage-host-mirage-mini-comics",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-bottoming-out",
+      "to": "manual:tmnt-mirage-host-shell-shock",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-junk-man",
+      "to": "manual:tmnt-mirage-host-shell-shock",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-meanwhile-1-000-000-b-c",
+      "to": "manual:tmnt-mirage-host-shell-shock",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-the-treaty",
+      "to": "manual:tmnt-mirage-host-shell-shock",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-o-deed",
+      "to": "manual:tmnt-mirage-host-shell-shock",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-a-splinter-in-the-eye-of-god",
+      "to": "manual:tmnt-mirage-host-shell-shock",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-untitled-nobody-story",
+      "to": "manual:tmnt-mirage-host-tales-of-the-teenage-mutant-ninja-turtles-tpb",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-a-christmas-carol",
+      "to": "manual:tmnt-mirage-host-michaelangelo-2nd-print",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-rockin-rollin-miner-ants-feat-the-tmnt",
+      "to": "manual:tmnt-mirage-v1-40",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-old-times",
+      "to": "manual:tmnt-mirage-host-plastron-cafe-1",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-teenage-mutant-ninja-turtles-fox-box-comic",
+      "to": "manual:tmnt-mirage-host-toys-r-us-fox-box-package",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-digital-webbing-presents-tmnt",
+      "to": "manual:tmnt-mirage-host-digital-webbing-presents-24",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-the-paradox-of-chudnovsky",
+      "to": "manual:tmnt-mirage-host-tortugas-ninja-vol-2",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-spinal-tapped",
+      "to": "manual:tmnt-mirage-host-tales-of-the-teenage-mutant-ninja-turtles-tpb-2nd-print",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-life-on-earth",
+      "to": "manual:tmnt-mirage-host-michelangelo-the-third-kind-issue-4",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-teenage-mutant-ninja-turtles-smash-up-pack-in-comic",
+      "to": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-smash-up-video-game-for-nintendo-wii",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-ready-set-go",
+      "to": "manual:tmnt-mirage-host-hero-comics-2012",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-night-of-the-ninja-girl",
+      "to": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-30th-anniversary-special",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-mirage-1-story",
+      "to": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-40th-anniversary-comics-celebration",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-monsters",
+      "to": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-40th-anniversary-comics-celebration",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:tmnt-mirage-backup-gang-wars",
+      "to": "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-40th-anniversary-comics-celebration",
+      "type": "contained-in"
+    }
+  ],
+  "shelves": [
+    {
+      "date": "2026-10-23",
+      "description": "Mirrors the Mirage tab of L's TMNT sheet as exported on 2026-10-23, section for section and row for row.",
+      "name": "TMNT, the Mirage run",
+      "sections": [
+        {
+          "entries": [
+            {
+              "item": "manual:tmnt-mirage-v1-1",
+              "position": 1
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-2",
+              "position": 2
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-3",
+              "position": 3
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-4",
+              "position": 4
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-5",
+              "position": 5
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-6",
+              "position": 6
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-7",
+              "position": 7
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-8",
+              "position": 8
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-9",
+              "position": 9
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-10",
+              "position": 10
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-11",
+              "position": 11
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-12",
+              "position": 12
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-13",
+              "position": 13
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-14",
+              "position": 14
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-15",
+              "position": 15
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-16",
+              "position": 16
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-17",
+              "position": 17
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-18",
+              "position": 18
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-19",
+              "position": 19
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-20",
+              "position": 20
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-21",
+              "position": 21
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-22",
+              "position": 22
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-23",
+              "position": 23
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-24",
+              "position": 24
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-25",
+              "position": 25
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-26",
+              "position": 26
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-27",
+              "position": 27
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-28",
+              "position": 28
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-29",
+              "position": 29
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-30",
+              "position": 30
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-31",
+              "position": 31
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-32",
+              "position": 32
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-33",
+              "position": 33
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-34",
+              "position": 34
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-35",
+              "position": 35
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-36",
+              "position": 36
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-37",
+              "position": 37
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-38",
+              "position": 38
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-39",
+              "position": 39
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-40",
+              "position": 40
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-41",
+              "position": 41
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-42",
+              "position": 42
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-43",
+              "position": 43
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-44",
+              "position": 44
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-45",
+              "position": 45
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-46",
+              "position": 46
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-47",
+              "position": 47
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-48",
+              "position": 48
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-49",
+              "position": 49
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-50",
+              "position": 50
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-51",
+              "position": 51
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-52",
+              "position": 52
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-53",
+              "position": 53
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-54",
+              "position": 54
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-55",
+              "position": 55
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-56",
+              "position": 56
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-57",
+              "position": 57
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-58",
+              "position": 58
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-59",
+              "position": 59
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-60",
+              "position": 60
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-61",
+              "position": 61
+            },
+            {
+              "item": "manual:tmnt-mirage-v1-62",
+              "position": 62
+            }
+          ],
+          "name": "Volume 1 · Main Series"
+        },
+        {
+          "entries": [
+            {
+              "item": "manual:tmnt-mirage-micro-raphael-me-myself-and-i",
+              "position": 1
+            },
+            {
+              "item": "manual:tmnt-mirage-micro-michelangelo-the-christmas-aliens",
+              "position": 2
+            },
+            {
+              "item": "manual:tmnt-mirage-micro-donatello-kirby-and-the-warp-crystal",
+              "position": 3
+            },
+            {
+              "item": "manual:tmnt-mirage-micro-leonardo-what-goes-around-comes-around",
+              "position": 4
+            },
+            {
+              "item": "manual:tmnt-mirage-micro-fugitoid-the-fugitoids-origin",
+              "position": 5
+            }
+          ],
+          "name": "Volume 1 · Micro Series"
+        },
+        {
+          "entries": [
+            {
+              "item": "manual:tmnt-mirage-tales-v1-1",
+              "position": 1
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v1-2",
+              "position": 2
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v1-3",
+              "position": 3
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v1-4",
+              "position": 4
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v1-5",
+              "position": 5
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v1-6",
+              "position": 6
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v1-7",
+              "position": 7
+            }
+          ],
+          "name": "Volume 1 · Tales of the Teenage Mutant Ninja Turtles"
+        },
+        {
+          "entries": [
+            {
+              "item": "manual:tmnt-mirage-backup-dont-judge-a-book",
+              "position": 1
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-you-had-to-be-there",
+              "position": 2
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-dants-fever",
+              "position": 3
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-new-york-ninja",
+              "position": 4
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-the-road-trip",
+              "position": 5
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-the-tmnt-by-fred-hembeck",
+              "position": 6
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-complete-carnage-an-radical",
+              "position": 7
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-new-comic-day",
+              "position": 8
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-night-life",
+              "position": 9
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-crazy-man",
+              "position": 10
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-technofear",
+              "position": 11
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-terror-by-transmat",
+              "position": 12
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-the-survival-game",
+              "position": 13
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-word-warriors",
+              "position": 14
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-the-howl",
+              "position": 15
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-turtle-soup-and-rabbit-stew",
+              "position": 16
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-fun-with-guns",
+              "position": 17
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-ghouls-night-out",
+              "position": 18
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-the-lesson-a-tale-of-the-triceraton-marines",
+              "position": 19
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-49th-street-stompers",
+              "position": 20
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-its-a-gas",
+              "position": 21
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-the-crossing",
+              "position": 22
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-choices",
+              "position": 23
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-not-one-word",
+              "position": 24
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-king-for-a-day",
+              "position": 25
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-casey-jones-private-eye",
+              "position": 26
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-bottoming-out",
+              "position": 27
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-junk-man",
+              "position": 28
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-meanwhile-1-000-000-b-c",
+              "position": 29
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-the-treaty",
+              "position": 30
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-o-deed",
+              "position": 31
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-a-splinter-in-the-eye-of-god",
+              "position": 32
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-untitled-nobody-story",
+              "position": 33
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-a-christmas-carol",
+              "position": 34
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-rockin-rollin-miner-ants-feat-the-tmnt",
+              "position": 35
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-old-times",
+              "position": 36
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-teenage-mutant-ninja-turtles-fox-box-comic",
+              "position": 37
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-digital-webbing-presents-tmnt",
+              "position": 38
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-the-paradox-of-chudnovsky",
+              "position": 39
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-spinal-tapped",
+              "position": 40
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-life-on-earth",
+              "position": 41
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-teenage-mutant-ninja-turtles-smash-up-pack-in-comic",
+              "position": 42
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-ready-set-go",
+              "position": 43
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-night-of-the-ninja-girl",
+              "position": 44
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-mirage-1-story",
+              "position": 45
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-monsters",
+              "position": 46
+            },
+            {
+              "item": "manual:tmnt-mirage-backup-gang-wars",
+              "position": 47
+            }
+          ],
+          "name": "Volume 1 · Short Stories"
+        },
+        {
+          "entries": [
+            {
+              "item": "manual:tmnt-mirage-gobbledygook-vol-2-1",
+              "position": 1
+            },
+            {
+              "item": "manual:tmnt-mirage-turtle-soup-vol-1-1",
+              "position": 2
+            },
+            {
+              "item": "manual:tmnt-mirage-grunts-1",
+              "position": 3
+            },
+            {
+              "item": "manual:tmnt-mirage-gizmo-and-the-fugitoid-1",
+              "position": 4
+            },
+            {
+              "item": "manual:tmnt-mirage-gizmo-and-the-fugitoid-2",
+              "position": 5
+            },
+            {
+              "item": "manual:tmnt-mirage-minor-mirage-mini-comics",
+              "position": 6
+            },
+            {
+              "item": "manual:tmnt-mirage-minor-shell-shock",
+              "position": 7
+            },
+            {
+              "item": "manual:tmnt-mirage-minor-green-grey-sponge-suit-sushi-turtles",
+              "position": 8
+            },
+            {
+              "item": "manual:tmnt-mirage-minor-teenage-mutant-ninja-turtles-challenges",
+              "position": 9
+            },
+            {
+              "item": "manual:tmnt-mirage-turtle-soup-vol-2-1",
+              "position": 10
+            },
+            {
+              "item": "manual:tmnt-mirage-turtle-soup-vol-2-2",
+              "position": 11
+            },
+            {
+              "item": "manual:tmnt-mirage-turtle-soup-vol-2-3",
+              "position": 12
+            },
+            {
+              "item": "manual:tmnt-mirage-turtle-soup-vol-2-4",
+              "position": 13
+            },
+            {
+              "item": "manual:tmnt-mirage-minor-times-pipeline",
+              "position": 14
+            },
+            {
+              "item": "manual:tmnt-mirage-minor-the-haunted-pizza",
+              "position": 15
+            },
+            {
+              "item": "manual:tmnt-mirage-plastron-cafe-1",
+              "position": 16
+            },
+            {
+              "item": "manual:tmnt-mirage-plastron-cafe-2",
+              "position": 17
+            },
+            {
+              "item": "manual:tmnt-mirage-plastron-cafe-3",
+              "position": 18
+            },
+            {
+              "item": "manual:tmnt-mirage-plastron-cafe-4",
+              "position": 19
+            },
+            {
+              "item": "manual:tmnt-mirage-minor-the-maltese-turtle",
+              "position": 20
+            }
+          ],
+          "name": "Volume 1 · Minor Titles"
+        },
+        {
+          "entries": [
+            {
+              "item": "manual:tmnt-mirage-v2-1",
+              "position": 1
+            },
+            {
+              "item": "manual:tmnt-mirage-v2-2",
+              "position": 2
+            },
+            {
+              "item": "manual:tmnt-mirage-v2-3",
+              "position": 3
+            },
+            {
+              "item": "manual:tmnt-mirage-v2-4",
+              "position": 4
+            },
+            {
+              "item": "manual:tmnt-mirage-v2-5",
+              "position": 5
+            },
+            {
+              "item": "manual:tmnt-mirage-v2-6",
+              "position": 6
+            },
+            {
+              "item": "manual:tmnt-mirage-v2-7",
+              "position": 7
+            },
+            {
+              "item": "manual:tmnt-mirage-v2-8",
+              "position": 8
+            },
+            {
+              "item": "manual:tmnt-mirage-v2-9",
+              "position": 9
+            },
+            {
+              "item": "manual:tmnt-mirage-v2-10",
+              "position": 10
+            },
+            {
+              "item": "manual:tmnt-mirage-v2-11",
+              "position": 11
+            },
+            {
+              "item": "manual:tmnt-mirage-v2-12",
+              "position": 12
+            },
+            {
+              "item": "manual:tmnt-mirage-v2-13",
+              "position": 13
+            }
+          ],
+          "name": "Volume 2 · Main Series"
+        },
+        {
+          "entries": [
+            {
+              "item": "manual:tmnt-mirage-teenage-mutant-ninja-turtles-flaming-carrot-1",
+              "position": 1
+            },
+            {
+              "item": "manual:tmnt-mirage-teenage-mutant-ninja-turtles-flaming-carrot-2",
+              "position": 2
+            },
+            {
+              "item": "manual:tmnt-mirage-teenage-mutant-ninja-turtles-flaming-carrot-3",
+              "position": 3
+            },
+            {
+              "item": "manual:tmnt-mirage-teenage-mutant-ninja-turtles-flaming-carrot-4",
+              "position": 4
+            },
+            {
+              "item": "manual:tmnt-mirage-minor-north-by-downeast-part-1-of-2",
+              "position": 5
+            },
+            {
+              "item": "manual:tmnt-mirage-minor-north-by-downeast-the-conclusion",
+              "position": 6
+            },
+            {
+              "item": "manual:tmnt-mirage-casey-jones-raphael-bodycount-1",
+              "position": 7
+            },
+            {
+              "item": "manual:tmnt-mirage-the-savage-dragon-tmnt-1",
+              "position": 8
+            },
+            {
+              "item": "manual:tmnt-mirage-tmnt-the-savage-dragon-1",
+              "position": 9
+            }
+          ],
+          "name": "Volume 2 · Minor Titles"
+        },
+        {
+          "entries": [
+            {
+              "item": "manual:tmnt-mirage-v3-1",
+              "position": 1
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-2",
+              "position": 2
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-3",
+              "position": 3
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-4",
+              "position": 4
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-5",
+              "position": 5
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-6",
+              "position": 6
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-7",
+              "position": 7
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-8",
+              "position": 8
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-9",
+              "position": 9
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-10",
+              "position": 10
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-11",
+              "position": 11
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-12",
+              "position": 12
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-13",
+              "position": 13
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-14",
+              "position": 14
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-15",
+              "position": 15
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-16",
+              "position": 16
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-17",
+              "position": 17
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-18",
+              "position": 18
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-19",
+              "position": 19
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-20",
+              "position": 20
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-21",
+              "position": 21
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-22",
+              "position": 22
+            },
+            {
+              "item": "manual:tmnt-mirage-v3-23",
+              "position": 23
+            }
+          ],
+          "name": "Volume 3 · Image Series"
+        },
+        {
+          "entries": [
+            {
+              "item": "manual:tmnt-mirage-bodycount-1",
+              "position": 1
+            },
+            {
+              "item": "manual:tmnt-mirage-bodycount-2",
+              "position": 2
+            },
+            {
+              "item": "manual:tmnt-mirage-bodycount-3",
+              "position": 3
+            },
+            {
+              "item": "manual:tmnt-mirage-bodycount-4",
+              "position": 4
+            }
+          ],
+          "name": "Volume 3 · Mini Series"
+        },
+        {
+          "entries": [
+            {
+              "item": "manual:tmnt-mirage-savage-dragon-2",
+              "position": 1
+            },
+            {
+              "item": "manual:tmnt-mirage-savage-dragon-2-r212",
+              "position": 2
+            },
+            {
+              "item": "manual:tmnt-mirage-savage-dragon-41",
+              "position": 3
+            },
+            {
+              "item": "manual:tmnt-mirage-crossover-the-savage-dragon-destroyer-duck-issue-1",
+              "position": 4
+            },
+            {
+              "item": "manual:tmnt-mirage-shattered-image-2",
+              "position": 5
+            },
+            {
+              "item": "manual:tmnt-mirage-crossover-gen-13-vol-2-13b",
+              "position": 6
+            },
+            {
+              "item": "manual:tmnt-mirage-mars-attacks-image-1",
+              "position": 7
+            },
+            {
+              "item": "manual:tmnt-mirage-big-bang-comics-10",
+              "position": 8
+            },
+            {
+              "item": "manual:tmnt-mirage-crossover-teenage-mutant-ninja-turtles-savage-dragon-playmates-pack-in-comic",
+              "position": 9
+            }
+          ],
+          "name": "Volume 3 · Supplemental/Crossover"
+        },
+        {
+          "entries": [
+            {
+              "item": "manual:tmnt-mirage-v4-1",
+              "position": 1
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-2",
+              "position": 2
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-3",
+              "position": 3
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-4",
+              "position": 4
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-5",
+              "position": 5
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-6",
+              "position": 6
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-7",
+              "position": 7
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-8",
+              "position": 8
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-9",
+              "position": 9
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-10",
+              "position": 10
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-11",
+              "position": 11
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-12",
+              "position": 12
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-13",
+              "position": 13
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-14",
+              "position": 14
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-15",
+              "position": 15
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-16",
+              "position": 16
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-17",
+              "position": 17
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-18",
+              "position": 18
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-19",
+              "position": 19
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-20",
+              "position": 20
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-21",
+              "position": 21
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-22",
+              "position": 22
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-23",
+              "position": 23
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-24",
+              "position": 24
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-25",
+              "position": 25
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-26",
+              "position": 26
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-27",
+              "position": 27
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-28",
+              "position": 28
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-29",
+              "position": 29
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-30",
+              "position": 30
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-31",
+              "position": 31
+            },
+            {
+              "item": "manual:tmnt-mirage-v4-32",
+              "position": 32
+            }
+          ],
+          "name": "Volume 4 · Main Series"
+        },
+        {
+          "entries": [
+            {
+              "item": "manual:tmnt-mirage-tales-v2-1",
+              "position": 1
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-2",
+              "position": 2
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-3",
+              "position": 3
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-4",
+              "position": 4
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-5",
+              "position": 5
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-6",
+              "position": 6
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-7",
+              "position": 7
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-8",
+              "position": 8
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-9",
+              "position": 9
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-10",
+              "position": 10
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-11",
+              "position": 11
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-12",
+              "position": 12
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-13",
+              "position": 13
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-14",
+              "position": 14
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-15",
+              "position": 15
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-16",
+              "position": 16
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-17",
+              "position": 17
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-18",
+              "position": 18
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-19",
+              "position": 19
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-20",
+              "position": 20
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-21",
+              "position": 21
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-22",
+              "position": 22
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-23",
+              "position": 23
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-24",
+              "position": 24
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-25",
+              "position": 25
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-26",
+              "position": 26
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-27",
+              "position": 27
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-28",
+              "position": 28
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-29",
+              "position": 29
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-30",
+              "position": 30
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-31",
+              "position": 31
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-32",
+              "position": 32
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-33",
+              "position": 33
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-34",
+              "position": 34
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-35",
+              "position": 35
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-36",
+              "position": 36
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-37",
+              "position": 37
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-38",
+              "position": 38
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-39",
+              "position": 39
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-40",
+              "position": 40
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-41",
+              "position": 41
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-42",
+              "position": 42
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-43",
+              "position": 43
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-44",
+              "position": 44
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-45",
+              "position": 45
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-46",
+              "position": 46
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-47",
+              "position": 47
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-48",
+              "position": 48
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-49",
+              "position": 49
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-50",
+              "position": 50
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-51",
+              "position": 51
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-52",
+              "position": 52
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-53",
+              "position": 53
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-54",
+              "position": 54
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-55",
+              "position": 55
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-56",
+              "position": 56
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-57",
+              "position": 57
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-58",
+              "position": 58
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-59",
+              "position": 59
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-60",
+              "position": 60
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-61",
+              "position": 61
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-62",
+              "position": 62
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-63",
+              "position": 63
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-64",
+              "position": 64
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-65",
+              "position": 65
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-66",
+              "position": 66
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-67",
+              "position": 67
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-68",
+              "position": 68
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-69",
+              "position": 69
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-v2-70",
+              "position": 70
+            }
+          ],
+          "name": "Volume 4 · Tales of the Teenage Mutant Ninja Turtles 2"
+        },
+        {
+          "entries": [
+            {
+              "item": "manual:tmnt-mirage-tales-of-leonardo-blind-sight-1",
+              "position": 1
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-of-leonardo-blind-sight-2",
+              "position": 2
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-of-leonardo-blind-sight-3",
+              "position": 3
+            },
+            {
+              "item": "manual:tmnt-mirage-tales-of-leonardo-blind-sight-4",
+              "position": 4
+            },
+            {
+              "item": "manual:tmnt-mirage-raphael-bad-moon-rising-1",
+              "position": 5
+            },
+            {
+              "item": "manual:tmnt-mirage-raphael-bad-moon-rising-2",
+              "position": 6
+            },
+            {
+              "item": "manual:tmnt-mirage-raphael-bad-moon-rising-3",
+              "position": 7
+            },
+            {
+              "item": "manual:tmnt-mirage-raphael-bad-moon-rising-4",
+              "position": 8
+            },
+            {
+              "item": "manual:tmnt-mirage-michelangelo-the-third-kind-1",
+              "position": 9
+            },
+            {
+              "item": "manual:tmnt-mirage-michelangelo-the-third-kind-2",
+              "position": 10
+            },
+            {
+              "item": "manual:tmnt-mirage-michelangelo-the-third-kind-3",
+              "position": 11
+            },
+            {
+              "item": "manual:tmnt-mirage-michelangelo-the-third-kind-4",
+              "position": 12
+            },
+            {
+              "item": "manual:tmnt-mirage-donatello-the-brain-thief-1",
+              "position": 13
+            },
+            {
+              "item": "manual:tmnt-mirage-donatello-the-brain-thief-2",
+              "position": 14
+            },
+            {
+              "item": "manual:tmnt-mirage-donatello-the-brain-thief-3",
+              "position": 15
+            },
+            {
+              "item": "manual:tmnt-mirage-donatello-the-brain-thief-4",
+              "position": 16
+            }
+          ],
+          "name": "Volume 4 · Mini Series"
+        },
+        {
+          "entries": [
+            {
+              "item": "manual:tmnt-mirage-tie-in-teenage-mutant-ninja-turtles-the-movie",
+              "position": 1
+            },
+            {
+              "item": "manual:tmnt-mirage-tie-in-teenage-mutant-ninja-turtles-the-secret-of-the-ooze-the-official-movie-adaptation",
+              "position": 2
+            },
+            {
+              "item": "manual:tmnt-mirage-tie-in-teenage-mutant-ninja-turtles-iii-the-turtles-are-back-in-time-see-the-list-of-tmnt-archie-comics",
+              "position": 3
+            },
+            {
+              "item": "manual:tmnt-mirage-tie-in-disposable-heroes",
+              "position": 4
+            },
+            {
+              "item": "manual:tmnt-mirage-tie-in-the-continuing-story-of-cowabunga-carl",
+              "position": 5
+            },
+            {
+              "item": "manual:tmnt-mirage-tie-in-strangers-in-the-night",
+              "position": 6
+            },
+            {
+              "item": "manual:tmnt-mirage-tie-in-bungle-in-the-jungle",
+              "position": 7
+            },
+            {
+              "item": "manual:tmnt-mirage-tie-in-five-to-one",
+              "position": 8
+            },
+            {
+              "item": "manual:tmnt-mirage-tie-in-tmnt-movie-adaptation",
+              "position": 9
+            }
+          ],
+          "name": "Volume 4 · Movie tie-ins"
+        }
+      ]
+    }
+  ]
+}

@@ -9,10 +9,10 @@
 import { buildFixtures } from "./fixtures/build.mjs";
 import { kingWorks } from "./fixtures/king-works.mjs";
 import { letterboxdList } from "./fixtures/letterboxd.mjs";
+import { mirageTab } from "./fixtures/mirage-tab.mjs";
 
 const RAW = "supabase/seed/raw";
-// One line per fixture; a raw file may feed more than one. Chapter 0.6 adds
-// the Mirage tab.
+// One line per fixture; a raw file may feed more than one.
 const SOURCES = [
   {
     raw: "letterboxd/stephen-king-watch-list.csv",
@@ -23,6 +23,11 @@ const SOURCES = [
     raw: "letterboxd/stephen-king-watch-list.csv",
     out: "king-books.json",
     build: kingWorks,
+  },
+  {
+    raw: "google-sheets/tmnt-mirage.csv",
+    out: "tmnt-mirage.json",
+    build: mirageTab,
   },
 ];
 
