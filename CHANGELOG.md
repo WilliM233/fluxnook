@@ -2,4 +2,9 @@
 
 One line per chapter, newest first. Release notes live in `docs/releases/`.
 
-- 0.1 Repo, House Rules, briefs, plan template (restart)
+- 0.6 Fixtures, comics: the TMNT Mirage tab as comics, collected editions with copies, backups in their hosts and read logs, a third rebuildable fixture ([note](docs/releases/0.6.md))
+- 0.5 Fixtures, books: the King works, their film adaptations and the Night Shift stories, as a second rebuildable fixture ([note](docs/releases/0.5.md))
+- 0.4 Fixtures, films: the Stephen King watch list as a committed, rebuildable fixture ([note](docs/releases/0.4.md))
+- 0.3 CI and the test harness: Actions on every PR, a database test, Playwright through the mail catcher ([note](docs/releases/0.3.md))
+- 0.2 Scaffold, Supabase local, magic-link sign-in, the empty nook ([note](docs/releases/0.2.md))
+- 0.1 Repo, House Rules, briefs, plan template (restart) ([note](docs/releases/0.1.md))

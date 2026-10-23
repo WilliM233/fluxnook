@@ -1,0 +1,13 @@
+name: stack
+description: The local Supabase stack, with only the services the gates use, and .env.local from .env.example.
+
+runs:
+  using: composite
+  steps:
+    # .env.example holds the CLI's fixed local defaults; CI needs no secrets.
+    - run: cp .env.example .env.local
+      shell: bash
+    # Kept: gotrue (sign-in), kong (the app's API URL), postgrest (pg_graphql
+    # for the exposure test), mailpit (magic links) and the database.
+    - run: npx supabase start -x studio,postgres-meta,imgproxy,edge-runtime,logflare,vector,realtime,storage-api,supavisor
+      shell: bash

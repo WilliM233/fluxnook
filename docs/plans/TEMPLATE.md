@@ -16,6 +16,8 @@ Issue: #<n> · Branch: `chapter/<vol>.<n>-<slug>` · Volume: <Volume name>
 
 **Browse.** What L does by hand before sign-off, as a short script: open this, do that, see this.
 
+**QA model.** `Opus` or `Fable`. Fable when the chapter opens a door: auth, visibility, migrations on content tables, import or export, anything that can lose or expose a person's data.
+
 **Out of scope.** Named so the Cartographer doesn't plan it and the Raccoon doesn't flag its absence.
 
 ## 1. Feasibility (Nookkeeper)

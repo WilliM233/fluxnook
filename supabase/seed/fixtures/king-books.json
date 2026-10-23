@@ -1,0 +1,726 @@
+{
+  "gaps": [
+    {
+      "item": "letterboxd:mic8",
+      "reason": "no source note"
+    }
+  ],
+  "items": [
+    {
+      "author": "Stephen King",
+      "form": "novel",
+      "id": "manual:carrie-1974",
+      "providers": {},
+      "source_note": "Novel: Carrie (1974)",
+      "title": "Carrie",
+      "type": "book",
+      "year": 1974
+    },
+    {
+      "author": "Stephen King",
+      "form": "novel",
+      "id": "manual:salems-lot-1975",
+      "providers": {},
+      "source_note": "Novel: Salem's Lot (1975)",
+      "title": "Salem's Lot",
+      "type": "book",
+      "year": 1975
+    },
+    {
+      "author": "Stephen King",
+      "form": "story",
+      "id": "manual:jerusalems-lot-1977",
+      "providers": {},
+      "source_note": "Short Story: Jerusalem's Lot, Night Shift (1977)",
+      "title": "Jerusalem's Lot",
+      "type": "book",
+      "year": 1977
+    },
+    {
+      "author": "Stephen King",
+      "form": "collection",
+      "id": "manual:night-shift-1977",
+      "providers": {},
+      "source_note": "Short Story: Jerusalem's Lot, Night Shift (1977)",
+      "title": "Night Shift",
+      "type": "book",
+      "year": 1977
+    },
+    {
+      "author": "Stephen King",
+      "form": "novel",
+      "id": "manual:the-shining-1977",
+      "providers": {},
+      "source_note": "Novel: The Shining (1977)",
+      "title": "The Shining",
+      "type": "book",
+      "year": 1977
+    },
+    {
+      "author": "Stephen King",
+      "form": "story",
+      "id": "manual:graveyard-shift-1977",
+      "providers": {},
+      "source_note": "Short Story: Graveyard Shift, Night Shift (1977)",
+      "title": "Graveyard Shift",
+      "type": "book",
+      "year": 1977
+    },
+    {
+      "author": "Stephen King",
+      "form": "story",
+      "id": "manual:night-surf-1977",
+      "providers": {},
+      "source_note": "Short Story: Night Surf, Night Shift (1977)",
+      "title": "Night Surf",
+      "type": "book",
+      "year": 1977
+    },
+    {
+      "author": "Stephen King",
+      "form": "story",
+      "id": "manual:i-am-the-doorway-1977",
+      "providers": {},
+      "source_note": "Short Story: I am the Doorway, Night Shift (1977)",
+      "title": "I am the Doorway",
+      "type": "book",
+      "year": 1977
+    },
+    {
+      "author": "Stephen King",
+      "form": "story",
+      "id": "manual:the-mangler-1977",
+      "providers": {},
+      "source_note": "Short Story: The Mangler, Night Shift (1977)",
+      "title": "The Mangler",
+      "type": "book",
+      "year": 1977
+    },
+    {
+      "author": "Stephen King",
+      "form": "story",
+      "id": "manual:the-boogeyman-1977",
+      "providers": {},
+      "source_note": "Short Story: The Boogeyman, Night Shift (1977)",
+      "title": "The Boogeyman",
+      "type": "book",
+      "year": 1977
+    },
+    {
+      "author": "Stephen King",
+      "form": "story",
+      "id": "manual:trucks-1977",
+      "providers": {},
+      "source_note": "Short Story: Trucks, Night Shift (1977)",
+      "title": "Trucks",
+      "type": "book",
+      "year": 1977
+    },
+    {
+      "author": "Stephen King",
+      "form": "story",
+      "id": "manual:sometimes-they-come-back-1977",
+      "providers": {},
+      "source_note": "Short Story: Sometimes They Come Back, Night Shift (1977)",
+      "title": "Sometimes They Come Back",
+      "type": "book",
+      "year": 1977
+    },
+    {
+      "author": "Stephen King",
+      "form": "story",
+      "id": "manual:quitters-inc-1977",
+      "providers": {},
+      "source_note": "Short Story: Quitters, Inc, Night Shift (1977)",
+      "title": "Quitters, Inc",
+      "type": "book",
+      "year": 1977
+    },
+    {
+      "author": "Stephen King",
+      "form": "story",
+      "id": "manual:the-ledge-1977",
+      "providers": {},
+      "source_note": "Short Story: The Ledge, Night Shift (1977)",
+      "title": "The Ledge",
+      "type": "book",
+      "year": 1977
+    },
+    {
+      "author": "Stephen King",
+      "form": "story",
+      "id": "manual:the-lawnmower-man-1977",
+      "providers": {},
+      "source_note": "Short Story: The Lawnmower Man, Night Shift (1977)",
+      "title": "The Lawnmower Man",
+      "type": "book",
+      "year": 1977
+    },
+    {
+      "author": "Stephen King",
+      "form": "story",
+      "id": "manual:i-know-what-you-need-1977",
+      "providers": {},
+      "source_note": "Short Story: I Know What You Need, Night Shift (1977)",
+      "title": "I Know What You Need",
+      "type": "book",
+      "year": 1977
+    },
+    {
+      "author": "Stephen King",
+      "form": "story",
+      "id": "manual:children-of-the-corn-1977",
+      "providers": {},
+      "source_note": "Short Story: Children of the Corn, Night Shift (1977)",
+      "title": "Children of the Corn",
+      "type": "book",
+      "year": 1977
+    },
+    {
+      "author": "Stephen King",
+      "form": "story",
+      "id": "manual:the-last-rung-on-the-ladder-1977",
+      "providers": {},
+      "source_note": "Short Story: The Last Rung on the Ladder, Night Shift (1977)",
+      "title": "The Last Rung on the Ladder",
+      "type": "book",
+      "year": 1977
+    },
+    {
+      "author": "Stephen King",
+      "form": "story",
+      "id": "manual:the-man-who-loved-flowers-1977",
+      "providers": {},
+      "source_note": "Short Story: The Man Who Loved Flowers, Night Shift (1977)",
+      "title": "The Man Who Loved Flowers",
+      "type": "book",
+      "year": 1977
+    },
+    {
+      "author": "Stephen King",
+      "form": "story",
+      "id": "manual:the-woman-in-the-room-1977",
+      "providers": {},
+      "source_note": "Short Story: The Woman in the Room, Night Shift (1977)",
+      "title": "The Woman in the Room",
+      "type": "book",
+      "year": 1977
+    },
+    {
+      "author": "Stephen King",
+      "form": "novel",
+      "id": "manual:the-stand-1978",
+      "providers": {},
+      "source_note": "Novel: The Stand (1978)",
+      "title": "The Stand",
+      "type": "book",
+      "year": 1978
+    },
+    {
+      "author": "Stephen King",
+      "form": "novel",
+      "id": "manual:the-dead-zone-1979",
+      "providers": {},
+      "source_note": "Novel: The Dead Zone (1979)",
+      "title": "The Dead Zone",
+      "type": "book",
+      "year": 1979
+    },
+    {
+      "author": "Stephen King",
+      "form": "novel",
+      "id": "manual:firestarter-1979",
+      "providers": {},
+      "source_note": "Novel: Firestarter (1979)",
+      "title": "Firestarter",
+      "type": "book",
+      "year": 1979
+    },
+    {
+      "author": "Stephen King",
+      "form": "novella",
+      "id": "manual:the-mist-1980",
+      "providers": {},
+      "source_note": "Novella: The Mist (1980)",
+      "title": "The Mist",
+      "type": "book",
+      "year": 1980
+    },
+    {
+      "author": "Stephen King",
+      "form": "novel",
+      "id": "manual:cujo-1981",
+      "providers": {},
+      "source_note": "Novel: Cujo (1981)",
+      "title": "Cujo",
+      "type": "book",
+      "year": 1981
+    },
+    {
+      "author": "Stephen King",
+      "form": "series",
+      "id": "manual:the-dark-tower-1981",
+      "providers": {},
+      "source_note": "Series: The Dark Tower (1981)",
+      "title": "The Dark Tower",
+      "type": "book",
+      "year": 1981
+    },
+    {
+      "author": "Richard Bachman",
+      "form": "novel",
+      "id": "manual:the-running-man-1981",
+      "providers": {},
+      "source_note": "Bachman Novel: The Running Man (1981)",
+      "title": "The Running Man",
+      "type": "book",
+      "year": 1981
+    }
+  ],
+  "relations": [
+    {
+      "from": "letterboxd:20ZQ",
+      "to": "manual:carrie-1974",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:20ZG",
+      "to": "manual:carrie-1974",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:20Zw",
+      "to": "manual:carrie-1974",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:4kC2",
+      "to": "manual:carrie-1974",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1U58",
+      "to": "manual:salems-lot-1975",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1r4U",
+      "to": "manual:salems-lot-1975",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:19SC",
+      "to": "manual:salems-lot-1975",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:xQHw",
+      "to": "manual:salems-lot-1975",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:xQHw",
+      "to": "manual:jerusalems-lot-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:sqU0",
+      "to": "manual:salems-lot-1975",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:29Nu",
+      "to": "manual:the-shining-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:3AKk",
+      "to": "manual:the-shining-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1FzW",
+      "to": "manual:graveyard-shift-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:hAqs",
+      "to": "manual:night-surf-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:geFS",
+      "to": "manual:i-am-the-doorway-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:flFe",
+      "to": "manual:i-am-the-doorway-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:jXi6",
+      "to": "manual:i-am-the-doorway-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1PU6",
+      "to": "manual:the-mangler-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1s0u",
+      "to": "manual:the-mangler-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1p6k",
+      "to": "manual:the-mangler-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:4dQ2",
+      "to": "manual:the-boogeyman-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:7ota",
+      "to": "manual:the-boogeyman-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:jnna",
+      "to": "manual:the-boogeyman-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1XnO",
+      "to": "manual:trucks-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1Jd6",
+      "to": "manual:trucks-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1r0S",
+      "to": "manual:sometimes-they-come-back-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1r0I",
+      "to": "manual:sometimes-they-come-back-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1r0y",
+      "to": "manual:sometimes-they-come-back-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1VYI",
+      "to": "manual:quitters-inc-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1VYI",
+      "to": "manual:the-ledge-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:8Gm4",
+      "to": "manual:the-lawnmower-man-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1WVK",
+      "to": "manual:the-lawnmower-man-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1TE2",
+      "to": "manual:the-lawnmower-man-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:HAvu",
+      "to": "manual:i-know-what-you-need-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:b64",
+      "to": "manual:children-of-the-corn-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1ViW",
+      "to": "manual:children-of-the-corn-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1vco",
+      "to": "manual:children-of-the-corn-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1vce",
+      "to": "manual:children-of-the-corn-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1vc4",
+      "to": "manual:children-of-the-corn-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1vbU",
+      "to": "manual:children-of-the-corn-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1vbK",
+      "to": "manual:children-of-the-corn-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1vbA",
+      "to": "manual:children-of-the-corn-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1vbq",
+      "to": "manual:children-of-the-corn-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:2tbA",
+      "to": "manual:children-of-the-corn-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:fRHw",
+      "to": "manual:children-of-the-corn-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:qd8o",
+      "to": "manual:children-of-the-corn-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:i9gC",
+      "to": "manual:the-last-rung-on-the-ladder-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:sKEG",
+      "to": "manual:the-man-who-loved-flowers-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:EqiO",
+      "to": "manual:the-man-who-loved-flowers-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:EqoM",
+      "to": "manual:the-man-who-loved-flowers-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:9qQ",
+      "to": "manual:the-woman-in-the-room-1977",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1PZU",
+      "to": "manual:the-stand-1978",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:rHIe",
+      "to": "manual:the-stand-1978",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1U6g",
+      "to": "manual:the-dead-zone-1979",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:bR0O",
+      "to": "manual:the-dead-zone-1979",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1TII",
+      "to": "manual:firestarter-1979",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1EwC",
+      "to": "manual:firestarter-1979",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:jnA4",
+      "to": "manual:firestarter-1979",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:22r2",
+      "to": "manual:the-mist-1980",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:1W8o",
+      "to": "manual:cujo-1981",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:bU66",
+      "to": "manual:the-dark-tower-1981",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "letterboxd:29q6",
+      "to": "manual:the-running-man-1981",
+      "type": "adaptation-of"
+    },
+    {
+      "from": "manual:jerusalems-lot-1977",
+      "to": "manual:night-shift-1977",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:graveyard-shift-1977",
+      "to": "manual:night-shift-1977",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:night-surf-1977",
+      "to": "manual:night-shift-1977",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:i-am-the-doorway-1977",
+      "to": "manual:night-shift-1977",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:the-mangler-1977",
+      "to": "manual:night-shift-1977",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:the-boogeyman-1977",
+      "to": "manual:night-shift-1977",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:trucks-1977",
+      "to": "manual:night-shift-1977",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:sometimes-they-come-back-1977",
+      "to": "manual:night-shift-1977",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:quitters-inc-1977",
+      "to": "manual:night-shift-1977",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:the-ledge-1977",
+      "to": "manual:night-shift-1977",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:the-lawnmower-man-1977",
+      "to": "manual:night-shift-1977",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:i-know-what-you-need-1977",
+      "to": "manual:night-shift-1977",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:children-of-the-corn-1977",
+      "to": "manual:night-shift-1977",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:the-last-rung-on-the-ladder-1977",
+      "to": "manual:night-shift-1977",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:the-man-who-loved-flowers-1977",
+      "to": "manual:night-shift-1977",
+      "type": "contained-in"
+    },
+    {
+      "from": "manual:the-woman-in-the-room-1977",
+      "to": "manual:night-shift-1977",
+      "type": "contained-in"
+    }
+  ],
+  "shelves": [
+    {
+      "date": "2024-04-01",
+      "description": "The works the list's notes name, less the stories (reached through Night Shift), by the year the notes give and then by the position of the first film whose first note line names the work or its collection.",
+      "entries": [
+        {
+          "item": "manual:carrie-1974",
+          "position": 1
+        },
+        {
+          "item": "manual:salems-lot-1975",
+          "position": 2
+        },
+        {
+          "item": "manual:the-shining-1977",
+          "position": 3
+        },
+        {
+          "item": "manual:night-shift-1977",
+          "position": 4
+        },
+        {
+          "item": "manual:the-stand-1978",
+          "position": 5
+        },
+        {
+          "item": "manual:the-dead-zone-1979",
+          "position": 6
+        },
+        {
+          "item": "manual:firestarter-1979",
+          "position": 7
+        },
+        {
+          "item": "manual:the-mist-1980",
+          "position": 8
+        },
+        {
+          "item": "manual:cujo-1981",
+          "position": 9
+        },
+        {
+          "item": "manual:the-dark-tower-1981",
+          "position": 10
+        },
+        {
+          "item": "manual:the-running-man-1981",
+          "position": 11
+        }
+      ],
+      "name": "Stephen King, publication order",
+      "url": "https://boxd.it/upKRw"
+    }
+  ]
+}

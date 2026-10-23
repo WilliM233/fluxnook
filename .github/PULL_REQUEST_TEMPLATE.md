@@ -2,6 +2,8 @@
 
 Closes #<issue>. Plan: `docs/plans/<vol>.<n>-<slug>.md`
 
+`Closes`: the Afterword lands as the branch's last commit, so the merge closes the issue, and the keyword is what links this PR on the issue's Development panel.
+
 ## Handoff
 
 - [ ] Every step in section 3 landed, or its deviation is named in section 5
@@ -12,13 +14,13 @@ Closes #<issue>. Plan: `docs/plans/<vol>.<n>-<slug>.md`
 
 ## Browse
 
-Browse line from section 0, with what L saw.
+Section 5's Browse block: Git Bash commands with the expected output under each. L pastes what differed, if anything, below it.
 
 ## Review
 
-- Nookkeeper: Signed off / Signed off with notes / Not yet
+- Nookkeeper: <Signed off / Signed off with notes / Not yet, from the plan's History, filled by the Binder at the Afterword commit>
 - L: merge
 
 ## Afterword
 
-Filed on the issue before close.
+Filed on the issue before close. Its edits (House Rules, skills, briefs) are the branch's last commit.
