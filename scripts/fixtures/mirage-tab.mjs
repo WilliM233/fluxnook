@@ -18,6 +18,14 @@
  * `year` (its first four-digit number) and `month` (a leading month name);
  * the cell is kept in `source_date`, and a cell with no year is a gap.
  *
+ * Then the collection. A backup is contained-in its host (`Name`): the Vol 1
+ * issue when the cell is exactly `Teenage Mutant Ninja Turtles #<n>` and the
+ * sheet lists it, else an `anthology` item of that cell. An owned row names
+ * its Ultimate Collection in `Format`; each collection is a `collected` work
+ * with a hardcover edition whose contents are those rows, and a copy of it.
+ * A read row is a `done` occurrence. Items come out rows first, in sheet
+ * order, then anthologies, then collections.
+ *
  * Ids are `manual:tmnt-mirage-<key>-<n>` for a numbered row and
  * `manual:tmnt-mirage-<section>-<title>` otherwise. A repeated id stops the
  * build, except in Supplemental/Crossover, where the sheet repeats a row and
@@ -137,14 +145,18 @@ const RULES = {
   // Kind null: a backup is a story, not a run; its host is in Name.
   "Short Stories": {
     kind: null,
-    read: ({ Issue, Published }) => ({
-      title: Issue,
-      date: Published,
-      form: "backup",
-      series: null,
-      number: null,
-      key: "backup",
-    }),
+    read: ({ Issue, Name, Published }, fail) => {
+      if (Name === "") fail("is a backup with no host in Name");
+      return {
+        title: Issue,
+        date: Published,
+        host: Name,
+        form: "backup",
+        series: null,
+        number: null,
+        key: "backup",
+      };
+    },
   },
   // Slid left: the title is in Issue, the date in Name.
   "Minor Titles": { kind: "minor", read: slid("minor") },
@@ -200,6 +212,9 @@ export function mirageTab(text, rawPath) {
   const sections = [];
   const gaps = [];
   const recordOf = new Map();
+  const backups = [];
+  const collected = new Map();
+  const occurrences = [];
   let volume;
   let section;
 
@@ -243,6 +258,15 @@ export function mirageTab(text, rawPath) {
     if (Owned !== "TRUE" && Owned !== "FALSE") {
       fail(`Owned ${JSON.stringify(Owned)} is not TRUE or FALSE`);
     }
+    const collection = /^Ultimate Collection ([1-5])$/.exec(Format);
+    if (
+      (Owned === "TRUE") !== Boolean(collection) ||
+      (!collection && Format !== "")
+    ) {
+      fail(
+        `Owned ${Owned} with Format ${JSON.stringify(Format)}; an owned row names Ultimate Collection 1 to 5, any other row nothing`,
+      );
+    }
     const { kind, read, repeats } = section.rule;
     const row = read({ Issue, Name, Published }, fail, section.run);
     if (row.title === "") fail("has an empty title");
@@ -273,10 +297,94 @@ export function mirageTab(text, rawPath) {
     });
     if (date.year === null) gaps.push({ item: id, reason: "no readable year" });
     section.entries.push({ item: id, position: section.entries.length + 1 });
+    if (row.host !== undefined) {
+      backups.push({ id, host: row.host, date, cell: row.date, record: i });
+    }
+    if (collection) {
+      const n = Number(collection[1]);
+      collected.set(n, [...(collected.get(n) ?? []), id]);
+    }
+    if (Read === "TRUE") occurrences.push({ item: id, status: "done" });
   }
 
+  // Hosts resolve after the walk, so a backup may come before its issue. A
+  // host is a Vol 1 issue only when the cell is exactly that issue's name and
+  // the sheet lists it (A6); any other cell, reprints and listed rows of
+  // other sections included, is an anthology of that exact text (Q2).
+  const anthologies = new Map();
+  const relations = backups.map(({ id, host, date, cell, record }) => {
+    const issue = /^Teenage Mutant Ninja Turtles #(\d+)$/.exec(host);
+    const listed = issue && `manual:tmnt-mirage-v1-${issue[1]}`;
+    if (listed && recordOf.has(listed)) {
+      return { type: "contained-in", from: id, to: listed };
+    }
+    const seen = anthologies.get(host);
+    if (seen === undefined) {
+      const hostId = `manual:tmnt-mirage-host-${slug(host)}`;
+      if (recordOf.has(hostId)) {
+        failAt(record)(
+          `host ${JSON.stringify(host)} would be ${hostId}, which record ${recordOf.get(hostId)} already is`,
+        );
+      }
+      recordOf.set(hostId, record);
+      anthologies.set(host, {
+        record,
+        item: {
+          id: hostId,
+          type: "comic",
+          title: host,
+          ...date,
+          source_date: cell,
+          source_note: "",
+          providers: {},
+          form: "anthology",
+          series: null,
+          series_kind: null,
+          number: null,
+        },
+      });
+    } else if (seen.item.year !== date.year) {
+      failAt(record)(
+        `host ${JSON.stringify(host)} is dated ${date.year} here and ${seen.item.year} at record ${seen.record}`,
+      );
+    }
+    return {
+      type: "contained-in",
+      from: id,
+      to: anthologies.get(host).item.id,
+    };
+  });
+
+  // An Ultimate Collection is a work whose edition collects the rows that
+  // name it; owning a row is "owned via" the copy of that edition, never a
+  // contained-in. Its date is the edition's, which the sheet doesn't hold.
+  const numbers = [...collected.keys()].sort((a, b) => a - b);
+  const collections = numbers.map((n) => ({
+    id: `manual:tmnt-ultimate-collection-${n}`,
+    type: "comic",
+    title: `Ultimate Collection ${n}`,
+    year: null,
+    source_date: "",
+    source_note: "",
+    providers: {},
+    form: "collected",
+    series: null,
+    series_kind: null,
+    number: null,
+  }));
+  const editions = numbers.map((n) => ({
+    id: `edition:tmnt-ultimate-collection-${n}-hardcover`,
+    item: `manual:tmnt-ultimate-collection-${n}`,
+    format: "hardcover",
+    contents: collected.get(n),
+  }));
+
   return {
-    items,
+    items: [
+      ...items,
+      ...[...anthologies.values()].map(({ item }) => item),
+      ...collections,
+    ],
     shelves: [
       {
         name: SHELF_NAME,
@@ -285,10 +393,10 @@ export function mirageTab(text, rawPath) {
         sections: sections.map(({ name, entries }) => ({ name, entries })),
       },
     ],
-    relations: [],
-    editions: [],
-    copies: [],
-    occurrences: [],
+    relations,
+    editions,
+    copies: editions.map(({ id }) => ({ edition: id, note: "" })),
+    occurrences,
     gaps,
   };
 }

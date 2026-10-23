@@ -386,3 +386,185 @@ describe("mirageTab, the rows", () => {
     ]);
   });
 });
+
+describe("mirageTab, the collection", () => {
+  const SHORTS = "Volume 1,Short Stories,,,,";
+  const backup = (title: string, host: string, date = '"March, 1986"') =>
+    `FALSE,${title},${host},${date},FALSE,`;
+  const ofForm = (tab: { items: { form: string }[] }, form: string) =>
+    tab.items.filter((item) => item.form === form);
+
+  it("puts a backup in the Vol 1 issue its host names, when the sheet lists it", () => {
+    const issue = 'FALSE,#7,All is Revealed,"March, 1986",FALSE,';
+    const host = backup(
+      "You Had to Be There",
+      "Teenage Mutant Ninja Turtles #7",
+    );
+    const relation = {
+      type: "contained-in",
+      from: "manual:tmnt-mirage-backup-you-had-to-be-there",
+      to: "manual:tmnt-mirage-v1-7",
+    };
+    for (const rows of [
+      [V1_MAIN, issue, SHORTS, host],
+      [SHORTS, host, "Volume 1,Main Series,,,,", issue],
+    ]) {
+      const tab = build(rows);
+      expect(tab.relations).toEqual([relation]);
+      expect(ofForm(tab, "anthology")).toEqual([]);
+    }
+    const alone = build([SHORTS, host]);
+    expect(alone.relations).toEqual([
+      {
+        ...relation,
+        to: "manual:tmnt-mirage-host-teenage-mutant-ninja-turtles-7",
+      },
+    ]);
+    expect(ofForm(alone, "anthology")).toHaveLength(1);
+  });
+
+  it("makes one anthology per host cell, exact text, after the rows", () => {
+    const tab = build([
+      SHORTS,
+      backup("A", "Shell Shock", '"December, 1989"'),
+      backup("B", "Shell Shock", '"December, 1989"'),
+      backup("C", "Gobbledygook (vol. 2) #1", '"December, 1986"'),
+      "Volume 1,Minor Titles,,,,",
+      'FALSE,Shell Shock,"December, 1989",,FALSE,',
+      'FALSE,Gobbledygook (Vol. 2) #1,"December, 1986",,FALSE,',
+    ]);
+    const shellShock = {
+      id: "manual:tmnt-mirage-host-shell-shock",
+      type: "comic",
+      form: "anthology",
+      title: "Shell Shock",
+      year: 1989,
+      month: 12,
+      source_date: "December, 1989",
+      source_note: "",
+      series: null,
+      series_kind: null,
+      number: null,
+      providers: {},
+    };
+    // As A6 is written (Q2): a host that is also a listed row still gets its
+    // anthology, and case is not folded.
+    expect(ofForm(tab, "anthology")).toEqual([
+      shellShock,
+      expect.objectContaining({
+        id: "manual:tmnt-mirage-host-gobbledygook-vol-2-1",
+        title: "Gobbledygook (vol. 2) #1",
+      }),
+    ]);
+    expect(
+      tab.items.slice(5).map(({ form }: { form: string }) => form),
+    ).toEqual(["anthology", "anthology"]);
+    expect(
+      tab.relations.filter(({ to }: { to: string }) => to === shellShock.id),
+    ).toHaveLength(2);
+    expect(tab.items).toContainEqual(
+      expect.objectContaining({ id: "manual:tmnt-mirage-minor-shell-shock" }),
+    );
+  });
+
+  it("stops on a host whose backups disagree on its year", () => {
+    expect(() =>
+      build([
+        SHORTS,
+        backup("A", "Shell Shock", '"December, 1989"'),
+        backup("B", "Shell Shock", '"January, 1990"'),
+      ]),
+    ).toThrow(/record 4: .*Shell Shock.*1990.*1989/);
+  });
+
+  it("makes each Ultimate Collection a collected work with an edition and a copy", () => {
+    const owned = (n: number, uc: number) =>
+      `FALSE,#${n},T,"May, 1984",TRUE,Ultimate Collection ${uc}`;
+    const tab = build([V1_MAIN, owned(1, 2), owned(2, 1), owned(3, 1)]);
+    expect(tab.items.at(-2)).toEqual({
+      id: "manual:tmnt-ultimate-collection-1",
+      type: "comic",
+      form: "collected",
+      title: "Ultimate Collection 1",
+      year: null,
+      source_date: "",
+      source_note: "",
+      series: null,
+      series_kind: null,
+      number: null,
+      providers: {},
+    });
+    expect(tab.items.at(-1).id).toBe("manual:tmnt-ultimate-collection-2");
+    expect(tab.editions).toEqual([
+      {
+        id: "edition:tmnt-ultimate-collection-1-hardcover",
+        item: "manual:tmnt-ultimate-collection-1",
+        format: "hardcover",
+        contents: ["manual:tmnt-mirage-v1-2", "manual:tmnt-mirage-v1-3"],
+      },
+      {
+        id: "edition:tmnt-ultimate-collection-2-hardcover",
+        item: "manual:tmnt-ultimate-collection-2",
+        format: "hardcover",
+        contents: ["manual:tmnt-mirage-v1-1"],
+      },
+    ]);
+    expect(tab.copies).toEqual([
+      { edition: "edition:tmnt-ultimate-collection-1-hardcover", note: "" },
+      { edition: "edition:tmnt-ultimate-collection-2-hardcover", note: "" },
+    ]);
+    // A collection's date is its edition's, which the sheet doesn't hold.
+    expect(tab.gaps).toEqual([]);
+    for (const [owns, format] of [
+      ["TRUE", ""],
+      ["FALSE", "Ultimate Collection 1"],
+      ["TRUE", "Ultimate Collection 9"],
+    ]) {
+      expect(
+        () => build([V1_MAIN, `FALSE,#1,T,"May, 1984",${owns},${format}`]),
+        `${owns} ${format}`,
+      ).toThrow(`${RAW}: record 3:`);
+    }
+  });
+
+  it("makes a done occurrence of every read row, in sheet order", () => {
+    const tab = build([
+      V1_MAIN,
+      'TRUE,#2,B,"May, 1984",FALSE,',
+      'FALSE,#1,A,"May, 1984",FALSE,',
+      "Volume 1,Micro Series,,,,",
+      'TRUE,Raphael,"Me, Myself and I","April, 1985",FALSE,',
+      SHORTS,
+      backup("You Had to Be There", "Host").replace("FALSE", "TRUE"),
+    ]);
+    expect(tab.occurrences).toEqual(
+      [
+        "manual:tmnt-mirage-v1-2",
+        "manual:tmnt-mirage-micro-raphael-me-myself-and-i",
+        "manual:tmnt-mirage-backup-you-had-to-be-there",
+      ].map((item) => ({ item, status: "done" })),
+    );
+  });
+
+  it("orders items rows, anthologies, collections; only backups have relations", () => {
+    const tab = build([
+      V1_MAIN,
+      'TRUE,#1,A,"May, 1984",TRUE,Ultimate Collection 1',
+      SHORTS,
+      backup("Zebra", "Host"),
+    ]);
+    expect(tab.items.map(({ form }: { form: string }) => form)).toEqual([
+      "issue",
+      "backup",
+      "anthology",
+      "collected",
+    ]);
+    expect(tab.relations).toEqual([
+      {
+        type: "contained-in",
+        from: "manual:tmnt-mirage-backup-zebra",
+        to: "manual:tmnt-mirage-host-host",
+      },
+    ]);
+  });
+});
