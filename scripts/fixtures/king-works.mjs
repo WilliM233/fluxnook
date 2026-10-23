@@ -73,6 +73,7 @@ export function kingWorks(text, rawPath) {
   const works = new Map();
   const collectionOf = new Map();
   const collectionYear = new Map();
+  const workYear = new Map();
   const firstNamed = new Map();
   const contained = new Set();
   const adaptations = [];
@@ -121,6 +122,16 @@ export function kingWorks(text, rawPath) {
       };
 
       const { form, author, title, collection, year } = parseLine(line, fail);
+      // A work has one year, its first publication as the notes give it; a
+      // second year for the same title would be an edition, which this
+      // fixture doesn't model, so it stops the build like a collection does.
+      const workDated = workYear.get(slug(title));
+      if (workDated !== undefined && workDated !== year) {
+        fail(
+          `dates ${JSON.stringify(title)} ${year}; an earlier line has ${workDated}`,
+        );
+      }
+      workYear.set(slug(title), year);
       const id = `manual:${slug(title)}-${year}`;
       if (inNote.has(id)) fail(`names ${id} again in the same note`);
       inNote.add(id);

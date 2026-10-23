@@ -56,7 +56,13 @@ try {
   mkdirSync(out, { recursive: true });
   for (const source of SOURCES) {
     const rawPath = `${RAW}/${source.raw}`;
-    const data = source.build(readFileSync(rawPath, "utf8"), rawPath);
+    // Two fixtures can share a raw file, so an error names the one being built.
+    let data;
+    try {
+      data = source.build(readFileSync(rawPath, "utf8"), rawPath);
+    } catch (error) {
+      throw new Error(`${source.out}: ${error.message}`);
+    }
     writeFileSync(join(out, source.out), serializeFixture(data), "utf8");
     console.log(
       `wrote ${out}/${source.out} (${data.items.length} items, ${data.shelves.length} shelves)`,
