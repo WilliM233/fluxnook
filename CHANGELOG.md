@@ -2,6 +2,7 @@
 
 One line per chapter, newest first. Release notes live in `docs/releases/`.
 
+- 0.5 Fixtures, books: the King works, their film adaptations and the Night Shift stories, as a second rebuildable fixture ([note](docs/releases/0.5.md))
 - 0.4 Fixtures, films: the Stephen King watch list as a committed, rebuildable fixture ([note](docs/releases/0.4.md))
 - 0.3 CI and the test harness: Actions on every PR, a database test, Playwright through the mail catcher ([note](docs/releases/0.3.md))
 - 0.2 Scaffold, Supabase local, magic-link sign-in, the empty nook ([note](docs/releases/0.2.md))

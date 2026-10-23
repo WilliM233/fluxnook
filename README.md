@@ -59,17 +59,26 @@ Tests that sign in should import `test` and `expect` from `tests/e2e/harness/sig
 
 ## Fixtures
 
-`supabase/seed` holds the acceptance data every later chapter is checked against. Today that is L's Stephen King watch list from Letterboxd: 61 films and one shelf.
+`supabase/seed` holds the acceptance data every later chapter is checked against. Today that is L's Stephen King watch list from Letterboxd, built into two files from the one raw CSV: `king-films.json` (61 films, one shelf) and `king-books.json` (27 book items, 78 relations, one shelf, one gap).
 
 - `supabase/seed/raw/<source>/`: exports exactly as their source wrote them. Never edit one by hand. Each has a row in `supabase/seed/raw/README.md`.
 - `supabase/seed/fixtures/<name>.json`: generated, committed, never edited. `npm run fixtures:build` writes it. A second run leaves `git status` clean.
-- `src/fixtures/shape.ts`: the Zod shape of a fixture file. Item ids are `<source>:<key>`; the King films are `letterboxd:<boxd key>`.
+- `src/fixtures/shape.ts`: the Zod shape of a fixture file. Item ids are `<source>:<key>`; the King films are `letterboxd:<boxd key>`. An item with no provider is `manual:<slug>-<year>` with `providers: {}` (`manual:salems-lot-1975`; apostrophes and accents are dropped from the slug).
 
-`npm test` goes red when a fixture disagrees with the shape or with a fresh build of its raw file (`tests/unit/fixtures.test.ts`). The fresh build goes to `node_modules/.cache/fixtures`; no test writes to the repo.
+Items are a `film` or a `book`. A book has an `author` and a `form`: `novel`, `novella`, `collection`, `story` or `series`. A short story is a book with form `story`; Night Shift is the `collection` its 16 stories are in. The King notes name the works; `scripts/fixtures/king-works.mjs` reads them out of the films' `source_note`s.
 
-The build stops, naming the raw file and record, when an export changed shape: different headers, a non-empty `Tags`, a URL that isn't `https://boxd.it/<key>`, a Year or Position that isn't a whole number, a film listed twice with different data, or a list with no films. It never drops a row quietly. A hand-edited raw file shows up as a red byte compare, not as a fix.
+A file may also carry:
 
-Adding a raw file: put it under `supabase/seed/raw/<source>/`, add its row to `supabase/seed/raw/README.md`, add a `SOURCES` line in `scripts/fixtures-build.mjs` (and `scripts/fixtures/<source>.mjs` if the source is new), run `npm run fixtures:build`, and commit the raw file and its JSON together. The CSV reader is `scripts/fixtures/csv.mjs`, written in-repo; no package was added.
+- `relations`: `{ type, from, to }`, `type` being `adaptation-of` (from the adaptation to its source) or `contained-in` (from the part to the whole). Either end may be an item in another file: `king-books.json` holds the relations, and its `adaptation-of` ones start in `king-films.json`.
+- `gaps`: `{ item, reason }`, an item the raw file gave nothing to build from. Recorded, not filled in, and not a relation. Today: The Long Walk (`letterboxd:mic8`), "no source note".
+
+Both read as empty when absent. A work has one year, the one its note gives; a second year for the same title stops the build.
+
+`npm test` goes red when a fixture disagrees with the shape or with a fresh build of its raw file (`tests/unit/fixtures.test.ts`). The same file checks every fixture together: no id is defined in two files, and every relation endpoint, shelf entry and gap names an item in some file. The shape alone can't see across files. The fresh build goes to `node_modules/.cache/fixtures`; no test writes to the repo.
+
+The build stops, naming the raw file and record, when an export changed shape: different headers, a non-empty `Tags`, a URL that isn't `https://boxd.it/<key>`, a Year or Position that isn't a whole number, a film listed twice with different data, or a list with no films. The books build also stops, naming the fixture, raw file, record and note line, on a note line it can't read, a story with no collection, two lines that disagree about one work or its year, a line repeated within one note, or a shelf work no first note line names. It never drops a row quietly. A hand-edited raw file shows up as a red byte compare, not as a fix.
+
+Adding a raw file: put it under `supabase/seed/raw/<source>/`, add its row to `supabase/seed/raw/README.md`, add a `SOURCES` line in `scripts/fixtures-build.mjs` per fixture (a raw file may feed more than one; builders live in `scripts/fixtures/<name>.mjs`, and a new source needs its own), run `npm run fixtures:build`, and commit the raw file and its JSON together. The CSV reader is `scripts/fixtures/csv.mjs`, written in-repo; no package was added.
 
 ## Where things are
 
@@ -83,7 +92,7 @@ Adding a raw file: put it under `supabase/seed/raw/<source>/`, add its row to `s
 - `tests/unit`, `tests/db`, `tests/e2e`: Vitest, Vitest against Postgres, and Playwright
 - `tests/e2e/harness`: `signedIn`, a Playwright fixture that gives a spec a page signed in as a brand-new user. Its doc comment is the contract
 - `scripts/db-check.mjs`: the script behind `npm run db:check`
-- `scripts/fixtures-build.mjs`, `scripts/fixtures/`: the script behind `npm run fixtures:build`, its CSV reader and the Letterboxd list builder
+- `scripts/fixtures-build.mjs`, `scripts/fixtures/`: the script behind `npm run fixtures:build`, its CSV reader, the Letterboxd list builder and the King works builder
 - `.github/`: the workflows and the two composite actions they share
 
 ## Docs
