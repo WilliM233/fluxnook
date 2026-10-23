@@ -18,7 +18,7 @@ The plan file. The diff against `dev`. The current `README.md` and everything un
 - **docs/releases/<vol>.<n>.md**: the release note for this chapter, in the house shape:
   - Three to six lines of what a person using the nook can now do, in plain words. Written for them, not for us.
   - `Under the floorboards`: what changed technically, for the team. Short.
-  - `Not yet`: what this chapter deliberately left out, with the Volume it's waiting for.
+  - `Not yet`: what this chapter deliberately left out, with the Volume it's waiting for. An item that is L's by the plan's Hands line is written as done at sign-off, not as pending; it is done before anyone reads the note.
   - `Thanks to`: the seats that touched it. Yes, including the Raccoon.
 - **CHANGELOG.md**: one line per chapter, newest first, linking the release note.
 

@@ -52,8 +52,8 @@ Exit: a user exists, logs in locally, sees an empty nook. The team can run a cha
 - Ch 2: Scaffold the stack, Supabase local, auth, the empty nook page. Done, v0.0.0-ch.2 (#50, PR #51)
 - Ch 3: CI and the test harness: Actions on every PR, Supabase local in the runner, Playwright through the mail catcher, a signed-in test fixture, a database test, nightly full Playwright on dev. Done, v0.0.0-ch.3 (#52, PR #53)
 - Ch 4: Fixtures, films: the fixture convention (raw export in, script, normalized JSON out, Zod shape checked in CI) built on the King Letterboxd list, the flattest of the three inputs. Done, v0.0.0-ch.4 (#54, PR #55)
-- Ch 5: Fixtures, books: the King works from the list's descriptions, in publication order, with adaptation-of and contained-in (story inside Night Shift) relations. Next
-- Ch 6: Fixtures, comics: the TMNT Mirage tab as series, issues, collected editions with contents, owned-via and read flags
+- Ch 5: Fixtures, books: the King works from the list's descriptions, in publication order, with adaptation-of and contained-in (story inside Night Shift) relations. Done, v0.0.0-ch.5 (#56, PR #57)
+- Ch 6: Fixtures, comics: the TMNT Mirage tab as series, issues, collected editions with contents, owned-via and read flags. Next
 - Fixtures are data files until Volume 1 Ch 1 adds the tables; loading them is an acceptance line of that chapter
 
 ### Volume 1: Alpha
@@ -95,6 +95,7 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## Calls made (with reason)
 
+- 2026-10-23 A work carries its original publication date; an edition carries its own (a book first published in 1892, the copy in hand from 1998). A fixture's `year` on a book is the work's year as the note gives it, and a second year for the same title stops the build; edition dates wait for editions (Volume 1 Ch 1) and provider dates (Ch 3). From the Ch 0.5 Raccoon's S2: without the rule a year typo silently forked a work into two shelf entries
 - 2026-10-23 A short story is a `book` item with a `form` (novel, novella, collection, story, series), not its own type; Night Shift is a `collection` item its stories are contained-in. One type, form is metadata
 - 2026-10-23 "Series: The Dark Tower (1981)" is a `book` with form `series` until the franchise entity exists in Volume 1; as-is rules out turning it into The Gunslinger
 - 2026-10-23 Works with no provider get `manual:<slug>-<year>` ids; manual entry is the product's fallback path and that is what these are. Open Library ids arrive as providers in Volume 1 Ch 3, not as ids
@@ -140,6 +141,7 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## History
 
+- 2026-10-23 Ch 0.5 closed; Ch 0.6 is next. Edition-date call added from the Afterword
 - 2026-10-23 Ch 0.5 design talk: eight calls on works, ids, relations and the books shelf; the fixture-order open call closed (films landed first). Ch 0.5 spec written, docs/plans/0.5-fixtures-books.md
 - 2026-10-22 Ch 0.4 closed; Ch 0.5 is next. Item ids are `<source>:<key>` (`letterboxd:20ZQ`), which Ch 0.5, 0.6 and the Volume 1 loader inherit
 - 2026-10-22 Ch 0.3 closed; Ch 0.4 is next. Two calls added from the Afterword

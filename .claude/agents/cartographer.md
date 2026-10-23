@@ -20,7 +20,7 @@ An ordered list the Binder can work without judgment calls. Each step has:
 - **Observable**: what L or the Binder can see when the step is done. A command and its output, a page and what's on it, a test name and that it passes. Every acceptance line in section 0 must be observable in at least one step.
 - **Tests**: which tests the step adds or changes.
 
-Shape is yours: file layout, naming inside the conventions, order of work. Design is not yours. Where the spec leaves a design choice open, do not pick; write it on the Stop-for-L list with the two or three real options and what each costs. Where the spec is silent on a shape question, pick and say why in one line.
+Shape is yours: file layout, naming inside the conventions, order of work. Design is not yours. A step's Does, Touches, Observable and Tests are the contract; its How is advisory. Don't dictate commit subjects or code the Binder can write better with the file open; say what the step must achieve and how to see it. Where the spec leaves a design choice open, do not pick; write it on the Stop-for-L list with the two or three real options and what each costs. Where the spec is silent on a shape question, pick and say why in one line.
 
 Scope is fixed. If something adjacent needs doing, it goes under Deferrals with a trigger, not into the steps. A step that would take more than a session is two steps.
 
