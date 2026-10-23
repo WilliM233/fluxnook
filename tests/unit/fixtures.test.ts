@@ -8,8 +8,10 @@ import { fixture } from "@/fixtures/shape";
 
 // Every fixture holds to the shape, and is byte for byte what the build makes
 // of its raw file today. The build runs into a cache directory, the db:check
-// pattern, so no test writes to the repo. Across all the files together, no id
-// is defined twice and every id a file points at is defined somewhere.
+// pattern, so no test writes to the repo. Across all the files together, no
+// item or edition id is defined twice and every id a file points at (relation
+// ends, shelf entries, gaps, edition contents, copies, occurrences) is defined
+// somewhere.
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const FIXTURES = join(ROOT, "supabase/seed/fixtures");
@@ -73,13 +75,26 @@ describe("across files", () => {
       defined.set(id, [...(defined.get(id) ?? []), name]);
     }
   }
+  const editions = new Map<string, string[]>();
+  for (const { name, data } of parsed) {
+    for (const { id } of data.editions ?? []) {
+      editions.set(id, [...(editions.get(id) ?? []), name]);
+    }
+  }
   const missing = (id: string) =>
     defined.has(id) ? [] : [`${id} is not an item in any file`];
-
-  it("no id is defined in two files", () => {
-    const lines = [...defined]
+  const twice = (ids: Map<string, string[]>) =>
+    [...ids]
       .filter(([, names]) => names.length > 1)
       .map(([id, names]) => `${id} is defined in ${names.join(" and ")}`);
+
+  it("no id is defined in two files", () => {
+    const lines = twice(defined);
+    expect(lines, lines.join("\n")).toEqual([]);
+  });
+
+  it("no edition id is defined in two files", () => {
+    const lines = twice(editions);
     expect(lines, lines.join("\n")).toEqual([]);
   });
 
@@ -98,11 +113,53 @@ describe("across files", () => {
   it("every shelf entry is an item in some file", () => {
     const lines = parsed.flatMap(({ name, data }) =>
       data.shelves.flatMap((shelf) =>
-        (shelf.entries ?? []).flatMap(({ item, position }) =>
-          missing(item).map(
-            (line) => `${name}: ${shelf.name} entry ${position}: ${line}`,
+        [
+          { where: "", entries: shelf.entries ?? [] },
+          ...(shelf.sections ?? []).map((section) => ({
+            where: ` · ${section.name}`,
+            entries: section.entries,
+          })),
+        ].flatMap(({ where, entries }) =>
+          entries.flatMap(({ item, position }) =>
+            missing(item).map(
+              (line) =>
+                `${name}: ${shelf.name}${where} entry ${position}: ${line}`,
+            ),
           ),
         ),
+      ),
+    );
+    expect(lines, lines.join("\n")).toEqual([]);
+  });
+
+  it("every edition content is an item in some file", () => {
+    const lines = parsed.flatMap(({ name, data }) =>
+      (data.editions ?? []).flatMap(({ id, contents }) =>
+        contents.flatMap((content, i) =>
+          missing(content).map(
+            (line) => `${name}: edition ${id} contents[${i}]: ${line}`,
+          ),
+        ),
+      ),
+    );
+    expect(lines, lines.join("\n")).toEqual([]);
+  });
+
+  it("every copy points at an edition in some file", () => {
+    const lines = parsed.flatMap(({ name, data }) =>
+      (data.copies ?? []).flatMap(({ edition }, i) =>
+        editions.has(edition)
+          ? []
+          : [`${name}: copy ${i}: ${edition} is not an edition in any file`],
+      ),
+    );
+    expect(lines, lines.join("\n")).toEqual([]);
+  });
+
+  it("every occurrence is on an item in some file", () => {
+    const lines = parsed.flatMap(({ name, data }) =>
+      (data.occurrences ?? []).flatMap(({ item }, i) =>
+        missing(item).map((line) => `${name}: occurrence ${i}: ${line}`),
       ),
     );
     expect(lines, lines.join("\n")).toEqual([]);
