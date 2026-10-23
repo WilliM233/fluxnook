@@ -93,16 +93,28 @@ function sourceNote(item: FixtureItem) {
   return parts.filter(Boolean).join("\n") || null;
 }
 
+// A fixture id the files point at but never define is a refusal that names
+// it, not a foreign-key error from deep in the transaction (Ch 1.1 S1).
+function resolve(ids: Map<string, string>, id: string, what: string) {
+  const found = ids.get(id);
+  if (!found) throw new LoadError(`${id} is not ${what} in any fixture`);
+  return found;
+}
+
 async function findUser(tx: Tx, email: string) {
+  // Auth stores addresses lowercased; the login form takes any case (S3).
   const [user] = await tx
     .select({ id: authUsers.id })
     .from(authUsers)
-    .where(eq(authUsers.email, email));
+    .where(sql`lower(${authUsers.email}) = lower(${email})`);
   if (!user) throw new LoadError(`no auth user with email ${email}`);
+  // The row lock claims the user: a second load at once waits here, then
+  // finds the content the first one wrote and refuses (Ch 1.1 B2).
   const [profile] = await tx
     .select({ id: profiles.id })
     .from(profiles)
-    .where(eq(profiles.id, user.id));
+    .where(eq(profiles.id, user.id))
+    .for("update");
   if (!profile) throw new LoadError(`${email} has no profiles row`);
   return user.id;
 }
@@ -194,11 +206,7 @@ async function loadCatalog(
 ) {
   const itemIds = new Map<string, string>();
   const editionIds = new Map<string, string>();
-  const resolve = (id: string) => {
-    const found = itemIds.get(id);
-    if (!found) throw new LoadError(`${id} is not an item in any fixture`);
-    return found;
-  };
+  const itemUuid = (id: string) => resolve(itemIds, id, "an item");
 
   // Every file's items before any relation: relations cross files.
   let created = 0;
@@ -217,20 +225,20 @@ async function loadCatalog(
       await tx
         .insert(itemRelations)
         .values({
-          fromItem: resolve(relation.from),
-          toItem: resolve(relation.to),
+          fromItem: itemUuid(relation.from),
+          toItem: itemUuid(relation.to),
           kind: relation.type,
         })
         .onConflictDoNothing();
       relations++;
     }
     for (const edition of data.editions) {
-      const id = await upsertEdition(tx, edition, resolve(edition.item));
+      const id = await upsertEdition(tx, edition, itemUuid(edition.item));
       editionIds.set(edition.id, id);
       for (const [index, content] of edition.contents.entries()) {
         await tx
           .insert(editionContents)
-          .values({ edition: id, item: resolve(content), position: index + 1 })
+          .values({ edition: id, item: itemUuid(content), position: index + 1 })
           .onConflictDoUpdate({
             target: [editionContents.edition, editionContents.item],
             set: { position: index + 1 },
@@ -304,7 +312,7 @@ async function loadContent(
   fixtures: Named[],
   ids: Awaited<ReturnType<typeof loadCatalog>>,
 ) {
-  const item = (id: string) => ids.itemIds.get(id) as string;
+  const itemUuid = (id: string) => resolve(ids.itemIds, id, "an item");
   const written = {
     shelves: 0,
     sections: 0,
@@ -347,7 +355,7 @@ async function loadContent(
           section.entries.map((entry) => ({
             shelf: shelfId,
             section: sectionId,
-            item: item(entry.item),
+            item: itemUuid(entry.item),
             position: entry.position,
           })),
         );
@@ -359,7 +367,7 @@ async function loadContent(
       await tx.insert(copies).values(
         data.copies.map((copy) => ({
           owner,
-          edition: ids.editionIds.get(copy.edition) as string,
+          edition: resolve(ids.editionIds, copy.edition, "an edition"),
           note: copy.note,
         })),
       );
@@ -369,7 +377,7 @@ async function loadContent(
       await tx.insert(occurrences).values(
         data.occurrences.map((occurrence) => ({
           owner,
-          item: item(occurrence.item),
+          item: itemUuid(occurrence.item),
           status: occurrence.status,
         })),
       );

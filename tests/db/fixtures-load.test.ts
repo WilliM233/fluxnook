@@ -339,6 +339,13 @@ describe("fixtures:load, the user's content", spawning, () => {
     expect(await content(user.id)).toEqual(expectedContent);
   });
 
+  it("finds the user however the address is cased, as the login form does", async () => {
+    const shouty = await signUp();
+    const result = run(["--user", shouty.email.toUpperCase()]);
+    expect(result.status, result.stderr).toBe(0);
+    expect(await content(shouty.id)).toEqual(expectedContent);
+  });
+
   // Last: it takes the user.
   it("a profile delete takes that user's content and no catalog row", async () => {
     const before = await catalog();
