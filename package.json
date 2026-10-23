@@ -15,6 +15,7 @@
     "db:generate": "drizzle-kit generate",
     "db:check": "node scripts/db-check.mjs",
     "fixtures:build": "node scripts/fixtures-build.mjs",
+    "fixtures:load": "node --env-file=.env.local --import tsx scripts/fixtures-load.ts",
     "check": "npm run lint && npm run typecheck && npm test && npm run db:check && npm run test:db && npm run test:e2e"
   },
   "dependencies": {
