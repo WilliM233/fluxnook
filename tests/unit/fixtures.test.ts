@@ -3,7 +3,8 @@ import { readdirSync, readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { beforeAll, describe, expect, it } from "vitest";
-import { type Fixture, fixture } from "@/fixtures/shape";
+import type { z } from "zod";
+import { fixture } from "@/fixtures/shape";
 
 // Every fixture holds to the shape, and is byte for byte what the build makes
 // of its raw file today. The build runs into a cache directory, the db:check
@@ -20,12 +21,13 @@ const files = readdirSync(FIXTURES)
 
 const read = (name: string) => readFileSync(join(FIXTURES, name), "utf8");
 
-// A file that fails the shape is reported under "shape" and sits out the
-// cross-file checks rather than failing them for the same reason.
-const parsed: { name: string; data: Fixture }[] = files.flatMap((name) => {
-  const result = fixture.safeParse(JSON.parse(read(name)));
-  return result.success ? [{ name, data: result.data }] : [];
-});
+// The cross-file checks read each file as written, whatever the shape says,
+// so each can go red on its own: a shelf entry outside its file is refused by
+// the shape too, and would otherwise never reach these checks (Ch 0.5 R4).
+const parsed = files.map((name) => ({
+  name,
+  data: JSON.parse(read(name)) as z.input<typeof fixture>,
+}));
 
 it("finds fixtures to check", () => {
   expect(files.length).toBeGreaterThan(0);
@@ -83,7 +85,7 @@ describe("across files", () => {
 
   it("every relation endpoint is an item in some file", () => {
     const lines = parsed.flatMap(({ name, data }) =>
-      data.relations.flatMap(({ type, from, to }, i) =>
+      (data.relations ?? []).flatMap(({ type, from, to }, i) =>
         [...missing(from), ...missing(to)].map(
           (line) =>
             `${name}: relation ${i} ${from} -> ${to} (${type}): ${line}`,
@@ -108,7 +110,7 @@ describe("across files", () => {
 
   it("every gap names an item in some file", () => {
     const lines = parsed.flatMap(({ name, data }) =>
-      data.gaps.flatMap(({ item }) =>
+      (data.gaps ?? []).flatMap(({ item }) =>
         missing(item).map((line) => `${name}: gap ${item}: ${line}`),
       ),
     );
