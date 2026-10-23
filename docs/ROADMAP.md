@@ -95,6 +95,14 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## Calls made (with reason)
 
+- 2026-10-23 A short story is a `book` item with a `form` (novel, novella, collection, story, series), not its own type; Night Shift is a `collection` item its stories are contained-in. One type, form is metadata
+- 2026-10-23 "Series: The Dark Tower (1981)" is a `book` with form `series` until the franchise entity exists in Volume 1; as-is rules out turning it into The Gunslinger
+- 2026-10-23 Works with no provider get `manual:<slug>-<year>` ids; manual entry is the product's fallback path and that is what these are. Open Library ids arrive as providers in Volume 1 Ch 3, not as ids
+- 2026-10-23 `author` on a book is derived from the note's prefix ("Bachman Novel" is Richard Bachman, everything else Stephen King); the one interpretation past the literal note, kept so the Bachman distinction survives
+- 2026-10-23 Relations (adaptation-of, contained-in) are a top-level array in the fixture that produced them and may point across fixture files; the test checks ids across every file together
+- 2026-10-23 The books fixture carries a publication-order shelf of the works (stories reached through their collection); the interleaved book-then-film King path waits for shelves with sections in Volume 1 Ch 5
+- 2026-10-23 A film whose note names no work is recorded under `gaps` in the fixture, not filled in; The Long Walk is the one today
+- 2026-10-23 Design calls for the fixture chapters are made on the data, not the GUI; L revisits them once there is a screen to look at
 - 2026-10-22 `Closes #<issue>` in the PR, not `Refs`. The Afterword is the branch's last commit, so closing on merge is right and saves L a step; and only a closing keyword links the PR in the issue's Development panel, which `Refs` never does
 - 2026-10-22 L bookends every chapter: opens the branch and makes the first commit (the spec), runs the Browse, checks CI, merges. The Binder opens the issue and keeps it as the chapter's log; the Nookkeeper reviews the plan and the handoff, not each step
 - 2026-10-22 Fixtures are data files, not rows. No content table exists until Volume 1 Ch 1, so `supabase/seed/` holds normalized JSON with a Zod shape checked in CI, and the loader is a Volume 1 Ch 1 acceptance line. The shape gets fitted to real data before the schema is drawn, not after
@@ -124,7 +132,6 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 ## Open calls
 
 - Comic Vine vs Metron for comics (lean Metron: free, models trades and their contents; verify coverage of Mirage-era TMNT in the Ch 4 feasibility read)
-- Order of the fixture chapters: films, books, comics as listed (convention on the flattest data first), or books first as L listed them. Settle before Ch 0.4's spec
 
 ## Deferrals
 
@@ -133,6 +140,7 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## History
 
+- 2026-10-23 Ch 0.5 design talk: eight calls on works, ids, relations and the books shelf; the fixture-order open call closed (films landed first). Ch 0.5 spec written, docs/plans/0.5-fixtures-books.md
 - 2026-10-22 Ch 0.4 closed; Ch 0.5 is next. Item ids are `<source>:<key>` (`letterboxd:20ZQ`), which Ch 0.5, 0.6 and the Volume 1 loader inherit
 - 2026-10-22 Ch 0.3 closed; Ch 0.4 is next. Two calls added from the Afterword
 - 2026-10-22 Ch 0.3 design talk. Fixtures become data files and split into one chapter per media type (Ch 4 films, 5 books, 6 comics); Volume 0 exit widened; six calls added. Ch 0.3 spec written, docs/plans/0.3-ci-harness.md
