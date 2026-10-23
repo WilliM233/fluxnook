@@ -98,7 +98,8 @@ const section = z.strictObject({
 const shelf = z.strictObject({
   name: z.string().min(1),
   date: z.iso.date(),
-  url: httpsUrl,
+  // A source with no public link (L's sheet, Ch 0.6) gives none.
+  url: httpsUrl.optional(),
   description: z.string(),
   entries: z.array(entry).optional(),
   sections: z.array(section).optional(),

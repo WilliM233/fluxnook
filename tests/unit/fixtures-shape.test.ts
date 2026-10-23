@@ -252,6 +252,17 @@ describe("fixture", () => {
     expect(fixture.safeParse(data).success).toBe(false);
   });
 
+  // L's sheet has no public link to give (Ch 0.6 Q1).
+  it("takes a shelf with no url, and still refuses one that isn't https", () => {
+    const { url: _, ...unlinked } = sample().shelves[0];
+    const result = fixture.safeParse({ ...sample(), shelves: [unlinked] });
+    expect(result.success).toBe(true);
+    expect(result.data?.shelves[0]).not.toHaveProperty("url");
+    const data = sample();
+    data.shelves[0].url = "http://boxd.it/upKRw";
+    expect(paths(data)).toContainEqual(["shelves", 0, "url"]);
+  });
+
   it("accepts a book, relations and gaps, and keeps them", () => {
     const data = sample();
     const result = fixture.safeParse(data);
