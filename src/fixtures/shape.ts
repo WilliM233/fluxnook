@@ -2,9 +2,9 @@
  * The shape of a fixture file under `supabase/seed/fixtures/`.
  *
  * A fixture is media items, the shelves that point at them and the relations
- * between them, built from a raw export by `npm run fixtures:build`. `tests/unit/fixtures.test.ts` holds
- * every fixture to this shape; the Volume 1 Ch 1 loader reads it to fill the
- * tables. A chapter that brings a new media type adds its variant to `item`
+ * between them, built from a raw export by `npm run fixtures:build`.
+ * `tests/unit/fixtures.test.ts` holds every fixture to this shape; the
+ * Volume 1 Ch 1 loader reads it to fill the tables. A chapter that brings a new media type adds its variant to `item`
  * and its provider names to `providers`.
  */
 import { z } from "zod";

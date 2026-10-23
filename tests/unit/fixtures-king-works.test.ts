@@ -30,7 +30,7 @@ function build(notes: string[]) {
 }
 
 const SHELF_DESCRIPTION =
-  "The works the list's notes name, less the stories (reached through Night Shift), by publication year and then by the position of the first film whose first note line names the work or its collection.";
+  "The works the list's notes name, less the stories (reached through Night Shift), by the year the notes give and then by the position of the first film whose first note line names the work or its collection.";
 
 describe("kingWorks", () => {
   it("turns one note into a book, its adaptation-of and a one-entry shelf", () => {

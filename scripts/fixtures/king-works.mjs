@@ -29,11 +29,14 @@ const FORMS = {
 };
 const SHELF_NAME = "Stephen King, publication order";
 const SHELF_DESCRIPTION =
-  "The works the list's notes name, less the stories (reached through Night Shift), by publication year and then by the position of the first film whose first note line names the work or its collection.";
+  "The works the list's notes name, less the stories (reached through Night Shift), by the year the notes give and then by the position of the first film whose first note line names the work or its collection.";
 
-// Apostrophes go first, so Salem's Lot is salems-lot and not salem-s-lot.
+// Accents and apostrophes go first, so Été is ete and Salem's Lot is
+// salems-lot, not t and salem-s-lot.
 function slug(text) {
   return text
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
     .replace(/['’]/g, "")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
@@ -88,6 +91,8 @@ export function kingWorks(text, rawPath) {
       return;
     }
 
+    // A line repeated inside one note is a paste, not a second adaptation.
+    const inNote = new Set();
     film.source_note.split("\n").forEach((line, n) => {
       const fail = (message) => {
         throw new Error(
@@ -117,6 +122,8 @@ export function kingWorks(text, rawPath) {
 
       const { form, author, title, collection, year } = parseLine(line, fail);
       const id = `manual:${slug(title)}-${year}`;
+      if (inNote.has(id)) fail(`names ${id} again in the same note`);
+      inNote.add(id);
       const base = { type: "book", year, providers: {}, source_note: line };
       remember({ id, form, author, title, ...base }, collection);
       adaptations.push({ type: "adaptation-of", from: film.id, to: id });
