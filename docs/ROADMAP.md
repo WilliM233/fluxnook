@@ -95,6 +95,11 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## Calls made (with reason)
 
+- 2026-10-23 Comic forms use collectors' words: `issue` (single/floppy), `one-shot`, `backup` (a short printed inside another comic), `collected` (a trade, hardcover or omnibus as a work), `anthology` (a host book that isn't the run's own). Edition formats `floppy`, `tpb`, `hardcover`, `omnibus`. Series kinds `ongoing`, `micro-series`, `mini-series`, `crossover`, `tie-in`, `minor`. Story arcs and runs-by-creative-team wait for Metron
+- 2026-10-23 A collected edition is a `collected` work with an edition (its printing) and contents on the edition; owning it is a copy of that edition. Ownership of the issues it collects is derived through contents ("owned via"), never written as contained-in. Narrative containment (a backup inside an issue) is contained-in; physical collection is edition contents. The TMNT Ultimate Collections are the first data under the rule
+- 2026-10-23 A backup story is contained-in its host; a host the sheet doesn't list as an issue becomes an `anthology` item from the cell text, reprints included, until Metron can resolve printings (Volume 1 Ch 4)
+- 2026-10-23 Read flags from a sheet are occurrences (`done`, no date), never a property of the copy or the shelf entry
+- 2026-10-23 A tab of the TMNT sheet is a run, and a run is a shelf with the tab's sections; the hand-made tab is taken as it is, section rules declared per chapter, cells never corrected
 - 2026-10-23 A work carries its original publication date; an edition carries its own (a book first published in 1892, the copy in hand from 1998). A fixture's `year` on a book is the work's year as the note gives it, and a second year for the same title stops the build; edition dates wait for editions (Volume 1 Ch 1) and provider dates (Ch 3). From the Ch 0.5 Raccoon's S2: without the rule a year typo silently forked a work into two shelf entries
 - 2026-10-23 A short story is a `book` item with a `form` (novel, novella, collection, story, series), not its own type; Night Shift is a `collection` item its stories are contained-in. One type, form is metadata
 - 2026-10-23 "Series: The Dark Tower (1981)" is a `book` with form `series` until the franchise entity exists in Volume 1; as-is rules out turning it into The Gunslinger
@@ -141,6 +146,7 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## History
 
+- 2026-10-23 Ch 0.6 design talk: five calls on comic forms, the edition model, backups, read flags and runs. Ch 0.6 spec written, docs/plans/0.6-fixtures-comics.md; last chapter of Volume 0
 - 2026-10-23 Ch 0.5 closed; Ch 0.6 is next. Edition-date call added from the Afterword
 - 2026-10-23 Ch 0.5 design talk: eight calls on works, ids, relations and the books shelf; the fixture-order open call closed (films landed first). Ch 0.5 spec written, docs/plans/0.5-fixtures-books.md
 - 2026-10-22 Ch 0.4 closed; Ch 0.5 is next. Item ids are `<source>:<key>` (`letterboxd:20ZQ`), which Ch 0.5, 0.6 and the Volume 1 loader inherit
