@@ -2,11 +2,14 @@ import { type SQL, sql } from "drizzle-orm";
 import {
   check,
   date,
+  foreignKey,
   integer,
+  numeric,
   pgTable,
   primaryKey,
   text,
   timestamp,
+  unique,
   uuid,
 } from "drizzle-orm/pg-core";
 import { authUsers } from "drizzle-orm/supabase";
@@ -51,6 +54,10 @@ export const seriesKinds = [
   "minor",
 ] as const;
 export const releasedPrecisions = ["day", "month", "year"] as const;
+export const visibilities = ["private", "unlisted", "public"] as const;
+export const entryStatuses = ["unmarked", "done", "skipped"] as const;
+export const occurrenceStatuses = ["in_progress", "done", "abandoned"] as const;
+export const anchorKinds = ["page", "chapter", "episode", "issue"] as const;
 export const relationKinds = ["adaptation-of", "contained-in"] as const;
 // One vocabulary across types, narrowed per type at the API (Ch 1.1 call).
 export const editionFormats = [
@@ -300,4 +307,177 @@ export const itemFranchises = pgTable(
     ...timestamps(),
   },
   (t) => [primaryKey({ columns: [t.item, t.franchise] })],
+);
+
+// ---- A person's own content: every row reaches an owner, through its own
+// `owner` column or its parent's, and goes when the profile does. Private by
+// default (Roadmap 2026-10-16).
+
+// The column plus its check; the default is what keeps a forgotten field
+// private, so the unit and db tests both read it back.
+function visibility() {
+  return text("visibility", { enum: visibilities })
+    .notNull()
+    .default("private");
+}
+
+function owner() {
+  return uuid("owner")
+    .notNull()
+    .references(() => profiles.id, { onDelete: "cascade" });
+}
+
+/** A person's list of works: flat, or in named sections. */
+export const shelves = pgTable(
+  "shelves",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    owner: owner(),
+    name: text("name").notNull(),
+    description: text("description").notNull().default(""),
+    // Where the list came from, when it came from somewhere (a Letterboxd list).
+    sourceUrl: text("source_url"),
+    visibility: visibility(),
+    ...timestamps(),
+  },
+  (t) => [check("shelves_visibility", oneOf(t.visibility, visibilities))],
+);
+
+/**
+ * A named part of a shelf. Its owner and visibility are the shelf's. The
+ * `(id, shelf)` key is what an entry's section points at, so an entry can't
+ * sit in another shelf's section.
+ */
+export const shelfSections = pgTable(
+  "shelf_sections",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    shelf: uuid("shelf")
+      .notNull()
+      .references(() => shelves.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    position: integer("position").notNull(),
+    ...timestamps(),
+  },
+  (t) => [
+    unique("shelf_sections_shelf_name").on(t.shelf, t.name),
+    unique("shelf_sections_id_shelf").on(t.id, t.shelf),
+  ],
+);
+
+/**
+ * A work on a shelf, once. Positions are integers renumbered on move; `section`
+ * is null on a flat shelf. Owner through the shelf.
+ */
+export const shelfEntries = pgTable(
+  "shelf_entries",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    shelf: uuid("shelf")
+      .notNull()
+      .references(() => shelves.id, { onDelete: "cascade" }),
+    section: uuid("section"),
+    item: uuid("item")
+      .notNull()
+      .references(() => items.id, { onDelete: "restrict" }),
+    position: integer("position").notNull(),
+    status: text("status", { enum: entryStatuses })
+      .notNull()
+      .default("unmarked"),
+    visibility: visibility(),
+    ...timestamps(),
+  },
+  (t) => [
+    unique("shelf_entries_shelf_item").on(t.shelf, t.item),
+    // Cascade: what a section delete does to its entries is Ch 1.5's call
+    // (Deferral); its API can move them first.
+    foreignKey({
+      name: "shelf_entries_section_shelf_fk",
+      columns: [t.section, t.shelf],
+      foreignColumns: [shelfSections.id, shelfSections.shelf],
+    }).onDelete("cascade"),
+    check("shelf_entries_status", oneOf(t.status, entryStatuses)),
+    check("shelf_entries_visibility", oneOf(t.visibility, visibilities)),
+  ],
+);
+
+/**
+ * One read or watch of a work. Hangs off the item, never a copy; stars live
+ * here, in half steps.
+ */
+export const occurrences = pgTable(
+  "occurrences",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    owner: owner(),
+    item: uuid("item")
+      .notNull()
+      .references(() => items.id, { onDelete: "restrict" }),
+    status: text("status", { enum: occurrenceStatuses }).notNull(),
+    startedOn: date("started_on"),
+    finishedOn: date("finished_on"),
+    stars: numeric("stars", { precision: 2, scale: 1 }),
+    visibility: visibility(),
+    ...timestamps(),
+  },
+  (t) => [
+    check("occurrences_status", oneOf(t.status, occurrenceStatuses)),
+    // numeric(2,1) stores 4.3 happily; the doubling is what holds half steps.
+    check(
+      "occurrences_stars",
+      sql`${t.stars} is null or (${t.stars} >= 0.5 and ${t.stars} <= 5.0 and ${t.stars} * 2 = trunc(${t.stars} * 2))`,
+    ),
+    check("occurrences_visibility", oneOf(t.visibility, visibilities)),
+  ],
+);
+
+/**
+ * What someone wrote during an occurrence, optionally pinned to a place in the
+ * work: page 12, episode S02E03. Owner through the occurrence.
+ */
+export const journalEntries = pgTable(
+  "journal_entries",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    occurrence: uuid("occurrence")
+      .notNull()
+      .references(() => occurrences.id, { onDelete: "cascade" }),
+    writtenAt: timestamp("written_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    body: text("body").notNull(),
+    anchorKind: text("anchor_kind", { enum: anchorKinds }),
+    anchorValue: text("anchor_value"),
+    visibility: visibility(),
+    ...timestamps(),
+  },
+  (t) => [
+    check(
+      "journal_entries_anchor_kind",
+      sql`${t.anchorKind} is null or ${oneOf(t.anchorKind, anchorKinds)}`,
+    ),
+    check(
+      "journal_entries_anchor",
+      sql`(${t.anchorKind} is null) = (${t.anchorValue} is null)`,
+    ),
+    check("journal_entries_visibility", oneOf(t.visibility, visibilities)),
+  ],
+);
+
+/** An owned edition. What it holds is owned through its contents. */
+export const copies = pgTable(
+  "copies",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    owner: owner(),
+    edition: uuid("edition")
+      .notNull()
+      .references(() => editions.id, { onDelete: "restrict" }),
+    condition: text("condition"),
+    acquiredOn: date("acquired_on"),
+    note: text("note").notNull().default(""),
+    visibility: visibility(),
+    ...timestamps(),
+  },
+  (t) => [check("copies_visibility", oneOf(t.visibility, visibilities))],
 );

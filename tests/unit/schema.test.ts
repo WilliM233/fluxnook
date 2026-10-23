@@ -33,6 +33,14 @@ const catalog = [
   "item_franchises",
 ];
 
+const content = [
+  "shelves",
+  "shelf_entries",
+  "occurrences",
+  "journal_entries",
+  "copies",
+];
+
 describe("schema", () => {
   it("every table but profiles keeps created_at and updated_at, not null with a default", () => {
     const rest = tables.filter((table) => table.name !== "profiles");
@@ -75,5 +83,38 @@ describe("schema", () => {
       expect(primaryKeys, name).toHaveLength(1);
       expect(primaryKeys[0].columns.map((c) => c.name)).toEqual(columns);
     }
+  });
+
+  it("every content table carries visibility, not null, private by default", () => {
+    for (const name of content) {
+      const c = column(name, "visibility");
+      expect(c, name).toBeDefined();
+      expect(c?.notNull, `${name}.visibility not null`).toBe(true);
+      expect(c?.default, `${name}.visibility default`).toBe("private");
+    }
+  });
+
+  it("owner is on shelves, occurrences and copies; the rest reach it through a parent", () => {
+    for (const name of ["shelves", "occurrences", "copies"]) {
+      expect(column(name, "owner")?.notNull, name).toBe(true);
+    }
+    for (const name of ["shelf_sections", "shelf_entries", "journal_entries"]) {
+      expect(column(name, "owner"), name).toBeUndefined();
+    }
+    expect(column("shelf_sections", "visibility")).toBeUndefined();
+  });
+
+  it("a shelf entry's section is keyed together with its shelf", () => {
+    const composite = config("shelf_entries")
+      .foreignKeys.map((fk) => fk.reference())
+      .find((ref) => ref.columns.length === 2);
+    expect(composite?.columns.map((c) => c.name)).toEqual(["section", "shelf"]);
+    expect(getTableConfig(composite?.foreignTable as PgTable).name).toBe(
+      "shelf_sections",
+    );
+    expect(composite?.foreignColumns.map((c) => c.name)).toEqual([
+      "id",
+      "shelf",
+    ]);
   });
 });
