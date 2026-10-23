@@ -2,6 +2,7 @@
 
 One line per chapter, newest first. Release notes live in `docs/releases/`.
 
+- 1.1 Schema: the whole core model as tables, private by default, and a loader that fills them from the three fixtures ([note](docs/releases/1.1.md))
 - 0.6 Fixtures, comics: the TMNT Mirage tab as comics, collected editions with copies, backups in their hosts and read logs, a third rebuildable fixture ([note](docs/releases/0.6.md))
 - 0.5 Fixtures, books: the King works, their film adaptations and the Night Shift stories, as a second rebuildable fixture ([note](docs/releases/0.5.md))
 - 0.4 Fixtures, films: the Stephen King watch list as a committed, rebuildable fixture ([note](docs/releases/0.4.md))

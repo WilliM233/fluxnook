@@ -2,7 +2,7 @@
 
 A cozy place to keep your shelves: films, TV, books, comics and games in one nook, organized the way you read and watch them, with a journal for each pass through and the physical collection tracked alongside.
 
-Volume 0 is in progress. Today you can sign in with a magic link and see an empty nook, locally.
+Volume 1 is in progress. Today you can sign in with a magic link and see an empty nook, locally. The tables behind it exist (see Data model), and a loader fills them from the fixtures.
 
 ## Run it locally
 
@@ -37,6 +37,7 @@ Things that trip people up:
 | `npm run test:e2e` | Playwright, Chromium, `tests/e2e`. Run `npx playwright install chromium` once first. Needs the Supabase stack up; starts `npm run dev` or reuses one on :3000. One test turns `pg_graphql` on in the local database and off again. `PLAYWRIGHT_ALL_BROWSERS=1` adds Firefox and WebKit (`npx playwright install firefox webkit` once) and runs one worker |
 | `npm run db:check` | Fails when `src/db/schema.ts` and `supabase/migrations` disagree. Writes nothing to the repo |
 | `npm run fixtures:build` | Rebuilds `supabase/seed/fixtures/*.json` from `supabase/seed/raw`. Deterministic. Plain Node, no stack needed |
+| `npm run fixtures:load -- --user <email> [--replace]` | Writes the fixtures into the local database for one user. Needs the stack up, `.env.local`, and that address signed in once, so its `profiles` row exists. See Data model |
 | `npm run check` | The six gates CI runs, in order, stopping at the first red: lint, typecheck, test, db:check, test:db, test:e2e. Needs the stack up |
 | `npm run db:generate -- --name=<change>` | drizzle-kit writes a migration into `supabase/migrations`. Read `.claude/skills/migrations/SKILL.md` first |
 
@@ -88,12 +89,46 @@ The build stops, naming the raw file and record, when an export changed shape: d
 
 Adding a raw file: put it under `supabase/seed/raw/<source>/`, add its row to `supabase/seed/raw/README.md`, add a `SOURCES` line in `scripts/fixtures-build.mjs` per fixture (a raw file may feed more than one; builders live in `scripts/fixtures/<name>.mjs`, and a new source needs its own; each `out` must be new), run `npm run fixtures:build`, and commit the raw file and its JSON together. From a Google Sheet, export one tab per file (File > Download > Comma-separated values) under `google-sheets/`; a new tab needs its own section rules. The CSV reader is `scripts/fixtures/csv.mjs`, written in-repo; no package was added.
 
+## Data model
+
+`src/db/schema.ts` holds 18 tables in `public`, in two halves. No page reads them yet.
+
+- The catalog, shared by every user, no `visibility`: `items` (a `film`, `book` or `comic`; `form` is null for films and required for books and comics), `item_books`, `item_comics`, `item_sources`, `item_relations`, `editions`, `edition_sources`, `edition_contents`, `franchises`, `franchise_sources`, `item_franchises`. An item's identity is its `item_sources` row, `(source, key)`: the fixtures' `letterboxd:20ZQ` is source `letterboxd`, key `20ZQ`, and `manual` is a source like any other. Dates are `released_on` plus `released_precision` (`day`, `month`, `year`), both null or both set.
+- A person's content: `shelves`, `shelf_sections`, `shelf_entries`, `occurrences` (a read or watch, with half-step `stars`), `journal_entries`, `copies`. Everything here points at the catalog and never the other way round.
+- `profiles` is an account table: no `visibility`, no `updated_at`.
+
+Visibility is `private`, `unlisted` or `public`, default `private`, on `shelves`, `shelf_entries`, `occurrences`, `journal_entries` and `copies`. `shelf_sections` has none; the shelf's is the section's. `owner` is on `shelves`, `occurrences` and `copies` only: the rest reach their owner through their parent. Nothing enforces that a child is no more visible than its parent yet.
+
+Deletes: removing a `profiles` row removes everything that person owns and leaves the catalog alone. A catalog row can't be deleted while a shelf entry or occurrence points at its item, or a copy at its edition. Deleting a shelf section deletes its entries.
+
+Every enumeration is `text` with a check constraint, not a Postgres enum. Every table but `profiles` has `updated_at`, kept by the trigger `<table>_updated_at`.
+
+Owned via: a work is owned when a copy's edition holds it. There is no column for it; it is a query over `copies`, `editions`, `edition_contents` and `items`. Read is an `occurrences` row and is never derived from a copy.
+
+```sh
+docker exec supabase_db_fluxnook psql -U postgres -tAc "select i.title || ' | owned via ' || w.title from copies c join editions e on e.id = c.edition join items w on w.id = e.item join edition_contents ec on ec.edition = e.id join items i on i.id = ec.item order by w.title, ec.position"
+```
+
+After the fixtures are loaded this returns 37 rows.
+
+The loader, `npm run fixtures:load -- --user <email>`, reads every file under `supabase/seed/fixtures`, checks each against `src/fixtures/shape.ts`, and writes in one transaction: the catalog first, then the user's shelves, sections, entries, copies and occurrences. After a reset and one load the counts are 454 `items`, 454 `item_sources`, 125 `item_relations`, 5 `editions`, 37 `edition_contents`, and for the user 3 `shelves`, 14 `shelf_sections`, 398 `shelf_entries`, 26 `occurrences`, 5 `copies`. `gaps` are printed and not loaded.
+
+- The address is matched without regard to case, and must already be signed in. With no auth user or no `profiles` row it exits 1 and says which.
+- The catalog is upserted on its source key, so a second run adds no catalog row. It does not refresh a row's `item_sources.url`, and does not remove a relation or content that has left a fixture.
+- Content loads only into a user who has none. A second plain run exits 1 with `already has ... pass --replace` and writes nothing. `--replace` deletes that user's shelves, occurrences and copies, with their sections, entries and journal entries, then loads again. The log names the email before it deletes.
+- Two loads for one user at once: the second waits, then refuses.
+- `npx supabase db reset` removes all of it. Sign in again, then load.
+
+Raw SQL by hand: `docker exec supabase_db_fluxnook psql -U postgres`, as above. Studio is at http://127.0.0.1:54323.
+
 ## Where things are
 
 - `src/app`: the pages (`/`, `/nook`) and the API route handlers under `src/app/api/v1`
 - `src/lib`: env reader, Supabase server client and session refresh, the API error helper
 - `src/proxy.ts`: refreshes the session on every request except Next's assets and image files
-- `src/db/schema.ts`: Drizzle table definitions
+- `src/db/schema.ts`: Drizzle table definitions. See Data model
+- `src/db/client.ts`: `createDb()`, the Drizzle client over `postgres` on `DATABASE_URL`. The caller closes it
+- `src/fixtures/load.ts`, `scripts/fixtures-load.ts`: the fixture loader and the script behind `npm run fixtures:load`. The script runs through `tsx`
 - `supabase/`: local stack config and migrations
 - `supabase/seed`: raw exports and the fixtures built from them. See Fixtures
 - `src/fixtures/shape.ts`: the Zod shape of a fixture file
