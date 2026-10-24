@@ -75,7 +75,7 @@ export async function startTmdbStub({
       res.writeHead(500);
       return res.end();
     }
-    if (/^\/t\/p\/w500\/[A-Za-z0-9]+\.(jpg|png)$/.test(url.pathname)) {
+    if (/^\/t\/p\/w[0-9]+\/[A-Za-z0-9]+\.(jpg|png)$/.test(url.pathname)) {
       res.writeHead(200, { "content-type": "image/jpeg" });
       return res.end(PIXEL);
     }

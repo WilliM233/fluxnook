@@ -57,3 +57,8 @@ test("an item page redirects to / without a session", async ({ page }) => {
   await page.goto(`/items/${crypto.randomUUID()}`);
   await expect(page).toHaveURL("/");
 });
+
+test("/search redirects to / without a session", async ({ page }) => {
+  await page.goto("/search?q=carrie");
+  await expect(page).toHaveURL("/");
+});
