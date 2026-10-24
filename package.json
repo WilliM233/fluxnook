@@ -1,6 +1,6 @@
 {
   "name": "fluxnook",
-  "version": "0.0.0-ch.6",
+  "version": "0.1.0-ch.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -15,6 +15,7 @@
     "db:generate": "drizzle-kit generate",
     "db:check": "node scripts/db-check.mjs",
     "fixtures:build": "node scripts/fixtures-build.mjs",
+    "fixtures:load": "node --env-file=.env.local --import tsx scripts/fixtures-load.ts",
     "check": "npm run lint && npm run typecheck && npm test && npm run db:check && npm run test:db && npm run test:e2e"
   },
   "dependencies": {
@@ -26,6 +27,7 @@
     "drizzle-orm": "0.45.4",
     "lucide-react": "1.58.0",
     "next": "16.4.2",
+    "postgres": "3.4.9",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "zod": "4.6.7"
@@ -38,10 +40,10 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "drizzle-kit": "0.31.11",
-    "postgres": "3.4.9",
     "shadcn": "4.22.0",
     "supabase": "2.121.0",
     "tailwindcss": "4.3.3",
+    "tsx": "4.23.15",
     "tw-animate-css": "1.4.0",
     "typescript": "5.9.3",
     "vite": "8.3.4",

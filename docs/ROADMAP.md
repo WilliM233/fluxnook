@@ -47,7 +47,7 @@ See docs/HOUSE-RULES.md. Volume = milestone, Chapter = run, Plan = docs/plans/<v
 ## Volumes
 
 ### Volume 0: Foundations
-Exit: a user exists, logs in locally, sees an empty nook. The team can run a chapter end to end, CI gates every PR, and the three fixtures validate in CI.
+Exit: a user exists, logs in locally, sees an empty nook. The team can run a chapter end to end, CI gates every PR, and the three fixtures validate in CI. Closed 2026-10-23, `v0.0.0`, PR #60.
 - Ch 1: Repo reset, House Rules, CLAUDE.md, the agent briefs, plan template, PR and issue templates. Done, v0.0.0-ch.1
 - Ch 2: Scaffold the stack, Supabase local, auth, the empty nook page. Done, v0.0.0-ch.2 (#50, PR #51)
 - Ch 3: CI and the test harness: Actions on every PR, Supabase local in the runner, Playwright through the mail catcher, a signed-in test fixture, a database test, nightly full Playwright on dev. Done, v0.0.0-ch.3 (#52, PR #53)
@@ -58,8 +58,8 @@ Exit: a user exists, logs in locally, sees an empty nook. The team can run a cha
 
 ### Volume 1: Alpha
 A usable app for one person. Exit: the King path lives in the app as a cross-media book-then-films shelf, the TMNT sheet is retired, L's physical library is tracked, and the sheet has stopped being opened.
-- Ch 1: Schema and migrations for the whole core model above, including visibility, occurrences, copies and franchise, even where no UI exists yet. Loads the Volume 0 fixtures
-- Ch 2: Providers, film and TV: TMDB search and import into the local catalog, cover cache, the item page
+- Ch 1: Schema and migrations for the whole core model above, including visibility, occurrences, copies and franchise, even where no UI exists yet. Loads the Volume 0 fixtures. Done, v0.1.0-ch.1 (#61, PR #62); plan at docs/plans/1.1-schema.md
+- Ch 2: Providers, film and TV: TMDB search and import into the local catalog, cover cache, the item page. Next
 - Ch 3: Providers, books: Open Library search and ISBN lookup. ISBN entry is the main path for matching the library
 - Ch 4: Providers, comics: Metron search and import; edition contents where Metron has them, manual fill where it does not
 - Ch 5: Shelves: create, sections, drag ordering, add from catalog, status per entry (unmarked, done, skipped), aggregate stars across the shelf
@@ -95,6 +95,21 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## Calls made (with reason)
 
+- 2026-10-23 Type-specific columns are child tables (`item_books`, `item_comics`), not jsonb: a handful of real columns per type, all sorted and filtered on, and plain SQL reads better in review. A column two types share lives on `items` (`form`, checked per type). `item_films` waits for TMDB's first film column (Ch 1.1)
+- 2026-10-23 Every enumeration is `text` with a check constraint, never a Postgres enum: adding a value is a readable constraint swap, and `ALTER TYPE` inside a transactional migration is a trap (Ch 1.1)
+- 2026-10-23 The catalog (items, sources, relations, editions, franchises) is global and deduped by source; user content points at it. `item_sources (source, key)` is the identity table, and `manual` is a source like any provider, so the fixtures' `<source>:<key>` ids land there and a later TMDB import adds a row to the same item instead of a duplicate. Manual items carry `created_by` (Ch 1.1)
+- 2026-10-23 Release dates are `released_on date` + `released_precision` (`day`, `month`, `year`), both null or both set; the fixtures' year and year-plus-month fit, and dates sort (Ch 1.1)
+- 2026-10-23 The show is the item; season and episode are the journal anchor. Episodes as items wait for someone wanting to rate one. Comic `series` stays text until Metron (Ch 1.1)
+- 2026-10-23 Relations carry no position until a feature reads one; the fixtures have none (Ch 1.1)
+- 2026-10-23 Visibility is `private`, `unlisted`, `public`, default private, on shelves, entries, occurrences, journal entries and copies. Effective visibility (a child never more visible than its parent) is an API rule in Volume 2, not a constraint today (Ch 1.1)
+- 2026-10-23 The journal anchor is `anchor_kind` (`page`, `chapter`, `episode`, `issue`) plus `anchor_value` text as shown; entries sort by date, never by anchor (Ch 1.1)
+- 2026-10-23 Shelf entries are ordered by integer position, renumbered on move; unique (shelf, item); a section belongs to its shelf by a composite key. Lexorank only if Ch 5's drag earns it (Ch 1.1)
+- 2026-10-23 One edition-format vocabulary across types (`floppy`, `tpb`, `hardcover`, `omnibus`, `paperback`, `ebook`, `audiobook`, `dvd`, `blu-ray`, `4k`, `digital`), narrowed per type at the API, not in the schema (Ch 1.1)
+- 2026-10-23 No soft delete in alpha. A user's delete cascades to everything they own; a catalog row restricts while content points at it; an edition restricts while a copy exists (Ch 1.1)
+- 2026-10-23 Occurrence status is `in_progress`, `done`, `abandoned`; dates nullable (the Mirage reads have none); stars `numeric(2,1)` in half steps. Journal entries are a table from this chapter with zero rows (Ch 1.1)
+- 2026-10-23 The fixtures' leftovers: `source_note` is kept on items as provenance and a comic's `source_date` folds into it; a fixture shelf's `date` becomes its `created_at`; `gaps` are printed by the loader, never loaded (Ch 1.1)
+- 2026-10-23 The loader (`fixtures:load --user`) is a script through the Drizzle runtime client, not `seed.sql`: the fixtures carry one user's shelves, copies and occurrences. Catalog rows upsert on their source key; content loads only into an empty user, `--replace` empties first (Ch 1.1)
+- 2026-10-23 From Ch 1.2 on, a chapter that brings a screen gets its design made in the Nookkeeper's seat before the spec goes to the team, so the expectation is set up front
 - 2026-10-23 A shelf's `url` is optional. The TMNT sheet is private and has no public link; the shape asks for a URL only where one exists (Ch 0.6 Q1)
 - 2026-10-23 A backup's host resolves only to a listed Vol 1 Main issue named exactly `Teenage Mutant Ninja Turtles #<n>`; any other host cell becomes an anthology item even when it matches a listed row's title, so seven comics exist twice until Metron reconciles them in Volume 1 Ch 4. Cells are never read past their literal text (Ch 0.6 Q2)
 - 2026-10-23 Comic forms use collectors' words: `issue` (single/floppy), `one-shot`, `backup` (a short printed inside another comic), `collected` (a trade, hardcover or omnibus as a work), `anthology` (a host book that isn't the run's own). Edition formats `floppy`, `tpb`, `hardcover`, `omnibus`. Series kinds `ongoing`, `micro-series`, `mini-series`, `crossover`, `tie-in`, `minor`. Story arcs and runs-by-creative-team wait for Metron
@@ -148,6 +163,9 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## History
 
+- 2026-10-23 Ch 1.1 closed; Ch 1.2 is next. First Fable-QA chapter; the migration-fold and design-talk rules added from the Afterword.
+- 2026-10-23 Ch 1.1 design talk: fifteen leans on the data model taken against the fixtures as they landed, four calls on their leftovers. Ch 1.1 spec written, docs/plans/1.1-schema.md; the first Fable-QA chapter
+- 2026-10-23 Volume 0 closed: PR #60 `dev` to `main`, merge commit, `v0.0.0`, GitHub Release from the PR body. Six chapters, `v0.0.0-ch.1` to `ch.6`
 - 2026-10-23 Ch 0.6 closed; Volume 0's exit is met (a user logs in and sees an empty nook, CI gates every PR, three fixtures validate in CI). Next: the `dev` to `main` close PR and `v0.0.0`, then Volume 1 Ch 1
 - 2026-10-23 Ch 0.6 design talk: five calls on comic forms, the edition model, backups, read flags and runs. Ch 0.6 spec written, docs/plans/0.6-fixtures-comics.md; last chapter of Volume 0
 - 2026-10-23 Ch 0.5 closed; Ch 0.6 is next. Edition-date call added from the Afterword

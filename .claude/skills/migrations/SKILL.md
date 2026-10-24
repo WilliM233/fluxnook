@@ -41,6 +41,10 @@ App tables are reached only through `/api/v1`. Never `grant` a table to `anon` o
 
 Every table that holds user content gets a `visibility` column, private by default (`CLAUDE.md`). Account tables don't: `profiles` has none (ch 0.2 Q2), and its migration header says so.
 
+As of Ch 1.1, five tables carry `visibility` (`text not null default 'private'`, checked to `private`/`unlisted`/`public`): `shelves`, `shelf_entries`, `occurrences`, `journal_entries`, `copies`. Three carry `owner` → `profiles` on delete cascade: `shelves`, `occurrences`, `copies`. The rest reach their owner through a parent: `shelf_sections` and `shelf_entries` through their shelf, `journal_entries` through its occurrence. `shelf_sections` has no `visibility`; the shelf's is the section's. The catalog tables (`items` and its children, `editions` and theirs, `franchises` and theirs) carry neither: they're shared by every user. A new content table gets both the column and its `<table>_visibility` check, plus `owner` or a parent that has one, and `tests/unit/schema.test.ts` names it.
+
+Every table but `profiles` has `updated_at`, kept by `public.set_updated_at()` through a `<table>_updated_at` trigger (`20261023195411_updated_at.sql`). A new table adds its trigger in a `--custom` migration; the constraint test fails on a table without one.
+
 ## Triggers on `auth.users`
 
 Functions a trigger on `auth.users` calls are `security definer` with `set search_path = ''` and schema-qualify every name. The insert into `auth.users` runs as `supabase_auth_admin`, which has no grants on `public`.

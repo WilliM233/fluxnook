@@ -15,6 +15,34 @@
       "when": 1792182031063,
       "tag": "20261016202031_profiles_on_signup",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792784879713,
+      "tag": "20261023194759_catalog",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792785113848,
+      "tag": "20261023195153_content",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792785251398,
+      "tag": "20261023195411_updated_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792787475825,
+      "tag": "20261023203115_items_form_required",
+      "breakpoints": true
     }
   ]
 }
