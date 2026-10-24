@@ -52,3 +52,8 @@ test("manual items are 401 without a session", async ({ request }) => {
   });
   expect(response.status()).toBe(401);
 });
+
+test("an item page redirects to / without a session", async ({ page }) => {
+  await page.goto(`/items/${crypto.randomUUID()}`);
+  await expect(page).toHaveURL("/");
+});
