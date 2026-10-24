@@ -161,7 +161,7 @@ type RawTv = RawRow & {
 
 /** `movie/<id>` or `tv/<id>`; anything else is not a TMDB key. */
 export function parseTmdbKey(key: string) {
-  const match = key.match(/^(movie|tv)\/([1-9][0-9]*)$/);
+  const match = key.match(/^(movie|tv)\/([0-9]+)$/);
   return match ? { kind: match[1] as TmdbKind, id: Number(match[2]) } : null;
 }
 

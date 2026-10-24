@@ -135,7 +135,8 @@ async function catalog() {
       (select count(*)::int from editions where id in (${ed})) as editions,
       (select count(*)::int from edition_sources where edition in (${ed})) as edition_sources,
       (select count(*)::int from edition_contents where edition in (${ed})) as contents,
-      (select count(*)::int from franchises) as franchises`;
+      -- The loader's own franchises: an import beside this file makes tmdb ones.
+      (select count(*)::int from franchise_sources where source <> 'tmdb') as franchises`;
   return {
     ...counts,
     byType: rows(byType),

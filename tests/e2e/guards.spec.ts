@@ -38,3 +38,10 @@ test("tmdb search is 401 without a session", async ({ request }) => {
     error: { code: "unauthorized" },
   });
 });
+
+test("import is 401 without a session", async ({ request }) => {
+  const response = await request.post("/api/v1/items/import", {
+    data: { source: "tmdb", key: "movie/133805" },
+  });
+  expect(response.status()).toBe(401);
+});

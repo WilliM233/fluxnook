@@ -36,7 +36,13 @@ beforeAll(async () => {
     baseUrl: stub.baseUrl,
     imageBaseUrl: stub.imageBaseUrl,
   });
-  rows = (await tmdb.search("carrie", 1)).results;
+  // The recording's titles and years under keys of this file's own (800000000
+  // + TMDB's id), so a key a by-hand import or another file holds can't
+  // turn a match into `in`.
+  rows = (await tmdb.search("carrie", 1)).results.map((row) => ({
+    ...row,
+    key: `${row.kind}/${800_000_000 + Number(row.key.split("/")[1])}`,
+  }));
   user = await signUpWithFixtures(sql);
   bare = await signUp(sql);
   carrie1976 = await itemFor(sql, "letterboxd", "20ZQ");
