@@ -2,13 +2,14 @@ import { readFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import { join } from "node:path";
-import { fileURLToPath } from "node:url";
 
 // The TMDB stub: serves the recordings under tests/fixtures/tmdb by path and a
 // 1x1 JPEG for every poster, so tests and the Browse never need TMDB or a key.
 // Plain node:http; it ignores the Authorization header but remembers it.
 
-const RECORDINGS = fileURLToPath(new URL("../fixtures/tmdb", import.meta.url));
+// From the repo root, where every runner starts: Playwright loads this file as
+// CommonJS, so import.meta is not available.
+const RECORDINGS = join(process.cwd(), "tests/fixtures/tmdb");
 
 // A 1x1 lavender JPEG, encoded by Chromium's canvas.
 const PIXEL = Buffer.from(
