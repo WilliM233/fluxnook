@@ -30,3 +30,11 @@ test("callback without a code goes to /?error=link", async ({ request }) => {
   expect(response.status()).toBe(303);
   expect(response.headers().location).toBe("http://localhost:3000/?error=link");
 });
+
+test("tmdb search is 401 without a session", async ({ request }) => {
+  const response = await request.get("/api/v1/providers/tmdb/search?q=carrie");
+  expect(response.status()).toBe(401);
+  expect(await response.json()).toMatchObject({
+    error: { code: "unauthorized" },
+  });
+});
