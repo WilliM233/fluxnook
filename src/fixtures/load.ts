@@ -274,6 +274,12 @@ export async function loadFixtures(db: Db, options: LoadOptions) {
     // Before any write, so a refusal leaves the catalog as it was too.
     const replaced = await clearContent(tx, userId, options);
 
+    // Loads for different people share the catalog: one at a time from here,
+    // or two inserting the same new item collide on its source key (Ch 1.2
+    // D2). Taken after the user's row lock, so the order is always the same.
+    await tx.execute(
+      sql`select pg_advisory_xact_lock(hashtext('fixtures:load'))`,
+    );
     const ids = await loadCatalog(tx, fixtures, log);
     const written = await loadContent(tx, userId, fixtures, ids);
     log(
