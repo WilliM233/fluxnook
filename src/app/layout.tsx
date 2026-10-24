@@ -1,9 +1,18 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Geist } from "next/font/google";
+import { Fraunces, Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
+// Deep Field's two faces (Ch 1.2): Fraunces for titles, Inter for text.
+// next/font takes `axes` only on the variable font, so 400 and 600 are CSS
+// weights here, not separate files.
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  weight: "variable",
+  axes: ["opsz"],
+  variable: "--font-heading",
+});
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "Fluxnook",
@@ -12,7 +21,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
+    <html
+      lang="en"
+      className={cn("font-sans", inter.variable, fraunces.variable)}
+    >
       <body>{children}</body>
     </html>
   );
