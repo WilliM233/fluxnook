@@ -62,6 +62,15 @@ describe("GET /api/v1/providers/tmdb/search", () => {
     });
   });
 
+  // Rummage R6 (Raccoon N8): a bad page is a bad page, not a short query.
+  it("is 400 naming page, not the query, for page=abc", async () => {
+    const response = await call("q=carrie&page=abc");
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error.message).not.toContain("two characters");
+    expect(body.error.fields).toHaveProperty("page");
+  });
+
   it("is 503 provider_unavailable with no token, and says nothing of TMDB's", async () => {
     search.mockRejectedValue(new ProviderNotConfigured());
     const response = await call("q=carrie");

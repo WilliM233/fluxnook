@@ -20,6 +20,7 @@ let carrie1976: string;
 let carrie2013: string;
 let rage: string;
 let key1976: string;
+const noteR7 = `rummage R7 ${crypto.randomUUID()}`;
 
 const pick = (title: string, year: number) => {
   const found = rows.find((r) => r.title === title && r.year === year);
@@ -55,6 +56,7 @@ beforeAll(async () => {
 }, 60_000);
 
 afterAll(async () => {
+  await sql`delete from items where title = '???' and source_note = ${noteR7}`;
   await sql`delete from item_sources where source = 'tmdb' and key = ${key1976}`;
   await sql`delete from auth.users where id in (${user.id}, ${bare.id})`;
   await stub.close();
@@ -119,6 +121,17 @@ describe("catalogStatuses for carrie", () => {
     expect(result.status).toBe("match");
     if (result.status !== "match") return;
     expect(result.candidates.map((c) => c.year).sort()).toEqual([2017, 2018]);
+  });
+
+  // Rummage R7 (Raccoon N4): punctuation folds to nothing, and nothing is
+  // not a title two items can share.
+  it("a title that folds to nothing is new, even beside another such title", async () => {
+    await sql`
+      insert into items (type, title, released_on, released_precision, source_note)
+      values ('film', '???', '2013-01-01', 'year', ${noteR7})`;
+    expect(
+      await status(made({ key: "movie/999999995", title: "...", year: 2013 })),
+    ).toEqual({ status: "new" });
   });
 
   it("someone with no shelves sees the match with no shelf", async () => {
