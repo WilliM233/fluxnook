@@ -16,6 +16,7 @@ import {
   type Tmdb,
   type TmdbItem,
 } from "@/lib/providers/tmdb";
+import { normalizeTitle } from "./normalize";
 
 /** No such item here, or no such key at TMDB. */
 export class NotFoundError extends Error {}
@@ -30,6 +31,7 @@ type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0];
 
 const precisionRank = { year: 0, month: 1, day: 2 } as const;
 const POSTER_LIMIT = 5 * 1024 * 1024;
+const POSTER_TIMEOUT_MS = 10_000;
 
 const tmdbUrl = (key: string) => `https://www.themoviedb.org/${key}`;
 
@@ -54,11 +56,15 @@ export async function importFromTmdb(
   db: Db,
   tmdb: Tmdb,
   covers: CoverStore | null,
-  { key, attachTo }: { key: string; attachTo?: string },
+  { key: asked, attachTo }: { key: string; attachTo?: string },
 ): Promise<{ id: string; created: boolean }> {
+  const parsed = parseTmdbKey(asked);
+  if (!parsed) throw new NotFoundError(`Not a TMDB key: ${asked}`);
+  // One spelling per TMDB id: `movie/0133805` is `movie/133805`, or the
+  // catalog would hold the same film twice under two keys (Ch 1.2 B1).
+  const key = `${parsed.kind}/${parsed.id}`;
   const existing = await itemForKey(db, key);
   if (existing) return { id: existing, created: false };
-  if (!parseTmdbKey(key)) throw new NotFoundError(`Not a TMDB key: ${key}`);
 
   let details: TmdbItem;
   try {
@@ -129,6 +135,13 @@ async function attach(tx: Tx, itemId: string, details: TmdbItem) {
   if (taken) {
     throw new ConflictError(`That item already has TMDB source ${taken.key}.`);
   }
+  // The sheet only offers items that look like the result; the route holds
+  // the same line, since an attach can't be undone this chapter (S1).
+  if (!looksAlike(item, details)) {
+    throw new ConflictError(
+      `That item doesn't look like ${details.title}: the title and year must match.`,
+    );
+  }
 
   const date = mergedDate(item, details);
   await tx
@@ -140,6 +153,19 @@ async function attach(tx: Tx, itemId: string, details: TmdbItem) {
     })
     .where(eq(items.id, itemId));
   return itemId;
+}
+
+/** The match rule (A4): the same title once folded, and a year within 1 when both have one. */
+function looksAlike(
+  item: Pick<typeof items.$inferSelect, "title" | "releasedOn">,
+  details: TmdbItem,
+) {
+  const folded = normalizeTitle(item.title);
+  if (folded === "" || folded !== normalizeTitle(details.title)) return false;
+  const held = item.releasedOn ? Number(item.releasedOn.slice(0, 4)) : null;
+  return (
+    held === null || details.year === null || Math.abs(held - details.year) <= 1
+  );
 }
 
 /** Q2: the held date stays unless it is missing, or TMDB's is finer in the same year. */
@@ -231,13 +257,33 @@ async function addFranchise(
       .insert(franchises)
       .values({ name: collection.name })
       .returning({ id: franchises.id });
-    franchise = made.id;
-    await tx.insert(franchiseSources).values({
-      franchise,
-      source: "tmdb",
-      key: collection.key,
-      url: tmdbUrl(collection.key),
-    });
+    // Upsert on the source (A5): an import of the same collection at once
+    // waits here, finds the winner's row, and drops the one it made (B2).
+    const [claimed] = await tx
+      .insert(franchiseSources)
+      .values({
+        franchise: made.id,
+        source: "tmdb",
+        key: collection.key,
+        url: tmdbUrl(collection.key),
+      })
+      .onConflictDoNothing()
+      .returning({ franchise: franchiseSources.franchise });
+    if (claimed) {
+      franchise = made.id;
+    } else {
+      await tx.delete(franchises).where(eq(franchises.id, made.id));
+      const [winner] = await tx
+        .select({ franchise: franchiseSources.franchise })
+        .from(franchiseSources)
+        .where(
+          and(
+            eq(franchiseSources.source, "tmdb"),
+            eq(franchiseSources.key, collection.key),
+          ),
+        );
+      franchise = winner.franchise;
+    }
   }
   await tx
     .insert(itemFranchises)
@@ -257,7 +303,10 @@ async function cachePoster(
   const path = `tmdb/${details.key}${details.posterPath.slice(details.posterPath.lastIndexOf("."))}`;
   try {
     if (!covers) throw new Error("no cover store (SUPABASE_SECRET_KEY unset)");
-    const response = await fetch(tmdb.posterUrl(details.posterPath));
+    // A CDN that accepts and never answers mustn't hold the request (S2).
+    const response = await fetch(tmdb.posterUrl(details.posterPath), {
+      signal: AbortSignal.timeout(POSTER_TIMEOUT_MS),
+    });
     const type = response.headers.get("content-type") ?? "";
     if (!response.ok) throw new Error(`poster answered ${response.status}`);
     if (!type.startsWith("image/")) throw new Error(`poster is ${type}`);

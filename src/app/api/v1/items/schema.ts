@@ -6,7 +6,11 @@ import { bookForms, comicForms, seriesKinds } from "@/db/vocabulary";
 // messages are written for the person filling it in.
 
 const common = {
-  title: z.string("Give it a title.").trim().min(1, "Give it a title."),
+  title: z
+    .string("Give it a title.")
+    .trim()
+    .min(1, "Give it a title.")
+    .max(300, "Keep the title under 300 characters."),
   year: z
     .int("A year is a number.")
     .min(1000, "That year looks off.")
@@ -53,13 +57,22 @@ export const manualItemSchema = z
         type: z.literal("book"),
         ...common,
         form: z.enum(bookForms, "Pick a form."),
-        author: z.string("Name the author.").trim().min(1, "Name the author."),
+        author: z
+          .string("Name the author.")
+          .trim()
+          .min(1, "Name the author.")
+          .max(200, "Keep the author under 200 characters."),
       }),
       z.strictObject({
         type: z.literal("comic"),
         ...common,
         form: z.enum(comicForms, "Pick a form."),
-        series: z.string().trim().min(1).optional(),
+        series: z
+          .string()
+          .trim()
+          .min(1)
+          .max(200, "Keep the series under 200 characters.")
+          .optional(),
         seriesKind: z.enum(seriesKinds, "Pick a kind of series.").optional(),
         number: count("The number"),
       }),
@@ -111,20 +124,4 @@ export function releasedFrom(item: Pick<ManualItem, "year" | "month" | "day">) {
   };
 }
 
-/** Zod's issues as the first message per field, the shape `error.fields` carries. */
-export function fieldErrors(error: z.ZodError): Record<string, string> {
-  const fields: Record<string, string> = {};
-  for (const issue of error.issues) {
-    const names =
-      issue.code === "unrecognized_keys"
-        ? issue.keys
-        : [issue.path.join(".") || "form"];
-    for (const name of names) {
-      fields[name] ??=
-        issue.code === "unrecognized_keys"
-          ? "Not a field for this type."
-          : issue.message;
-    }
-  }
-  return fields;
-}
+export { fieldErrors } from "@/lib/api/fields";

@@ -1,5 +1,6 @@
 import { serverDb } from "@/db/client";
 import { apiError, noStore } from "@/lib/api/errors";
+import { fieldErrors } from "@/lib/api/fields";
 import { catalogStatuses } from "@/lib/catalog/match";
 import {
   ProviderError,
@@ -27,10 +28,12 @@ export async function GET(request: Request) {
   const params = Object.fromEntries(new URL(request.url).searchParams);
   const parsed = searchQuerySchema.safeParse(params);
   if (!parsed.success) {
+    const fields = fieldErrors(parsed.error);
     return apiError(
       400,
       "invalid_request",
-      "Search for at least two characters.",
+      fields.q ?? "That isn't a search this route takes.",
+      fields,
     );
   }
   const { q, type, page } = parsed.data;

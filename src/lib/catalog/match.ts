@@ -70,6 +70,9 @@ export async function catalogStatuses(
     if (itemId) return { status: "in", itemId };
     if (row.year === null) return { status: "new" };
     const title = normalizeTitle(row.title);
+    // A title of only punctuation folds to nothing, and nothing is not a
+    // title two works can share (R7).
+    if (title === "") return { status: "new" };
     const found = folded
       .filter(
         (c) =>
