@@ -9,6 +9,8 @@ Every version in `package.json` is exact (`.npmrc` has `save-exact=true`). This 
 | Node | 22.15.0 (`.nvmrc`) | The runtime the versions below were pinned against; meets Next 16 (>=20.9). CI reads `.nvmrc` |
 | Docker Desktop | any current | The Supabase CLI runs the local stack in containers. CI starts only the services the gates use (`.github/actions/stack`): the database, gotrue, kong, postgrest, mailpit and, from Ch 1.2, storage-api for the `covers` bucket |
 
+Fonts are not packages: Fraunces (titles) and Inter (text) come through `next/font/google` and are fetched at build, replacing Geist (Ch 1.2). The TMDB logo in `public/tmdb` is TMDB's own file, source noted beside it.
+
 Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js files in Chapter 0.2.
 
 ## dependencies
@@ -22,7 +24,7 @@ Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js fil
 | cn | 0.5.0 | shadcn's class merger; replaces clsx and tailwind-merge |
 | lucide-react | 1.58.0 | shadcn's default icon set |
 | zod | 4.6.7 | Validation at the `/api/v1` edge, requests and responses |
-| @supabase/supabase-js | 2.118.0 | Supabase Auth: magic links, sessions, `getUser()` |
+| @supabase/supabase-js | 2.118.0 | Supabase Auth: magic links, sessions, `getUser()`. Its bundled Storage client writes covers to the `covers` bucket from `src/lib/covers.ts`, server-side with the secret key |
 | @supabase/ssr | 0.12.7 | Supabase's cookie-session helper for the App Router: the server client and the session-refresh proxy |
 | drizzle-orm | 0.45.4 | Table definitions in `src/db/schema.ts`; `drizzle-orm/supabase` for `auth.users`. 1.0 is still a release candidate |
 | postgres | 3.4.9 | The driver under `drizzle-orm/postgres-js` in `src/db/client.ts`, the server's only database client; `tests/db` also use it directly. Over `pg`: no `@types` package, and it is the driver `drizzle-orm/postgres-js` takes |

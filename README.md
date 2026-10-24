@@ -2,7 +2,7 @@
 
 A cozy place to keep your shelves: films, TV, books, comics and games in one nook, organized the way you read and watch them, with a journal for each pass through and the physical collection tracked alongside.
 
-Volume 1 is in progress. Today you can sign in with a magic link and see an empty nook, locally. The tables behind it exist (see Data model), and a loader fills them from the fixtures.
+Volume 1 is in progress. Today you can sign in with a magic link, search TMDB for a film or a show and add it to the catalog, add an item by hand, and open any item's page, locally. Shelves, reads and copies have tables (see Data model) and a loader fills them from the fixtures, but no screens yet.
 
 ## Run it locally
 
@@ -21,7 +21,18 @@ Things that trip people up:
 
 - Use `localhost:3000`, not `127.0.0.1:3000`, and nothing else on port 3000. The link always returns to `http://localhost:3000` (`supabase/config.toml` `[auth]`), and the sign-in cookie lives on the host you asked from. From anywhere else the link won't sign you in.
 - Every checkout of this repo has `project_id = "fluxnook"`, so they share one set of containers and one database. Run `npx supabase stop` in the other checkout before `npx supabase start` in this one. The second checkout starts on the first one's data.
-- `.env.example` holds the Supabase CLI's fixed local URL and publishable key. Without `.env.local`, the app throws naming the missing variable.
+- `.env.example` holds the Supabase CLI's fixed local URL, publishable key and database URL. Without `.env.local`, the app throws naming the missing variable.
+- Two lines in `.env.example` are empty on purpose, and both are server-only: never `NEXT_PUBLIC_`, never committed, never in a response. `SUPABASE_SECRET_KEY` is the `SECRET_KEY` value `npx supabase status` prints (`npx supabase status -o env` prints it as `SECRET_KEY=`); the server writes cover images to Storage with it. Empty, an import still works and the item has no cover. `TMDB_API_KEY` is the v4 read access token from https://www.themoviedb.org/settings/api (a free TMDB account). Empty, search answers "Search isn't set up on this nook yet" and every other page works.
+- Tests and the Browse never need a TMDB key. `npm run tmdb:stub -- --port 4010` serves the recordings in `tests/fixtures/tmdb` and a 1x1 jpg for every poster. Point the app at it with `TMDB_BASE_URL=http://127.0.0.1:4010/3` and `TMDB_IMAGE_BASE_URL=http://127.0.0.1:4010/t/p` in `.env.local` (both optional; they default to TMDB's own). Playwright starts its own stub and sets these for the app it runs.
+
+## Screens
+
+All three sit behind sign-in; a signed-out visit to any of them goes to `/`. The header links Search and Nook; the footer carries TMDB's required attribution line and logo.
+
+- `/search`: type two or more characters, pick All, Films or TV. The URL carries `q` and `type`. Each result says one of three things. In your catalog: Open goes to the item. Looks like one you have: Add opens a sheet with TMDB's side and the catalog item's side; "Same, add the TMDB details to it" adds the TMDB source and fills what the item lacks, "Different, add as new" makes a second item. New: Add imports it and goes to its page. With the box empty it lists the 12 newest catalog items.
+- `/items/<uuid>`: the item page. Cover, facts for its type, summary, release date at the precision held, sources as links, relations in both directions, and which of your shelves hold it. An unknown id is a 404 inside the app shell.
+- `/items/new`: add an item by hand, for what no provider knows. The fields follow the type.
+- `/nook` is still empty. Shelves are Chapter 1.5.
 
 `npx supabase stop` stops the stack and keeps the data. `npx supabase db reset` wipes local data and re-applies `supabase/migrations`; the running app doesn't need a restart.
 
@@ -38,12 +49,14 @@ Things that trip people up:
 | `npm run db:check` | Fails when `src/db/schema.ts` and `supabase/migrations` disagree. Writes nothing to the repo |
 | `npm run fixtures:build` | Rebuilds `supabase/seed/fixtures/*.json` from `supabase/seed/raw`. Deterministic. Plain Node, no stack needed |
 | `npm run fixtures:load -- --user <email> [--replace]` | Writes the fixtures into the local database for one user. Needs the stack up, `.env.local`, and that address signed in once, so its `profiles` row exists. See Data model |
+| `npm run tmdb:stub -- [--port 4010]` | The TMDB stand-in described under Run it locally. Ctrl+C stops it |
+| `npm run tmdb:record -- <path>...` | Rewrites recordings in `tests/fixtures/tmdb` from the real API, reading `TMDB_API_KEY` from `.env.local`. Paths are `search:<query>`, `movie/<id>`, `tv/<id>`. The recordings were made with `search:carrie movie/133805 tv/46157 movie/7340` |
 | `npm run check` | The six gates CI runs, in order, stopping at the first red: lint, typecheck, test, db:check, test:db, test:e2e. Needs the stack up |
 | `npm run db:generate -- --name=<change>` | drizzle-kit writes a migration into `supabase/migrations`. Read `.claude/skills/migrations/SKILL.md` first |
 
 ## CI
 
-Every PR into `dev` or `main`, and every push to `dev`, runs workflow `CI` (`.github/workflows/ci.yml`). It has six jobs, named as their npm scripts: `lint`, `typecheck`, `test`, `db:check`, `test:db`, `test:e2e`. `test:db` and `test:e2e` each start their own Supabase stack in the runner. `test:e2e` builds the app and runs it with `next start` on Chromium only. No secrets are used: `.env.example` is copied to `.env.local`.
+Every PR into `dev` or `main`, and every push to `dev`, runs workflow `CI` (`.github/workflows/ci.yml`). It has six jobs, named as their npm scripts: `lint`, `typecheck`, `test`, `db:check`, `test:db`, `test:e2e`. `test:db` and `test:e2e` each start their own Supabase stack in the runner, including Storage for the `covers` bucket. `test:e2e` builds the app and runs it with `next start` on Chromium only. No secrets are used: `.env.example` is copied to `.env.local`, and `SUPABASE_SECRET_KEY` is filled from the key that stack prints. CI holds no TMDB token: the tests run on the stub, and the one test that calls the real TMDB skips without a key.
 
 `npm run check` runs the same six gates locally.
 
@@ -91,9 +104,9 @@ Adding a raw file: put it under `supabase/seed/raw/<source>/`, add its row to `s
 
 ## Data model
 
-`src/db/schema.ts` holds 18 tables in `public`, in two halves. No page reads them yet.
+`src/db/schema.ts` holds 20 tables in `public`, in two halves. The item page reads the catalog and the signed-in user's shelf entries; nothing else reads the content half yet.
 
-- The catalog, shared by every user, no `visibility`: `items` (a `film`, `book` or `comic`; `form` is null for films and required for books and comics), `item_books`, `item_comics`, `item_sources`, `item_relations`, `editions`, `edition_sources`, `edition_contents`, `franchises`, `franchise_sources`, `item_franchises`. An item's identity is its `item_sources` row, `(source, key)`: the fixtures' `letterboxd:20ZQ` is source `letterboxd`, key `20ZQ`, and `manual` is a source like any other. Dates are `released_on` plus `released_precision` (`day`, `month`, `year`), both null or both set.
+- The catalog, shared by every user, no `visibility`: `items` (a `film`, `tv`, `book` or `comic`; `form` is null for films and shows and required for books and comics; `summary` and `cover_path` are shared by every type), `item_films` (runtime, original title), `item_tv` (seasons, episodes, original title, first and last aired, ended), `item_books`, `item_comics`, `item_sources`, `item_relations`, `editions`, `edition_sources`, `edition_contents`, `franchises`, `franchise_sources`, `item_franchises`. An item's identity is its `item_sources` row, `(source, key)`: the fixtures' `letterboxd:20ZQ` is source `letterboxd`, key `20ZQ`, and `manual` is a source like any other. A TMDB key carries the kind, `movie/603` or `tv/1396`, because the ids collide; an item added by hand has its own uuid as its `manual` key and its `created_by` set (loader rows have it null). Dates are `released_on` plus `released_precision` (`day`, `month`, `year`), both null or both set.
 - A person's content: `shelves`, `shelf_sections`, `shelf_entries`, `occurrences` (a read or watch, with half-step `stars`), `journal_entries`, `copies`. Everything here points at the catalog and never the other way round.
 - `profiles` is an account table: no `visibility`, no `updated_at`.
 
@@ -123,8 +136,12 @@ Raw SQL by hand: `docker exec supabase_db_fluxnook psql -U postgres`, as above. 
 
 ## Where things are
 
-- `src/app`: the pages (`/`, `/nook`) and the API route handlers under `src/app/api/v1`
-- `src/lib`: env reader, Supabase server client and session refresh, the API error helper
+- `src/app`: the sign-in page at `/`, the signed-in pages under the `(app)` route group (`/nook`, `/search`, `/items/<uuid>`, `/items/new`; its layout holds the sign-in guard, header and footer), and the API route handlers under `src/app/api/v1`
+- `src/components/shell`: the header and footer. `src/components/ui`: shadcn components
+- `src/lib`: env reader (`readEnv` for the public settings, `readServerEnv` for the server-only ones), Supabase server client and session refresh, the API error helper
+- `src/lib/providers/tmdb.ts`: the TMDB client. `src/lib/catalog`: title matching, import, manual entry and the item page's reads. `src/lib/covers.ts`: the Storage client for the `covers` bucket, server-only
+- `tests/stub/tmdb.ts`, `tests/fixtures/tmdb`: the TMDB stub and the recordings it serves
+- `public/tmdb`: TMDB's logo, with its source noted
 - `src/proxy.ts`: refreshes the session on every request except Next's assets and image files
 - `src/db/schema.ts`: Drizzle table definitions. See Data model
 - `src/db/client.ts`: `createDb()`, the Drizzle client over `postgres` on `DATABASE_URL`. The caller closes it
