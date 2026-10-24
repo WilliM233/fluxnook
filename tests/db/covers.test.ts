@@ -8,3 +8,10 @@ it("the cover store reaches Storage with the secret key", async () => {
   const buckets = await coverStoreFromEnv().listBuckets();
   expect(Array.isArray(buckets)).toBe(true);
 });
+
+it("the covers bucket exists and is public", async () => {
+  const buckets = await coverStoreFromEnv().listBuckets();
+  expect(buckets.find((bucket) => bucket.id === "covers")).toMatchObject({
+    public: true,
+  });
+});
