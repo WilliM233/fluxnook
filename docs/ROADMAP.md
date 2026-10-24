@@ -59,8 +59,8 @@ Exit: a user exists, logs in locally, sees an empty nook. The team can run a cha
 ### Volume 1: Alpha
 A usable app for one person. Exit: the King path lives in the app as a cross-media book-then-films shelf, the TMNT sheet is retired, L's physical library is tracked, and the sheet has stopped being opened.
 - Ch 1: Schema and migrations for the whole core model above, including visibility, occurrences, copies and franchise, even where no UI exists yet. Loads the Volume 0 fixtures. Done, v0.1.0-ch.1 (#61, PR #62); plan at docs/plans/1.1-schema.md
-- Ch 2: Providers, film and TV: TMDB search and import into the local catalog, cover cache, the item page. Next; plan at docs/plans/1.2-providers-film-tv.md, design at https://claude.ai/artifact/Kz18YNtugryAE1SEzNXiLp
-- Ch 3: Providers, books: Open Library search and ISBN lookup. ISBN entry is the main path for matching the library
+- Ch 2: Providers, film and TV: TMDB search and import into the local catalog, cover cache, the item page. Done, v0.1.0-ch.2 (#63, PR #64); plan at docs/plans/1.2-providers-film-tv.md, design at https://claude.ai/artifact/Kz18YNtugryAE1SEzNXiLp
+- Ch 3: Providers, books: Open Library search and ISBN lookup. ISBN entry is the main path for matching the library. Next
 - Ch 4: Providers, comics: Metron search and import; edition contents where Metron has them, manual fill where it does not
 - Ch 5: Shelves: create, sections, drag ordering, add from catalog, status per entry (unmarked, done, skipped), aggregate stars across the shelf
 - Ch 6: Occurrences and journal: log a read or watch, stars, journal entries, item page history
@@ -95,6 +95,10 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## Calls made (with reason)
 
+- 2026-10-24 The attach rule is the server's: an attach target has the same type, the same normalized title and a year within 1 of the TMDB result, or the import is 409; the match sheet only shows the rule (Ch 1.2 S1)
+- 2026-10-24 A finer date for the same year refines a coarser one on attach; a date from a different year never replaces a held one, and a held title or summary is never replaced (Ch 1.2 Q2)
+- 2026-10-24 TMDB keys are stored canonical, `movie/<int>` and `tv/<int>`: `movie/0133805` is `movie/133805`, so one id is one item (Ch 1.2 B1)
+- 2026-10-24 Secrets stay out of the repo, local defaults included: `.env.example` carries empty slots, CI fills them from the tool that owns them (Ch 1.2 D1)
 - 2026-10-24 Search is its own page (`/search`), TMDB only until the next providers land; an empty query lists the catalog's recent items. The nook stays empty until shelves (Ch 1.2)
 - 2026-10-24 Import attaches to a likely match instead of making a second item: a result whose type, normalized title and year (within 1) match a catalog item with no TMDB source shows a sheet, and the person says same or different. Reconciliation of the Letterboxd rows happens here, as the 2026-10-22 call parked it (Ch 1.2)
 - 2026-10-24 The TMDB token is server-only; tests run on recorded responses through a `TMDB_BASE_URL` stub, and one live test runs only when the key is present. CI never holds a provider secret (Ch 1.2)
@@ -172,6 +176,7 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## History
 
+- 2026-10-24 Ch 1.2 closed, v0.1.0-ch.2 (#63, PR #64); Ch 1.3 is next. The first screens and the first provider; four calls added from the Afterword (attach rule, date rule, canonical keys, secrets)
 - 2026-10-24 Ch 1.2 design talk: nine leans on search, import, TV, covers and the item page; the design made first (five screens and a palette board), Deep Field chosen over Nebula and Dusk. Ch 1.2 spec written, docs/plans/1.2-providers-film-tv.md
 - 2026-10-23 Ch 1.1 closed; Ch 1.2 is next. First Fable-QA chapter; the migration-fold and design-talk rules added from the Afterword.
 - 2026-10-23 Ch 1.1 design talk: fifteen leans on the data model taken against the fixtures as they landed, four calls on their leftovers. Ch 1.1 spec written, docs/plans/1.1-schema.md; the first Fable-QA chapter
