@@ -36,3 +36,54 @@ export function readEnv(source: EnvSource = processEnv): Env {
     supabasePublishableKey: result.data.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   };
 }
+
+const serverEnvSchema = z.object({
+  TMDB_API_KEY: z.string().optional(),
+  TMDB_BASE_URL: z.url().default("https://api.themoviedb.org/3"),
+  TMDB_IMAGE_BASE_URL: z.url().default("https://image.tmdb.org/t/p"),
+  SUPABASE_SECRET_KEY: z.string().optional(),
+});
+
+type ServerEnvSource = Partial<
+  Record<keyof z.infer<typeof serverEnvSchema>, string>
+>;
+
+export type ServerEnv = {
+  tmdbApiKey: string | null;
+  tmdbBaseUrl: string;
+  tmdbImageBaseUrl: string;
+  supabaseSecretKey: string | null;
+};
+
+// Server-only secrets: never NEXT_PUBLIC_, so Next never inlines them into a
+// bundle. Read lazily, so a route reads the environment it runs in.
+const processServerEnv = (): ServerEnvSource => ({
+  TMDB_API_KEY: process.env.TMDB_API_KEY,
+  TMDB_BASE_URL: process.env.TMDB_BASE_URL,
+  TMDB_IMAGE_BASE_URL: process.env.TMDB_IMAGE_BASE_URL,
+  SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
+});
+
+/**
+ * Reads the server-only settings. Every one is optional: an empty key reads as
+ * null (the feature it unlocks is off), and the TMDB URLs default to TMDB's
+ * own, so only tests and the Browse's stub ever set them.
+ */
+export function readServerEnv(
+  source: ServerEnvSource = processServerEnv(),
+): ServerEnv {
+  const present = Object.fromEntries(
+    Object.entries(source).filter(([, value]) => value),
+  );
+  const result = serverEnvSchema.safeParse(present);
+  if (!result.success) {
+    const names = result.error.issues.map((issue) => issue.path.join("."));
+    throw new Error(`Invalid environment variable: ${names.join(", ")}.`);
+  }
+  return {
+    tmdbApiKey: result.data.TMDB_API_KEY ?? null,
+    tmdbBaseUrl: result.data.TMDB_BASE_URL,
+    tmdbImageBaseUrl: result.data.TMDB_IMAGE_BASE_URL,
+    supabaseSecretKey: result.data.SUPABASE_SECRET_KEY ?? null,
+  };
+}

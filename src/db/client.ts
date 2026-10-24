@@ -19,3 +19,13 @@ export function createDb(url = process.env.DATABASE_URL) {
 }
 
 export type Db = ReturnType<typeof createDb>["db"];
+
+// One pool per server process, kept on globalThis so dev's hot reloads
+// don't open a new one per edit.
+const shared = globalThis as { fluxnookDb?: Db };
+
+/** The database for route handlers and server pages; never closed. */
+export function serverDb(): Db {
+  shared.fluxnookDb ??= createDb().db;
+  return shared.fluxnookDb;
+}

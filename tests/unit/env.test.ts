@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { readEnv } from "@/lib/env";
+import { readEnv, readServerEnv } from "@/lib/env";
 
 const url = "http://127.0.0.1:54321";
 const key = "sb_publishable_test";
@@ -27,5 +27,36 @@ describe("readEnv", () => {
         NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: key,
       }),
     ).toEqual({ supabaseUrl: url, supabasePublishableKey: key });
+  });
+});
+
+describe("readServerEnv", () => {
+  it("reads an empty key as null, so the feature it unlocks is off", () => {
+    expect(
+      readServerEnv({ TMDB_API_KEY: "", SUPABASE_SECRET_KEY: "" }),
+    ).toMatchObject({ tmdbApiKey: null, supabaseSecretKey: null });
+  });
+
+  it("fills TMDB's own URLs when none are set", () => {
+    expect(readServerEnv({ TMDB_BASE_URL: "" })).toEqual({
+      tmdbApiKey: null,
+      tmdbBaseUrl: "https://api.themoviedb.org/3",
+      tmdbImageBaseUrl: "https://image.tmdb.org/t/p",
+      supabaseSecretKey: null,
+    });
+  });
+
+  it("returns a set base URL and key, so tests can point at a stub", () => {
+    expect(
+      readServerEnv({
+        TMDB_API_KEY: "token",
+        TMDB_BASE_URL: "http://127.0.0.1:4010/3",
+        TMDB_IMAGE_BASE_URL: "http://127.0.0.1:4010/t/p",
+      }),
+    ).toMatchObject({
+      tmdbApiKey: "token",
+      tmdbBaseUrl: "http://127.0.0.1:4010/3",
+      tmdbImageBaseUrl: "http://127.0.0.1:4010/t/p",
+    });
   });
 });

@@ -1,5 +1,6 @@
 import { type SQL, sql } from "drizzle-orm";
 import {
+  boolean,
   check,
   date,
   foreignKey,
@@ -28,51 +29,33 @@ export const profiles = pgTable("profiles", {
     .defaultNow(),
 });
 
-// Every enumeration is text with a check, never a Postgres enum (Ch 1.1
-// call): adding a value is a one-line migration, not an ALTER TYPE.
-export const itemTypes = ["film", "book", "comic"] as const;
-export const bookForms = [
-  "novel",
-  "novella",
-  "collection",
-  "story",
-  "series",
-] as const;
-export const comicForms = [
-  "issue",
-  "one-shot",
-  "backup",
-  "collected",
-  "anthology",
-] as const;
-export const seriesKinds = [
-  "ongoing",
-  "micro-series",
-  "mini-series",
-  "crossover",
-  "tie-in",
-  "minor",
-] as const;
-export const releasedPrecisions = ["day", "month", "year"] as const;
-export const visibilities = ["private", "unlisted", "public"] as const;
-export const entryStatuses = ["unmarked", "done", "skipped"] as const;
-export const occurrenceStatuses = ["in_progress", "done", "abandoned"] as const;
-export const anchorKinds = ["page", "chapter", "episode", "issue"] as const;
-export const relationKinds = ["adaptation-of", "contained-in"] as const;
-// One vocabulary across types, narrowed per type at the API (Ch 1.1 call).
-export const editionFormats = [
-  "floppy",
-  "tpb",
-  "hardcover",
-  "omnibus",
-  "paperback",
-  "ebook",
-  "audiobook",
-  "dvd",
-  "blu-ray",
-  "4k",
-  "digital",
-] as const;
+import {
+  anchorKinds,
+  bookForms,
+  comicForms,
+  editionFormats,
+  entryStatuses,
+  itemTypes,
+  occurrenceStatuses,
+  relationKinds,
+  releasedPrecisions,
+  seriesKinds,
+  visibilities,
+} from "./vocabulary";
+
+export {
+  anchorKinds,
+  bookForms,
+  comicForms,
+  editionFormats,
+  entryStatuses,
+  itemTypes,
+  occurrenceStatuses,
+  relationKinds,
+  releasedPrecisions,
+  seriesKinds,
+  visibilities,
+} from "./vocabulary";
 
 // Literals, not parameters: a check constraint is DDL and takes no binds.
 function oneOf(column: SQL | unknown, values: readonly string[]) {
@@ -106,7 +89,8 @@ function released() {
 /**
  * A work: one film, book or comic, with its original date (an edition carries
  * its own). A story is a book with form `story`; a collected edition is a
- * `collected` comic with an edition and contents (Roadmap 2026-10-23).
+ * `collected` comic with an edition and contents (Roadmap 2026-10-23). A show
+ * is type `tv` (Ch 1.2).
  */
 export const items = pgTable(
   "items",
@@ -117,6 +101,10 @@ export const items = pgTable(
     form: text("form", { enum: [...bookForms, ...comicForms] }),
     ...released(),
     sourceNote: text("source_note"),
+    // Shared by every type, so on items, not a child table (Ch 1.2 call).
+    summary: text("summary"),
+    // Bucket-relative path in `covers`, e.g. `tmdb/movie/133805.jpg`.
+    coverPath: text("cover_path"),
     // Null for loader and provider rows. Set null when the author goes: the
     // catalog is global and carries no ownership (Deferral).
     createdBy: uuid("created_by").references(() => profiles.id, {
@@ -130,7 +118,7 @@ export const items = pgTable(
       "items_form_per_type",
       // `form in (...)` is null for a null form, and a null check passes, so
       // the book and comic arms say not null out loud (Ch 1.1 B1).
-      sql`(${t.type} = 'film' and ${t.form} is null) or (${t.type} = 'book' and ${t.form} is not null and ${oneOf(t.form, bookForms)}) or (${t.type} = 'comic' and ${t.form} is not null and ${oneOf(t.form, comicForms)})`,
+      sql`(${t.type} = 'film' and ${t.form} is null) or (${t.type} = 'tv' and ${t.form} is null) or (${t.type} = 'book' and ${t.form} is not null and ${oneOf(t.form, bookForms)}) or (${t.type} = 'comic' and ${t.form} is not null and ${oneOf(t.form, comicForms)})`,
     ),
     check(
       "items_released",
@@ -171,6 +159,33 @@ export const itemComics = pgTable(
     ),
   ],
 );
+
+/** A film's own columns, from TMDB's first column (Ch 1.2). */
+export const itemFilms = pgTable("item_films", {
+  item: uuid("item")
+    .primaryKey()
+    .references(() => items.id, { onDelete: "cascade" }),
+  runtimeMinutes: integer("runtime_minutes"),
+  originalTitle: text("original_title"),
+  ...timestamps(),
+});
+
+/**
+ * A show's own columns (Ch 1.2). Its first air date is the item's
+ * `released_on`; `first_aired` keeps TMDB's value beside it.
+ */
+export const itemTv = pgTable("item_tv", {
+  item: uuid("item")
+    .primaryKey()
+    .references(() => items.id, { onDelete: "cascade" }),
+  seasons: integer("seasons"),
+  episodes: integer("episodes"),
+  originalTitle: text("original_title"),
+  firstAired: date("first_aired"),
+  lastAired: date("last_aired"),
+  ended: boolean("ended").notNull().default(false),
+  ...timestamps(),
+});
 
 /**
  * An item's identity at a source: `letterboxd`/`20ZQ`, or `manual` for a

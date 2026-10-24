@@ -1,0 +1,12 @@
+-- covers_bucket: the public Storage bucket for cached posters (Ch 1.2). Public
+-- read by URL; no policy on storage.objects, so only the server's secret key
+-- writes. A row in storage.buckets, so local and hosted get it the same way;
+-- outside public, so db:check never sees it.
+-- Down (first; the film_tv_updated_at and film_tv Downs follow). Storage's
+-- protect_delete trigger refuses direct deletes unless the transaction opts in;
+-- the object files stay on Storage's volume, so empty the bucket through the
+-- Storage API first where they matter (hosted):
+--   set local storage.allow_delete_query = 'true';
+--   delete from storage.objects where bucket_id = 'covers';
+--   delete from storage.buckets where id = 'covers';
+insert into storage.buckets (id, name, public) values ('covers', 'covers', true) on conflict (id) do nothing;
