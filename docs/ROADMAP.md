@@ -59,7 +59,7 @@ Exit: a user exists, logs in locally, sees an empty nook. The team can run a cha
 ### Volume 1: Alpha
 A usable app for one person. Exit: the King path lives in the app as a cross-media book-then-films shelf, the TMNT sheet is retired, L's physical library is tracked, and the sheet has stopped being opened.
 - Ch 1: Schema and migrations for the whole core model above, including visibility, occurrences, copies and franchise, even where no UI exists yet. Loads the Volume 0 fixtures. Done, v0.1.0-ch.1 (#61, PR #62); plan at docs/plans/1.1-schema.md
-- Ch 2: Providers, film and TV: TMDB search and import into the local catalog, cover cache, the item page. Next
+- Ch 2: Providers, film and TV: TMDB search and import into the local catalog, cover cache, the item page. Next; plan at docs/plans/1.2-providers-film-tv.md, design at https://claude.ai/artifact/Kz18YNtugryAE1SEzNXiLp
 - Ch 3: Providers, books: Open Library search and ISBN lookup. ISBN entry is the main path for matching the library
 - Ch 4: Providers, comics: Metron search and import; edition contents where Metron has them, manual fill where it does not
 - Ch 5: Shelves: create, sections, drag ordering, add from catalog, status per entry (unmarked, done, skipped), aggregate stars across the shelf
@@ -95,6 +95,15 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## Calls made (with reason)
 
+- 2026-10-24 Search is its own page (`/search`), TMDB only until the next providers land; an empty query lists the catalog's recent items. The nook stays empty until shelves (Ch 1.2)
+- 2026-10-24 Import attaches to a likely match instead of making a second item: a result whose type, normalized title and year (within 1) match a catalog item with no TMDB source shows a sheet, and the person says same or different. Reconciliation of the Letterboxd rows happens here, as the 2026-10-22 call parked it (Ch 1.2)
+- 2026-10-24 The TMDB token is server-only; tests run on recorded responses through a `TMDB_BASE_URL` stub, and one live test runs only when the key is present. CI never holds a provider secret (Ch 1.2)
+- 2026-10-24 TV is item type `tv` with `item_tv` (seasons, episodes, air dates, ended); films get `item_films` (runtime, original title). `summary` and `cover_path` are shared, so they live on `items` (Ch 1.2)
+- 2026-10-24 TMDB source keys carry the kind (`movie/603`, `tv/1396`) because the ids collide; TMDB collections become franchises on import (Ch 1.2)
+- 2026-10-24 Posters are cached at w500 in a public Storage bucket `covers`, written by the server with a server-only key; a poster failure never fails an import (Ch 1.2)
+- 2026-10-24 The item page shows relations in both directions and the signed-in user's shelves from its first version; later chapters add their sections to it rather than making new pages (Ch 1.2)
+- 2026-10-24 A manual item's source key is its own uuid; `created_by` is the person who added it (Ch 1.2)
+- 2026-10-24 The look is Deep Field: near-black violet ground, one lavender accent, Fraunces for titles, Inter for text; covers carry the warmth. Tokens are CSS variables so a theme setting can offer Nebula and Dusk later (Deferral). Chosen on the Ch 1.2 palette board (Ch 1.2)
 - 2026-10-23 Type-specific columns are child tables (`item_books`, `item_comics`), not jsonb: a handful of real columns per type, all sorted and filtered on, and plain SQL reads better in review. A column two types share lives on `items` (`form`, checked per type). `item_films` waits for TMDB's first film column (Ch 1.1)
 - 2026-10-23 Every enumeration is `text` with a check constraint, never a Postgres enum: adding a value is a readable constraint swap, and `ALTER TYPE` inside a transactional migration is a trap (Ch 1.1)
 - 2026-10-23 The catalog (items, sources, relations, editions, franchises) is global and deduped by source; user content points at it. `item_sources (source, key)` is the identity table, and `manual` is a source like any provider, so the fixtures' `<source>:<key>` ids land there and a later TMDB import adds a row to the same item instead of a duplicate. Manual items carry `created_by` (Ch 1.1)
@@ -163,6 +172,7 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## History
 
+- 2026-10-24 Ch 1.2 design talk: nine leans on search, import, TV, covers and the item page; the design made first (five screens and a palette board), Deep Field chosen over Nebula and Dusk. Ch 1.2 spec written, docs/plans/1.2-providers-film-tv.md
 - 2026-10-23 Ch 1.1 closed; Ch 1.2 is next. First Fable-QA chapter; the migration-fold and design-talk rules added from the Afterword.
 - 2026-10-23 Ch 1.1 design talk: fifteen leans on the data model taken against the fixtures as they landed, four calls on their leftovers. Ch 1.1 spec written, docs/plans/1.1-schema.md; the first Fable-QA chapter
 - 2026-10-23 Volume 0 closed: PR #60 `dev` to `main`, merge commit, `v0.0.0`, GitHub Release from the PR body. Six chapters, `v0.0.0-ch.1` to `ch.6`

@@ -7,7 +7,7 @@ Every version in `package.json` is exact (`.npmrc` has `save-exact=true`). This 
 | Tool | Version | Why |
 |---|---|---|
 | Node | 22.15.0 (`.nvmrc`) | The runtime the versions below were pinned against; meets Next 16 (>=20.9). CI reads `.nvmrc` |
-| Docker Desktop | any current | The Supabase CLI runs the local stack in containers |
+| Docker Desktop | any current | The Supabase CLI runs the local stack in containers. CI starts only the services the gates use (`.github/actions/stack`): the database, gotrue, kong, postgrest, mailpit and, from Ch 1.2, storage-api for the `covers` bucket |
 
 Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js files in Chapter 0.2.
 

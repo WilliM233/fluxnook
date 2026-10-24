@@ -23,6 +23,8 @@ const catalog = [
   "items",
   "item_books",
   "item_comics",
+  "item_films",
+  "item_tv",
   "item_sources",
   "item_relations",
   "editions",
@@ -116,5 +118,28 @@ describe("schema", () => {
       "id",
       "shelf",
     ]);
+  });
+
+  it("items carries summary and cover_path, both nullable (Ch 1.2)", () => {
+    for (const name of ["summary", "cover_path"]) {
+      const c = column("items", name);
+      expect(c, `items.${name}`).toBeDefined();
+      expect(c?.notNull, `items.${name} nullable`).toBe(false);
+    }
+  });
+
+  it("item_films and item_tv are keyed on their item", () => {
+    for (const name of ["item_films", "item_tv"]) {
+      const item = column(name, "item");
+      expect(item?.primary, `${name}.item primary`).toBe(true);
+      const ref = config(name).foreignKeys[0]?.reference();
+      expect(getTableConfig(ref?.foreignTable as PgTable).name).toBe("items");
+    }
+  });
+
+  it("item_tv.ended is not null and defaults to false", () => {
+    const ended = column("item_tv", "ended");
+    expect(ended?.notNull).toBe(true);
+    expect(ended?.default).toBe(false);
   });
 });

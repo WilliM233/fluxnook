@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import { TMDB_STUB_ORIGIN } from "./tests/e2e/harness/tmdb-stub";
 
 // In CI the app is a production build (`npm run start`), built by its own
 // step first; locally it is `npm run dev`, reused if already running.
@@ -16,6 +17,9 @@ export default defineConfig({
   // shared database (pg_graphql in the exposure test), so they take turns.
   workers: allBrowsers ? 1 : undefined,
   reporter: [["list"], ["html", { open: "never" }]],
+  // The TMDB stub (tests/stub/tmdb.ts) for the whole run; the app reaches it
+  // through webServer.env, which wins over .env.local in Next.
+  globalSetup: "./tests/e2e/global-setup.ts",
   use: { baseURL: "http://localhost:3000", trace: "retain-on-failure" },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
@@ -30,5 +34,10 @@ export default defineConfig({
     command: ci ? "npm run start" : "npm run dev",
     url: "http://localhost:3000",
     reuseExistingServer: !ci,
+    env: {
+      TMDB_API_KEY: "stub",
+      TMDB_BASE_URL: `${TMDB_STUB_ORIGIN}/3`,
+      TMDB_IMAGE_BASE_URL: `${TMDB_STUB_ORIGIN}/t/p`,
+    },
   },
 });
