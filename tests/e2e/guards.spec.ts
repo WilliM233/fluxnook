@@ -45,3 +45,10 @@ test("import is 401 without a session", async ({ request }) => {
   });
   expect(response.status()).toBe(401);
 });
+
+test("manual items are 401 without a session", async ({ request }) => {
+  const response = await request.post("/api/v1/items", {
+    data: { type: "film", title: "Carrie" },
+  });
+  expect(response.status()).toBe(401);
+});

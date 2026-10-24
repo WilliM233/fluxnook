@@ -1,0 +1,135 @@
+import { z } from "zod";
+import { bookForms, comicForms, seriesKinds } from "@/db/vocabulary";
+
+// Request body of `POST /api/v1/items`: an item by hand, fields by type (A6).
+// The manual form validates with this same schema in the browser, so the
+// messages are written for the person filling it in.
+
+const common = {
+  title: z.string("Give it a title.").trim().min(1, "Give it a title."),
+  year: z
+    .int("A year is a number.")
+    .min(1000, "That year looks off.")
+    .max(2999, "That year looks off.")
+    .optional(),
+  month: z
+    .int("A month is a number.")
+    .min(1, "Months run 1 to 12.")
+    .max(12, "Months run 1 to 12.")
+    .optional(),
+  day: z
+    .int("A day is a number.")
+    .min(1, "Days run 1 to 31.")
+    .max(31, "Days run 1 to 31.")
+    .optional(),
+  summary: z
+    .string()
+    .trim()
+    .max(2000, "Keep the summary under 2000 characters.")
+    .optional(),
+};
+const count = (what: string) =>
+  z
+    .int(`${what} is a whole number.`)
+    .min(0, `${what} can't be negative.`)
+    .optional();
+
+export const manualItemSchema = z
+  .discriminatedUnion(
+    "type",
+    [
+      z.strictObject({
+        type: z.literal("film"),
+        ...common,
+        runtimeMinutes: count("Runtime"),
+      }),
+      z.strictObject({
+        type: z.literal("tv"),
+        ...common,
+        seasons: count("Seasons"),
+        episodes: count("Episodes"),
+      }),
+      z.strictObject({
+        type: z.literal("book"),
+        ...common,
+        form: z.enum(bookForms, "Pick a form."),
+        author: z.string("Name the author.").trim().min(1, "Name the author."),
+      }),
+      z.strictObject({
+        type: z.literal("comic"),
+        ...common,
+        form: z.enum(comicForms, "Pick a form."),
+        series: z.string().trim().min(1).optional(),
+        seriesKind: z.enum(seriesKinds, "Pick a kind of series.").optional(),
+        number: count("The number"),
+      }),
+    ],
+    "Pick a type: film, TV, book or comic.",
+  )
+  .superRefine((item, ctx) => {
+    if (item.month !== undefined && item.year === undefined) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["month"],
+        message: "A month needs a year.",
+      });
+    }
+    if (item.day !== undefined && item.month === undefined) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["day"],
+        message: "A day needs a month.",
+      });
+    }
+    if (
+      item.year !== undefined &&
+      item.month !== undefined &&
+      item.day !== undefined
+    ) {
+      const date = new Date(Date.UTC(item.year, item.month - 1, item.day));
+      if (date.getUTCMonth() !== item.month - 1) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["day"],
+          message: "That month has no such day.",
+        });
+      }
+    }
+  });
+
+export type ManualItem = z.infer<typeof manualItemSchema>;
+
+/** The item's date at the precision the person gave it: 1979 alone is a year. */
+export function releasedFrom(item: Pick<ManualItem, "year" | "month" | "day">) {
+  if (item.year === undefined)
+    return { releasedOn: null, releasedPrecision: null };
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const precision =
+    item.day !== undefined
+      ? "day"
+      : item.month !== undefined
+        ? "month"
+        : "year";
+  return {
+    releasedOn: `${item.year}-${pad(item.month ?? 1)}-${pad(item.day ?? 1)}`,
+    releasedPrecision: precision as "day" | "month" | "year",
+  };
+}
+
+/** Zod's issues as the first message per field, the shape `error.fields` carries. */
+export function fieldErrors(error: z.ZodError): Record<string, string> {
+  const fields: Record<string, string> = {};
+  for (const issue of error.issues) {
+    const names =
+      issue.code === "unrecognized_keys"
+        ? issue.keys
+        : [issue.path.join(".") || "form"];
+    for (const name of names) {
+      fields[name] ??=
+        issue.code === "unrecognized_keys"
+          ? "Not a field for this type."
+          : issue.message;
+    }
+  }
+  return fields;
+}
