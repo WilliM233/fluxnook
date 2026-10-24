@@ -58,8 +58,8 @@ Exit: a user exists, logs in locally, sees an empty nook. The team can run a cha
 
 ### Volume 1: Alpha
 A usable app for one person. Exit: the King path lives in the app as a cross-media book-then-films shelf, the TMNT sheet is retired, L's physical library is tracked, and the sheet has stopped being opened.
-- Ch 1: Schema and migrations for the whole core model above, including visibility, occurrences, copies and franchise, even where no UI exists yet. Loads the Volume 0 fixtures. Next; plan at docs/plans/1.1-schema.md
-- Ch 2: Providers, film and TV: TMDB search and import into the local catalog, cover cache, the item page
+- Ch 1: Schema and migrations for the whole core model above, including visibility, occurrences, copies and franchise, even where no UI exists yet. Loads the Volume 0 fixtures. Done, v0.1.0-ch.1 (#61, PR #62); plan at docs/plans/1.1-schema.md
+- Ch 2: Providers, film and TV: TMDB search and import into the local catalog, cover cache, the item page. Next
 - Ch 3: Providers, books: Open Library search and ISBN lookup. ISBN entry is the main path for matching the library
 - Ch 4: Providers, comics: Metron search and import; edition contents where Metron has them, manual fill where it does not
 - Ch 5: Shelves: create, sections, drag ordering, add from catalog, status per entry (unmarked, done, skipped), aggregate stars across the shelf
@@ -163,6 +163,7 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## History
 
+- 2026-10-23 Ch 1.1 closed; Ch 1.2 is next. First Fable-QA chapter; the migration-fold and design-talk rules added from the Afterword.
 - 2026-10-23 Ch 1.1 design talk: fifteen leans on the data model taken against the fixtures as they landed, four calls on their leftovers. Ch 1.1 spec written, docs/plans/1.1-schema.md; the first Fable-QA chapter
 - 2026-10-23 Volume 0 closed: PR #60 `dev` to `main`, merge commit, `v0.0.0`, GitHub Release from the PR body. Six chapters, `v0.0.0-ch.1` to `ch.6`
 - 2026-10-23 Ch 0.6 closed; Volume 0's exit is met (a user logs in and sees an empty nook, CI gates every PR, three fixtures validate in CI). Next: the `dev` to `main` close PR and `v0.0.0`, then Volume 1 Ch 1
