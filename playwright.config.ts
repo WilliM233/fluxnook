@@ -15,7 +15,9 @@ export default defineConfig({
   retries: 0,
   // Three browsers on one local stack would interleave specs that change the
   // shared database (pg_graphql in the exposure test), so they take turns.
-  workers: allBrowsers ? 1 : undefined,
+  // Locally, two: `next dev` compiles each page on first hit, and ten workers
+  // at once starved it on the dev box until every page load timed out (Ch 1.2).
+  workers: allBrowsers ? 1 : ci ? undefined : 2,
   reporter: [["list"], ["html", { open: "never" }]],
   // The TMDB stub (tests/stub/tmdb.ts) for the whole run; the app reaches it
   // through webServer.env, which wins over .env.local in Next.
