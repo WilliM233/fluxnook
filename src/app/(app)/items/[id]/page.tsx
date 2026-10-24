@@ -90,10 +90,10 @@ export default async function ItemPageView({
             alt={`Poster for ${item.title}`}
             width={500}
             height={750}
-            className="aspect-[2/3] w-full rounded-xl object-cover shadow-2xl"
+            className="aspect-2/3 w-full rounded-xl object-cover shadow-2xl"
           />
         ) : (
-          <div className="flex aspect-[2/3] w-full items-center justify-center rounded-xl border border-dashed border-line-strong text-sm text-dim">
+          <div className="flex aspect-2/3 w-full items-center justify-center rounded-xl border border-dashed border-line-strong text-sm text-dim">
             No poster
           </div>
         )}
@@ -113,12 +113,14 @@ export default async function ItemPageView({
             </Badge>
             {[year(item.released_on), ...facts(item)]
               .filter(Boolean)
-              .map((fact, i) => (
-                <span key={fact} className="flex items-center gap-2.5">
-                  {i > 0 && <span aria-hidden="true">·</span>}
-                  {fact}
-                </span>
-              ))}
+              .flatMap((fact, i) => [
+                i > 0 && (
+                  <span key={`dot-${fact}`} aria-hidden="true">
+                    ·
+                  </span>
+                ),
+                <span key={fact}>{fact}</span>,
+              ])}
           </div>
           <h1 className="font-heading text-5xl leading-none font-semibold tracking-tight">
             {item.title}

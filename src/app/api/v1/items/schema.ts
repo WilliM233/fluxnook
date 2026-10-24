@@ -66,36 +66,31 @@ export const manualItemSchema = z
     ],
     "Pick a type: film, TV, book or comic.",
   )
-  .superRefine((item, ctx) => {
-    if (item.month !== undefined && item.year === undefined) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["month"],
-        message: "A month needs a year.",
-      });
-    }
-    if (item.day !== undefined && item.month === undefined) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["day"],
-        message: "A day needs a month.",
-      });
-    }
-    if (
-      item.year !== undefined &&
-      item.month !== undefined &&
-      item.day !== undefined
-    ) {
-      const date = new Date(Date.UTC(item.year, item.month - 1, item.day));
-      if (date.getUTCMonth() !== item.month - 1) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["day"],
-          message: "That month has no such day.",
-        });
-      }
-    }
-  });
+  // `when` runs these even while another field is wrong, so the form names
+  // every problem at once; the input may be unparsed, hence the guards.
+  .refine((item) => !(item?.month !== undefined && item?.year === undefined), {
+    path: ["month"],
+    message: "A month needs a year.",
+    when: isObject,
+  })
+  .refine((item) => !(item?.day !== undefined && item?.month === undefined), {
+    path: ["day"],
+    message: "A day needs a month.",
+    when: isObject,
+  })
+  .refine(
+    ({ year, month, day }) =>
+      ![year, month, day].every(Number.isInteger) ||
+      new Date(
+        Date.UTC(year as number, (month as number) - 1, day),
+      ).getUTCMonth() ===
+        (month as number) - 1,
+    { path: ["day"], message: "That month has no such day." },
+  );
+
+function isObject({ value }: { value: unknown }) {
+  return typeof value === "object" && value !== null;
+}
 
 export type ManualItem = z.infer<typeof manualItemSchema>;
 

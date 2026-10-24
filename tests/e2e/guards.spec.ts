@@ -62,3 +62,8 @@ test("/search redirects to / without a session", async ({ page }) => {
   await page.goto("/search?q=carrie");
   await expect(page).toHaveURL("/");
 });
+
+test("/items/new redirects to / without a session", async ({ page }) => {
+  await page.goto("/items/new");
+  await expect(page).toHaveURL("/");
+});
