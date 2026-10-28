@@ -12,9 +12,10 @@ Any org-level or user-level CLAUDE.md that names `develop`, `feature/*` branches
 
 ## Session start
 
-1. `git status --short` and `git branch --show-current`. A dirty tree or a `chapter/*` branch means a chapter is mid-flight: open its plan in `docs/plans/` and read its History before saying anything.
+1. `git status --short` and `git branch --show-current`. A dirty tree or a `chapter/*` branch means a chapter is mid-flight: open its plan in `docs/plans/` and read its History before saying anything. A dirty tree that no plan's History accounts for is restored or explained to L before a line is written; the session starts clean (House Rules step 1).
 2. Read the chapter's plan in `docs/plans/`. If its header still says `#<n>`, open the issue first: body is section 0 plus a link to the plan, milestone is the Volume, label `chapter`; write the number into the header and commit `docs: link ch <vol>.<n> plan to issue`. The issue is the spec; the plan file is the working copy. Nothing is spawned without one.
-3. Say in one line what step you're on and what its observable is.
+3. Run the Hands line's check commands from section 0 and show their output; a failed check is a Stop-for-L, not a guess.
+4. Say in one line what step you're on and what its observable is.
 
 ## Working a chapter
 
