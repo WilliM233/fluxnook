@@ -181,6 +181,24 @@ describe("cleanDescription", () => {
     ).toBe("One.\n\nTwo.");
   });
 
+  it("drops Carrie's source link with its parentheses", () => {
+    const summary = cleanDescription(carrieWork.description);
+    expect(summary).toBe(carrieWork.description.value.split("\r\n")[0]);
+    expect(summary?.endsWith("during the senior prom.")).toBe(true);
+  });
+
+  it("drops a link that says only source, in any case", () => {
+    expect(cleanDescription("A blurb. ([Source](https://example.com))")).toBe(
+      "A blurb.",
+    );
+    expect(cleanDescription("A blurb. [SOURCE](https://example.com)")).toBe(
+      "A blurb.",
+    );
+    expect(
+      cleanDescription("See [the source](https://example.com) for more."),
+    ).toBe("See the source for more.");
+  });
+
   it("reads nothing, or only a rule, as null", () => {
     expect(cleanDescription(undefined)).toBeNull();
     expect(cleanDescription({ value: "---\nAlso contained in:" })).toBeNull();

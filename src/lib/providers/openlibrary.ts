@@ -42,7 +42,7 @@ export function createOpenLibrary({
   coversBaseUrl,
   userAgent,
   fetch: fetcher = fetch,
-  timeoutMs = 10_000,
+  timeoutMs = 20_000,
 }: OpenLibraryOptions) {
   const base = new URL(`${baseUrl.replace(/\/$/, "")}/`);
 
@@ -373,8 +373,10 @@ export function mapPhysicalFormat(word: string | null | undefined) {
 
 /**
  * A work's description as a summary (Ch 1.3 Q1, b): the blurb before the
- * first horizontal rule, markdown links unwrapped to their text and
- * `*emphasis*` stripped. Nothing else is touched.
+ * first horizontal rule, a link that says only "source" dropped with the
+ * parentheses around it (Browse: Carrie ended "(source)"), other markdown
+ * links unwrapped to their text and `*emphasis*` stripped. Nothing else is
+ * touched.
  */
 export function cleanDescription(description: RawDescription): string | null {
   const raw =
@@ -383,6 +385,8 @@ export function cleanDescription(description: RawDescription): string | null {
   const blurb = raw
     .replace(/\r\n?/g, "\n")
     .split(/^\s*(?:-{3,}|\*{3,}|_{3,})\s*$/m)[0]
+    .replace(/[ \t]*\(\s*\[\s*source\s*\]\([^)]*\)\s*\)/gi, "")
+    .replace(/[ \t]*\[\s*source\s*\]\([^)]*\)/gi, "")
     .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
     .replace(/\*{1,2}([^*\n]+)\*{1,2}/g, "$1")
     .trim();
