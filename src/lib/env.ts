@@ -42,6 +42,11 @@ const serverEnvSchema = z.object({
   TMDB_BASE_URL: z.url().default("https://api.themoviedb.org/3"),
   TMDB_IMAGE_BASE_URL: z.url().default("https://image.tmdb.org/t/p"),
   SUPABASE_SECRET_KEY: z.string().optional(),
+  OPENLIBRARY_BASE_URL: z.url().default("https://openlibrary.org"),
+  OPENLIBRARY_COVERS_BASE_URL: z
+    .url()
+    .default("https://covers.openlibrary.org"),
+  OPENLIBRARY_CONTACT: z.string().optional(),
 });
 
 type ServerEnvSource = Partial<
@@ -53,6 +58,9 @@ export type ServerEnv = {
   tmdbBaseUrl: string;
   tmdbImageBaseUrl: string;
   supabaseSecretKey: string | null;
+  openLibraryBaseUrl: string;
+  openLibraryCoversBaseUrl: string;
+  openLibraryContact: string | null;
 };
 
 // Server-only secrets: never NEXT_PUBLIC_, so Next never inlines them into a
@@ -62,12 +70,15 @@ const processServerEnv = (): ServerEnvSource => ({
   TMDB_BASE_URL: process.env.TMDB_BASE_URL,
   TMDB_IMAGE_BASE_URL: process.env.TMDB_IMAGE_BASE_URL,
   SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
+  OPENLIBRARY_BASE_URL: process.env.OPENLIBRARY_BASE_URL,
+  OPENLIBRARY_COVERS_BASE_URL: process.env.OPENLIBRARY_COVERS_BASE_URL,
+  OPENLIBRARY_CONTACT: process.env.OPENLIBRARY_CONTACT,
 });
 
 /**
  * Reads the server-only settings. Every one is optional: an empty key reads as
- * null (the feature it unlocks is off), and the TMDB URLs default to TMDB's
- * own, so only tests and the Browse's stub ever set them.
+ * null (the feature it unlocks is off), and the provider URLs default to the
+ * providers' own, so only tests and the Browse's stub ever set them.
  */
 export function readServerEnv(
   source: ServerEnvSource = processServerEnv(),
@@ -85,5 +96,8 @@ export function readServerEnv(
     tmdbBaseUrl: result.data.TMDB_BASE_URL,
     tmdbImageBaseUrl: result.data.TMDB_IMAGE_BASE_URL,
     supabaseSecretKey: result.data.SUPABASE_SECRET_KEY ?? null,
+    openLibraryBaseUrl: result.data.OPENLIBRARY_BASE_URL,
+    openLibraryCoversBaseUrl: result.data.OPENLIBRARY_COVERS_BASE_URL,
+    openLibraryContact: result.data.OPENLIBRARY_CONTACT ?? null,
   };
 }

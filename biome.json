@@ -14,7 +14,8 @@
       "!dist",
       "!build",
       "!supabase/migrations/meta",
-      "!public/tmdb"
+      "!public/tmdb",
+      "!docs/designs"
     ]
   },
   "formatter": {

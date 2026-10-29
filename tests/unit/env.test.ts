@@ -43,6 +43,29 @@ describe("readServerEnv", () => {
       tmdbBaseUrl: "https://api.themoviedb.org/3",
       tmdbImageBaseUrl: "https://image.tmdb.org/t/p",
       supabaseSecretKey: null,
+      openLibraryBaseUrl: "https://openlibrary.org",
+      openLibraryCoversBaseUrl: "https://covers.openlibrary.org",
+      openLibraryContact: null,
+    });
+  });
+
+  it("reads an empty Open Library contact as null", () => {
+    expect(readServerEnv({ OPENLIBRARY_CONTACT: "" })).toMatchObject({
+      openLibraryContact: null,
+    });
+  });
+
+  it("returns a set Open Library contact and base URLs", () => {
+    expect(
+      readServerEnv({
+        OPENLIBRARY_BASE_URL: "http://127.0.0.1:4011",
+        OPENLIBRARY_COVERS_BASE_URL: "http://127.0.0.1:4011",
+        OPENLIBRARY_CONTACT: "nook@example.com",
+      }),
+    ).toMatchObject({
+      openLibraryBaseUrl: "http://127.0.0.1:4011",
+      openLibraryCoversBaseUrl: "http://127.0.0.1:4011",
+      openLibraryContact: "nook@example.com",
     });
   });
 
