@@ -243,58 +243,52 @@ export function sameSeries(row: SeriesRow, held: SeriesHeld): boolean {
   );
 }
 
-type HeldGroup = SeriesHeld & { count: number; first: string };
+/** A hand-entered run as the matcher holds it, with the item its shelf is read from. */
+export type HandEnteredGroup = SeriesHeld & { count: number; first: string };
+
+/** A hand-entered run as the import sheet's select lists it (A8). */
+export type SeriesGroupOption = Pick<SeriesGroup, "group" | "label" | "count">;
 
 /**
- * A page of Comic Vine volumes against the catalog: the keys, the series
- * groups, the collected editions, then the shelves of the groups that
- * matched. Four queries per page, whatever its size.
+ * Every run entered by hand that no Comic Vine volume holds yet: comics by
+ * their series text, and collected editions by title stem (Ch 1.4 Q1, L). A
+ * group any of whose items already carries a Comic Vine source went with
+ * another volume and is left out whole, since an attach to it is a 409.
+ * Two queries, in the order the rule prefers them (Rummage R3).
  */
-export async function seriesStatuses(
-  db: Db,
-  { userId, rows }: { userId: string; rows: ComicVineSeries[] },
-): Promise<SeriesStatus[]> {
-  if (rows.length === 0) return [];
-
-  const known = await db.execute<{ key: string; series: string }>(sql`
-    select key, series from series_sources
-    where source = 'comicvine' and key in (${sql.join(
-      rows.map((row) => sql`${row.key}`),
-      sql`, `,
-    )})`);
-  const byKey = new Map(known.map((r) => [r.key, r.series]));
-
-  // Every hand-entered run with no Comic Vine source, by its series text,
-  // with its earliest item for the shelf.
-  const series = await db.execute<HeldGroup>(sql`
+export async function seriesGroups(db: Db): Promise<HandEnteredGroup[]> {
+  // Every hand-entered run by its series text, with its earliest item for
+  // the shelf.
+  const series = await db.execute<HandEnteredGroup>(sql`
     select c.series as label, count(*)::int as count,
       min(extract(year from i.released_on))::int as earliest,
       (array_agg(i.id order by i.released_on nulls last, c.number nulls last, i.id))[1] as first
     from items i join item_comics c on c.item = i.id
     where i.type = 'comic' and c.series is not null
-      and not exists (
-        select 1 from item_sources s where s.item = i.id and s.source = 'comicvine')
-    group by c.series`);
+    group by c.series
+    having not bool_or(exists (
+      select 1 from item_sources s where s.item = i.id and s.source = 'comicvine'))`);
 
   // Every hand-entered collected edition, with the series of what its
   // editions hold; grouped by title stem here, a fold SQL can't do.
   const collected = await db.execute<{
     id: string;
     title: string;
+    attached: boolean;
     contains: string[];
   }>(sql`
-    select i.id, i.title,
+    select i.id, i.title, exists (
+      select 1 from item_sources s where s.item = i.id and s.source = 'comicvine'
+    ) as attached,
       coalesce(array_agg(distinct cc.series) filter (where cc.series is not null), '{}') as contains
     from items i
     left join editions e on e.item = i.id
     left join edition_contents ec on ec.edition = e.id
     left join item_comics cc on cc.item = ec.item
     where i.type = 'comic' and i.form = 'collected'
-      and not exists (
-        select 1 from item_sources s where s.item = i.id and s.source = 'comicvine')
     group by i.id, i.title`);
 
-  const groups: HeldGroup[] = series.map((g) => ({
+  const groups: HandEnteredGroup[] = series.map((g) => ({
     ...g,
     group: "series",
     contains: [],
@@ -306,6 +300,7 @@ export async function seriesStatuses(
     stems.set(stem, [...(stems.get(stem) ?? []), item]);
   }
   for (const items of stems.values()) {
+    if (items.some((item) => item.attached)) continue;
     const ordered = [...items].sort(
       (a, b) =>
         trailingNumber(a.title) - trailingNumber(b.title) ||
@@ -331,6 +326,42 @@ export async function seriesStatuses(
       b.count - a.count ||
       a.label.localeCompare(b.label),
   );
+  return groups;
+}
+
+/** The groups for the sheet's select: label and size, by label. */
+export function groupOptions(groups: HandEnteredGroup[]): SeriesGroupOption[] {
+  return groups
+    .map(({ group, label, count }) => ({ group, label, count }))
+    .sort(
+      (a, b) =>
+        a.label.localeCompare(b.label) || a.group.localeCompare(b.group),
+    );
+}
+
+/**
+ * A page of Comic Vine volumes against the catalog: the keys, the groups
+ * (`seriesGroups`, or the ones the caller already read), then the shelves
+ * of the groups that matched. Four queries per page, whatever its size.
+ */
+export async function seriesStatuses(
+  db: Db,
+  {
+    userId,
+    rows,
+    groups: given,
+  }: { userId: string; rows: ComicVineSeries[]; groups?: HandEnteredGroup[] },
+): Promise<SeriesStatus[]> {
+  if (rows.length === 0) return [];
+
+  const known = await db.execute<{ key: string; series: string }>(sql`
+    select key, series from series_sources
+    where source = 'comicvine' and key in (${sql.join(
+      rows.map((row) => sql`${row.key}`),
+      sql`, `,
+    )})`);
+  const byKey = new Map(known.map((r) => [r.key, r.series]));
+  const groups = given ?? (await seriesGroups(db));
 
   const found = rows.map((row) =>
     byKey.has(row.key) ? [] : groups.filter((g) => sameSeries(row, g)),

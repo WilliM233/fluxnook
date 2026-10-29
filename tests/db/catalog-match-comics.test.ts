@@ -3,7 +3,11 @@ import { join } from "node:path";
 import postgres from "postgres";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createDb } from "@/db/client";
-import { seriesStatuses } from "@/lib/catalog/match";
+import {
+  groupOptions,
+  seriesGroups,
+  seriesStatuses,
+} from "@/lib/catalog/match";
 import { importSeriesFromComicVine } from "@/lib/catalog/series";
 import { coverStoreFromEnv } from "@/lib/covers";
 import {
@@ -263,6 +267,67 @@ describe("seriesStatuses, in", () => {
     expect(statuses[turtles.indexOf(pick(turtles, 42285))]).toEqual({
       status: "new",
     });
+  });
+});
+
+describe("seriesGroups, for the sheet's select", () => {
+  // The fixture's own labels, read off the file: other db files add runs by
+  // hand beside this one, so the check is on these, never a whole list.
+  const mirage = JSON.parse(
+    readFileSync(
+      join(process.cwd(), "supabase/seed/fixtures/tmnt-mirage.json"),
+      "utf8",
+    ),
+  ).items as { series?: string | null }[];
+  const labels = new Set(
+    mirage.map((item) => item.series).filter((s): s is string => Boolean(s)),
+  );
+
+  it("lists the fixture's 25 series groups and its one collected stem, by label", async () => {
+    const options = groupOptions(await seriesGroups(db)).filter(
+      (g) =>
+        (g.group === "series" && labels.has(g.label)) ||
+        (g.group === "collected" && g.label === "Ultimate Collection"),
+    );
+    expect(labels.size).toBe(25);
+    expect(options.filter((g) => g.group === "series")).toHaveLength(25);
+    expect(options).toContainEqual({
+      group: "collected",
+      label: "Ultimate Collection",
+      count: 5,
+    });
+    expect(options).toContainEqual({
+      group: "series",
+      label: "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      count: 62,
+    });
+    expect(options).toContainEqual({
+      group: "series",
+      label: "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      count: 70,
+    });
+    const sorted = [...options].sort((a, b) => a.label.localeCompare(b.label));
+    expect(options).toEqual(sorted);
+  });
+
+  it("leaves out a group any of whose items carries a Comic Vine source, whole", async () => {
+    const label = `${tag} part-attached`;
+    const ids: string[] = [];
+    for (const n of [1, 2]) {
+      const [{ id }] = await sql`
+        insert into items (type, form, title) values ('comic', 'issue', ${`${tag} pa ${n}`})
+        returning id`;
+      await sql`
+        insert into item_comics (item, series, number) values (${id}, ${label}, ${n})`;
+      ids.push(id);
+    }
+    const listed = async () =>
+      (await seriesGroups(db)).filter((g) => g.label === label);
+    expect(await listed()).toHaveLength(1);
+    await sql`
+      insert into item_sources (item, source, key)
+      values (${ids[0]}, 'comicvine', ${`issue/9${Date.now()}`})`;
+    expect(await listed()).toEqual([]);
   });
 });
 
