@@ -61,7 +61,7 @@ A usable app for one person. Exit: the King path lives in the app as a cross-med
 - Ch 1: Schema and migrations for the whole core model above, including visibility, occurrences, copies and franchise, even where no UI exists yet. Loads the Volume 0 fixtures. Done, v0.1.0-ch.1 (#61, PR #62); plan at docs/plans/1.1-schema.md
 - Ch 2: Providers, film and TV: TMDB search and import into the local catalog, cover cache, the item page. Done, v0.1.0-ch.2 (#63, PR #64); plan at docs/plans/1.2-providers-film-tv.md, design at https://claude.ai/artifact/Kz18YNtugryAE1SEzNXiLp
 - Ch 3: Providers, books: Open Library search and ISBN lookup. ISBN entry is the main path for matching the library. Done, v0.1.0-ch.3 (#65, PR #66); plan at docs/plans/1.3-providers-books.md, design at https://claude.ai/artifact/CPehVxMcpMH21hfELe4xG8 (exports in docs/designs/1.3/), the Deep Field design system at https://claude.ai/artifact/BFgHbCApeRScHbeeusWdxq (docs/designs/deep-field/)
-- Ch 4: Providers, comics: Metron search and import; edition contents where Metron has them, manual fill where it does not. Next
+- Ch 4: Providers, comics: Comic Vine series search and import, the series page, the issue page, and a contents picker for collected editions (no provider carries contents as data; Comic Vine's are prose). Next; plan at docs/plans/1.4-providers-comics.md, design at https://claude.ai/artifact/BXAPvwiszmTKCsf7VE2Phz (exports in docs/designs/1.4/). The first chapter bound from Signatures
 - Ch 5: Shelves: create, sections, drag ordering, add from catalog, status per entry (unmarked, done, skipped), aggregate stars across the shelf
 - Ch 6: Occurrences and journal: log a read or watch, stars, journal entries, item page history
 - Ch 7: Collection: copies with edition and format, derived ownership via contents, the shopping view
@@ -69,7 +69,7 @@ A usable app for one person. Exit: the King path lives in the app as a cross-med
 
 ### Volume 2: Beta
 A few invited people, hosted. Exit: three people besides L keep a real shelf in it and nothing has lost data.
-- Deploy to Vercel + Supabase cloud, invite-only signup, backups verified
+- Deploy to Vercel + Supabase cloud, invite-only signup, backups verified. Provider keys (TMDB, Comic Vine) are L's personal dev accounts until here; the deploy chapter re-issues them under organization credentials (L, 2026-10-29)
 - Visibility goes live: public profile, shelf shareable by link
 - Responsive layout that is good on a phone; PWA installable
 - Export (full account as JSON and CSV) and CSV import of a sheet
@@ -95,6 +95,14 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## Calls made (with reason)
 
+- 2026-10-29 Comics come from Comic Vine, not Metron. Metron's commercial-use terms say an app used by many people needs each user to hold their own Metron account, and a second sign-in after Fluxnook's own is a product rule broken; Comic Vine is one key per site, and its public pages matched the Mirage fixture series for series (1984 Mirage 62, 1993 Mirage 13, 1996 Image 23, Tales 1987 7, The Ultimate Collection 7 volumes). The costs, recorded so they aren't surprises: Comic Vine's API is "strictly for non-commercial use", re-read if Fluxnook ever charges; its attribution is per page, so every page showing Comic Vine data links back to the record it came from, not only the footer; its rate is 200 requests per resource per hour; a trade's contents are prose, so edition contents are filled by hand in this chapter. `item_sources` is per source, so Metron can be added beside Comic Vine later without a migration (Ch 1.4 design talk)
+- 2026-10-29 A Comic Vine volume is a `series` row (name, volume, year began, publisher, kind, source key), a catalog table like `franchises`; `item_comics.series_id` points at it and the `series` text stays for manual items and as the held label. Franchise is not seeded from Comic Vine: TMNT the thing is a franchise, "Teenage Mutant Ninja Turtles (Mirage) Vol. 1" is a series, and the Roadmap's "Metron series" in the core model meant the latter (Ch 1.4)
+- 2026-10-29 A comic series matches the catalog on its folded name after a trailing "Vol. n" and a parenthetical publisher are stripped, and the year of the catalog group's earliest issue within 1 of the volume's start year; never on the volume number, which Comic Vine doesn't carry. Inside an attached series, an issue attaches by number; a collected edition attaches by the trailing number of its held title. The sheet shows the rule, the server holds it, as 1.2 S1 says (Ch 1.4)
+- 2026-10-29 Comic Vine doesn't know a run of floppies from a run of trades: both are a volume of issues. The person says which on the import sheet (single issues, or collected editions with a format), preselected by the volume's name. A collected volume's issues become `collected` items, each with one edition of that format and empty contents until the picker fills them (Ch 1.4)
+- 2026-10-29 A comic's `released_on` is Comic Vine's cover date at `month` precision, the collector's date; the store date is ignored. A new issue's title is Comic Vine's issue name, else "<Series> #<n>"; an attach keeps the held title, as every attach does (Ch 1.4)
+- 2026-10-29 Comic Vine keys are stored canonical, `volume/<int>` and `issue/<int>`, their `4050-` and `4000-` prefixes stripped; source `comicvine`. The key rides the query string by their design, so no request URL is ever logged or returned; `COMICVINE_BASE_URL` is the stub seam; the `User-Agent` names Fluxnook as their API asks. Empty key means the Comics chip is off, as TMDB's (Ch 1.4)
+- 2026-10-29 Comic covers are cached in the same `covers` bucket at `comicvine/<kind>-<id>.jpg`, the issue's on the item and the volume's on the series, written at import like posters; a failure never fails an import (Ch 1.4)
+- 2026-10-29 Edition contents are edited by hand on the item page from this chapter: a picker over the catalog's comics, replacing the edition's contents in the order picked. The Roadmap's "manual fill where the provider does not" is the main path now, not the fallback (Ch 1.4)
 - 2026-10-29 From Ch 1.4 a chapter is bound from Signatures: the design talk and spec stay at the chapter, Run 1 (a fresh session, Cartographer only) writes the census and the cut, then each Signature is its own run with its own issue, branch, PR, Browse and tag (`v0.<vol>.0-ch.<n>.<s>`), one after another off `dev`; the Afterword stays at the chapter. Reason: Ch 1.3 was 22 commits, 96 files and a Browse too long to run clean in one sitting; fresh sessions and small Browses are where the quality is. Named after the bindery: a chapter is sewn from signatures (session review after Ch 1.3)
 - 2026-10-29 A book's `summary` is Open Library's blurb, not its wiki: the description cut at its first horizontal rule, markdown links unwrapped to their text, emphasis stripped, and a link whose text is only "source" dropped with its parentheses (the Browse showed Carrie's ending "(source)"). Nothing else is touched; a wrong blurb is the item-edit Deferral's (Ch 1.3 Q1, Browse)
 - 2026-10-29 An Open Library call waits 20 s, not 10: the ISBN path is three calls in a row and a slow afternoon at Open Library tripped 10 s once in the Browse. A retry before the 503 is a Deferral (Ch 1.3 Browse)
@@ -180,15 +188,18 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## Open calls
 
-- Comic Vine vs Metron for comics (lean Metron: free, models trades and their contents; verify coverage of Mirage-era TMNT in the Ch 4 feasibility read)
+- None. Comic Vine vs Metron closed 2026-10-29 (Calls)
 
 ## Deferrals
 
 - Books-to-films adaptation data: no provider links them. Manual adaptation-of links in alpha; Wikidata "based on" explored at 1.0+
 - Comics backup stories and anthology appearances: manual contained-in links; no provider is clean here
+- Metron beside Comic Vine for structured edition contents (`reprints`), once per-user provider accounts are a thing Fluxnook can ask for, or a coverage gap shows. Trigger: a Volume 2 settings page, or a series Comic Vine lacks
+- Per-user provider credentials: every provider key is one server-side account today, which Comic Vine allows and Metron doesn't. Trigger: the first provider whose terms need it
 
 ## History
 
+- 2026-10-29 Ch 1.4 design talk: Metron probed from outside (API 401 without an account, the site behind bot protection and down for the afternoon), its commercial terms read, Comic Vine's public pages checked against the Mirage fixture; Comic Vine chosen on the no-second-account rule. Eight calls on the provider, the series table, matching, forms, dates, keys, covers and the contents picker; two Deferrals; the spike-as-a-chapter question closed by the Signature cut. Four screens drawn on Deep Field. Ch 1.4 spec written, docs/plans/1.4-providers-comics.md
 - 2026-10-29 Ch 1.3 closed, v0.1.0-ch.3 (#65, PR #66); Ch 1.4 is next. The second provider, the first provider-written editions; two calls added from the Afterword (the blurb rule, the 20 s timeout) and the census-at-census-commit and Browse-block rules to House Rules
 - 2026-10-28 Ch 1.3 design talk: ten leans on the work-and-edition model, book matching, form, author, the fan-out, ISBN mode, edition columns, covers, keys and the item page, all taken; two Open Library findings (bad first-publish years, a loose ISBN endpoint) shaped them. The Deep Field design system made first, then four screens. Ch 1.3 spec written, docs/plans/1.3-providers-books.md; the Ch 1.2 Afterword addendum rides the same commit
 - 2026-10-24 Ch 1.2 closed, v0.1.0-ch.2 (#63, PR #64); Ch 1.3 is next. The first screens and the first provider; four calls added from the Afterword (attach rule, date rule, canonical keys, secrets)
