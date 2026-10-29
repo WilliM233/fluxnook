@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import type { Db } from "@/db/client";
+import { type CollectedIn, collectedInRows } from "./item-page";
 
 /** What `/series/<id>` shows (A9): the series, its sources, and its issues in the catalog. */
 export type SeriesPage = {
@@ -22,6 +23,8 @@ export type SeriesPage = {
     released_precision: string | null;
     cover_path: string | null;
   }[];
+  /** Every edition whose contents hold an issue of this run. */
+  collectedIn: CollectedIn[];
 };
 
 /** Everything `/series/<id>` shows, or null for an id the catalog doesn't hold. */
@@ -34,7 +37,7 @@ export async function loadSeriesPage(
     from series where id = ${id}`);
   if (!series) return null;
 
-  const [sources, issues] = await Promise.all([
+  const [sources, issues, collectedIn] = await Promise.all([
     db.execute<SeriesPage["sources"][number]>(sql`
       select source, key, url from series_sources
       where series = ${id} order by source, key`),
@@ -46,6 +49,21 @@ export async function loadSeriesPage(
       from item_comics c join items i on i.id = c.item
       where c.series_id = ${id}
       order by i.released_on nulls last, c.number nulls last, i.title`),
+    // In run order: by the lowest issue of this series each one holds.
+    db.execute<CollectedIn>(
+      collectedInRows(
+        sql`e.id in (select x.edition from edition_contents x
+          join item_comics c on c.item = x.item where c.series_id = ${id})`,
+        sql`(select min(c.number) from edition_contents x
+          join item_comics c on c.item = x.item
+          where x.edition = e.id and c.series_id = ${id}) nulls last, i.title, e.id`,
+      ),
+    ),
   ]);
-  return { series, sources: [...sources], issues: [...issues] };
+  return {
+    series,
+    sources: [...sources],
+    issues: [...issues],
+    collectedIn: [...collectedIn],
+  };
 }
