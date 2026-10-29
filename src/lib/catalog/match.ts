@@ -61,9 +61,10 @@ export function matchRow(row: TmdbItem | OpenLibraryWork): MatchRow {
  * The one "looks like the same work" rule, which the search, the sheet and
  * the attach all hold (Roadmap 2026-10-24 S1). Always the same type and the
  * same folded title, and a title that folds to nothing matches nothing (R7).
- * Films and shows: a year within 1 when both have one. Books: an author the
- * item holds among the row's names, or all of them joined; never the year,
- * since Open Library's first-publish year is too often wrong (2026-10-28).
+ * Films and shows: a year within 1 when both have one. Books: the author the
+ * item holds is one of the row's names, or the item holds the row's names in
+ * any order, joined with ", "; never the year, since Open Library's
+ * first-publish year is too often wrong (2026-10-28).
  */
 export function sameWork(row: MatchRow, held: MatchHeld): boolean {
   if (held.type !== row.type) return false;
@@ -71,9 +72,12 @@ export function sameWork(row: MatchRow, held: MatchHeld): boolean {
   if (title === "" || title !== normalizeTitle(held.title)) return false;
   if (row.type === "book") {
     const author = held.author ? normalizeName(held.author) : "";
-    if (author === "" || row.authors.length === 0) return false;
-    const names = [...row.authors, row.authors.join(", ")].map(normalizeName);
-    return names.includes(author);
+    const names = row.authors.map(normalizeName).filter(Boolean);
+    if (author === "" || names.length === 0) return false;
+    if (names.includes(author)) return true;
+    // A multi-author work, held as an import joined them (Rummage R3).
+    const heldNames = held.author?.split(",").map(normalizeName) ?? [];
+    return names.length > 1 && sameNames(heldNames, names);
   }
   return (
     held.year === null ||
@@ -81,6 +85,10 @@ export function sameWork(row: MatchRow, held: MatchHeld): boolean {
     Math.abs(held.year - row.year) <= 1
   );
 }
+
+const sameNames = (a: string[], b: string[]) =>
+  a.length === b.length &&
+  [...a].sort().join("\n") === [...b].sort().join("\n");
 
 /** Two queries per page, whatever its size: the keys, then the candidates. */
 export async function catalogStatuses(

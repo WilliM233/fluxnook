@@ -258,6 +258,9 @@ export async function attach(
     .where(
       and(eq(itemSources.item, itemId), eq(itemSources.source, row.source)),
     );
+  // The same key, attached while this import waited on the lock (two tabs):
+  // the caller answers with the winner, as for any key already in (R4).
+  if (taken?.key === row.key) throw new KeyTaken();
   if (taken) {
     throw new ConflictError(
       `That item already has ${provider} source ${taken.key}.`,

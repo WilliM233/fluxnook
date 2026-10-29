@@ -23,7 +23,9 @@ export async function GET(
     return apiError(401, "unauthorized", "Sign in to search.");
   }
 
-  const isbn = normalizeIsbn(decodeURIComponent((await params).isbn));
+  // Next hands the segment over decoded; decoding it again would throw on a
+  // bare `%` (Rummage R1).
+  const isbn = normalizeIsbn((await params).isbn);
   if (!isbn) {
     return apiError(400, "invalid_request", "That isn't a valid ISBN.");
   }

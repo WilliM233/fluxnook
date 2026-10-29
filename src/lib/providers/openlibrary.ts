@@ -276,6 +276,14 @@ const positiveInteger = (value: unknown) =>
     ? value
     : null;
 
+// `editions.pages` is a Postgres integer; a count past it is junk, read as
+// none rather than failing the whole import (Rummage R2).
+const PAGES_MAX = 2_147_483_647;
+const pageCount = (value: unknown) => {
+  const pages = positiveInteger(value);
+  return pages !== null && pages <= PAGES_MAX ? pages : null;
+};
+
 // Open Library pads a work's covers with -1 where one was removed.
 const firstCover = (covers: number[] | undefined) =>
   (covers ?? []).map(positiveInteger).find((id) => id !== null) ?? null;
@@ -395,7 +403,7 @@ function mapEdition(body: RawEdition): OpenLibraryEdition {
     publisher: body.publishers?.[0]?.trim() || null,
     publishedOn: published?.on ?? null,
     publishedPrecision: published?.precision ?? null,
-    pages: positiveInteger(body.number_of_pages),
+    pages: pageCount(body.number_of_pages),
     format: mapPhysicalFormat(body.physical_format),
     formatWord: body.physical_format?.trim() || null,
     isbn13: dedupe(

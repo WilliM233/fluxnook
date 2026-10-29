@@ -20,8 +20,17 @@ import {
   openLibraryWork,
   writeBook,
 } from "./import";
+import { normalizeTitle } from "./normalize";
 
 const openLibraryUrl = (key: string) => `https://openlibrary.org/${key}`;
+
+/** An edition's title when it isn't one of its work's, folded; else null. */
+function ownTitle(title: string, workTitles: (string | undefined)[]) {
+  const folded = normalizeTitle(title);
+  if (folded === "") return null;
+  const same = workTitles.some((t) => t && normalizeTitle(t) === folded);
+  return same ? null : title;
+}
 
 /** The ISBN-13s an edition is known by: its 13s, or its 10s converted when it has none. */
 export function editionIsbns(edition: OpenLibraryEdition): string[] {
@@ -198,11 +207,9 @@ async function writeEdition(
         item: itemId,
         format,
         // A printing titled as its work is that work; only a different
-        // title is the edition's own.
-        title:
-          edition.title && edition.title !== (work?.title ?? item.title)
-            ? edition.title
-            : null,
+        // title, once folded, is the edition's own, on whichever path the
+        // work arrived ('Salem's Lot is Salem's Lot, Rummage R5).
+        title: ownTitle(edition.title, [work?.title, item.title]),
         releasedOn: edition.publishedOn,
         releasedPrecision: edition.publishedPrecision,
         publisher: edition.publisher,

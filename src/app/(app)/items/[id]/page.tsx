@@ -94,8 +94,7 @@ function Editions({ editions }: { editions: ItemPage["editions"] }) {
               </span>
               <span className="sr-only"> · </span>
               <span className="text-sm text-muted-foreground">
-                {e.title && `${e.title} · `}
-                {editionLine(e)}
+                {[e.title, editionLine(e)].filter(Boolean).join(" · ")}
               </span>
               {e.isbn && (
                 <span className="text-sm text-dim tabular-nums">
