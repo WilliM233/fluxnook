@@ -15,7 +15,9 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe("playwright.config.ts", () => {
+// A cold import of the config pulls in @playwright/test; under a full run's
+// worker pool on the dev box it outlasted vitest's 5 s on 3 of 5 runs.
+describe("playwright.config.ts", { timeout: 20_000 }, () => {
   it("under CI: forbidOnly, no retries, npm run start, no server reuse", async () => {
     const config = await loadConfig(true);
     expect(config.forbidOnly).toBe(true);
