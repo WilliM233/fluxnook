@@ -45,6 +45,28 @@ export function normalizeSeries(name: string): string {
   return fold(text);
 }
 
+// A trailing volume number, bare or in parentheses: "Vol. 1", "(Vol. 2)".
+const VOLUME_TAIL =
+  /\s*(?:\bvol(?:ume)?\.?\s*[0-9]+|\(\s*vol(?:ume)?\.?\s*[0-9]+\s*\))\s*$/i;
+
+/**
+ * The publisher a hand-entered label names, folded (Ch 1.4, 1.4.1 Q2, L): the
+ * parenthetical it ends in once its volume number is off, so
+ * "Teenage Mutant Ninja Turtles (Mirage) Vol. 1" is `mirage`. Null when the
+ * label names none.
+ */
+export function seriesPublisher(label: string): string | null {
+  let text = label;
+  while (VOLUME_TAIL.test(text)) text = text.replace(VOLUME_TAIL, "");
+  const inner = text.match(/\(([^()]*)\)\s*$/)?.[1];
+  return (inner && fold(inner)) || null;
+}
+
+/** A publisher's name folded to compare with `seriesPublisher`. */
+export function normalizePublisher(name: string): string {
+  return fold(name);
+}
+
 /**
  * A collected edition's title with its trailing number removed, folded
  * (Ch 1.4 Q1, L): "Ultimate Collection 1" is `ultimate collection`. A title

@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   collectedStem,
   normalizeName,
+  normalizePublisher,
   normalizeSeries,
   normalizeTitle,
+  seriesPublisher,
 } from "@/lib/catalog/normalize";
 
 describe("normalizeName", () => {
@@ -95,6 +97,28 @@ describe("normalizeSeries", () => {
     expect(normalizeSeries("Teenage Mutant Ninja Turtles Adventures")).not.toBe(
       normalizeSeries("Teenage Mutant Ninja Turtles (Mirage) Vol. 1"),
     );
+  });
+});
+
+describe("seriesPublisher", () => {
+  it.each([
+    ["Teenage Mutant Ninja Turtles (Mirage) Vol. 1", "mirage"],
+    ["Teenage Mutant Ninja Turtles (Image) Vol. 3", "image"],
+    ["Groo (Epic Comics)", "epic comics"],
+    ["Groo (Epic) (Vol. 2)", "epic"],
+    ["Tales of the Teenage Mutant Ninja Turtles Vol. 2", null],
+    ["Teenage Mutant Ninja Turtles & Flaming Carrot", null],
+    ["Groo (Vol. 2)", null],
+    ["Groo ( )", null],
+  ])("%s → %s", (label, publisher) => {
+    expect(seriesPublisher(label)).toBe(publisher);
+  });
+
+  it("folds a publisher's name the same way", () => {
+    expect(normalizePublisher("Mirage")).toBe(
+      seriesPublisher("X (Mirage) Vol. 1"),
+    );
+    expect(normalizePublisher("IDW Publishing")).toBe("idw publishing");
   });
 });
 

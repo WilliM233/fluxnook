@@ -1,8 +1,16 @@
 import { type SQL, sql } from "drizzle-orm";
 import type { Db } from "@/db/client";
+import type { ComicVineSeries } from "@/lib/providers/comicvine";
 import type { OpenLibraryWork } from "@/lib/providers/openlibrary";
 import type { TmdbItem } from "@/lib/providers/tmdb";
-import { normalizeName, normalizeTitle } from "./normalize";
+import {
+  collectedStem,
+  normalizeName,
+  normalizePublisher,
+  normalizeSeries,
+  normalizeTitle,
+  seriesPublisher,
+} from "./normalize";
 
 /** A catalog item a provider row looks like, with where it came from. */
 export type Candidate = {
@@ -162,3 +170,197 @@ export async function catalogStatuses(
     return { status: "match", ...found[0], candidates: found };
   });
 }
+
+/**
+ * A run the person entered by hand, as a Comic Vine volume might match it:
+ * comics sharing an `item_comics.series` text (`series`), or collected
+ * editions sharing a title stem (`collected`, Ch 1.4 Q1, L). `shelf` is the
+ * signed-in user's first shelf holding the group's earliest item.
+ */
+export type SeriesGroup = {
+  group: "series" | "collected";
+  label: string;
+  count: number;
+  earliest: number | null;
+  shelf: string | null;
+};
+
+/**
+ * Where a Comic Vine volume stands against the catalog (A4): `in` when its
+ * key is already a series' source; `match` when a hand-entered group looks
+ * like the same run (`sameSeries`; the first group's fields, and every
+ * group); `new` otherwise.
+ */
+export type SeriesStatus =
+  | { status: "in"; seriesId: string }
+  | ({ status: "match"; candidates: SeriesGroup[] } & SeriesGroup)
+  | { status: "new" };
+
+/** What the rule reads of a volume. */
+export type SeriesRow = Pick<ComicVineSeries, "name" | "year" | "publisher">;
+
+/**
+ * What the rule reads of a group: its label, its earliest year, and for a
+ * collected group the series texts of what its editions already hold.
+ */
+export type SeriesHeld = {
+  group: "series" | "collected";
+  label: string;
+  earliest: number | null;
+  contains: string[];
+};
+
+// Whole words inside a fold: "ultimate collection" is in
+// "teenage mutant ninja turtles the ultimate collection".
+const holds = (folded: string, part: string) =>
+  part !== "" && ` ${folded} `.includes(` ${part} `);
+
+/**
+ * The one "looks like the same run" rule, which the search, the sheet and
+ * 1.4.2's attach hold (Roadmap 2026-10-29, 1.4.1 Q1 and Q2, L). A series
+ * group: the label's series fold is the volume name's, both first years are
+ * known and within 1, and a publisher the label names in parentheses is the
+ * volume's. A collected group: its title stem is in the volume's name, and
+ * so is the series of something its editions already hold. Never the
+ * volume number, which Comic Vine doesn't carry.
+ */
+export function sameSeries(row: SeriesRow, held: SeriesHeld): boolean {
+  const name = normalizeSeries(row.name);
+  if (name === "") return false;
+  if (held.group === "collected") {
+    return (
+      holds(name, collectedStem(held.label)) &&
+      held.contains.some((series) => holds(name, normalizeSeries(series)))
+    );
+  }
+  if (normalizeSeries(held.label) !== name) return false;
+  if (held.earliest === null || row.year === null) return false;
+  if (Math.abs(held.earliest - row.year) > 1) return false;
+  const publisher = seriesPublisher(held.label);
+  return (
+    publisher === null ||
+    (row.publisher !== null && normalizePublisher(row.publisher) === publisher)
+  );
+}
+
+type HeldGroup = SeriesHeld & { count: number; first: string };
+
+/**
+ * A page of Comic Vine volumes against the catalog: the keys, the series
+ * groups, the collected editions, then the shelves of the groups that
+ * matched. Four queries per page, whatever its size.
+ */
+export async function seriesStatuses(
+  db: Db,
+  { userId, rows }: { userId: string; rows: ComicVineSeries[] },
+): Promise<SeriesStatus[]> {
+  if (rows.length === 0) return [];
+
+  const known = await db.execute<{ key: string; series: string }>(sql`
+    select key, series from series_sources
+    where source = 'comicvine' and key in (${sql.join(
+      rows.map((row) => sql`${row.key}`),
+      sql`, `,
+    )})`);
+  const byKey = new Map(known.map((r) => [r.key, r.series]));
+
+  // Every hand-entered run with no Comic Vine source, by its series text,
+  // with its earliest item for the shelf.
+  const series = await db.execute<HeldGroup>(sql`
+    select c.series as label, count(*)::int as count,
+      min(extract(year from i.released_on))::int as earliest,
+      (array_agg(i.id order by i.released_on nulls last, c.number nulls last, i.id))[1] as first
+    from items i join item_comics c on c.item = i.id
+    where i.type = 'comic' and c.series is not null
+      and not exists (
+        select 1 from item_sources s where s.item = i.id and s.source = 'comicvine')
+    group by c.series`);
+
+  // Every hand-entered collected edition, with the series of what its
+  // editions hold; grouped by title stem here, a fold SQL can't do.
+  const collected = await db.execute<{
+    id: string;
+    title: string;
+    contains: string[];
+  }>(sql`
+    select i.id, i.title,
+      coalesce(array_agg(distinct cc.series) filter (where cc.series is not null), '{}') as contains
+    from items i
+    left join editions e on e.item = i.id
+    left join edition_contents ec on ec.edition = e.id
+    left join item_comics cc on cc.item = ec.item
+    where i.type = 'comic' and i.form = 'collected'
+      and not exists (
+        select 1 from item_sources s where s.item = i.id and s.source = 'comicvine')
+    group by i.id, i.title`);
+
+  const groups: HeldGroup[] = series.map((g) => ({
+    ...g,
+    group: "series",
+    contains: [],
+  }));
+  const stems = new Map<string, (typeof collected)[number][]>();
+  for (const item of collected) {
+    const stem = collectedStem(item.title);
+    if (stem === "") continue;
+    stems.set(stem, [...(stems.get(stem) ?? []), item]);
+  }
+  for (const items of stems.values()) {
+    const ordered = [...items].sort(
+      (a, b) =>
+        trailingNumber(a.title) - trailingNumber(b.title) ||
+        a.id.localeCompare(b.id),
+    );
+    groups.push({
+      group: "collected",
+      label: ordered[0].title.replace(/\s*[0-9]+\s*$/, "").trim(),
+      count: ordered.length,
+      earliest: null,
+      first: ordered[0].id,
+      contains: [...new Set(ordered.flatMap((item) => item.contains))],
+    });
+  }
+  // Series by first year, then collected, so the first candidate is the
+  // likeliest run.
+  groups.sort(
+    (a, b) =>
+      Number(a.group === "collected") - Number(b.group === "collected") ||
+      (a.earliest ?? 0) - (b.earliest ?? 0) ||
+      a.label.localeCompare(b.label),
+  );
+
+  const found = rows.map((row) =>
+    byKey.has(row.key) ? [] : groups.filter((g) => sameSeries(row, g)),
+  );
+  const firsts = [...new Set(found.flat().map((g) => g.first))];
+  const shelves = firsts.length
+    ? await db.execute<{ item: string; name: string }>(sql`
+        select distinct on (e.item) e.item, sh.name from shelf_entries e
+        join shelves sh on sh.id = e.shelf
+        where sh.owner = ${userId} and e.item in (${sql.join(
+          firsts.map((id) => sql`${id}`),
+          sql`, `,
+        )})
+        order by e.item, sh.created_at, sh.id`)
+    : [];
+  const shelfOf = new Map(shelves.map((s) => [s.item, s.name]));
+
+  return rows.map((row, i): SeriesStatus => {
+    const seriesId = byKey.get(row.key);
+    if (seriesId) return { status: "in", seriesId };
+    if (found[i].length === 0) return { status: "new" };
+    const candidates = found[i].map(
+      ({ group, label, count, earliest, first }): SeriesGroup => ({
+        group,
+        label,
+        count,
+        earliest,
+        shelf: shelfOf.get(first) ?? null,
+      }),
+    );
+    return { status: "match", ...candidates[0], candidates };
+  });
+}
+
+const trailingNumber = (title: string) =>
+  Number(title.match(/([0-9]+)\s*$/)?.[1] ?? Number.MAX_SAFE_INTEGER);
