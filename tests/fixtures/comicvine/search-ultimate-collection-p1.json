@@ -1,0 +1,527 @@
+{
+  "error": "OK",
+  "limit": 20,
+  "offset": 0,
+  "number_of_page_results": 20,
+  "number_of_total_results": 1913,
+  "status_code": 1,
+  "results": [
+    {
+      "count_of_issues": 20,
+      "deck": null,
+      "id": 102412,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/0/3125/5922393-pap1.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/0/3125/5922393-pap1.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/0/3125/5922393-pap1.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/0/3125/5922393-pap1.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/0/3125/5922393-pap1.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/0/3125/5922393-pap1.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/0/3125/5922393-pap1.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/0/3125/5922393-pap1.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/0/3125/5922393-pap1.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "PK Ultimate Collection",
+      "publisher": null,
+      "site_detail_url": "https://comicvine.gamespot.com/pk-ultimate-collection/4050-102412/",
+      "start_year": "2007",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 3,
+      "deck": null,
+      "id": 30219,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/7162966-7573279392-81723.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/7162966-7573279392-81723.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/7162966-7573279392-81723.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/7162966-7573279392-81723.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/7162966-7573279392-81723.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/7162966-7573279392-81723.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/7162966-7573279392-81723.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/7162966-7573279392-81723.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/7162966-7573279392-81723.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "New X-Men Ultimate Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-31/",
+        "id": 31,
+        "name": "Marvel"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/new-x-men-ultimate-collection/4050-30219/",
+      "start_year": "2008",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 4,
+      "deck": null,
+      "id": 41502,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/2/22664/1927914-f4_by_ww_uc.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/2/22664/1927914-f4_by_ww_uc.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/2/22664/1927914-f4_by_ww_uc.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/2/22664/1927914-f4_by_ww_uc.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/2/22664/1927914-f4_by_ww_uc.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/2/22664/1927914-f4_by_ww_uc.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/2/22664/1927914-f4_by_ww_uc.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/2/22664/1927914-f4_by_ww_uc.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/2/22664/1927914-f4_by_ww_uc.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Fantastic Four by Waid and Wieringo Ultimate Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-31/",
+        "id": 31,
+        "name": "Marvel"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/fantastic-four-by-waid-and-wieringo-ultimate-colle/4050-41502/",
+      "start_year": "2011",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 34325,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/7434107-1948536287-86627.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/7434107-1948536287-86627.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/7434107-1948536287-86627.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/7434107-1948536287-86627.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/7434107-1948536287-86627.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/7434107-1948536287-86627.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/7434107-1948536287-86627.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/7434107-1948536287-86627.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/7434107-1948536287-86627.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Ultimate Iron Man Ultimate Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-31/",
+        "id": 31,
+        "name": "Marvel"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/ultimate-iron-man-ultimate-collection/4050-34325/",
+      "start_year": "2010",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 5,
+      "deck": null,
+      "id": 27602,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/7434112-5028270240-86628.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/7434112-5028270240-86628.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/7434112-5028270240-86628.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/7434112-5028270240-86628.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/7434112-5028270240-86628.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/7434112-5028270240-86628.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/7434112-5028270240-86628.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/7434112-5028270240-86628.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/7434112-5028270240-86628.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Ultimate X-Men: Ultimate Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-31/",
+        "id": 31,
+        "name": "Marvel"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/ultimate-x-men-ultimate-collection/4050-27602/",
+      "start_year": "2006",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 7,
+      "deck": null,
+      "id": 28977,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/6906056-7270735644-76112.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/6906056-7270735644-76112.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/6906056-7270735644-76112.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/6906056-7270735644-76112.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/6906056-7270735644-76112.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/6906056-7270735644-76112.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/6906056-7270735644-76112.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/6906056-7270735644-76112.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/6906056-7270735644-76112.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Ultimate Spider-Man: Ultimate Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-31/",
+        "id": 31,
+        "name": "Marvel"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/ultimate-spider-man-ultimate-collection/4050-28977/",
+      "start_year": "2007",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 12,
+      "deck": null,
+      "id": 38743,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/68811/1717793-uc1.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/68811/1717793-uc1.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/68811/1717793-uc1.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/68811/1717793-uc1.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/68811/1717793-uc1.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/68811/1717793-uc1.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/68811/1717793-uc1.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/68811/1717793-uc1.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/68811/1717793-uc1.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Invincible Ultimate Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-513/",
+        "id": 513,
+        "name": "Image"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/invincible-ultimate-collection/4050-38743/",
+      "start_year": "2005",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 2,
+      "deck": " ",
+      "id": 125710,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/7276966-01.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/7276966-01.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/7276966-01.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/7276966-01.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/7276966-01.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/7276966-01.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/7276966-01.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/7276966-01.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/7276966-01.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Alias Ultimate Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-31/",
+        "id": 31,
+        "name": "Marvel"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/alias-ultimate-collection/4050-125710/",
+      "start_year": "2009",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 32393,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/5/59000/1175348-p00001.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/5/59000/1175348-p00001.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/5/59000/1175348-p00001.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/5/59000/1175348-p00001.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/5/59000/1175348-p00001.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/5/59000/1175348-p00001.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/5/59000/1175348-p00001.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/5/59000/1175348-p00001.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/5/59000/1175348-p00001.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Mini Marvels Ultimate Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-31/",
+        "id": 31,
+        "name": "Marvel"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/mini-marvels-ultimate-collection/4050-32393/",
+      "start_year": "2009",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 40349,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/6523689-0745171078-69773.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/6523689-0745171078-69773.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/6523689-0745171078-69773.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/6523689-0745171078-69773.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/6523689-0745171078-69773.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/6523689-0745171078-69773.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/6523689-0745171078-69773.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/6523689-0745171078-69773.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/6523689-0745171078-69773.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Emma Frost: Ultimate Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-31/",
+        "id": 31,
+        "name": "Marvel"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/emma-frost-ultimate-collection/4050-40349/",
+      "start_year": "2011",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 71975,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/3666173-01.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/3666173-01.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/3666173-01.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/3666173-01.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/3666173-01.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/3666173-01.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/3666173-01.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/3666173-01.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/3666173-01.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "The Spider Widevision: The Ultimate Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1102/",
+        "id": 1102,
+        "name": "Moonstone"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/the-spider-widevision-the-ultimate-collection/4050-71975/",
+      "start_year": "2014",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 74354,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/3850230-01.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/3850230-01.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/3850230-01.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/3850230-01.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/3850230-01.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/3850230-01.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/3850230-01.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/3850230-01.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/3850230-01.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Scam Ultimate Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-3331/",
+        "id": 3331,
+        "name": "ComixTribe"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/scam-ultimate-collection/4050-74354/",
+      "start_year": "2014",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 86400,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/4934617-01.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/4934617-01.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/4934617-01.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/4934617-01.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/4934617-01.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/4934617-01.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/4934617-01.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/4934617-01.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/4934617-01.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "The Standard: Ultimate Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-3331/",
+        "id": 3331,
+        "name": "ComixTribe"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/the-standard-ultimate-collection/4050-86400/",
+      "start_year": "2015",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": "The Amy Racecar trades",
+      "id": 33651,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/1/15776/8633238-amyracer.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/1/15776/8633238-amyracer.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/1/15776/8633238-amyracer.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/1/15776/8633238-amyracer.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/1/15776/8633238-amyracer.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/1/15776/8633238-amyracer.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/1/15776/8633238-amyracer.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/1/15776/8633238-amyracer.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/1/15776/8633238-amyracer.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Amy Racecar Ultimate Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-692/",
+        "id": 692,
+        "name": "El Capitan"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/amy-racecar-ultimate-collection/4050-33651/",
+      "start_year": "2002",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 34299,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/7068627-8628923761-79787.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/7068627-8628923761-79787.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/7068627-8628923761-79787.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/7068627-8628923761-79787.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/7068627-8628923761-79787.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/7068627-8628923761-79787.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/7068627-8628923761-79787.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/7068627-8628923761-79787.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/7068627-8628923761-79787.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "The Ultimates Ultimate Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-31/",
+        "id": 31,
+        "name": "Marvel"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/the-ultimates-ultimate-collection/4050-34299/",
+      "start_year": "2010",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 34768,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/2/22664/1328549-ya_uc.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/2/22664/1328549-ya_uc.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/2/22664/1328549-ya_uc.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/2/22664/1328549-ya_uc.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/2/22664/1328549-ya_uc.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/2/22664/1328549-ya_uc.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/2/22664/1328549-ya_uc.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/2/22664/1328549-ya_uc.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/2/22664/1328549-ya_uc.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Young Avengers Ultimate Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-31/",
+        "id": 31,
+        "name": "Marvel"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/young-avengers-ultimate-collection/4050-34768/",
+      "start_year": "2010",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 53564,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/2675831-01.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/2675831-01.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/2675831-01.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/2675831-01.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/2675831-01.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/2675831-01.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/2675831-01.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/2675831-01.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/2675831-01.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "The Metabarons Ultimate Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-7332/",
+        "id": 7332,
+        "name": "Humanoids"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/the-metabarons-ultimate-collection/4050-53564/",
+      "start_year": "2012",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 80443,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/0/3125/4426431-cal1.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/0/3125/4426431-cal1.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/0/3125/4426431-cal1.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/0/3125/4426431-cal1.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/0/3125/4426431-cal1.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/0/3125/4426431-cal1.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/0/3125/4426431-cal1.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/0/3125/4426431-cal1.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/0/3125/4426431-cal1.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "California Raisins: The Ultimate Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-345/",
+        "id": 345,
+        "name": "Blackthorne"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/california-raisins-the-ultimate-collection/4050-80443/",
+      "start_year": "1988",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 98082,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/0/3125/5653499-inv.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/0/3125/5653499-inv.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/0/3125/5653499-inv.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/0/3125/5653499-inv.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/0/3125/5653499-inv.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/0/3125/5653499-inv.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/0/3125/5653499-inv.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/0/3125/5653499-inv.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/0/3125/5653499-inv.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Invencible Ultimate Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-3421/",
+        "id": 3421,
+        "name": "Aleta Ediciones"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/invencible-ultimate-collection/4050-98082/",
+      "start_year": "2012",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 159832,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/1/15776/9562613-ender.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/1/15776/9562613-ender.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/1/15776/9562613-ender.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/1/15776/9562613-ender.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/1/15776/9562613-ender.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/1/15776/9562613-ender.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/1/15776/9562613-ender.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/1/15776/9562613-ender.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/1/15776/9562613-ender.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Ender's Game Ultimate Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-31/",
+        "id": 31,
+        "name": "Marvel"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/enders-game-ultimate-collection/4050-159832/",
+      "start_year": "2011",
+      "resource_type": "volume"
+    }
+  ],
+  "version": "1.0"
+}
