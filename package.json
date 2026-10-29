@@ -18,6 +18,8 @@
     "fixtures:load": "node --env-file=.env.local --import tsx scripts/fixtures-load.ts",
     "tmdb:stub": "node --import tsx scripts/tmdb-stub.ts",
     "tmdb:record": "node --env-file=.env.local --import tsx scripts/tmdb-record.ts",
+    "openlibrary:stub": "node --import tsx scripts/openlibrary-stub.ts",
+    "openlibrary:record": "node --env-file-if-exists=.env.local --import tsx scripts/openlibrary-record.ts",
     "check": "npm run lint && npm run typecheck && npm test && npm run db:check && npm run test:db && npm run test:e2e"
   },
   "dependencies": {

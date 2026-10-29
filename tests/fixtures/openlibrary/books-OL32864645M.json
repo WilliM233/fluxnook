@@ -1,0 +1,48 @@
+{
+  "type": {
+    "key": "/type/edition"
+  },
+  "title": "Carrie",
+  "authors": [
+    {
+      "key": "/authors/OL7829293A"
+    }
+  ],
+  "publish_date": "2011",
+  "source_records": [
+    "amazon:0307743667",
+    "bwb:9780307743664",
+    "idb:9780307743664"
+  ],
+  "number_of_pages": 304,
+  "publishers": ["Anchor Books"],
+  "physical_format": "mass market paperback",
+  "full_title": "Carrie",
+  "covers": [14656089, 11497047],
+  "works": [
+    {
+      "key": "/works/OL81626W"
+    }
+  ],
+  "key": "/books/OL32864645M",
+  "identifiers": {},
+  "isbn_10": ["0307743667"],
+  "isbn_13": ["9780307743664"],
+  "ocaid": "carrie0000step_v0q5",
+  "classifications": {},
+  "languages": [
+    {
+      "key": "/languages/eng"
+    }
+  ],
+  "latest_revision": 6,
+  "revision": 6,
+  "created": {
+    "type": "/type/datetime",
+    "value": "2021-07-24T22:42:42.989237"
+  },
+  "last_modified": {
+    "type": "/type/datetime",
+    "value": "2024-08-14T14:51:34.090168"
+  }
+}
