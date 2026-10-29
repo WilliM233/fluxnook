@@ -11,6 +11,13 @@ Every version in `package.json` is exact (`.npmrc` has `save-exact=true`). This 
 
 Fonts are not packages: Fraunces (titles) and Inter (text) come through `next/font/google` and are fetched at build, replacing Geist (Ch 1.2). The TMDB logo in `public/tmdb` is TMDB's own file, source noted beside it.
 
+Providers (no package for either; each client is a closure over `fetch` in `src/lib/providers/`):
+
+| Provider | Key | Limit | Notes |
+|---|---|---|---|
+| TMDB | v4 read token, `TMDB_API_KEY` | not handled before Volume 2 | Films and TV |
+| Open Library (Ch 1.3) | none | 1 request a second anonymous, 3 identified by `User-Agent` | Books. `User-Agent` is `Fluxnook/<package.json version> (<OPENLIBRARY_CONTACT, else the repo URL>)`. Redirects followed only under `OPENLIBRARY_BASE_URL`. Pacing is not handled; a 429 is the call's 503. Tests read recordings in `tests/fixtures/openlibrary` through a stub |
+
 Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js files in Chapter 0.2.
 
 ## dependencies

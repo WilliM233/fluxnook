@@ -2,6 +2,7 @@
 
 One line per chapter, newest first. Release notes live in `docs/releases/`.
 
+- 1.3 Providers, books: search Open Library or type an ISBN, add a book with its cover and an edition under it, and see a book's Editions on its page ([note](docs/releases/1.3.md))
 - 1.2 Providers, film and TV: search TMDB, add a film or show with its poster, an item page for everything in the catalog, manual entry, and the Deep Field look ([note](docs/releases/1.2.md))
 - 1.1 Schema: the whole core model as tables, private by default, and a loader that fills them from the three fixtures ([note](docs/releases/1.1.md))
 - 0.6 Fixtures, comics: the TMNT Mirage tab as comics, collected editions with copies, backups in their hosts and read logs, a third rebuildable fixture ([note](docs/releases/0.6.md))
