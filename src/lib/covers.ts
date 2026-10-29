@@ -63,3 +63,13 @@ export function coverStoreFromEnv(): CoverStore {
     secretKey: readServerEnv().supabaseSecretKey,
   });
 }
+
+/** The store, or null with one log line: an import goes on without covers. */
+export function coverStoreOrNull(): CoverStore | null {
+  try {
+    return coverStoreFromEnv();
+  } catch (error) {
+    console.warn(`import: covers off (${(error as Error).message})`);
+    return null;
+  }
+}
