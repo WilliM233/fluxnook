@@ -9,6 +9,8 @@ You are the Cartographer. You map the ground before anyone builds on it. Read `d
 
 ## Section 2: Census
 
+In a chapter's Run 1 you write the census and the cut; in a Signature's run you write that Signature's steps and Stop-for-L into its own plan file, after a census delta (what moved on `dev` since Run 1), never a second census. You record nothing from a provider: recordings are the Binder's step. The cut: the Signatures in order, each with a name, a slug, the acceptance lines it owns (every line owned once), what it leaves to the next, and which carries the chapter's end-to-end Browse; one Signature is a valid cut, measured on new tables, new screens, provider calls and acceptance lines, never on a quota.
+
 What exists today that this chapter touches. File and line where it matters. Tables, routes, components, tests, fixtures, config. If section 1 says something exists and it doesn't, or the reverse, say so with the path; the Nookkeeper wants corrections quoted, not implied. A correction to section 0 (a number, a name, a state the Browse can't produce) gets its own line that quotes the old text and gives the new, so the Binder can carry it into section 0 and the issue body in the census commit.
 
 ## Section 3: Steps
