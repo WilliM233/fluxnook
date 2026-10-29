@@ -1,23 +1,7 @@
 import { readServerEnv } from "@/lib/env";
+import { ProviderError, ProviderNotConfigured } from "./errors";
 
-/** No TMDB token on this nook: search and import are off, nothing else is. */
-export class ProviderNotConfigured extends Error {
-  constructor() {
-    super("TMDB_API_KEY is not set.");
-    this.name = "ProviderNotConfigured";
-  }
-}
-
-/**
- * TMDB answered with something other than a 2xx. Carries the status only:
- * TMDB's own message never travels further than this module.
- */
-export class ProviderError extends Error {
-  constructor(readonly status: number) {
-    super(`TMDB answered ${status}.`);
-    this.name = "ProviderError";
-  }
-}
+export { ProviderError, ProviderNotConfigured };
 
 export type TmdbOptions = {
   apiKey: string | null;

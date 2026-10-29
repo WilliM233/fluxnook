@@ -28,9 +28,9 @@ test("The Long Walk, July 1979, lands on its own page", async ({
   await expect(released).toHaveText("July 1979");
   await expect(page.getByText("Added by hand")).toBeVisible();
   await expect(page.getByText("Novel", { exact: true })).toBeVisible();
-  await expect(
-    page.getByText("Richard Bachman", { exact: true }),
-  ).toBeVisible();
+  // The pill row and, since Ch 1.3, the Author fact both carry the name.
+  const author = page.locator("dt", { hasText: "Author" }).locator("+ dd");
+  await expect(author).toHaveText("Richard Bachman");
 });
 
 test("a missing author and a month with no year are named where they go", async ({

@@ -1,5 +1,25 @@
 import { describe, expect, it } from "vitest";
-import { normalizeTitle } from "@/lib/catalog/normalize";
+import { normalizeName, normalizeTitle } from "@/lib/catalog/normalize";
+
+describe("normalizeName", () => {
+  it("folds case", () => {
+    expect(normalizeName("Stephen King")).toBe(normalizeName("stephen king"));
+  });
+
+  it("keeps word order: King, Stephen is not Stephen King", () => {
+    expect(normalizeName("King, Stephen")).not.toBe(
+      normalizeName("Stephen King"),
+    );
+  });
+
+  it("folds a doubled space", () => {
+    expect(normalizeName("Stephen  King")).toBe(normalizeName("Stephen King"));
+  });
+
+  it("keeps a leading initial A, which a title would drop", () => {
+    expect(normalizeName("A. Smith")).not.toBe(normalizeName("Smith"));
+  });
+});
 
 describe("normalizeTitle", () => {
   it("folds punctuation and the leading article", () => {

@@ -9,7 +9,7 @@ You are the Cartographer. You map the ground before anyone builds on it. Read `d
 
 ## Section 2: Census
 
-What exists today that this chapter touches. File and line where it matters. Tables, routes, components, tests, fixtures, config. If section 1 says something exists and it doesn't, or the reverse, say so with the path; the Nookkeeper wants corrections quoted, not implied.
+What exists today that this chapter touches. File and line where it matters. Tables, routes, components, tests, fixtures, config. If section 1 says something exists and it doesn't, or the reverse, say so with the path; the Nookkeeper wants corrections quoted, not implied. A correction to section 0 (a number, a name, a state the Browse can't produce) gets its own line that quotes the old text and gives the new, so the Binder can carry it into section 0 and the issue body in the census commit.
 
 ## Section 3: Steps
 

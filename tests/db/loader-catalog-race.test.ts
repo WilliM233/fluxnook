@@ -54,7 +54,12 @@ afterAll(async () => {
   await sql.end();
 });
 
-it("two people's loads at once onto a new catalog both succeed", async () => {
+// The two loads wait on the loader's lock by design, and so does every other
+// db file that loads the fixtures beside this one; on a fresh database the
+// first full load holds it for seconds. Ch 1.3 timed out once at 5 s.
+it("two people's loads at once onto a new catalog both succeed", {
+  timeout: 30_000,
+}, async () => {
   const one = await signUp(sql);
   const two = await signUp(sql);
   users.push(one.id, two.id);

@@ -137,6 +137,16 @@ describe("schema", () => {
     }
   });
 
+  it("editions carries publisher and pages, both nullable, pages checked (Ch 1.3)", () => {
+    for (const name of ["publisher", "pages"]) {
+      const c = column("editions", name);
+      expect(c, `editions.${name}`).toBeDefined();
+      expect(c?.notNull, `editions.${name} nullable`).toBe(false);
+    }
+    const names = config("editions").checks.map((c) => c.name);
+    expect(names).toContain("editions_pages");
+  });
+
   it("item_tv.ended is not null and defaults to false", () => {
     const ended = column("item_tv", "ended");
     expect(ended?.notNull).toBe(true);

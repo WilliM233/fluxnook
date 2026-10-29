@@ -7,7 +7,7 @@ import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { readServerEnv } from "../src/lib/env";
 import { createTmdb, ProviderError } from "../src/lib/providers/tmdb";
-import { searchFileName } from "../tests/stub/tmdb";
+import { searchFileName } from "../tests/stub/names";
 
 const DIR = join(process.cwd(), "tests/fixtures/tmdb");
 const usage = "usage: npm run tmdb:record -- search:<query> movie/<id> tv/<id>";
