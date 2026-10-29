@@ -133,7 +133,8 @@ async function catalog() {
       (select count(*)::int from item_books where item in (${fx})) as books,
       (select count(*)::int from item_comics where item in (${fx})) as comics,
       (select count(*)::int from editions where id in (${ed})) as editions,
-      (select count(*)::int from edition_sources where edition in (${ed})) as edition_sources,
+      -- The loader's own: a Comic Vine attach beside this file adds one each (1.4.2).
+      (select count(*)::int from edition_sources where edition in (${ed}) and source = 'manual') as edition_sources,
       (select count(*)::int from edition_contents where edition in (${ed})) as contents,
       -- The loader's own franchises: an import beside this file makes tmdb ones.
       (select count(*)::int from franchise_sources where source <> 'tmdb') as franchises`;

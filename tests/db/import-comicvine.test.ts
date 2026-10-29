@@ -16,9 +16,10 @@ import { type ComicVineStub, startComicVineStub } from "../stub/comicvine";
 import { required } from "./harness";
 
 // A5 against the local stack and real Storage. db files run side by side, so
-// this one serves copies of the recordings under volume and issue ids of its
-// own (9<id>, 93<n><id> for the tweaked ones) and attaches only to rows it
-// makes: no fixture row, and no key another file holds.
+// this one serves copies of the recordings under ids of its own (volumes
+// 7<id> and 730nn, issues prefixed 9 or 93n; the status file holds
+// volume/9<id> and the real keys) and attaches only to rows it makes: no
+// fixture row, and no key another file holds.
 
 const RECORDINGS = join(process.cwd(), "tests/fixtures/comicvine");
 // biome-ignore lint/suspicious/noExplicitAny: raw Comic Vine JSON
@@ -29,20 +30,20 @@ type RawIssue = any;
 
 const THIS_YEAR = new Date().getUTCFullYear();
 const ids = {
-  mirage: 920281,
-  ultimate: 950804,
-  tales1987: 918790,
-  oneShot: 930001,
-  odd: 930002,
-  thisYear: 930003,
-  lostCover: 930004,
-  race: 930005,
-  attachRun: 930010,
-  attachedElsewhere: 930011,
-  omnibus: 930012,
-  treasury: 930013,
-  annual: 930014,
-  attachRace: 930015,
+  mirage: 720281,
+  ultimate: 750804,
+  tales1987: 718790,
+  oneShot: 730001,
+  odd: 730002,
+  thisYear: 730003,
+  lostCover: 730004,
+  race: 730005,
+  attachRun: 730010,
+  attachedElsewhere: 730011,
+  omnibus: 730012,
+  treasury: 730013,
+  annual: 730014,
+  attachRace: 730015,
 };
 // Letters and digits only, so its fold is itself: the stems and the series
 // fold the collected rule reads are this file's own.
@@ -329,7 +330,7 @@ describe("importSeriesFromComicVine, a new run", () => {
   });
 
   it("answers an unknown volume as NotFoundError, and an issue key too", async () => {
-    await expect(importVolume(9000001)).rejects.toBeInstanceOf(NotFoundError);
+    await expect(importVolume(7000001)).rejects.toBeInstanceOf(NotFoundError);
     await expect(
       importSeriesFromComicVine(db, cv, covers, {
         key: "issue/121041",
