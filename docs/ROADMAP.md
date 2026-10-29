@@ -60,8 +60,8 @@ Exit: a user exists, logs in locally, sees an empty nook. The team can run a cha
 A usable app for one person. Exit: the King path lives in the app as a cross-media book-then-films shelf, the TMNT sheet is retired, L's physical library is tracked, and the sheet has stopped being opened.
 - Ch 1: Schema and migrations for the whole core model above, including visibility, occurrences, copies and franchise, even where no UI exists yet. Loads the Volume 0 fixtures. Done, v0.1.0-ch.1 (#61, PR #62); plan at docs/plans/1.1-schema.md
 - Ch 2: Providers, film and TV: TMDB search and import into the local catalog, cover cache, the item page. Done, v0.1.0-ch.2 (#63, PR #64); plan at docs/plans/1.2-providers-film-tv.md, design at https://claude.ai/artifact/Kz18YNtugryAE1SEzNXiLp
-- Ch 3: Providers, books: Open Library search and ISBN lookup. ISBN entry is the main path for matching the library. In progress; plan at docs/plans/1.3-providers-books.md, design at https://claude.ai/artifact/CPehVxMcpMH21hfELe4xG8 (exports in docs/designs/1.3/), the Deep Field design system at https://claude.ai/artifact/BFgHbCApeRScHbeeusWdxq (docs/designs/deep-field/)
-- Ch 4: Providers, comics: Metron search and import; edition contents where Metron has them, manual fill where it does not
+- Ch 3: Providers, books: Open Library search and ISBN lookup. ISBN entry is the main path for matching the library. Done, v0.1.0-ch.3 (#65, PR #66); plan at docs/plans/1.3-providers-books.md, design at https://claude.ai/artifact/CPehVxMcpMH21hfELe4xG8 (exports in docs/designs/1.3/), the Deep Field design system at https://claude.ai/artifact/BFgHbCApeRScHbeeusWdxq (docs/designs/deep-field/)
+- Ch 4: Providers, comics: Metron search and import; edition contents where Metron has them, manual fill where it does not. Next
 - Ch 5: Shelves: create, sections, drag ordering, add from catalog, status per entry (unmarked, done, skipped), aggregate stars across the shelf
 - Ch 6: Occurrences and journal: log a read or watch, stars, journal entries, item page history
 - Ch 7: Collection: copies with edition and format, derived ownership via contents, the shopping view
@@ -95,6 +95,8 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## Calls made (with reason)
 
+- 2026-10-29 A book's `summary` is Open Library's blurb, not its wiki: the description cut at its first horizontal rule, markdown links unwrapped to their text, emphasis stripped, and a link whose text is only "source" dropped with its parentheses (the Browse showed Carrie's ending "(source)"). Nothing else is touched; a wrong blurb is the item-edit Deferral's (Ch 1.3 Q1, Browse)
+- 2026-10-29 An Open Library call waits 20 s, not 10: the ISBN path is three calls in a row and a slow afternoon at Open Library tripped 10 s once in the Browse. A retry before the 503 is a Deferral (Ch 1.3 Browse)
 - 2026-10-28 The Open Library work is the item: `item_sources (openlibrary, works/OL…W)`. An ISBN resolves to an edition and its work; the work becomes the item and the edition an `editions` row with `edition_sources (openlibrary, books/OL…M)` and `(isbn, <13 digits>)`, the first provider-written editions (Ch 1.3)
 - 2026-10-28 Books match on folded title and folded author, not year: Open Library's `first_publish_year` is unreliable (Night Shift 1960, 'Salem's Lot 1959), so for type `book` the attach rule is same type, same normalized title, and the catalog's author folded equal to any of the result's author names; the year is shown on the sheet and never gates. Films and TV keep the 2026-10-24 rule (Ch 1.3)
 - 2026-10-28 Open Library doesn't know a novel from a collection: a new book imports with `form` `novel`; an attach keeps the held form (Night Shift stays a collection). The first wrong form is the trigger for the item-edit Deferral (Ch 1.3)
@@ -186,6 +188,7 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## History
 
+- 2026-10-29 Ch 1.3 closed, v0.1.0-ch.3 (#65, PR #66); Ch 1.4 is next. The second provider, the first provider-written editions; two calls added from the Afterword (the blurb rule, the 20 s timeout) and the census-at-census-commit and Browse-block rules to House Rules
 - 2026-10-28 Ch 1.3 design talk: ten leans on the work-and-edition model, book matching, form, author, the fan-out, ISBN mode, edition columns, covers, keys and the item page, all taken; two Open Library findings (bad first-publish years, a loose ISBN endpoint) shaped them. The Deep Field design system made first, then four screens. Ch 1.3 spec written, docs/plans/1.3-providers-books.md; the Ch 1.2 Afterword addendum rides the same commit
 - 2026-10-24 Ch 1.2 closed, v0.1.0-ch.2 (#63, PR #64); Ch 1.3 is next. The first screens and the first provider; four calls added from the Afterword (attach rule, date rule, canonical keys, secrets)
 - 2026-10-24 Ch 1.2 design talk: nine leans on search, import, TV, covers and the item page; the design made first (five screens and a palette board), Deep Field chosen over Nebula and Dusk. Ch 1.2 spec written, docs/plans/1.2-providers-film-tv.md

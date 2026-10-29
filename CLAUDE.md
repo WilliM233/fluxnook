@@ -23,6 +23,8 @@ Any org-level or user-level CLAUDE.md that names `develop`, `feature/*` branches
 - Each step ends at its observable. State it, show it, move on. Stop only for a Stop-for-L, a deviation that needs a call, or a red you can't fix inside the plan; otherwise run through to the handoff.
 - Read every gate unpiped. `npm run lint | tail -1` hides the error and the exit code; a green you didn't see isn't one (Ch 0.4).
 - Comment on the issue at each seat handoff (plan approved, Rummage done, PR ready). The issue is the chapter's log.
+- The census commit carries the Cartographer's corrections into section 0 and the issue body, each marked `(census)`, with the History lines for L and for you (Ch 1.2 did this; Ch 1.3 didn't and the Browse ran on a stale year). The Nookkeeper verifies them at review.
+- In section 5's Browse block, a step that isn't a command for this terminal (start or stop the dev server or a stub, a click) ends the fenced block and is its own numbered prose line; the next command checks the state it set up. Sign in again after a `db reset` before loading fixtures.
 - Stop-for-L items are design. If you hit a question only L can answer and it isn't on the list, stop and ask; do not pick for them.
 - Migrations are plain SQL under `supabase/migrations` written through Drizzle. Every migration is reversible or says why it isn't.
 - API mutations are route handlers under `src/app/api/v1`, Zod-validated at the edge. No server actions for mutations.
