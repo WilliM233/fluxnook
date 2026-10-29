@@ -4,7 +4,7 @@ import { join } from "node:path";
 import postgres from "postgres";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { createDb } from "@/db/client";
-import { NotFoundError } from "@/lib/catalog/import";
+import { ConflictError, NotFoundError } from "@/lib/catalog/import";
 import { importSeriesFromComicVine } from "@/lib/catalog/series";
 import { coverStoreFromEnv } from "@/lib/covers";
 import {
@@ -37,7 +37,17 @@ const ids = {
   thisYear: 930003,
   lostCover: 930004,
   race: 930005,
+  attachRun: 930010,
+  attachedElsewhere: 930011,
+  omnibus: 930012,
+  treasury: 930013,
+  annual: 930014,
+  attachRace: 930015,
 };
+// Letters and digits only, so its fold is itself: the stems and the series
+// fold the collected rule reads are this file's own.
+const tag = `T${crypto.randomUUID().replaceAll("-", "").slice(0, 10)}`;
+const runLabel = `${tag} Run Vol. 3`;
 
 const sql = postgres(required("DATABASE_URL"), { max: 1, onnotice: () => {} });
 const { db, close } = createDb();
@@ -147,25 +157,46 @@ beforeAll(async () => {
     }),
   });
   copy(20281, ids.race, "935");
+  const firstFour = (rows: RawIssue[]) =>
+    ["1", "2", "3", "4"].map((n) => rows.find((row) => row.issue_number === n));
+  copy(20281, ids.attachRun, "936", { issues: firstFour });
+  copy(20281, ids.attachedElsewhere, "937", { issues: firstFour });
+  const firstThree = (rows: RawIssue[]) => rows.slice(0, 3);
+  copy(50804, ids.omnibus, "938", {
+    issues: firstThree,
+    volume: (v) => ({ ...v, name: `${tag} Run: The ${tag} Omnibus` }),
+  });
+  copy(50804, ids.treasury, "939", {
+    issues: firstThree,
+    volume: (v) => ({ ...v, name: `${tag} Run Treasury` }),
+  });
+  copy(50804, ids.annual, "940", {
+    issues: firstThree,
+    volume: (v) => ({ ...v, name: `${tag} Run ${tag} Annual` }),
+  });
+  copy(20281, ids.attachRace, "941", { issues: firstFour });
   stub = await startComicVineStub({ dir });
   cv = createComicVine({ apiKey: "k", baseUrl: stub.baseUrl, userAgent: "t" });
 });
 
 afterAll(async () => {
   const keys = Object.values(ids).map((id) => `volume/${id}`);
-  const paths = await sql<{ name: string }[]>`
-    select name from storage.objects where bucket_id = 'covers'
-      and (name like 'comicvine/volume-9%' or name like 'comicvine/issue-9%')`;
+  const mine = sql`
+    select series from series_sources
+    where source = 'comicvine' and key = any(${keys})`;
+  // Only the covers this file's rows hold: another file's import of a real
+  // key may share a prefix.
+  const paths = await sql<{ path: string }[]>`
+    select cover_path as path from series
+      where id in (${mine}) and cover_path is not null
+    union select i.cover_path from items i join item_comics c on c.item = i.id
+      where c.series_id in (${mine}) and i.cover_path is not null`;
   await sql`
     delete from items where id in (
-      select c.item from item_comics c
-      join series_sources s on s.series = c.series_id
-      where s.source = 'comicvine' and s.key = any(${keys}))`;
-  await sql`
-    delete from series where id in (
-      select series from series_sources
-      where source = 'comicvine' and key = any(${keys}))`;
-  if (paths.length) await covers.remove(paths.map((p) => p.name));
+      select item from item_comics where series_id in (${mine}))`;
+  await sql`delete from items where title like ${`${tag}%`}`;
+  await sql`delete from series where id in (${mine})`;
+  if (paths.length) await covers.remove(paths.map((p) => p.path));
   await stub.close();
   rmSync(dir, { recursive: true, force: true });
   await close();
@@ -330,5 +361,256 @@ describe("importSeriesFromComicVine, a new run", () => {
     ]);
     expect(lines.join(" ")).not.toMatch(/http/);
     warned.mockRestore();
+  });
+});
+
+/** A hand-entered comic the attach tests aim at, tagged for the cleanup. */
+async function held(
+  title: string,
+  {
+    form = "issue",
+    series = null,
+    number = null,
+    year = null,
+    summary = null,
+    comicRow = true,
+  }: {
+    form?: "issue" | "collected";
+    series?: string | null;
+    number?: number | null;
+    year?: number | null;
+    summary?: string | null;
+    comicRow?: boolean;
+  } = {},
+) {
+  const [row] = await sql<{ id: string }[]>`
+    insert into items (type, form, title, released_on, released_precision, summary)
+    values ('comic', ${form}, ${title}, ${year ? `${year}-01-01` : null},
+      ${year ? "year" : null}, ${summary})
+    returning id`;
+  if (comicRow) {
+    await sql`
+      insert into item_comics (item, series, number, series_kind)
+      values (${row.id}, ${series}, ${number}, ${series ? "ongoing" : null})`;
+  }
+  return row.id;
+}
+
+/** A hardcover under a held collected, holding the given comics in order. */
+async function hardcover(itemId: string, holds: string[] = []) {
+  const [edition] = await sql<{ id: string }[]>`
+    insert into editions (item, format) values (${itemId}, 'hardcover')
+    returning id`;
+  for (const [i, item] of holds.entries()) {
+    await sql`
+      insert into edition_contents (edition, item, position)
+      values (${edition.id}, ${item}, ${i + 1})`;
+  }
+  return edition.id;
+}
+
+const comic = async (id: string) => {
+  const [row] = await sql`
+    select i.title, i.form, i.summary, i.released_on::text, i.released_precision,
+      c.series, c.series_kind, c.series_id, c.number,
+      (select key from item_sources s where s.item = i.id and s.source = 'comicvine') as key
+    from items i left join item_comics c on c.item = i.id where i.id = ${id}`;
+  return row;
+};
+
+const attachVolume = (
+  id: number,
+  attachTo: { series: string } | { collected: string },
+  form: "issue" | "collected" = "issue",
+) =>
+  importSeriesFromComicVine(db, cv, covers, {
+    key: `volume/${id}`,
+    form,
+    format: form === "collected" ? "hardcover" : undefined,
+    attachTo,
+  });
+
+describe("importSeriesFromComicVine, onto a run added by hand", () => {
+  const run: Record<number, string> = {};
+  const omnibus: Record<number, string> = {};
+  let omnibusEdition: string;
+
+  beforeAll(async () => {
+    run[1] = await held(`${tag} the first`, {
+      series: runLabel,
+      number: 1,
+      year: 1984,
+    });
+    run[2] = await held(`${tag} the second`, {
+      series: runLabel,
+      number: 2,
+      year: 1985,
+      summary: "Held summary.",
+    });
+    run[4] = await held(`${tag} the fourth`, {
+      series: runLabel,
+      number: 4,
+      year: 1990,
+    });
+    omnibus[1] = await held(`${tag} Omnibus 1`, { form: "collected" });
+    omnibusEdition = await hardcover(omnibus[1], [run[1]]);
+    omnibus[2] = await held(`${tag} Omnibus 2`, {
+      form: "collected",
+      comicRow: false,
+    });
+  });
+
+  it("attaches by number and creates the rest: #1, #2 and #4 attached, #3 created under the label", async () => {
+    const before = await Promise.all([1, 2, 4].map((n) => comic(run[n])));
+    const result = await attachVolume(ids.attachRun, { series: runLabel });
+    expect(result).toMatchObject({ created: 1, attached: 3, known: false });
+    const after = await Promise.all([1, 2, 4].map((n) => comic(run[n])));
+    for (const [i, row] of after.entries()) {
+      expect(row.series_id).toBe(result.id);
+      expect(row.key).toMatch(/^issue\/936/);
+      // Never a title, a form, a series text or a kind.
+      expect({
+        title: row.title,
+        form: row.form,
+        series: row.series,
+        series_kind: row.series_kind,
+      }).toEqual({
+        title: before[i].title,
+        form: before[i].form,
+        series: before[i].series,
+        series_kind: before[i].series_kind,
+      });
+    }
+    const [created] = await sql`
+      select i.title, c.series, c.number from items i join item_comics c on c.item = i.id
+      where c.series_id = ${result.id} and i.id <> all(${Object.values(run)})`;
+    expect(created).toMatchObject({ series: runLabel, number: 3 });
+  });
+
+  it("refines a year to the cover month in that year, and keeps a date from another", async () => {
+    expect(await comic(run[1])).toMatchObject({
+      released_on: "1984-05-01",
+      released_precision: "month",
+    });
+    expect(await comic(run[4])).toMatchObject({
+      released_on: "1990-01-01",
+      released_precision: "year",
+    });
+  });
+
+  it("fills a missing summary and keeps a held one", async () => {
+    expect((await comic(run[1])).summary).toMatch(/^The Turtles are cornered/);
+    expect((await comic(run[2])).summary).toBe("Held summary.");
+  });
+
+  it("takes the label's Vol. n onto the series", async () => {
+    const [row] = await sql`
+      select s.volume from series s join item_comics c on c.series_id = s.id
+      where c.item = ${run[1]}`;
+    expect(row.volume).toBe(3);
+  });
+
+  it("answers a label no run has with a 409, before asking Comic Vine", async () => {
+    const asked = stub.requests.length;
+    await expect(
+      attachVolume(ids.attachedElsewhere, { series: `${tag} Nothing` }),
+    ).rejects.toThrow(`No run called ${tag} Nothing was added by hand.`);
+    expect(stub.requests.length).toBe(asked);
+  });
+
+  it("answers a run already attached to another volume with a 409, writing nothing", async () => {
+    const before = await counts();
+    await expect(
+      attachVolume(ids.attachedElsewhere, { series: runLabel }),
+    ).rejects.toBeInstanceOf(ConflictError);
+    expect(await counts()).toEqual(before);
+  });
+
+  it("attaches a collected run to its stem: the held hardcover takes the source, date and publisher; Omnibus 2 a new one; Vol. 3 is created as the stem and its number", async () => {
+    const result = await attachVolume(
+      ids.omnibus,
+      { collected: `${tag} Omnibus` },
+      "collected",
+    );
+    expect(result).toMatchObject({ created: 1, attached: 2 });
+    const [first] = await sql`
+      select e.released_on::text, e.released_precision, e.publisher, es.key
+      from editions e join edition_sources es on es.edition = e.id
+      where e.id = ${omnibusEdition} and es.source = 'comicvine'`;
+    expect(first).toMatchObject({
+      released_on: "2011-08-01",
+      released_precision: "month",
+      publisher: "IDW Publishing",
+    });
+    const [contents] = await sql`
+      select count(*)::int as n from edition_contents where edition = ${omnibusEdition}`;
+    expect(contents.n).toBe(1);
+    const second = await sql`
+      select e.format, es.key from editions e
+      join edition_sources es on es.edition = e.id where e.item = ${omnibus[2]}`;
+    expect(second).toHaveLength(1);
+    expect(second[0].format).toBe("hardcover");
+    expect(await comic(omnibus[1])).toMatchObject({
+      title: `${tag} Omnibus 1`,
+      series_id: result.id,
+      number: 1,
+    });
+    expect(await comic(omnibus[2])).toMatchObject({
+      series_id: result.id,
+      number: 2,
+    });
+    const [third] = await sql`
+      select i.title, i.form, (select count(*)::int from editions e where e.item = i.id) as editions
+      from items i join item_comics c on c.item = i.id
+      where c.series_id = ${result.id} and c.number = 3`;
+    expect(third).toEqual({
+      title: `${tag} Omnibus 3`,
+      form: "collected",
+      editions: 1,
+    });
+  });
+
+  it("answers a stem the volume's name doesn't hold with a 409 naming the rule", async () => {
+    const digest = await held(`${tag} Digest 1`, { form: "collected" });
+    await hardcover(digest, [run[2]]);
+    await expect(
+      attachVolume(ids.treasury, { collected: `${tag} Digest` }, "collected"),
+    ).rejects.toThrow(
+      /its name must hold their title and the run they collect/,
+    );
+  });
+
+  it("answers a stem whose editions hold nothing with a 409 (Q1 a)", async () => {
+    const annual = await held(`${tag} Annual 1`, { form: "collected" });
+    await hardcover(annual);
+    await expect(
+      attachVolume(ids.annual, { collected: `${tag} Annual` }, "collected"),
+    ).rejects.toBeInstanceOf(ConflictError);
+  });
+
+  it("answers a stem no editions have with a 409", async () => {
+    await expect(
+      attachVolume(ids.annual, { collected: `${tag} Nothing` }, "collected"),
+    ).rejects.toThrow(
+      `No collected editions called ${tag} Nothing were added by hand.`,
+    );
+  });
+
+  it("ends two attaches of one volume at once with one series and one source per comic", async () => {
+    const label = `${tag} Race`;
+    const pair = [
+      await held(`${tag} race 1`, { series: label, number: 1 }),
+      await held(`${tag} race 2`, { series: label, number: 2 }),
+    ];
+    const [a, b] = await Promise.all([
+      attachVolume(ids.attachRace, { series: label }),
+      attachVolume(ids.attachRace, { series: label }),
+    ]);
+    expect(a.id).toBe(b.id);
+    expect([a.known, b.known].sort()).toEqual([false, true]);
+    const [sources] = await sql`
+      select count(*)::int as n from item_sources
+      where source = 'comicvine' and item = any(${pair})`;
+    expect(sources.n).toBe(2);
   });
 });

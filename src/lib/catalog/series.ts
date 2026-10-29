@@ -1,4 +1,4 @@
-import { and, eq, inArray, isNull } from "drizzle-orm";
+import { and, eq, inArray, isNull, sql } from "drizzle-orm";
 import type { Db } from "@/db/client";
 import {
   editionSources,
@@ -17,7 +17,16 @@ import {
   ProviderError,
   parseComicVineKey,
 } from "@/lib/providers/comicvine";
-import { KeyTaken, NotFoundError, storeCover, type Tx } from "./import";
+import {
+  ConflictError,
+  KeyTaken,
+  mergedDate,
+  NotFoundError,
+  storeCover,
+  type Tx,
+} from "./import";
+import { sameSeries } from "./match";
+import { collectedStem, seriesVolume } from "./normalize";
 
 /** The formats a collected run comes in, narrowed at the API (A5). */
 export type CollectedFormat = "tpb" | "hardcover" | "omnibus";
@@ -60,9 +69,11 @@ export async function seriesForKey(db: Db | Tx, key: string) {
  * A Comic Vine volume and every issue it lists into the catalog (A5), in one
  * transaction (C13): a `series` row with its source, then each issue as a
  * new comic of the form the person chose (an `issue`, or a `collected` item
- * with one edition of `format`). Idempotent by the volume's key: a volume in
- * already answers with its series and writes nothing. Covers after the
- * commit; a cover never fails an import.
+ * with one edition of `format`). With `attachTo`, an issue whose number a
+ * held comic of that group carries attaches to it instead, and the rest are
+ * created beside them. Idempotent by the volume's key: a volume in already
+ * answers with its series and writes nothing. Covers after the commit; a
+ * cover never fails an import.
  */
 export async function importSeriesFromComicVine(
   db: Db,
@@ -78,9 +89,27 @@ export async function importSeriesFromComicVine(
   const held = await seriesForKey(db, key);
   if (held) return { id: held, created: 0, attached: 0, known: true };
 
+  // The group is settled before Comic Vine is asked, so a bad pick is a 409
+  // that costs no call against the hour's 200.
+  const group = request.attachTo ? await heldGroup(db, request.attachTo) : null;
   const volume = await comicVineVolume(cv, parsed.id);
   const issues = await cv.issues(parsed.id);
-  const run = { volume, issues, request };
+  // A stem is held to the one rule the search showed (Q1 a); a series group
+  // is the person's pick for runs no fold reaches, so it isn't (2b).
+  if (
+    group?.kind === "collected" &&
+    !sameSeries(volume, {
+      group: "collected",
+      label: group.label,
+      earliest: null,
+      contains: group.contains,
+    })
+  ) {
+    throw new ConflictError(
+      `Those editions don't look like ${volume.name}: its name must hold their title and the run they collect.`,
+    );
+  }
+  const run = { volume, issues, request, group };
 
   let written: Written;
   try {
@@ -118,7 +147,111 @@ type Run = {
   volume: ComicVineSeries;
   issues: ComicVineIssue[];
   request: SeriesImportRequest;
+  group: HeldGroup | null;
 };
+
+/**
+ * A run the person entered by hand, as `attachTo` names it: the comics of a
+ * series text, numbered by `item_comics.number`, or the collected editions
+ * of a title stem, numbered by their title's trailing number.
+ */
+type HeldGroup = {
+  kind: "series" | "collected";
+  label: string;
+  members: { itemId: string; number: number | null }[];
+  contains: string[];
+};
+
+/**
+ * `attachTo` to its group, or a 409: no such group, or one whose items
+ * already carry a Comic Vine source (it went with another volume).
+ */
+async function heldGroup(
+  db: Db,
+  attachTo: NonNullable<SeriesImportRequest["attachTo"]>,
+): Promise<HeldGroup> {
+  if ("series" in attachTo) {
+    const rows = await db.execute<{
+      id: string;
+      number: number | null;
+      attached: boolean;
+    }>(sql`
+      select i.id, c.number, exists (
+        select 1 from item_sources s where s.item = i.id and s.source = 'comicvine'
+      ) as attached
+      from items i join item_comics c on c.item = i.id
+      where i.type = 'comic' and c.series = ${attachTo.series}
+      order by c.number nulls last, i.released_on nulls last, i.id`);
+    if (rows.length === 0) {
+      throw new ConflictError(
+        `No run called ${attachTo.series} was added by hand.`,
+      );
+    }
+    if (rows.some((row) => row.attached)) {
+      throw new ConflictError(
+        "That run is already attached to another Comic Vine volume.",
+      );
+    }
+    return {
+      kind: "series",
+      label: attachTo.series,
+      members: rows.map((row) => ({ itemId: row.id, number: row.number })),
+      contains: [],
+    };
+  }
+
+  const stem = collectedStem(attachTo.collected);
+  const rows =
+    stem === ""
+      ? []
+      : (
+          await db.execute<{
+            id: string;
+            title: string;
+            attached: boolean;
+            contains: string[];
+          }>(sql`
+            select i.id, i.title, exists (
+              select 1 from item_sources s where s.item = i.id and s.source = 'comicvine'
+            ) as attached,
+            coalesce(array_agg(distinct cc.series) filter (where cc.series is not null), '{}') as contains
+            from items i
+            left join editions e on e.item = i.id
+            left join edition_contents ec on ec.edition = e.id
+            left join item_comics cc on cc.item = ec.item
+            where i.type = 'comic' and i.form = 'collected'
+            group by i.id, i.title`)
+        ).filter((row) => collectedStem(row.title) === stem);
+  if (rows.length === 0) {
+    throw new ConflictError(
+      `No collected editions called ${attachTo.collected} were added by hand.`,
+    );
+  }
+  if (rows.some((row) => row.attached)) {
+    throw new ConflictError(
+      "Those editions are already attached to another Comic Vine volume.",
+    );
+  }
+  const members = rows
+    .map((row) => ({
+      itemId: row.id,
+      title: row.title,
+      number: integerNumber(row.title.match(/([0-9]+)\s*$/)?.[1] ?? null),
+    }))
+    .sort(
+      (a, b) =>
+        (a.number ?? INTEGER_MAX) - (b.number ?? INTEGER_MAX) ||
+        a.itemId.localeCompare(b.itemId),
+    );
+  return {
+    kind: "collected",
+    // The stem as the person typed it into the catalog, as the search
+    // labels the group: "Ultimate Collection".
+    label: members[0].title.replace(/\s*[0-9]+\s*$/, "").trim(),
+    members: members.map(({ itemId, number }) => ({ itemId, number })),
+    contains: [...new Set(rows.flatMap((row) => row.contains))],
+  };
+}
 
 /** What the transaction wrote, for the covers after it. */
 type Written = {
@@ -129,12 +262,12 @@ type Written = {
 };
 
 async function writeRun(tx: Tx, key: string, run: Run): Promise<Written> {
-  const { volume, issues } = run;
+  const { volume, issues, group } = run;
   const [row] = await tx
     .insert(series)
     .values({
       name: volume.name,
-      volume: null,
+      volume: group?.kind === "series" ? seriesVolume(group.label) : null,
       yearBegan: volume.year,
       yearEnded: yearEnded(volume, issues),
       publisher: volume.publisher,
@@ -157,23 +290,146 @@ async function writeRun(tx: Tx, key: string, run: Run): Promise<Written> {
     attached: 0,
     comics: [],
   };
+  // Each held comic takes one issue, the first with its number.
+  const free = new Map<number, string>();
+  for (const member of [...(group?.members ?? [])].reverse()) {
+    if (member.number !== null) free.set(member.number, member.itemId);
+  }
   for (const issue of issues) {
-    const itemId = await createComic(tx, row.id, run, issue);
-    written.created += 1;
-    written.comics.push({ itemId, issue });
+    const number = integerNumber(issue.number);
+    const held = number === null ? undefined : free.get(number);
+    if (held && number !== null) {
+      free.delete(number);
+      await attachComic(tx, row.id, run, held, issue, number);
+      written.attached += 1;
+      written.comics.push({ itemId: held, issue });
+    } else {
+      const itemId = await createComic(tx, row.id, run, issue);
+      written.created += 1;
+      written.comics.push({ itemId, issue });
+    }
   }
   return written;
+}
+
+/**
+ * An issue onto the held comic its number names: the source, the series,
+ * a missing number, summary and finer date. Never the title, the form, the
+ * series text or the kind; for a collected run, the edition by C7.
+ */
+async function attachComic(
+  tx: Tx,
+  seriesId: string,
+  { request, volume }: Run,
+  itemId: string,
+  issue: ComicVineIssue,
+  number: number,
+) {
+  const [item] = await tx
+    .select()
+    .from(items)
+    .where(eq(items.id, itemId))
+    .for("update");
+  if (!item) throw new NotFoundError(`No item ${itemId}.`);
+  const [taken] = await tx
+    .select({ key: itemSources.key })
+    .from(itemSources)
+    .where(
+      and(eq(itemSources.item, itemId), eq(itemSources.source, "comicvine")),
+    );
+  // Another volume's import attached this run while this one waited on the
+  // lock: the group was free when it was read, and isn't now.
+  if (taken?.key === issue.key) throw new KeyTaken();
+  if (taken) {
+    throw new ConflictError(
+      "That run is already attached to another Comic Vine volume.",
+    );
+  }
+  await claimItemSource(tx, itemId, issue);
+  const released = coverMonth(issue.coverDate);
+  const date = mergedDate(item, { summary: issue.summary, ...released });
+  await tx
+    .update(items)
+    .set({
+      summary: item.summary ?? issue.summary,
+      releasedOn: date.releasedOn,
+      releasedPrecision: date.releasedPrecision,
+    })
+    .where(eq(items.id, itemId));
+  await tx
+    .insert(itemComics)
+    .values({ item: itemId, seriesId, number })
+    .onConflictDoUpdate({
+      target: itemComics.item,
+      set: {
+        seriesId,
+        number: sql`coalesce(${itemComics.number}, excluded.number)`,
+      },
+    });
+  if (request.form === "collected") {
+    await attachEdition(
+      tx,
+      itemId,
+      issue,
+      volume,
+      request.format ?? "hardcover",
+    );
+  }
+}
+
+/**
+ * A collected issue's edition on a held item: the held edition of that
+ * format takes the source and, where it has none, the cover month and the
+ * publisher (C7); with none of that format, a new one.
+ */
+async function attachEdition(
+  tx: Tx,
+  itemId: string,
+  issue: ComicVineIssue,
+  volume: ComicVineSeries,
+  format: CollectedFormat,
+) {
+  const [held] = await tx
+    .select({
+      id: editions.id,
+      releasedOn: editions.releasedOn,
+      publisher: editions.publisher,
+    })
+    .from(editions)
+    .where(and(eq(editions.item, itemId), eq(editions.format, format)))
+    .orderBy(editions.createdAt, editions.id)
+    .limit(1);
+  if (!held) {
+    await addEdition(tx, itemId, issue, volume, format);
+    return;
+  }
+  await claimEditionSource(tx, held.id, issue);
+  await tx
+    .update(editions)
+    .set({
+      ...(held.releasedOn ? {} : coverMonth(issue.coverDate)),
+      publisher: held.publisher ?? volume.publisher,
+    })
+    .where(eq(editions.id, held.id));
 }
 
 /** A new comic for one issue: its item, its source, its comic row, and for a collected run its edition. */
 async function createComic(
   tx: Tx,
   seriesId: string,
-  { volume, issues, request }: Run,
+  { volume, issues, request, group }: Run,
   issue: ComicVineIssue,
 ) {
   const collected = request.form === "collected";
   const released = coverMonth(issue.coverDate);
+  // Beside a held stem a new one reads as its neighbours do: "Ultimate
+  // Collection 6" (Q2 c).
+  const title =
+    group?.kind === "collected" && issue.number
+      ? `${group.label} ${issue.number}`
+      : collected
+        ? collectedTitle(volume.name, issue)
+        : issueTitle(volume.name, issue);
   const [item] = await tx
     .insert(items)
     .values({
@@ -183,9 +439,7 @@ async function createComic(
         : issues.length === 1
           ? "one-shot"
           : "issue",
-      title: collected
-        ? collectedTitle(volume.name, issue)
-        : issueTitle(volume.name, issue),
+      title,
       summary: issue.summary,
       ...released,
     })
@@ -193,7 +447,9 @@ async function createComic(
   await claimItemSource(tx, item.id, issue);
   await tx.insert(itemComics).values({
     item: item.id,
-    series: volume.name,
+    // A run picked by hand keeps its label on what joins it, so the picker
+    // groups the new issue with the held ones.
+    series: group?.kind === "series" ? group.label : volume.name,
     seriesId,
     number: integerNumber(issue.number),
   });
