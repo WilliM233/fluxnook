@@ -12,6 +12,9 @@ describe("editionImportSchema", () => {
     const result = editionImportSchema.safeParse({ ...valid, format: "tpb" });
     expect(result.success).toBe(false);
     expect(result.error?.issues[0].path).toEqual(["format"]);
+    expect(result.error?.issues[0].message).toBe(
+      "A book's format is paperback, hardcover, ebook or audiobook.",
+    );
   });
 
   it("refuses a work key", () => {

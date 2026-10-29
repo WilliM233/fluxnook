@@ -8,6 +8,9 @@ import { z } from "zod";
 export const editionImportSchema = z.strictObject({
   source: z.literal("openlibrary"),
   key: z.string().regex(/^books\/OL[0-9]+M$/),
-  format: z.enum(["paperback", "hardcover", "ebook", "audiobook"]),
+  format: z.enum(
+    ["paperback", "hardcover", "ebook", "audiobook"],
+    "A book's format is paperback, hardcover, ebook or audiobook.",
+  ),
   attachTo: z.uuid().optional(),
 });
