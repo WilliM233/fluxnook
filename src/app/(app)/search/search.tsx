@@ -301,10 +301,12 @@ export function Search({
     setBusy(null);
     setFailed({
       key,
+      // A 503 from a gateway has no JSON body; the sheet still says something
+      // (Rummage S1).
       message:
-        response?.status === 409 || response?.status === 503
-          ? body.error.message
-          : "Couldn't add it just now. Try again.",
+        (response?.status === 409 || response?.status === 503
+          ? body?.error?.message
+          : null) ?? "Couldn't add it just now. Try again.",
     });
   }
 

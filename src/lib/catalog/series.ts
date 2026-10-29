@@ -91,7 +91,9 @@ export async function importSeriesFromComicVine(
 
   // The group is settled before Comic Vine is asked, so a bad pick is a 409
   // that costs no call against the hour's 200.
-  const group = request.attachTo ? await heldGroup(db, request.attachTo) : null;
+  const group = request.attachTo
+    ? await heldGroup(db, request.attachTo, request.form)
+    : null;
   const volume = await comicVineVolume(cv, parsed.id);
   const issues = await cv.issues(parsed.id);
   // A stem is held to the one rule the search showed (Q1 a); a series group
@@ -166,17 +168,44 @@ type HeldGroup = {
  * `attachTo` to its group, or a 409: no such group, or one whose items
  * already carry a Comic Vine source (it went with another volume).
  */
+// What a held comic must be for each kind of run to attach to it (A5): a
+// trade takes a collected volume's issue; a single issue, a one-shot or an
+// anthology's host book takes an issue. A backup is a story printed inside
+// another comic, never an issue of its own.
+const COLLECTED_FORMS = new Set(["collected"]);
+const ISSUE_FORMS = new Set(["issue", "one-shot", "anthology"]);
+
+/**
+ * A run that numbers two comics the same can't say which one an issue is;
+ * attaching the first would strand the other in a group no search offers
+ * again (Rummage S4).
+ */
+function onePerNumber(members: { number: number | null }[]) {
+  const seen = new Set<number>();
+  for (const { number } of members) {
+    if (number === null) continue;
+    if (seen.has(number)) {
+      throw new ConflictError(
+        `That run has two comics numbered #${number}, so an issue can't tell which it is.`,
+      );
+    }
+    seen.add(number);
+  }
+}
+
 async function heldGroup(
   db: Db,
   attachTo: NonNullable<SeriesImportRequest["attachTo"]>,
+  form: SeriesImportRequest["form"],
 ): Promise<HeldGroup> {
   if ("series" in attachTo) {
     const rows = await db.execute<{
       id: string;
+      form: string | null;
       number: number | null;
       attached: boolean;
     }>(sql`
-      select i.id, c.number, exists (
+      select i.id, i.form, c.number, exists (
         select 1 from item_sources s where s.item = i.id and s.source = 'comicvine'
       ) as attached
       from items i join item_comics c on c.item = i.id
@@ -192,6 +221,17 @@ async function heldGroup(
         "That run is already attached to another Comic Vine volume.",
       );
     }
+    // A run's form is the person's word for what they hold; an import of
+    // the other kind would hang hardcovers off single issues (Rummage B1).
+    const fits = form === "collected" ? COLLECTED_FORMS : ISSUE_FORMS;
+    if (rows.some((row) => !fits.has(row.form ?? ""))) {
+      throw new ConflictError(
+        form === "collected"
+          ? "That run holds single issues; add these as single issues."
+          : "That run holds collected editions; add these as collected editions.",
+      );
+    }
+    onePerNumber(rows);
     return {
       kind: "series",
       label: attachTo.series,
@@ -243,6 +283,7 @@ async function heldGroup(
         (a.number ?? INTEGER_MAX) - (b.number ?? INTEGER_MAX) ||
         a.itemId.localeCompare(b.itemId),
     );
+  onePerNumber(members);
   return {
     kind: "collected",
     // The stem as the person typed it into the catalog, as the search

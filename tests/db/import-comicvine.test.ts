@@ -44,6 +44,7 @@ const ids = {
   treasury: 730013,
   annual: 730014,
   attachRace: 730015,
+  tradesRun: 730016,
 };
 // Letters and digits only, so its fold is itself: the stems and the series
 // fold the collected rule reads are this file's own.
@@ -176,6 +177,7 @@ beforeAll(async () => {
     volume: (v) => ({ ...v, name: `${tag} Run ${tag} Annual` }),
   });
   copy(20281, ids.attachRace, "941", { issues: firstFour });
+  copy(50804, ids.tradesRun, "943", { issues: (rows) => rows.slice(0, 2) });
   stub = await startComicVineStub({ dir });
   cv = createComicVine({ apiKey: "k", baseUrl: stub.baseUrl, userAgent: "t" });
 });
@@ -613,5 +615,35 @@ describe("importSeriesFromComicVine, onto a run added by hand", () => {
       select count(*)::int as n from item_sources
       where source = 'comicvine' and item = any(${pair})`;
     expect(sources.n).toBe(2);
+  });
+});
+
+describe("importSeriesFromComicVine, a run of trades entered with a series text", () => {
+  // B1 stops a form the run doesn't hold; a run of trades that does hold
+  // collected editions still takes a { series } pick (Rummage B1, the Raccoon).
+  it("attaches collected editions to held trades by number, the held hardcover taking the source", async () => {
+    const label = `${tag} Trades`;
+    const first = await held(`${tag} trade one`, {
+      form: "collected",
+      series: label,
+      number: 1,
+    });
+    const edition = await hardcover(first);
+    const second = await held(`${tag} trade two`, {
+      form: "collected",
+      series: label,
+      number: 2,
+    });
+    const result = await attachVolume(
+      ids.tradesRun,
+      { series: label },
+      "collected",
+    );
+    expect(result).toMatchObject({ created: 0, attached: 2 });
+    const [held1] = await sql`
+      select count(*)::int as n from edition_sources
+      where edition = ${edition} and source = 'comicvine'`;
+    expect(held1.n).toBe(1);
+    expect(await comic(second)).toMatchObject({ series_id: result.id });
   });
 });

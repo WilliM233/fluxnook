@@ -20,6 +20,11 @@ export const RESET_COMICVINE = [
     select item from item_comics where series_id in (${mine}))
     and id not in (${loaded})`,
   `update item_comics set series_id = null where series_id in (${mine})`,
+  // An edition an import hung on a loaded comic (Rummage R5 saw 62 on the
+  // fixture's issues before B1's fix); the loader's own carry a manual source.
+  `delete from editions where item in (${loaded})
+    and id not in (${loadedEditions})
+    and id in (select edition from edition_sources where source = 'comicvine')`,
   `delete from item_sources where source = 'comicvine' and item in (${loaded})`,
   `delete from edition_sources where source = 'comicvine' and edition in (${loadedEditions})`,
   `update editions set released_on = null, released_precision = null, publisher = null

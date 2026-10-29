@@ -1,6 +1,11 @@
 import { z } from "zod";
 
-const label = z.string().trim().min(1, "Name the run you added by hand.");
+// The items API caps a series text at 200 (Rummage S2); no longer label names a run.
+const label = z
+  .string()
+  .trim()
+  .min(1, "Name the run you added by hand.")
+  .max(200, "No run added by hand has a name that long.");
 
 /**
  * Request body of `POST /api/v1/series/import` (A5, 1.4.2 C12): a Comic Vine
