@@ -47,6 +47,9 @@ const serverEnvSchema = z.object({
     .url()
     .default("https://covers.openlibrary.org"),
   OPENLIBRARY_CONTACT: z.string().optional(),
+  COMICVINE_API_KEY: z.string().optional(),
+  COMICVINE_BASE_URL: z.url().default("https://comicvine.gamespot.com/api"),
+  COMICVINE_CONTACT: z.string().optional(),
 });
 
 type ServerEnvSource = Partial<
@@ -61,6 +64,9 @@ export type ServerEnv = {
   openLibraryBaseUrl: string;
   openLibraryCoversBaseUrl: string;
   openLibraryContact: string | null;
+  comicVineApiKey: string | null;
+  comicVineBaseUrl: string;
+  comicVineContact: string | null;
 };
 
 // Server-only secrets: never NEXT_PUBLIC_, so Next never inlines them into a
@@ -73,6 +79,9 @@ const processServerEnv = (): ServerEnvSource => ({
   OPENLIBRARY_BASE_URL: process.env.OPENLIBRARY_BASE_URL,
   OPENLIBRARY_COVERS_BASE_URL: process.env.OPENLIBRARY_COVERS_BASE_URL,
   OPENLIBRARY_CONTACT: process.env.OPENLIBRARY_CONTACT,
+  COMICVINE_API_KEY: process.env.COMICVINE_API_KEY,
+  COMICVINE_BASE_URL: process.env.COMICVINE_BASE_URL,
+  COMICVINE_CONTACT: process.env.COMICVINE_CONTACT,
 });
 
 /**
@@ -99,5 +108,8 @@ export function readServerEnv(
     openLibraryBaseUrl: result.data.OPENLIBRARY_BASE_URL,
     openLibraryCoversBaseUrl: result.data.OPENLIBRARY_COVERS_BASE_URL,
     openLibraryContact: result.data.OPENLIBRARY_CONTACT ?? null,
+    comicVineApiKey: result.data.COMICVINE_API_KEY ?? null,
+    comicVineBaseUrl: result.data.COMICVINE_BASE_URL,
+    comicVineContact: result.data.COMICVINE_CONTACT ?? null,
   };
 }
