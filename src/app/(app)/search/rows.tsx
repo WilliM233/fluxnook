@@ -6,6 +6,7 @@ export const typeLabel: Record<string, string> = {
   tv: "TV",
   book: "Book",
   comic: "Comic",
+  series: "Series",
 };
 
 export const sourceLabel: Record<string, string> = {
@@ -65,7 +66,7 @@ export function Row({
   status?: ReactNode;
   action: ReactNode;
 }) {
-  const printed = type === "book" || type === "comic";
+  const printed = type === "book" || type === "comic" || type === "series";
   return (
     <li className="flex items-stretch gap-4 rounded-2xl border bg-card p-3.5">
       <Thumb src={thumb} empty={printed ? "no cover" : "no poster"} />
