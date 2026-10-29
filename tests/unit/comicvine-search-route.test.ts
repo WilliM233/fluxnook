@@ -9,20 +9,24 @@ import {
 // GET /api/v1/providers/comicvine/search without a database or Comic Vine:
 // auth, the client and the matcher are mocked, so this is the route's own
 // logic, its three 503s and its silence in the log.
-const { getUser, search, comicVineFromEnv, seriesStatuses } = vi.hoisted(
-  () => ({
+const { getUser, search, comicVineFromEnv, seriesStatuses, seriesGroups } =
+  vi.hoisted(() => ({
     getUser: vi.fn(),
     search: vi.fn(),
     comicVineFromEnv: vi.fn(),
     seriesStatuses: vi.fn(),
-  }),
-);
+    seriesGroups: vi.fn(),
+  }));
 
 vi.mock("@/lib/supabase/server", () => ({
   createClient: async () => ({ auth: { getUser } }),
 }));
 vi.mock("@/db/client", () => ({ serverDb: () => ({}) }));
-vi.mock("@/lib/catalog/match", () => ({ seriesStatuses }));
+vi.mock("@/lib/catalog/match", async (actual) => ({
+  ...(await actual<typeof import("@/lib/catalog/match")>()),
+  seriesStatuses,
+  seriesGroups,
+}));
 vi.mock("@/lib/providers/comicvine", async (actual) => ({
   ...(await actual<typeof import("@/lib/providers/comicvine")>()),
   comicVineFromEnv,
@@ -41,6 +45,26 @@ const volume = {
   name: "Teenage Mutant Ninja Turtles",
   year: 1984,
 } as ComicVineSeries;
+
+// As seriesGroups holds them, in the rule's order; the route lists them by label.
+const held = [
+  {
+    group: "collected",
+    label: "Ultimate Collection",
+    count: 5,
+    earliest: null,
+    first: "a",
+    contains: [],
+  },
+  {
+    group: "series",
+    label: "Bodycount",
+    count: 4,
+    earliest: 1990,
+    first: "b",
+    contains: [],
+  },
+];
 
 let error: ReturnType<typeof vi.spyOn>;
 let warn: ReturnType<typeof vi.spyOn>;
@@ -86,17 +110,32 @@ describe("GET /api/v1/providers/comicvine/search", () => {
   it("puts a catalog status on every row and is never cached", async () => {
     search.mockResolvedValue([volume]);
     seriesStatuses.mockResolvedValue([{ status: "new" }]);
+    seriesGroups.mockResolvedValue(held);
     const response = await call("q=teenage%20mutant%20ninja%20turtles");
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toBe("no-store");
     expect(await response.json()).toEqual({
       results: [{ ...volume, catalog: { status: "new" } }],
+      groups: [
+        { group: "series", label: "Bodycount", count: 4 },
+        { group: "collected", label: "Ultimate Collection", count: 5 },
+      ],
     });
     expect(search).toHaveBeenCalledWith("teenage mutant ninja turtles");
+    // The groups are read once and handed to the matcher.
+    expect(seriesGroups).toHaveBeenCalledTimes(1);
     expect(seriesStatuses).toHaveBeenCalledWith(
       {},
-      { userId: user.id, rows: [volume] },
+      { userId: user.id, rows: [volume], groups: held },
     );
+  });
+
+  it("reads no groups for a search that finds nothing", async () => {
+    search.mockResolvedValue([]);
+    seriesStatuses.mockResolvedValue([]);
+    const response = await call("q=nothing%20at%20all");
+    expect(await response.json()).toEqual({ results: [], groups: [] });
+    expect(seriesGroups).not.toHaveBeenCalled();
   });
 
   it.each([

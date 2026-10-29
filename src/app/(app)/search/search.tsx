@@ -4,7 +4,11 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { type ReactNode, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import type { CatalogStatus, SeriesStatus } from "@/lib/catalog/match";
+import type {
+  CatalogStatus,
+  SeriesGroupOption,
+  SeriesStatus,
+} from "@/lib/catalog/match";
 import type { RecentItem } from "@/lib/catalog/recent";
 import { looksLikeIsbn, normalizeIsbn } from "@/lib/isbn";
 import type { ComicVineSeries } from "@/lib/providers/comicvine";
@@ -17,6 +21,7 @@ import { IsbnCard, type IsbnLookup } from "./isbn-card";
 import { looksLike } from "./looks-like";
 import { MatchSheet, type SheetResult } from "./match-sheet";
 import { Row, sourceLabel, typeLabel } from "./rows";
+import { type SeriesChoice, SeriesSheet } from "./series-sheet";
 
 type Kind = "all" | "film" | "tv" | "book" | "comic";
 type FilmResult = TmdbItem & { catalog: CatalogStatus };
@@ -25,7 +30,8 @@ type SeriesResult = ComicVineSeries & { catalog: SeriesStatus };
 type State<T> =
   | { kind: "idle" }
   | { kind: "loading" }
-  | { kind: "results"; results: T[] }
+  // `groups` rides the comics answer only: the runs added by hand (A8).
+  | { kind: "results"; results: T[]; groups?: SeriesGroupOption[] }
   | { kind: "unavailable"; message: string }
   | { kind: "error" };
 // ISBN mode (A9): one lookup in place of both searches.
@@ -85,7 +91,7 @@ async function ask<T>(url: string, signal: AbortSignal): Promise<State<T>> {
       return { kind: "unavailable", message: body.error.message };
     }
     if (!response.ok) return { kind: "error" };
-    return { kind: "results", results: body.results };
+    return { kind: "results", results: body.results, groups: body.groups };
   } catch {
     return { kind: "error" };
   }
@@ -129,6 +135,7 @@ export function Search({
   const [comics, setComics] = useState<State<SeriesResult>>({ kind: "idle" });
   const [lookup, setLookup] = useState<Lookup>({ kind: "idle" });
   const [matching, setMatching] = useState<Matching | null>(null);
+  const [adding, setAdding] = useState<SeriesResult | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [failed, setFailed] = useState<{ key: string; message: string } | null>(
     null,
@@ -277,6 +284,32 @@ export function Search({
     });
   }
 
+  // A series and its run (A5); the sheet said what they are and where they go.
+  async function addSeries(key: string, choice: SeriesChoice) {
+    setBusy(key);
+    setFailed(null);
+    const response = await fetch("/api/v1/series/import", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ source: "comicvine", key, ...choice }),
+    }).catch(() => null);
+    const body = await response?.json().catch(() => null);
+    if (response?.ok && body?.id) {
+      router.push(`/series/${body.id}`);
+      return;
+    }
+    setBusy(null);
+    setFailed({
+      key,
+      // A 503 from a gateway has no JSON body; the sheet still says something
+      // (Rummage S1).
+      message:
+        (response?.status === 409 || response?.status === 503
+          ? body?.error?.message
+          : null) ?? "Couldn't add it just now. Try again.",
+    });
+  }
+
   // The work looks like one you have: the sheet asks first, as a row's Add does.
   function onAddEdition(found: IsbnLookup, format: EditionFormat) {
     if (found.work.catalog.status === "match") {
@@ -321,8 +354,8 @@ export function Search({
   }
 
   // A series row's status (A7): in, a looks-like line for a hand-entered run
-  // or a run of collected editions, or nothing. Add arrives with the import
-  // sheet (1.4.2), so a match or a new row has no action yet.
+  // or a run of collected editions, or nothing. Every row but an in one has
+  // Add, which opens the import sheet whatever the status (A8).
   function seriesStatus(result: SeriesResult) {
     const c = result.catalog;
     if (c.status === "in") {
@@ -532,7 +565,20 @@ export function Search({
                     >
                       Open
                     </Link>
-                  ) : null
+                  ) : (
+                    <Button
+                      size="lg"
+                      className="min-h-11 px-4.5"
+                      disabled={busy !== null}
+                      aria-busy={busy === result.key}
+                      onClick={() => {
+                        setFailed(null);
+                        setAdding(result);
+                      }}
+                    >
+                      Add
+                    </Button>
+                  )
                 }
               />
             ))}
@@ -633,6 +679,20 @@ export function Search({
           onDifferent={() => accept(matching)}
           onClose={() => {
             setMatching(null);
+            setFailed(null);
+          }}
+        />
+      )}
+      {adding && (
+        <SeriesSheet
+          result={adding}
+          cover={adding.coverUrl}
+          groups={(comics.kind === "results" && comics.groups) || []}
+          busy={busy !== null}
+          error={failed?.key === adding.key ? failed.message : null}
+          onSubmit={(choice) => addSeries(adding.key, choice)}
+          onClose={() => {
+            setAdding(null);
             setFailed(null);
           }}
         />

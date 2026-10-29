@@ -7,9 +7,10 @@ import { PIXEL } from "./tmdb";
 
 // The Comic Vine stub: serves the recordings under tests/fixtures/comicvine by
 // path, with the query string read only for what names a file (the search
-// words, the volume filter, the offset), and a 1x1 JPEG for every cover, so
-// tests and the Browse never need Comic Vine or a key. Plain node:http; it
-// remembers each request's path and User-Agent.
+// words, the volume filter, the offset), and a 1x1 JPEG for every cover but a
+// `missing-` one, so tests and the Browse never need Comic Vine or a key. An
+// issue list it has no recording for is a 500 naming the file. Plain
+// node:http; it remembers each request's path and User-Agent.
 
 // From the repo root, where every runner starts: Playwright loads this file as
 // CommonJS, so import.meta is not available.
@@ -74,6 +75,7 @@ export async function startComicVineStub({
   dir?: string;
 } = {}): Promise<ComicVineStub> {
   const requests: ComicVineStubRequest[] = [];
+  const unrecorded = new Set<string>();
 
   const server = createServer(async (req, res) => {
     const url = new URL(req.url ?? "/", "http://stub");
@@ -92,6 +94,11 @@ export async function startComicVineStub({
       return res.end();
     }
     if (url.pathname.startsWith(IMAGE_PATH)) {
+      // A cover that's gone, for the red that proves an import outlives it.
+      if (url.pathname.split("/").pop()?.startsWith("missing-")) {
+        res.writeHead(404);
+        return res.end();
+      }
       res.writeHead(200, { "content-type": "image/jpeg" });
       return res.end(PIXEL);
     }
@@ -114,10 +121,17 @@ export async function startComicVineStub({
         /^volume:([0-9]+)$/,
       )?.[1];
       const offset = Number(url.searchParams.get("offset") ?? "0");
-      const body = id
-        ? await readJson(dir, issuesFileName(Number(id), offset))
-        : null;
-      return json(200, body ?? EMPTY);
+      const file = id ? issuesFileName(Number(id), offset) : null;
+      const body = file ? await readJson(dir, file) : null;
+      if (body) return json(200, body);
+      // A run with no recording is no answer, never a run of zero issues
+      // that an import would take silently (1.4.1 N2).
+      const why = `no recording: ${file ?? "issues without a volume filter"}`;
+      if (!unrecorded.has(why)) {
+        unrecorded.add(why);
+        console.error(`comicvine:stub: ${why}`);
+      }
+      return json(500, JSON.stringify({ error: why }));
     }
     return json(404, NOT_FOUND);
   });

@@ -308,7 +308,7 @@ function heldWork(
 }
 
 /** Q2: the held date stays unless it is missing, or the provider's is finer in the same year. */
-function mergedDate(
+export function mergedDate(
   held: Pick<typeof items.$inferSelect, "releasedOn" | "releasedPrecision">,
   details: Fills,
 ) {
@@ -466,6 +466,29 @@ export async function cacheWorkCover(
 }
 
 /**
+ * A cover's bytes into Storage at `path`: 10 s, an image, 5 MB at most. Throws
+ * with a reason that names no URL; the caller logs it and writes the path
+ * onto its own row.
+ */
+export async function storeCover(
+  covers: CoverStore | null,
+  url: string,
+  path: string,
+) {
+  if (!covers) throw new Error("no cover store (SUPABASE_SECRET_KEY unset)");
+  // A CDN that accepts and never answers mustn't hold the request (S2).
+  const response = await fetch(url, {
+    signal: AbortSignal.timeout(COVER_TIMEOUT_MS),
+  });
+  const type = response.headers.get("content-type") ?? "";
+  if (!response.ok) throw new Error(`cover answered ${response.status}`);
+  if (!type.startsWith("image/")) throw new Error(`cover is ${type}`);
+  const bytes = new Uint8Array(await response.arrayBuffer());
+  if (bytes.byteLength > COVER_LIMIT) throw new Error("cover too large");
+  await covers.put(path, bytes, type);
+}
+
+/**
  * A cover into Storage and onto the item when it has none. Any failure is one
  * log line: a cover never fails an import. A plain fetch, since Open Library's
  * covers redirect to archive.org; the URL is built from a checked id only.
@@ -481,17 +504,7 @@ async function cacheCover(
   }: { itemId: string; url: string; path: string; label: string },
 ) {
   try {
-    if (!covers) throw new Error("no cover store (SUPABASE_SECRET_KEY unset)");
-    // A CDN that accepts and never answers mustn't hold the request (S2).
-    const response = await fetch(url, {
-      signal: AbortSignal.timeout(COVER_TIMEOUT_MS),
-    });
-    const type = response.headers.get("content-type") ?? "";
-    if (!response.ok) throw new Error(`cover answered ${response.status}`);
-    if (!type.startsWith("image/")) throw new Error(`cover is ${type}`);
-    const bytes = new Uint8Array(await response.arrayBuffer());
-    if (bytes.byteLength > COVER_LIMIT) throw new Error("cover too large");
-    await covers.put(path, bytes, type);
+    await storeCover(covers, url, path);
     await db
       .update(items)
       .set({ coverPath: path })

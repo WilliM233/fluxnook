@@ -1,7 +1,11 @@
 import { serverDb } from "@/db/client";
 import { apiError, noStore } from "@/lib/api/errors";
 import { fieldErrors } from "@/lib/api/fields";
-import { seriesStatuses } from "@/lib/catalog/match";
+import {
+  groupOptions,
+  seriesGroups,
+  seriesStatuses,
+} from "@/lib/catalog/match";
 import {
   comicVineFromEnv,
   ProviderBusy,
@@ -15,6 +19,8 @@ import { comicVineSearchSchema } from "./schema";
  * Comic Vine volumes for a query, each with where it stands in the catalog
  * (A4): a series matches a hand-entered run on name, first year and the
  * label's publisher, never the volume number. One page of 20, so no paging.
+ * Beside them, every run entered by hand that no volume holds yet, which the
+ * import sheet's "Same as a run you added by hand?" select lists (A8).
  * Comic Vine's own words never reach the response, and nothing here logs:
  * the URL a call used holds the key.
  */
@@ -41,12 +47,18 @@ export async function GET(request: Request) {
 
   try {
     const rows = await comicVineFromEnv().search(parsed.data.q);
-    const statuses = await seriesStatuses(serverDb(), {
+    const db = serverDb();
+    const groups = rows.length ? await seriesGroups(db) : [];
+    const statuses = await seriesStatuses(db, {
       userId: user.id,
       rows,
+      groups,
     });
     return Response.json(
-      { results: rows.map((row, i) => ({ ...row, catalog: statuses[i] })) },
+      {
+        results: rows.map((row, i) => ({ ...row, catalog: statuses[i] })),
+        groups: groupOptions(groups),
+      },
       { headers: noStore },
     );
   } catch (error) {

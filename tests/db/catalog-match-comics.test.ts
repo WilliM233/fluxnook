@@ -1,24 +1,43 @@
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import postgres from "postgres";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createDb } from "@/db/client";
-import { seriesStatuses } from "@/lib/catalog/match";
 import {
+  groupOptions,
+  seriesGroups,
+  seriesStatuses,
+} from "@/lib/catalog/match";
+import { importSeriesFromComicVine } from "@/lib/catalog/series";
+import { coverStoreFromEnv } from "@/lib/covers";
+import {
+  type ComicVine,
   type ComicVineSeries,
   createComicVine,
 } from "@/lib/providers/comicvine";
 import { type ComicVineStub, startComicVineStub } from "../stub/comicvine";
-import { itemFor, required, signUp, signUpWithFixtures } from "./harness";
+import {
+  itemFor,
+  required,
+  resetComicVine,
+  signUp,
+  signUpWithFixtures,
+} from "./harness";
 
 // A4's series rule against the loaded fixtures (Ch 1.4, with 1.4.1 Q1 and
 // Q2, L): a folded name, a first year within 1 and the label's publisher for
 // a series group; a title stem and the series of what the editions hold for
 // a collected group. The recordings' rows run under keys of this file's own
 // (volume/9<id>), so a key another file holds can't turn a match into `in`.
+// Then the Browse's three imports run on the fixture rows under the real
+// keys, last, since they turn those groups into series; this is the only
+// file that holds the real keys, and it puts the rows back after.
 
 const sql = postgres(required("DATABASE_URL"), { max: 1, onnotice: () => {} });
 const { db, close } = createDb();
 const tag = `catalog-match-comics ${crypto.randomUUID()}`;
 let stub: ComicVineStub;
+let cv: ComicVine;
 let turtles: ComicVineSeries[];
 let ultimate: ComicVineSeries[];
 let tmntUltimate: ComicVineSeries[];
@@ -37,7 +56,9 @@ const pick = (rows: ComicVineSeries[], id: number) => {
 
 beforeAll(async () => {
   stub = await startComicVineStub();
-  const cv = createComicVine({
+  // A run left over from a crashed file would read as `in` below.
+  await resetComicVine(sql);
+  cv = createComicVine({
     apiKey: "k",
     baseUrl: stub.baseUrl,
     userAgent: "test",
@@ -52,6 +73,7 @@ beforeAll(async () => {
 }, 60_000);
 
 afterAll(async () => {
+  await resetComicVine(sql);
   await sql`delete from items where title like ${`${tag}%`}`;
   await sql`delete from series where name = ${tag}`;
   await sql`delete from auth.users where id in (${user.id}, ${stranger.id})`;
@@ -246,4 +268,257 @@ describe("seriesStatuses, in", () => {
       status: "new",
     });
   });
+});
+
+describe("seriesGroups, for the sheet's select", () => {
+  // The fixture's own labels, read off the file: other db files add runs by
+  // hand beside this one, so the check is on these, never a whole list.
+  const mirage = JSON.parse(
+    readFileSync(
+      join(process.cwd(), "supabase/seed/fixtures/tmnt-mirage.json"),
+      "utf8",
+    ),
+  ).items as { series?: string | null }[];
+  const labels = new Set(
+    mirage.map((item) => item.series).filter((s): s is string => Boolean(s)),
+  );
+
+  it("lists the fixture's 25 series groups and its one collected stem, by label", async () => {
+    const options = groupOptions(await seriesGroups(db)).filter(
+      (g) =>
+        (g.group === "series" && labels.has(g.label)) ||
+        (g.group === "collected" && g.label === "Ultimate Collection"),
+    );
+    expect(labels.size).toBe(25);
+    expect(options.filter((g) => g.group === "series")).toHaveLength(25);
+    expect(options).toContainEqual({
+      group: "collected",
+      label: "Ultimate Collection",
+      count: 5,
+    });
+    expect(options).toContainEqual({
+      group: "series",
+      label: "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      count: 62,
+    });
+    expect(options).toContainEqual({
+      group: "series",
+      label: "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      count: 70,
+    });
+    const sorted = [...options].sort((a, b) => a.label.localeCompare(b.label));
+    expect(options).toEqual(sorted);
+  });
+
+  it("leaves out a group any of whose items carries a Comic Vine source, whole", async () => {
+    const label = `${tag} part-attached`;
+    const ids: string[] = [];
+    for (const n of [1, 2]) {
+      const [{ id }] = await sql`
+        insert into items (type, form, title) values ('comic', 'issue', ${`${tag} pa ${n}`})
+        returning id`;
+      await sql`
+        insert into item_comics (item, series, number) values (${id}, ${label}, ${n})`;
+      ids.push(id);
+    }
+    const listed = async () =>
+      (await seriesGroups(db)).filter((g) => g.label === label);
+    expect(await listed()).toHaveLength(1);
+    await sql`
+      insert into item_sources (item, source, key)
+      values (${ids[0]}, 'comicvine', ${`issue/9${Date.now()}`})`;
+    expect(await listed()).toEqual([]);
+  });
+});
+
+// The fixture's own ids, read off the files as fixtures-load.test.ts does,
+// so the counts below are this walk's whatever other files write beside it.
+const FIXTURES = join(process.cwd(), "supabase/seed/fixtures");
+const fixtureIds = readdirSync(FIXTURES)
+  .filter((name) => name.endsWith(".json"))
+  .flatMap(
+    (name) =>
+      JSON.parse(readFileSync(join(FIXTURES, name), "utf8")).items as {
+        id: string;
+      }[],
+  )
+  .map((item) => item.id);
+
+const imported = (
+  key: string,
+  attachTo: { series: string } | { collected: string },
+  form: "issue" | "collected" = "issue",
+) =>
+  importSeriesFromComicVine(db, cv, coverStoreFromEnv(), {
+    key,
+    form,
+    format: form === "collected" ? "hardcover" : undefined,
+    attachTo,
+  });
+
+const fixtureItem = (key: string) => itemFor(sql, "manual", key);
+
+// A5 and A14 on the loaded fixtures, in the Browse's order. Only this file
+// imports the three real volumes, and it does so after every status test
+// above has read the groups as the loader left them.
+describe("the import on the fixtures", () => {
+  let mirage: string;
+  let tales: string;
+  let ultimateSeries: string;
+
+  it("attaches the Mirage run to the Vol. 1 group: 62 attached, none created, the held titles kept", async () => {
+    const result = await imported("volume/20281", {
+      series: "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+    });
+    expect(result).toMatchObject({ created: 0, attached: 62, known: false });
+    mirage = result.id;
+    const run = await sql`
+      select i.title, i.summary, i.cover_path, c.number,
+        (select key from item_sources s where s.item = i.id and s.source = 'comicvine') as key
+      from items i join item_comics c on c.item = i.id
+      where c.series_id = ${mirage} order by c.number`;
+    expect(run).toHaveLength(62);
+    expect(run.every((row) => row.key?.startsWith("issue/"))).toBe(true);
+    expect(run.slice(0, 3).map((row) => row.title)).toEqual([
+      "The Turtles' Origin is Told",
+      "TMNT vs. the Mousers",
+      "The Great Chase",
+    ]);
+    expect(run[0].summary).toMatch(/^The Turtles are cornered/);
+    expect(run[0].cover_path).toBe("comicvine/issue-121041.jpg");
+    const [series] = await sql`select * from series where id = ${mirage}`;
+    expect(series).toMatchObject({
+      name: "Teenage Mutant Ninja Turtles",
+      volume: 1,
+      year_began: 1984,
+      year_ended: 1993,
+      publisher: "Mirage",
+      summary: "Volume 1.",
+      cover_path: "comicvine/volume-20281.jpg",
+    });
+  });
+
+  it("says 1984 is in after that import, with that series (A4)", async () => {
+    const [row] = (await cv.search("teenage mutant ninja turtles")).filter(
+      (r) => r.key === "volume/20281",
+    );
+    expect(await status(row)).toEqual({ status: "in", seriesId: mirage });
+  });
+
+  it("attaches Tales of the TMNT to the picked Tales Vol. 2 group: 70 attached, #71 created", async () => {
+    const label = "Tales of the Teenage Mutant Ninja Turtles Vol. 2";
+    const result = await imported("volume/18785", { series: label });
+    expect(result).toMatchObject({ created: 1, attached: 70 });
+    tales = result.id;
+    const [created] = await sql`
+      select i.title, i.released_on::text, i.released_precision, c.series, c.number
+      from items i join item_comics c on c.item = i.id
+      where c.series_id = ${tales} and c.number = 71`;
+    expect(created).toEqual({
+      title: "The Paradox of Chudnovsky",
+      released_on: "2011-06-01",
+      released_precision: "month",
+      series: label,
+      number: 71,
+    });
+    const forty = await fixtureItem("tmnt-mirage-tales-v2-40");
+    const [held] = await sql`
+      select i.title, c.series_id from items i join item_comics c on c.item = i.id
+      where i.id = ${forty}`;
+    expect(held).toEqual({ title: "Silent Night", series_id: tales });
+    const [series] = await sql`
+      select volume, year_began, year_ended, publisher,
+        (select count(*)::int from item_comics where series_id = ${tales}) as issues
+      from series where id = ${tales}`;
+    expect(series).toEqual({
+      volume: 2,
+      year_began: 2004,
+      year_ended: 2011,
+      publisher: "Mirage",
+      issues: 71,
+    });
+  });
+
+  it("attaches the Ultimate Collection to the stem as hardcovers: 5 attached, 2 created, the 37 contents untouched", async () => {
+    const result = await imported(
+      "volume/50804",
+      { collected: "Ultimate Collection" },
+      "collected",
+    );
+    expect(result).toMatchObject({ created: 2, attached: 5 });
+    ultimateSeries = result.id;
+    const editions = await sql`
+      select i.title, e.released_on::text, e.released_precision, e.publisher,
+        (select count(*)::int from edition_sources es
+          where es.edition = e.id and es.source = 'comicvine') as comicvine,
+        (select count(*)::int from edition_contents ec where ec.edition = e.id) as contents
+      from editions e join items i on i.id = e.item
+      join item_comics c on c.item = i.id
+      where c.series_id = ${ultimateSeries} order by c.number`;
+    expect(editions.map((e) => e.title)).toEqual([
+      "Ultimate Collection 1",
+      "Ultimate Collection 2",
+      "Ultimate Collection 3",
+      "Ultimate Collection 4",
+      "Ultimate Collection 5",
+      "Ultimate Collection 6",
+      "Ultimate Collection 7",
+    ]);
+    expect(editions.every((e) => e.comicvine === 1)).toBe(true);
+    expect(editions[0]).toMatchObject({
+      released_on: "2011-08-01",
+      released_precision: "month",
+      publisher: "IDW Publishing",
+    });
+    expect(editions.reduce((n, e) => n + e.contents, 0)).toBe(37);
+    expect(editions.slice(5).map((e) => e.contents)).toEqual([0, 0]);
+  });
+
+  it("answers a second post of volume/20281 as known, writing nothing", async () => {
+    const before = await walkCounts();
+    expect(
+      await imported("volume/20281", {
+        series: "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      }),
+    ).toEqual({ id: mirage, created: 0, attached: 0, known: true });
+    expect(await walkCounts()).toEqual(before);
+  });
+
+  it("counts as the Browse does", async () => {
+    // item_comics is 369, not section 0's 368: Tales #71 is a created comic
+    // too, beside the two created collecteds (1.4.2 handoff).
+    expect(await walkCounts()).toEqual({
+      items: 457,
+      item_sources: 594,
+      series: 3,
+      series_sources: 3,
+      item_comics: 369,
+      with_series: 140,
+      editions: 7,
+      edition_sources: 12,
+      edition_contents: 37,
+    });
+  });
+
+  /** The Browse's count block over the fixture's rows and this walk's three series. */
+  async function walkCounts() {
+    const mine = [mirage, tales, ultimateSeries];
+    const scope = sql`
+      select item from item_sources
+        where source <> 'comicvine' and source || ':' || key = any(${fixtureIds})
+      union select item from item_comics where series_id = any(${mine})`;
+    const scopedEditions = sql`select id from editions where item in (${scope})`;
+    const [counts] = await sql`
+      select
+        (select count(*)::int from items where id in (${scope})) as items,
+        (select count(*)::int from item_sources where item in (${scope})) as item_sources,
+        (select count(*)::int from series where id = any(${mine})) as series,
+        (select count(*)::int from series_sources where series = any(${mine})) as series_sources,
+        (select count(*)::int from item_comics where item in (${scope})) as item_comics,
+        (select count(*)::int from item_comics where series_id = any(${mine})) as with_series,
+        (select count(*)::int from editions where id in (${scopedEditions})) as editions,
+        (select count(*)::int from edition_sources where edition in (${scopedEditions})) as edition_sources,
+        (select count(*)::int from edition_contents where edition in (${scopedEditions})) as edition_contents`;
+    return counts;
+  }
 });

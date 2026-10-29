@@ -6,6 +6,7 @@ import {
   normalizeSeries,
   normalizeTitle,
   seriesPublisher,
+  seriesVolume,
 } from "@/lib/catalog/normalize";
 
 describe("normalizeName", () => {
@@ -130,5 +131,20 @@ describe("collectedStem", () => {
     ["12", ""],
   ])("%s → %j", (title, stem) => {
     expect(collectedStem(title)).toBe(stem);
+  });
+});
+
+describe("seriesVolume", () => {
+  it.each([
+    ["Teenage Mutant Ninja Turtles (Mirage) Vol. 1", 1],
+    ["Tales of the Teenage Mutant Ninja Turtles Vol. 2", 2],
+    ["Teenage Mutant Ninja Turtles (Image) Vol. 3", 3],
+    ["Usagi Yojimbo Volume 12", 12],
+    ["Grendel (Vol. 2)", 2],
+    ["Bodycount", null],
+    ["Raphael: Bad Moon Rising", null],
+    ["Volatile 4", null],
+  ])("%s → %j", (label, volume) => {
+    expect(seriesVolume(label)).toBe(volume);
   });
 });

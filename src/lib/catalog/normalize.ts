@@ -64,6 +64,15 @@ export function seriesPublisher(label: string): string | null {
   return inner && !/^[0-9 ]+$/.test(inner) ? inner : null;
 }
 
+/**
+ * The volume number a hand-entered label ends in (Ch 1.4, A5):
+ * "Teenage Mutant Ninja Turtles (Mirage) Vol. 1" is 1, "Bodycount" null.
+ */
+export function seriesVolume(label: string): number | null {
+  const number = label.match(VOLUME_TAIL)?.[0].match(/[0-9]+/)?.[0];
+  return number && number.length <= 9 ? Number(number) : null;
+}
+
 /** A publisher's name folded to compare with `seriesPublisher`. */
 export function normalizePublisher(name: string): string {
   return fold(name);

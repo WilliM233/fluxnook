@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import type postgres from "postgres";
 import { createDb } from "@/db/client";
 import { loadFixtures } from "@/fixtures/load";
+import { RESET_COMICVINE } from "../reset-comicvine";
 
 // Shared by the Ch 1.2 db tests: a fresh account with the fixtures loaded,
 // and the lookups they all make. The older files keep their own copies.
@@ -47,4 +48,9 @@ export async function itemFor(sql: postgres.Sql, source: string, key: string) {
     select item from item_sources where source = ${source} and key = ${key}`;
   if (!row) throw new Error(`no item for ${source}:${key}`);
   return row.item as string;
+}
+
+/** The Browse's three imports undone on the fixture rows (Ch 1.4.2). */
+export async function resetComicVine(sql: postgres.Sql) {
+  for (const statement of RESET_COMICVINE) await sql.unsafe(statement);
 }
