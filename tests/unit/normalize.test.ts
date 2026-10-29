@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { normalizeName, normalizeTitle } from "@/lib/catalog/normalize";
+import {
+  collectedStem,
+  normalizeName,
+  normalizeSeries,
+  normalizeTitle,
+} from "@/lib/catalog/normalize";
 
 describe("normalizeName", () => {
   it("folds case", () => {
@@ -55,5 +60,51 @@ describe("normalizeTitle", () => {
 
   it("trims the edges", () => {
     expect(normalizeTitle("  Misery  ")).toBe("misery");
+  });
+});
+
+describe("normalizeSeries", () => {
+  it.each([
+    [
+      "Teenage Mutant Ninja Turtles (Mirage) Vol. 1",
+      "teenage mutant ninja turtles",
+    ],
+    [
+      "Teenage Mutant Ninja Turtles (Image) Vol. 3",
+      "teenage mutant ninja turtles",
+    ],
+    ["Teenage Mutant Ninja Turtles", "teenage mutant ninja turtles"],
+    [
+      "Tales of the Teenage Mutant Ninja Turtles Vol. 2",
+      "tales of the teenage mutant ninja turtles",
+    ],
+    ["The Savage Dragon", "the savage dragon"],
+    ["Groo Volume 2", "groo"],
+    ["Groo vol 2", "groo"],
+    ["Groo (Vol. 2)", "groo"],
+    [
+      "TMNT:  Teenage Mutant Ninja Turtles",
+      "tmnt teenage mutant ninja turtles",
+    ],
+    ["Volume", "volume"],
+  ])("%s → %s", (name, folded) => {
+    expect(normalizeSeries(name)).toBe(folded);
+  });
+
+  it("keeps Adventures, so a longer name is another series", () => {
+    expect(normalizeSeries("Teenage Mutant Ninja Turtles Adventures")).not.toBe(
+      normalizeSeries("Teenage Mutant Ninja Turtles (Mirage) Vol. 1"),
+    );
+  });
+});
+
+describe("collectedStem", () => {
+  it.each([
+    ["Ultimate Collection 1", "ultimate collection"],
+    ["Ultimate Collection", "ultimate collection"],
+    ["Ultimate Collection 12 ", "ultimate collection"],
+    ["12", ""],
+  ])("%s → %j", (title, stem) => {
+    expect(collectedStem(title)).toBe(stem);
   });
 });
