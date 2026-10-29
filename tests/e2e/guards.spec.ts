@@ -39,6 +39,16 @@ test("tmdb search is 401 without a session", async ({ request }) => {
   });
 });
 
+test("open library search is 401 without a session", async ({ request }) => {
+  const response = await request.get(
+    "/api/v1/providers/openlibrary/search?q=carrie",
+  );
+  expect(response.status()).toBe(401);
+  expect(await response.json()).toMatchObject({
+    error: { code: "unauthorized" },
+  });
+});
+
 test("import is 401 without a session", async ({ request }) => {
   const response = await request.post("/api/v1/items/import", {
     data: { source: "tmdb", key: "movie/133805" },

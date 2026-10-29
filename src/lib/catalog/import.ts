@@ -16,7 +16,7 @@ import {
   type Tmdb,
   type TmdbItem,
 } from "@/lib/providers/tmdb";
-import { normalizeTitle } from "./normalize";
+import { matchRow, sameWork } from "./match";
 
 /** No such item here, or no such key at TMDB. */
 export class NotFoundError extends Error {}
@@ -137,7 +137,7 @@ async function attach(tx: Tx, itemId: string, details: TmdbItem) {
   }
   // The sheet only offers items that look like the result; the route holds
   // the same line, since an attach can't be undone this chapter (S1).
-  if (!looksAlike(item, details)) {
+  if (!sameWork(matchRow(details), heldWork(item, null))) {
     throw new ConflictError(
       `That item doesn't look like ${details.title}: the title and year must match.`,
     );
@@ -155,17 +155,17 @@ async function attach(tx: Tx, itemId: string, details: TmdbItem) {
   return itemId;
 }
 
-/** The match rule (A4): the same title once folded, and a year within 1 when both have one. */
-function looksAlike(
-  item: Pick<typeof items.$inferSelect, "title" | "releasedOn">,
-  details: TmdbItem,
+/** An item as the match rule reads it, with its author when it is a book. */
+function heldWork(
+  item: Pick<typeof items.$inferSelect, "type" | "title" | "releasedOn">,
+  author: string | null,
 ) {
-  const folded = normalizeTitle(item.title);
-  if (folded === "" || folded !== normalizeTitle(details.title)) return false;
-  const held = item.releasedOn ? Number(item.releasedOn.slice(0, 4)) : null;
-  return (
-    held === null || details.year === null || Math.abs(held - details.year) <= 1
-  );
+  return {
+    type: item.type,
+    title: item.title,
+    year: item.releasedOn ? Number(item.releasedOn.slice(0, 4)) : null,
+    author,
+  };
 }
 
 /** Q2: the held date stays unless it is missing, or TMDB's is finer in the same year. */
