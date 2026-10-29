@@ -30,7 +30,7 @@ const formats: { value: EditionFormat; label: string }[] = [
 ];
 
 // The manual form's select, less its full width, so the two look alike.
-const selectClass =
+export const selectClass =
   "h-11 rounded-[10px] border border-input bg-background px-3 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 /**
