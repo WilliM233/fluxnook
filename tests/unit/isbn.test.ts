@@ -1,5 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { normalizeIsbn } from "@/lib/isbn";
+import { looksLikeIsbn, normalizeIsbn } from "@/lib/isbn";
+
+describe("looksLikeIsbn", () => {
+  it("reads a bad check digit as an ISBN still, so the box can say so", () => {
+    expect(looksLikeIsbn("978-0-307-74366-5")).toBe(true);
+    expect(looksLikeIsbn("0-8044-2957-X")).toBe(true);
+  });
+
+  it("reads words and other digit runs as a search", () => {
+    expect(looksLikeIsbn("carrie")).toBe(false);
+    expect(looksLikeIsbn("1408")).toBe(false);
+    expect(looksLikeIsbn("97803077436")).toBe(false);
+  });
+});
 
 describe("normalizeIsbn", () => {
   it("strips the hyphens off a 13", () => {

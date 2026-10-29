@@ -9,16 +9,14 @@ import { expect, test } from "./harness/signed-in";
 test.describe.configure({ mode: "serial" });
 
 const WORKS = ["works/OL81626W", "works/OL81608W"];
-const IT = "works/OL81613W";
 
+// It belongs to search-isbn.spec.ts, which runs beside this file.
 function resetCatalog() {
   const held = [
     itemFor("manual", "carrie-1974"),
     itemFor("manual", "night-shift-1977"),
   ];
   const ids = held.map((id) => `'${id}'`).join(", ");
-  db(`delete from items where id in (
-        select item from item_sources where source = 'openlibrary' and key = '${IT}')`);
   db(`delete from editions where item in (${ids})`);
   db(`delete from item_sources where source = 'openlibrary'
         and key in (${WORKS.map((k) => `'${k}'`).join(", ")})`);
@@ -150,4 +148,59 @@ test("Open Library down: its group says so, TMDB's still answers", async ({
     page.getByText("Open Library didn't answer. Try again in a moment."),
   ).toBeVisible();
   await expect(page.getByText("Nothing by that name at TMDB.")).toBeVisible();
+});
+
+test("an ISBN for Carrie: the card, the sheet, the printing on the novel", async ({
+  signedIn: { page, email },
+}) => {
+  loadFixturesFor(email);
+  await page.goto("/search?q=978-0-307-74366-4");
+  await expect(
+    page.getByRole("heading", { name: /That's an ISBN/ }),
+  ).toBeVisible();
+  const card = page.getByRole("article", { name: "That edition" });
+  await expect(card.getByRole("heading", { name: "Carrie" })).toBeVisible();
+  await expect(card.getByText("Anchor Books")).toBeVisible();
+  await expect(card.getByText("2011", { exact: true })).toBeVisible();
+  await expect(card.getByText("304", { exact: true })).toBeVisible();
+  await expect(card.getByText("978-0-307-74366-4")).toBeVisible();
+  await expect(card.getByText("0-307-74366-7")).toBeVisible();
+  await expect(card.getByLabel("Format")).toHaveValue("paperback");
+  await expect(
+    card.getByText('Open Library says "mass market paperback"'),
+  ).toBeVisible();
+  const work = card.getByRole("region", { name: "The work" });
+  await expect(
+    work.getByText(
+      "Looks like one you have: Carrie (1974) by Stephen King, added by hand. Add asks which.",
+    ),
+  ).toBeVisible();
+  for (const chip of ["All", "Films", "TV", "Books"]) {
+    await expect(page.getByRole("button", { name: chip })).toBeDisabled();
+  }
+
+  await card.getByRole("button", { name: "Add this edition" }).click();
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Same, add the Open Library details to it" })
+    .click();
+  await expect(page).toHaveURL(`/items/${itemFor("manual", "carrie-1974")}`);
+  const editions = page.getByRole("region", { name: "Editions" });
+  await expect(editions.getByText("Paperback", { exact: true })).toBeVisible();
+  await expect(
+    editions.getByText("Anchor Books · 2011 · 304 pages"),
+  ).toBeVisible();
+  await expect(editions.getByText("ISBN 9780307743664")).toBeVisible();
+
+  await page.goto("/search?q=978-0-307-74366-4");
+  const again = page.getByRole("article", { name: "That edition" });
+  await expect(
+    again
+      .getByRole("region", { name: "The work" })
+      .getByText("In your catalog"),
+  ).toBeVisible();
+  await expect(
+    again.getByText("This edition is in your catalog"),
+  ).toBeVisible();
+  await expect(again.getByRole("link", { name: "Open" })).toBeVisible();
 });

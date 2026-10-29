@@ -28,6 +28,17 @@ export function isbn10to13(isbn10: string): string {
 }
 
 /**
+ * Whether text is shaped like an ISBN once hyphens and spaces go: ten
+ * characters ending in a digit or X, or thirteen digits. The search box reads
+ * such text as an ISBN, valid or not, rather than as words.
+ */
+export function looksLikeIsbn(text: string): boolean {
+  return /^([0-9]{9}[0-9X]|[0-9]{13})$/.test(
+    text.replace(/[\s-]+/g, "").toUpperCase(),
+  );
+}
+
+/**
  * The ISBN-13 that text names, or null (Ch 1.3, A3). Hyphens and spaces go;
  * what's left is ten characters (a trailing X allowed) or thirteen digits under
  * 978 or 979, and the check digit must hold. A 10 comes back as its 13. Open
