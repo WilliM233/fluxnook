@@ -362,6 +362,16 @@ describe("mapping junk as null", () => {
     expect((await cv.issues(1)).map((i) => i.key)).toEqual(["issue/105"]);
   });
 
+  // Rummage R1 (1.4.1): a relevance search can list one volume twice; two
+  // rows with one key is a doubled row on the page and a duplicate React key.
+  it("keeps one row when a search lists the same volume id twice", async () => {
+    const { cv } = client(() =>
+      ok([volume, { ...volume, id: 7, name: "Other" }, { ...volume }]),
+    );
+    const rows = await cv.search("x");
+    expect(rows.map((r) => r.key)).toEqual(["volume/20281", "volume/7"]);
+  });
+
   it("drops a volume with no id or a blank name, and reads junk years as null", async () => {
     const { cv } = client(() =>
       ok([

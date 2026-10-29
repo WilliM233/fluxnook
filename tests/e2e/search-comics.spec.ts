@@ -11,6 +11,7 @@ const TAG = "search-comics e2e";
 
 function resetSeries() {
   db(`delete from series where name = '${TAG}'`);
+  db(`delete from items where title like '${TAG}%'`);
 }
 
 test.beforeEach(() => resetSeries());
@@ -145,6 +146,26 @@ test("a volume whose key is a series' source says In your catalog, with Open to 
     "href",
     `/series/${id}`,
   );
+});
+
+// Rummage R4 (1.4.1): a run entered by hand can be one issue long, and the
+// fixture has nine such groups. The line is written for many.
+test("a one-issue group says 1 issue, not 1 issues", async ({
+  signedIn: { page },
+}) => {
+  const id = db(
+    `insert into items (type, title, form, released_on, released_precision) values ('comic', '${TAG} The Works 1', 'issue', '2013-06-01', 'month') returning id`,
+  ).split("\n")[0];
+  db(
+    `insert into item_comics (item, series, number) values ('${id}', 'Teenage Mutant Ninja Turtles: The Works', 1)`,
+  );
+  await page.goto(`${TURTLES}&type=comic`);
+  const row = seriesRow(page, 2013, "IDW Publishing · 5 issues");
+  await expect(
+    row.getByText(
+      "Looks like one you have: Teenage Mutant Ninja Turtles: The Works, 1 issue added by hand",
+    ),
+  ).toBeVisible();
 });
 
 test("Comic Vine down: its group says so, the other two still answer", async ({

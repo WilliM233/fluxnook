@@ -7,7 +7,7 @@ import {
   createComicVine,
 } from "@/lib/providers/comicvine";
 import { type ComicVineStub, startComicVineStub } from "../stub/comicvine";
-import { required, signUp, signUpWithFixtures } from "./harness";
+import { itemFor, required, signUp, signUpWithFixtures } from "./harness";
 
 // A4's series rule against the loaded fixtures (Ch 1.4, with 1.4.1 Q1 and
 // Q2, L): a folded name, a first year within 1 and the label's publisher for
@@ -192,6 +192,36 @@ describe("seriesStatuses, the collected arm", () => {
       year: null,
     };
     expect(await status(row)).toEqual({ status: "new" });
+  });
+
+  // Rummage R3 (1.4.1): a second collected group whose stem is one generic
+  // word ("Collection") also sits inside the volume's name, and if one of
+  // its editions holds a Mirage issue it passes Q1's gate too. Sorted by
+  // label it comes first, so the row says "1 collected editions" and 1.4.2's
+  // Same would attach the seven volumes onto it. The likeliest group leads:
+  // the longer stem, then the larger count.
+  it("the five lead a one-edition group with a shorter stem", async () => {
+    const mirage1 = await itemFor(sql, "manual", "tmnt-mirage-v1-1");
+    const [{ id: other }] = await sql`
+      insert into items (type, title, form)
+      values ('comic', 'Collection 1', 'collected') returning id`;
+    try {
+      const [{ id: edition }] = await sql`
+        insert into editions (item, format) values (${other}, 'tpb') returning id`;
+      await sql`
+        insert into edition_contents (edition, item, position)
+        values (${edition}, ${mirage1}, 1)`;
+      const found = await status(pick(tmntUltimate, 50804));
+      expect(found).toMatchObject({
+        status: "match",
+        group: "collected",
+        label: "Ultimate Collection",
+        count: 5,
+      });
+      expect(found.status === "match" && found.candidates).toHaveLength(2);
+    } finally {
+      await sql`delete from items where id = ${other}`;
+    }
   });
 });
 
