@@ -63,6 +63,27 @@ test("a book's printing: format, the line, the ISBN, the links, the caption", as
   await expect(page.getByText("Cover from Open Library")).toBeVisible();
 });
 
+// Rummage R6: a printing with its own title and nothing else is that title,
+// not "Title · ".
+test("an edition with only a title of its own has no dangling separator", async ({
+  signedIn: { page },
+}) => {
+  const bare = db(`
+    with i as (
+      insert into items (type, title, form, source_note)
+      values ('book', 'Editions probe, bare', 'novel', '${tag}')
+      returning id),
+    e as (insert into editions (item, format, title) select id, 'hardcover', 'Special printing' from i)
+    select id from i`).split("\n")[0];
+  await page.goto(`/items/${bare}`);
+  const row = page
+    .getByRole("region", { name: "Editions" })
+    .getByRole("listitem");
+  await expect(
+    row.getByText("Special printing", { exact: true }),
+  ).toBeVisible();
+});
+
 test("a comic's collected edition: hardcover and its issues, no ISBN", async ({
   signedIn: { page, email },
 }) => {
