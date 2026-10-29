@@ -1,7 +1,7 @@
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import {
   BUSY_QUERY,
   type ComicVineStub,
@@ -60,8 +60,30 @@ describe("the Comic Vine stub", () => {
     expect((await first.json()).results).toEqual([{ id: 1 }]);
     const second = await get("/api/issues/?filter=volume:1&offset=100");
     expect((await second.json()).results).toEqual([{ id: 101 }]);
-    const none = await get("/api/issues/?filter=volume:1&offset=200");
-    expect(await none.json()).toMatchObject({ status_code: 1, results: [] });
+  });
+
+  it("a volume with no issues recording answers 500 naming the file", async () => {
+    const said = vi.spyOn(console, "error").mockImplementation(() => {});
+    const none = await get("/api/issues/?filter=volume:2&offset=0");
+    expect(none.status).toBe(500);
+    expect(await none.json()).toEqual({
+      error: "no recording: issues-2-o0.json",
+    });
+    await get("/api/issues/?filter=volume:2&offset=0");
+    expect(said).toHaveBeenCalledTimes(1);
+    expect(said).toHaveBeenCalledWith(
+      "comicvine:stub: no recording: issues-2-o0.json",
+    );
+    said.mockRestore();
+  });
+
+  it("a page that isn't on disk answers 500, never an empty list", async () => {
+    const said = vi.spyOn(console, "error").mockImplementation(() => {});
+    const past = await get("/api/issues/?filter=volume:1&offset=200");
+    expect(past.status).toBe(500);
+    expect((await past.json()).error).toBe("no recording: issues-1-o200.json");
+    expect((await get("/api/issues/")).status).toBe(500);
+    said.mockRestore();
   });
 
   it("serves a recorded search, and an unrecorded one is an empty OK", async () => {
@@ -88,6 +110,13 @@ describe("the Comic Vine stub", () => {
     const cover = await get("/a/uploads/original/0/77/105-1.jpg");
     expect(cover.headers.get("content-type")).toBe("image/jpeg");
     expect((await cover.arrayBuffer()).byteLength).toBeGreaterThan(0);
+  });
+
+  it("an image whose name starts with missing- answers 404", async () => {
+    const gone = await get("/a/uploads/original/0/77/missing-105-1.jpg");
+    expect(gone.status).toBe(404);
+    const kept = await get("/a/uploads/original/0/77/not-missing-1.jpg");
+    expect(kept.headers.get("content-type")).toBe("image/jpeg");
   });
 
   it("answers 500 to anything under /broken/", async () => {

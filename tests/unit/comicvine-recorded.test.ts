@@ -7,7 +7,7 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import {
   type ComicVine,
   createComicVine,
@@ -171,8 +171,13 @@ describe("the issue recordings", () => {
     expect(issues[5].coverDate).toBe("2015-12-31");
   });
 
-  it("a volume with no recorded issues is an empty list", async () => {
-    expect(await cv.issues(18790)).toEqual([]);
+  it("a volume with no recorded issues throws ProviderError 500, never an empty run", async () => {
+    const said = vi.spyOn(console, "error").mockImplementation(() => {});
+    await expect(cv.issues(18790)).rejects.toMatchObject({
+      name: "ProviderError",
+      status: 500,
+    });
+    said.mockRestore();
   });
 });
 
