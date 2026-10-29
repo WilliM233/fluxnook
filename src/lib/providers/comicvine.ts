@@ -123,10 +123,13 @@ export function createComicVine({
       limit: SEARCH_LIMIT,
       field_list: SEARCH_FIELDS,
     });
-    return (Array.isArray(body.results) ? body.results : []).flatMap((raw) => {
+    // A relevance search can list one volume twice; the first stays (R1).
+    const found = new Map<string, ComicVineSeries>();
+    for (const raw of Array.isArray(body.results) ? body.results : []) {
       const row = mapVolume(raw, origin, false);
-      return row ? [row] : [];
-    });
+      if (row && !found.has(row.key)) found.set(row.key, row);
+    }
+    return [...found.values()];
   }
 
   /** One volume by id, with its description as a blurb. */

@@ -332,8 +332,8 @@ export function Search({
     return (
       <span className="text-muted-foreground">
         {c.group === "collected"
-          ? `Looks like one you have: ${c.count} collected editions added by hand`
-          : `Looks like one you have: ${c.label}, ${c.count} issues added by hand`}
+          ? `Looks like one you have: ${c.count} collected ${c.count === 1 ? "edition" : "editions"} added by hand`
+          : `Looks like one you have: ${c.label}, ${c.count} ${c.count === 1 ? "issue" : "issues"} added by hand`}
       </span>
     );
   }

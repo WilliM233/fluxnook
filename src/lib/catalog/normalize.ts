@@ -58,8 +58,10 @@ const VOLUME_TAIL =
 export function seriesPublisher(label: string): string | null {
   let text = label;
   while (VOLUME_TAIL.test(text)) text = text.replace(VOLUME_TAIL, "");
-  const inner = text.match(/\(([^()]*)\)\s*$/)?.[1];
-  return (inner && fold(inner)) || null;
+  // A run of digits is a year, as Comic Vine prints a volume, never a
+  // publisher (Rummage R2).
+  const inner = fold(text.match(/\(([^()]*)\)\s*$/)?.[1] ?? "");
+  return inner && !/^[0-9 ]+$/.test(inner) ? inner : null;
 }
 
 /** A publisher's name folded to compare with `seriesPublisher`. */

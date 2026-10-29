@@ -320,12 +320,15 @@ export async function seriesStatuses(
       contains: [...new Set(ordered.flatMap((item) => item.contains))],
     });
   }
-  // Series by first year, then collected, so the first candidate is the
-  // likeliest run.
+  // The first candidate is the likeliest run: series by first year, then
+  // collected by the longer stem and the larger count, so a generic
+  // "Collection" never leads a run of "Ultimate Collection" (Rummage R3).
   groups.sort(
     (a, b) =>
       Number(a.group === "collected") - Number(b.group === "collected") ||
       (a.earliest ?? 0) - (b.earliest ?? 0) ||
+      collectedStem(b.label).length - collectedStem(a.label).length ||
+      b.count - a.count ||
       a.label.localeCompare(b.label),
   );
 
