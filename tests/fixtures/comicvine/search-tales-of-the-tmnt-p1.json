@@ -1,0 +1,531 @@
+{
+  "error": "OK",
+  "limit": 20,
+  "offset": 0,
+  "number_of_page_results": 20,
+  "number_of_total_results": 1895,
+  "status_code": 1,
+  "results": [
+    {
+      "count_of_issues": 71,
+      "deck": "Volume 2.",
+      "id": 18785,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/0/2533/140085-18785-111031-1-tales-of-the-tmnt.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/0/2533/140085-18785-111031-1-tales-of-the-tmnt.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/0/2533/140085-18785-111031-1-tales-of-the-tmnt.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/0/2533/140085-18785-111031-1-tales-of-the-tmnt.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/0/2533/140085-18785-111031-1-tales-of-the-tmnt.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/0/2533/140085-18785-111031-1-tales-of-the-tmnt.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/0/2533/140085-18785-111031-1-tales-of-the-tmnt.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/0/2533/140085-18785-111031-1-tales-of-the-tmnt.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/0/2533/140085-18785-111031-1-tales-of-the-tmnt.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Tales of the TMNT",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-517/",
+        "id": 517,
+        "name": "Mirage"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/tales-of-the-tmnt/4050-18785/",
+      "start_year": "2004",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": "Magazine containing short TMNT comics. It also recycles and adds some forgotten and obscure TMNT Archie characters. ",
+      "id": 136989,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/11145/111457259/8035158-5895279946-755cb.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/11145/111457259/8035158-5895279946-755cb.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/11145/111457259/8035158-5895279946-755cb.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/11145/111457259/8035158-5895279946-755cb.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/11145/111457259/8035158-5895279946-755cb.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/11145/111457259/8035158-5895279946-755cb.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/11145/111457259/8035158-5895279946-755cb.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/11145/111457259/8035158-5895279946-755cb.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/11145/111457259/8035158-5895279946-755cb.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "TMNT Magazine",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-2692/",
+        "id": 2692,
+        "name": "Welsh Publishing Group"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/tmnt-magazine/4050-136989/",
+      "start_year": "1990",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 3,
+      "deck": " ",
+      "id": 125276,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/7258180-01a.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/7258180-01a.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/7258180-01a.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/7258180-01a.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/7258180-01a.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/7258180-01a.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/7258180-01a.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/7258180-01a.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/7258180-01a.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "TMNT: Jennika",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/tmnt-jennika/4050-125276/",
+      "start_year": "2020",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 14,
+      "deck": " ",
+      "id": 166323,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/11161/111615891/9834530-cover.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/11161/111615891/9834530-cover.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/11161/111615891/9834530-cover.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/11161/111615891/9834530-cover.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/11161/111615891/9834530-cover.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/11161/111615891/9834530-cover.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/11161/111615891/9834530-cover.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/11161/111615891/9834530-cover.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/11161/111615891/9834530-cover.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "TMNT: Journeys",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/tmnt-journeys/4050-166323/",
+      "start_year": "2025",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 5,
+      "deck": null,
+      "id": 18763,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/0/2533/138158-18763-110882-1-tmnt-movie-prequel.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/0/2533/138158-18763-110882-1-tmnt-movie-prequel.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/0/2533/138158-18763-110882-1-tmnt-movie-prequel.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/0/2533/138158-18763-110882-1-tmnt-movie-prequel.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/0/2533/138158-18763-110882-1-tmnt-movie-prequel.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/0/2533/138158-18763-110882-1-tmnt-movie-prequel.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/0/2533/138158-18763-110882-1-tmnt-movie-prequel.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/0/2533/138158-18763-110882-1-tmnt-movie-prequel.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/0/2533/138158-18763-110882-1-tmnt-movie-prequel.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "TMNT Movie Prequel",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-517/",
+        "id": 517,
+        "name": "Mirage"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/tmnt-movie-prequel/4050-18763/",
+      "start_year": "2007",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 5,
+      "deck": " Volume 1.",
+      "id": 131518,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/7642024-01a.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/7642024-01a.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/7642024-01a.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/7642024-01a.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/7642024-01a.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/7642024-01a.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/7642024-01a.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/7642024-01a.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/7642024-01a.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "TMNT: The Last Ronin",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/tmnt-the-last-ronin/4050-131518/",
+      "start_year": "2020",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": "A trade paperback collecting TMNT: Movie Prequel miniseries and TMNT: The Official Movie Adaptation.",
+      "id": 105474,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/0/3125/6110926-tmn1.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/0/3125/6110926-tmn1.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/0/3125/6110926-tmn1.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/0/3125/6110926-tmn1.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/0/3125/6110926-tmn1.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/0/3125/6110926-tmn1.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/0/3125/6110926-tmn1.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/0/3125/6110926-tmn1.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/0/3125/6110926-tmn1.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "TMNT: The Collected Movie Books",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-517/",
+        "id": 517,
+        "name": "Mirage"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/tmnt-the-collected-movie-books/4050-105474/",
+      "start_year": "2007",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 106088,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/6143874-01.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/6143874-01.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/6143874-01.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/6143874-01.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/6143874-01.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/6143874-01.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/6143874-01.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/6143874-01.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/6143874-01.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "TMNT Day Sampler",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/tmnt-day-sampler/4050-106088/",
+      "start_year": "2017",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": " ",
+      "id": 140001,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/8234609-01.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/8234609-01.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/8234609-01.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/8234609-01.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/8234609-01.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/8234609-01.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/8234609-01.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/8234609-01.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/8234609-01.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "TMNT: Best of April O'Neil",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/tmnt-best-of-april-oneil/4050-140001/",
+      "start_year": "2021",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 141244,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/11122/111221019/8336189-0568501665-96916.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/11122/111221019/8336189-0568501665-96916.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/11122/111221019/8336189-0568501665-96916.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/11122/111221019/8336189-0568501665-96916.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/11122/111221019/8336189-0568501665-96916.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/11122/111221019/8336189-0568501665-96916.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/11122/111221019/8336189-0568501665-96916.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/11122/111221019/8336189-0568501665-96916.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/11122/111221019/8336189-0568501665-96916.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "TMNT: Best of Shredder",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/tmnt-best-of-shredder/4050-141244/",
+      "start_year": "2021",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": " ",
+      "id": 157643,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/11161/111615891/9328055-untitled.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/11161/111615891/9328055-untitled.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/11161/111615891/9328055-untitled.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/11161/111615891/9328055-untitled.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/11161/111615891/9328055-untitled.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/11161/111615891/9328055-untitled.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/11161/111615891/9328055-untitled.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/11161/111615891/9328055-untitled.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/11161/111615891/9328055-untitled.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "TMNT: Best of Alopex",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/tmnt-best-of-alopex/4050-157643/",
+      "start_year": "2024",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": " ",
+      "id": 159633,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/11161/111615891/9466526-cover.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/11161/111615891/9466526-cover.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/11161/111615891/9466526-cover.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/11161/111615891/9466526-cover.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/11161/111615891/9466526-cover.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/11161/111615891/9466526-cover.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/11161/111615891/9466526-cover.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/11161/111615891/9466526-cover.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/11161/111615891/9466526-cover.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "TMNT: Best of Dark Leo",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/tmnt-best-of-dark-leo/4050-159633/",
+      "start_year": "2024",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": " ",
+      "id": 166019,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/11161/111615891/9808319-cover.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/11161/111615891/9808319-cover.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/11161/111615891/9808319-cover.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/11161/111615891/9808319-cover.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/11161/111615891/9808319-cover.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/11161/111615891/9808319-cover.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/11161/111615891/9808319-cover.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/11161/111615891/9808319-cover.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/11161/111615891/9808319-cover.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "TMNT: Best of Renet",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/tmnt-best-of-renet/4050-166019/",
+      "start_year": "2025",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 64518,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/12/124613/3137863-tmnt%20sneak%20peek%20v2007%20001%20%282007%29%20pagecover.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/12/124613/3137863-tmnt%20sneak%20peek%20v2007%20001%20%282007%29%20pagecover.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/12/124613/3137863-tmnt%20sneak%20peek%20v2007%20001%20%282007%29%20pagecover.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/12/124613/3137863-tmnt%20sneak%20peek%20v2007%20001%20%282007%29%20pagecover.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/12/124613/3137863-tmnt%20sneak%20peek%20v2007%20001%20%282007%29%20pagecover.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/12/124613/3137863-tmnt%20sneak%20peek%20v2007%20001%20%282007%29%20pagecover.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/12/124613/3137863-tmnt%20sneak%20peek%20v2007%20001%20%282007%29%20pagecover.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/12/124613/3137863-tmnt%20sneak%20peek%20v2007%20001%20%282007%29%20pagecover.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/12/124613/3137863-tmnt%20sneak%20peek%20v2007%20001%20%282007%29%20pagecover.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "TMNT Sneak Peek",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-517/",
+        "id": 517,
+        "name": "Mirage"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/tmnt-sneak-peek/4050-64518/",
+      "start_year": "2006",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": " ",
+      "id": 114842,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/6663976-01.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/6663976-01.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/6663976-01.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/6663976-01.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/6663976-01.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/6663976-01.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/6663976-01.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/6663976-01.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/6663976-01.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Rise of the TMNT Promo",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/rise-of-the-tmnt-promo/4050-114842/",
+      "start_year": "2018",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": " ",
+      "id": 130734,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/7595772-01.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/7595772-01.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/7595772-01.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/7595772-01.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/7595772-01.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/7595772-01.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/7595772-01.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/7595772-01.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/7595772-01.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "TMNT: Best of Raphael",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/tmnt-best-of-raphael/4050-130734/",
+      "start_year": "2020",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": " ",
+      "id": 132281,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/7689141-01.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/7689141-01.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/7689141-01.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/7689141-01.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/7689141-01.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/7689141-01.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/7689141-01.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/7689141-01.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/7689141-01.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "TMNT: Best of Donatello",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/tmnt-best-of-donatello/4050-132281/",
+      "start_year": "2020",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": " ",
+      "id": 136080,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/7971750-01.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/7971750-01.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/7971750-01.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/7971750-01.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/7971750-01.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/7971750-01.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/7971750-01.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/7971750-01.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/7971750-01.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "TMNT: Best of Splinter",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/tmnt-best-of-splinter/4050-136080/",
+      "start_year": "2021",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 158135,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/11180/111809902/9358193-2694891629-large.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/11180/111809902/9358193-2694891629-large.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/11180/111809902/9358193-2694891629-large.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/11180/111809902/9358193-2694891629-large.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/11180/111809902/9358193-2694891629-large.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/11180/111809902/9358193-2694891629-large.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/11180/111809902/9358193-2694891629-large.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/11180/111809902/9358193-2694891629-large.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/11180/111809902/9358193-2694891629-large.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "TMNT: Best of Karai",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/tmnt-best-of-karai/4050-158135/",
+      "start_year": null,
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": " ",
+      "id": 161639,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/11161/111615891/9561866-cover.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/11161/111615891/9561866-cover.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/11161/111615891/9561866-cover.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/11161/111615891/9561866-cover.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/11161/111615891/9561866-cover.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/11161/111615891/9561866-cover.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/11161/111615891/9561866-cover.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/11161/111615891/9561866-cover.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/11161/111615891/9561866-cover.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "TMNT: Best of Mondo Gecko",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/tmnt-best-of-mondo-gecko/4050-161639/",
+      "start_year": "2024",
+      "resource_type": "volume"
+    }
+  ],
+  "version": "1.0"
+}
