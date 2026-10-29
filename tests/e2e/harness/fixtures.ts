@@ -1,4 +1,5 @@
 import { execFileSync, spawnSync } from "node:child_process";
+import { RESET_COMICVINE } from "../../reset-comicvine";
 
 // The fixtures for an e2e user, and SQL against the local stack's database,
 // for the specs that read or tidy catalog rows (Ch 1.2).
@@ -38,4 +39,9 @@ export function itemFor(source: string, key: string) {
   );
   if (!id) throw new Error(`no item for ${source}:${key}`);
   return id;
+}
+
+/** The Browse's three Comic Vine imports undone on the fixture rows (Ch 1.4.2). */
+export function resetComics() {
+  for (const statement of RESET_COMICVINE) db(statement);
 }

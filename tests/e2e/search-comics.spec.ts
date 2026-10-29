@@ -1,15 +1,18 @@
 import type { Page } from "@playwright/test";
-import { db, loadFixturesFor } from "./harness/fixtures";
+import { db, itemFor, loadFixturesFor, resetComics } from "./harness/fixtures";
 import { expect, test } from "./harness/signed-in";
 
-// A7's comics group on the three stubs and the loaded fixtures (Ch 1.4.1).
-// Serial: the `in` test claims the 1984 volume's key with a series row of its
-// own, and every test reads that row's status.
+// A7's comics group on the three stubs and the loaded fixtures (Ch 1.4.1),
+// and from 1.4.2 the import and the series page. Serial: the `in` test
+// claims the 1984 volume's key with a series row of its own, the imports
+// attach onto the fixture rows every other test reads, and each test starts
+// from the loader's rows.
 test.describe.configure({ mode: "serial" });
 
 const TAG = "search-comics e2e";
 
 function resetSeries() {
+  resetComics();
   db(`delete from series where name = '${TAG}'`);
   db(`delete from items where title like '${TAG}%'`);
 }
@@ -198,4 +201,93 @@ test("the hint names three providers and the way to add one by hand", async ({
   await expect(
     page.getByRole("link", { name: "Add one by hand" }),
   ).toHaveAttribute("href", "/items/new");
+});
+
+const MIRAGE_VOL_1 = "Teenage Mutant Ninja Turtles (Mirage) Vol. 1";
+
+test.describe("the series page", () => {
+  test("the 1984 run attached by the route: the header, the lede, the facts, 62 tiles in order", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    const response = await page.request.post("/api/v1/series/import", {
+      data: {
+        source: "comicvine",
+        key: "volume/20281",
+        form: "issue",
+        attachTo: { series: MIRAGE_VOL_1 },
+      },
+    });
+    expect(response.status()).toBe(201);
+    const { id, attached } = await response.json();
+    expect(attached).toBe(62);
+
+    await page.goto(`/series/${id}`);
+    await expect(
+      page.getByRole("heading", {
+        level: 1,
+        name: "Teenage Mutant Ninja Turtles",
+      }),
+    ).toBeVisible();
+    await expect(page.getByText("1984 to 1993", { exact: true })).toBeVisible();
+    await expect(page.getByText("62 issues", { exact: true })).toBeVisible();
+    await expect(page.getByText("Vol. 1. Volume 1.")).toBeVisible();
+    await expect(
+      page.getByRole("definition").filter({ hasText: /^Mirage$/ }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("main").getByRole("link", { name: "Comic Vine" }),
+    ).toHaveAttribute(
+      "href",
+      "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles/4050-20281/",
+    );
+    await expect(
+      page.getByText("62 in the catalog, in cover-date order"),
+    ).toBeVisible();
+    const tiles = page
+      .getByRole("list", { name: "Issues", exact: true })
+      .getByRole("listitem");
+    await expect(tiles).toHaveCount(62);
+    const first = tiles.first();
+    await expect(first.getByText("#1 · May 1984")).toBeVisible();
+    await expect(
+      first.getByRole("link", { name: "The Turtles' Origin is Told" }),
+    ).toHaveAttribute(
+      "href",
+      `/items/${itemFor("manual", "tmnt-mirage-v1-1")}`,
+    );
+    await expect(first.locator("img")).toHaveAttribute(
+      "src",
+      /\/storage\/v1\/object\/public\/covers\/comicvine\/issue-121041\.jpg$/,
+    );
+  });
+
+  test("a run with no end year prints its start alone", async ({
+    signedIn: { page },
+  }) => {
+    const id = db(
+      `insert into series (name, year_began, publisher) values ('${TAG}', 2011, 'IDW Publishing') returning id`,
+    ).split("\n")[0];
+    await page.goto(`/series/${id}`);
+    await expect(page.getByText("2011", { exact: true })).toBeVisible();
+    await expect(
+      page.getByText("IDW Publishing", { exact: true }).first(),
+    ).toBeVisible();
+    await expect(page.getByText("0 issues", { exact: true })).toBeVisible();
+    await expect(page.getByText("None in the catalog.")).toBeVisible();
+  });
+
+  test("a bad uuid and an unknown one are the in-shell not-found", async ({
+    signedIn: { page },
+  }) => {
+    for (const path of [
+      "/series/not-a-uuid",
+      `/series/${crypto.randomUUID()}`,
+    ]) {
+      await page.goto(path);
+      await expect(
+        page.getByRole("heading", { name: "Nothing on this shelf" }),
+      ).toBeVisible();
+    }
+  });
 });
