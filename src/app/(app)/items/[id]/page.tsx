@@ -16,6 +16,13 @@ const typeLabel = { film: "Film", tv: "TV", book: "Book", comic: "Comic" };
 const sourceLabel: Record<string, string> = {
   tmdb: "TMDB",
   letterboxd: "Letterboxd",
+  openlibrary: "Open Library",
+};
+
+// Who a cached cover came from, read off its path (`tmdb/…`, `openlibrary/…`).
+const coverCaption: Record<string, string> = {
+  tmdb: "Poster via TMDB",
+  openlibrary: "Cover from Open Library",
 };
 
 const capital = (word: string) => word.charAt(0).toUpperCase() + word.slice(1);
@@ -50,6 +57,72 @@ function facts(item: ItemPage["item"]): string[] {
   }
 }
 
+/** An edition's quiet line: publisher · year · pages, or a comic's issue count. */
+function editionLine(edition: ItemPage["editions"][number]): string {
+  return [
+    edition.publisher,
+    year(edition.released_on),
+    edition.pages !== null && plural(edition.pages, "page"),
+    edition.contents > 0 && plural(edition.contents, "issue"),
+  ]
+    .filter(Boolean)
+    .join(" · ");
+}
+
+function Editions({ editions }: { editions: ItemPage["editions"] }) {
+  return (
+    <section
+      aria-labelledby="editions"
+      className="flex flex-col gap-3 border-t pt-6"
+    >
+      <h2 id="editions" className="font-heading text-[22px] font-semibold">
+        Editions
+      </h2>
+      {editions.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          None in the catalog yet.
+        </p>
+      ) : (
+        <ul className="flex flex-col gap-2">
+          {editions.map((e) => (
+            <li
+              key={e.id}
+              className="flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-xl border bg-card px-4 py-3"
+            >
+              <span className="font-heading text-lg font-semibold text-foreground">
+                {capital(e.format)}
+              </span>
+              <span className="sr-only"> · </span>
+              <span className="text-sm text-muted-foreground">
+                {e.title && `${e.title} · `}
+                {editionLine(e)}
+              </span>
+              {e.isbn && (
+                <span className="text-sm text-dim tabular-nums">
+                  ISBN {e.isbn}
+                </span>
+              )}
+              {e.openlibrary_url && (
+                <a
+                  href={e.openlibrary_url}
+                  rel="noreferrer"
+                  className="ml-auto text-sm text-primary hover:text-accent-hover"
+                >
+                  Open Library
+                </a>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="text-sm text-dim">
+        A printing the catalog knows about. Which ones you own comes with the
+        collection chapter.
+      </p>
+    </section>
+  );
+}
+
 function Fact({ term, children }: { term: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-0.5">
@@ -76,9 +149,13 @@ export default async function ItemPageView({
 
   const page = await loadItemPage(serverDb(), { id, userId: user.id });
   if (!page) notFound();
-  const { item, sources, relations, franchises, shelves } = page;
+  const { item, sources, relations, franchises, shelves, editions } = page;
   const released = releasedLabel(item.released_on, item.released_precision);
-  const fromTmdb = sources.some((s) => s.source === "tmdb");
+  const caption = item.cover_path
+    ? coverCaption[item.cover_path.split("/")[0]]
+    : undefined;
+  const printed = item.type === "book" || item.type === "comic";
+  const coverWord = printed ? "Cover" : "Poster";
 
   return (
     <main className="mx-auto grid w-full max-w-5xl gap-11 px-6 py-11 md:grid-cols-[280px_1fr]">
@@ -87,19 +164,17 @@ export default async function ItemPageView({
           // biome-ignore lint/performance/noImgElement: plain img this chapter (next/image is a Deferral)
           <img
             src={coverPublicUrl(readEnv().supabaseUrl, item.cover_path)}
-            alt={`Poster for ${item.title}`}
+            alt={`${coverWord} for ${item.title}`}
             width={500}
             height={750}
             className="aspect-2/3 w-full rounded-xl object-cover shadow-2xl"
           />
         ) : (
           <div className="flex aspect-2/3 w-full items-center justify-center rounded-xl border border-dashed border-line-strong text-sm text-dim">
-            No poster
+            No {coverWord.toLowerCase()}
           </div>
         )}
-        {item.cover_path && fromTmdb && (
-          <span className="text-xs text-dim">Poster via TMDB</span>
-        )}
+        {caption && <span className="text-xs text-dim">{caption}</span>}
       </div>
 
       <article className="flex min-w-0 flex-col gap-8">
@@ -134,6 +209,9 @@ export default async function ItemPageView({
 
         <dl className="grid grid-cols-1 gap-x-7 gap-y-4 text-sm sm:grid-cols-2">
           {released && <Fact term="Released">{released}</Fact>}
+          {item.type === "book" && item.author && (
+            <Fact term="Author">{item.author}</Fact>
+          )}
           {item.type === "tv" && item.first_aired && (
             <Fact term="First aired">
               {releasedLabel(item.first_aired, "day")}
@@ -173,6 +251,8 @@ export default async function ItemPageView({
             </span>
           </Fact>
         </dl>
+
+        {printed && <Editions editions={editions} />}
 
         <section
           aria-labelledby="connected"

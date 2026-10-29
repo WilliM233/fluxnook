@@ -62,6 +62,18 @@ export type ItemPage = {
   }[];
   franchises: string[];
   shelves: { name: string; position: number }[];
+  editions: {
+    id: string;
+    format: string;
+    title: string | null;
+    released_on: string | null;
+    released_precision: string | null;
+    publisher: string | null;
+    pages: number | null;
+    isbn: string | null;
+    openlibrary_url: string | null;
+    contents: number;
+  }[];
 };
 
 /** Everything `/items/<id>` shows, or null for an id the catalog doesn't hold. */
@@ -84,12 +96,13 @@ export async function loadItemPage(
     where i.id = ${id}`);
   if (!item) return null;
 
-  const [sources, relations, franchises, shelves] = await Promise.all([
-    db.execute<ItemPage["sources"][number]>(sql`
+  const [sources, relations, franchises, shelves, editions] = await Promise.all(
+    [
+      db.execute<ItemPage["sources"][number]>(sql`
       select source, key, url from item_sources
       where item = ${id} order by source, key`),
-    // Both directions, each labelled from this item's side.
-    db.execute<ItemPage["relations"][number]>(sql`
+      // Both directions, each labelled from this item's side.
+      db.execute<ItemPage["relations"][number]>(sql`
       select case r.kind when 'adaptation-of' then 'Adaptation of' else 'Contained in' end as label,
         o.id, o.title, o.type, o.released_on::text as released_on, o.released_precision
       from item_relations r join items o on o.id = r.to_item
@@ -100,14 +113,27 @@ export async function loadItemPage(
       from item_relations r join items o on o.id = r.from_item
       where r.to_item = ${id}
       order by label, released_on nulls last, title`),
-    db.execute<{ name: string }>(sql`
+      db.execute<{ name: string }>(sql`
       select f.name from item_franchises i join franchises f on f.id = i.franchise
       where i.item = ${id} order by f.name`),
-    db.execute<ItemPage["shelves"][number]>(sql`
+      db.execute<ItemPage["shelves"][number]>(sql`
       select s.name, e.position from shelf_entries e join shelves s on s.id = e.shelf
       where e.item = ${id} and s.owner = ${userId}
       order by s.name, e.position`),
-  ]);
+      // The printings the catalog knows (Ch 1.3, A10), oldest first.
+      db.execute<ItemPage["editions"][number]>(sql`
+      select e.id, e.format, e.title, e.released_on::text as released_on,
+        e.released_precision, e.publisher, e.pages,
+        (select key from edition_sources
+          where edition = e.id and source = 'isbn' order by key limit 1) as isbn,
+        (select url from edition_sources
+          where edition = e.id and source = 'openlibrary' limit 1) as openlibrary_url,
+        (select count(*)::int from edition_contents where edition = e.id) as contents
+      from editions e
+      where e.item = ${id}
+      order by e.released_on nulls last, e.created_at, e.id`),
+    ],
+  );
 
   return {
     item,
@@ -115,5 +141,6 @@ export async function loadItemPage(
     relations: [...relations],
     franchises: franchises.map((f) => f.name),
     shelves: [...shelves],
+    editions: [...editions],
   };
 }
