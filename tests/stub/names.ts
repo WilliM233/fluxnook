@@ -10,3 +10,16 @@ export function searchFileName(query: string, page: number) {
     .replace(/^-|-$/g, "");
   return `search-${slug}-p${page}.json`;
 }
+
+/** The recording a Comic Vine volume is served from: `volume-<id>.json`. */
+export function volumeFileName(id: number) {
+  return `volume-${id}.json`;
+}
+
+/**
+ * The recording one page of a Comic Vine volume's issues is served from:
+ * `issues-<id>-o<offset>.json`, so a volume past a hundred issues is two files.
+ */
+export function issuesFileName(id: number, offset: number) {
+  return `issues-${id}-o${offset}.json`;
+}
