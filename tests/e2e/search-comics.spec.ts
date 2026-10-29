@@ -508,4 +508,72 @@ test.describe("the import sheet", () => {
     await expect(stem).toHaveCount(0);
     await expect(select).toHaveValue("");
   });
+
+  // Raccoon R3 (1.4.2): a 503 that isn't the route's own (a gateway, a
+  // proxy) has no JSON body; the sheet still says something and stays usable.
+  test("R3: a 503 with no JSON body shows the plain line, and the sheet stays open", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    await page.route("**/api/v1/series/import", (route) =>
+      route.fulfill({
+        status: 503,
+        contentType: "text/plain",
+        body: "upstream unavailable",
+      }),
+    );
+    await page.goto(`${TURTLES}&type=comic`);
+    await seriesRow(page, 1984, "Mirage · 62 issues")
+      .getByRole("button", { name: "Add" })
+      .click();
+    const sheet = page.getByRole("dialog");
+    await sheet
+      .getByRole("button", { name: "Different, add as a new run" })
+      .click();
+    await expect(sheet.getByRole("alert")).toHaveText(
+      "Couldn't add it just now. Try again.",
+      LANDS,
+    );
+    await expect(
+      sheet.getByRole("button", { name: "Different, add as a new run" }),
+    ).toBeEnabled();
+  });
+  // Raccoon R5 (1.4.2): one wrong radio on a match must not hang a hardcover
+  // off every issue of a hand-entered run; the server refuses, the sheet says.
+  test("R5: Collected editions onto the 1984 run of single issues shows the 409 and writes nothing", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    await page.goto(`${TURTLES}&type=comic`);
+    await seriesRow(page, 1984, "Mirage · 62 issues")
+      .getByRole("button", { name: "Add" })
+      .click();
+    const sheet = page.getByRole("dialog");
+    await sheet.getByRole("radio", { name: "Collected editions" }).check();
+    await expect(sheet.getByRole("combobox", { name: "Format" })).toHaveValue(
+      "hardcover",
+    );
+    await sheet
+      .getByRole("button", { name: "Same, add Comic Vine's details to it" })
+      .click();
+    await expect(sheet.getByRole("alert")).toHaveText(
+      "That run holds single issues; add these as single issues.",
+      LANDS,
+    );
+    await expect(page).toHaveURL(/\/search\?/);
+    const fixtureOne = itemFor("manual", "tmnt-mirage-v1-1");
+    expect(
+      db(
+        `select count(*) from item_sources where item = '${fixtureOne}' and source = 'comicvine'`,
+      ),
+    ).toBe("0");
+    expect(
+      db(
+        `select count(*) from edition_sources where edition in (select edition from edition_sources where source = 'manual')`,
+      ),
+    ).toBe("5");
+    expect(
+      db(`select count(*) from editions where item = '${fixtureOne}'`),
+    ).toBe("0");
+  });
 });
