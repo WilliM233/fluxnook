@@ -140,7 +140,11 @@ export const itemBooks = pgTable("item_books", {
   ...timestamps(),
 });
 
-/** A comic's own columns. `series` is text until Metron brings an entity. */
+/**
+ * A comic's own columns. `series` is the held label, kept for hand-entered
+ * runs; `series_id` points at a provider's series once one is attached
+ * (Ch 1.4).
+ */
 export const itemComics = pgTable(
   "item_comics",
   {
@@ -148,6 +152,9 @@ export const itemComics = pgTable(
       .primaryKey()
       .references(() => items.id, { onDelete: "cascade" }),
     series: text("series"),
+    seriesId: uuid("series_id").references(() => series.id, {
+      onDelete: "restrict",
+    }),
     seriesKind: text("series_kind", { enum: seriesKinds }),
     number: integer("number"),
     ...timestamps(),
@@ -306,6 +313,48 @@ export const franchiseSources = pgTable(
     franchise: uuid("franchise")
       .notNull()
       .references(() => franchises.id, { onDelete: "cascade" }),
+    source: text("source").notNull(),
+    key: text("key").notNull(),
+    url: text("url"),
+    ...timestamps(),
+  },
+  (t) => [primaryKey({ columns: [t.source, t.key] })],
+);
+
+/**
+ * A run of comics as a provider knows it: a Comic Vine volume (Ch 1.4). A
+ * catalog row like a franchise; its issues point at it through
+ * `item_comics.series_id`. `kind` stays null until someone says.
+ */
+export const series = pgTable(
+  "series",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: text("name").notNull(),
+    volume: integer("volume"),
+    yearBegan: integer("year_began"),
+    yearEnded: integer("year_ended"),
+    publisher: text("publisher"),
+    kind: text("kind", { enum: seriesKinds }),
+    summary: text("summary"),
+    coverPath: text("cover_path"),
+    ...timestamps(),
+  },
+  (t) => [
+    check(
+      "series_kind",
+      sql`${t.kind} is null or ${oneOf(t.kind, seriesKinds)}`,
+    ),
+  ],
+);
+
+/** A series' identity at a source. */
+export const seriesSources = pgTable(
+  "series_sources",
+  {
+    series: uuid("series")
+      .notNull()
+      .references(() => series.id, { onDelete: "cascade" }),
     source: text("source").notNull(),
     key: text("key").notNull(),
     url: text("url"),
