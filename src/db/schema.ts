@@ -240,10 +240,13 @@ export const editions = pgTable(
     format: text("format", { enum: editionFormats }).notNull(),
     title: text("title"),
     ...released(),
+    publisher: text("publisher"),
+    pages: integer("pages"),
     ...timestamps(),
   },
   (t) => [
     check("editions_format", oneOf(t.format, editionFormats)),
+    check("editions_pages", sql`${t.pages} is null or ${t.pages} > 0`),
     check(
       "editions_released",
       sql`(${t.releasedOn} is null) = (${t.releasedPrecision} is null)`,

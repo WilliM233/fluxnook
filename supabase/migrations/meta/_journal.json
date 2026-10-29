@@ -64,6 +64,13 @@
       "when": 1792865070628,
       "tag": "20261024180430_covers_bucket",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793234618409,
+      "tag": "20261029004338_editions_publisher_pages",
+      "breakpoints": true
     }
   ]
 }
