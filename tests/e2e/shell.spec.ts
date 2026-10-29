@@ -29,6 +29,10 @@ test("a signed-in page has the header, the TMDB footer and the look", async ({
   await expect(
     footer.getByRole("link", { name: "Open Library" }),
   ).toHaveAttribute("href", "https://openlibrary.org");
+  await expect(footer.getByText("Comic data from Comic Vine.")).toBeVisible();
+  await expect(
+    footer.getByRole("link", { name: "Comic Vine" }),
+  ).toHaveAttribute("href", "https://comicvine.gamespot.com");
 
   await expect(
     page.getByRole("heading", { name: "Your nook is empty" }),

@@ -1,6 +1,6 @@
 /**
- * The signed-in footer: TMDB's attribution, which its API terms require, and
- * Open Library's, which is manners.
+ * The signed-in footer: TMDB's attribution and Comic Vine's, which their API
+ * terms require, and Open Library's, which is manners.
  */
 export function Footer() {
   return (
@@ -18,6 +18,17 @@ export function Footer() {
           className="underline hover:text-accent-hover"
         >
           Open Library
+        </a>
+        .
+      </p>
+      <p>
+        Comic data from{" "}
+        <a
+          href="https://comicvine.gamespot.com"
+          rel="noreferrer"
+          className="underline hover:text-accent-hover"
+        >
+          Comic Vine
         </a>
         .
       </p>

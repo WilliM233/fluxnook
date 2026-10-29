@@ -1,6 +1,6 @@
 {
   "name": "fluxnook",
-  "version": "0.1.0-ch.3",
+  "version": "0.1.0-ch.4.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -19,6 +19,8 @@
     "tmdb:stub": "node --import tsx scripts/tmdb-stub.ts",
     "tmdb:record": "node --env-file=.env.local --import tsx scripts/tmdb-record.ts",
     "openlibrary:stub": "node --import tsx scripts/openlibrary-stub.ts",
+    "comicvine:stub": "node --import tsx scripts/comicvine-stub.ts",
+    "comicvine:record": "node --env-file=.env.local --import tsx scripts/comicvine-record.ts",
     "openlibrary:record": "node --env-file-if-exists=.env.local --import tsx scripts/openlibrary-record.ts",
     "check": "npm run lint && npm run typecheck && npm test && npm run db:check && npm run test:db && npm run test:e2e"
   },

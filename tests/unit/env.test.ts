@@ -46,6 +46,29 @@ describe("readServerEnv", () => {
       openLibraryBaseUrl: "https://openlibrary.org",
       openLibraryCoversBaseUrl: "https://covers.openlibrary.org",
       openLibraryContact: null,
+      comicVineApiKey: null,
+      comicVineBaseUrl: "https://comicvine.gamespot.com/api",
+      comicVineContact: null,
+    });
+  });
+
+  it("reads an empty Comic Vine key and contact as null", () => {
+    expect(
+      readServerEnv({ COMICVINE_API_KEY: "", COMICVINE_CONTACT: "" }),
+    ).toMatchObject({ comicVineApiKey: null, comicVineContact: null });
+  });
+
+  it("returns a set Comic Vine key, base URL and contact", () => {
+    expect(
+      readServerEnv({
+        COMICVINE_API_KEY: "key",
+        COMICVINE_BASE_URL: "http://127.0.0.1:4012/api",
+        COMICVINE_CONTACT: "nook@example.com",
+      }),
+    ).toMatchObject({
+      comicVineApiKey: "key",
+      comicVineBaseUrl: "http://127.0.0.1:4012/api",
+      comicVineContact: "nook@example.com",
     });
   });
 

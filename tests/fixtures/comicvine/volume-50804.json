@@ -1,0 +1,35 @@
+{
+  "error": "OK",
+  "limit": 1,
+  "offset": 0,
+  "number_of_page_results": 1,
+  "number_of_total_results": 1,
+  "status_code": 1,
+  "results": {
+    "count_of_issues": 7,
+    "deck": null,
+    "description": "<p>Series of hardcovers and trade paperbacks collecting <a href=\"/teenage-mutant-ninja-turtles/4050-20281/\" data-ref-id=\"4050-20281\">Teenage Mutant Ninja Turtles</a> and its spin-offs.</p>",
+    "id": 50804,
+    "image": {
+      "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/6113341-01.jpg",
+      "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/6113341-01.jpg",
+      "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/6113341-01.jpg",
+      "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/6113341-01.jpg",
+      "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/6113341-01.jpg",
+      "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/6113341-01.jpg",
+      "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/6113341-01.jpg",
+      "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/6113341-01.jpg",
+      "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/6113341-01.jpg",
+      "image_tags": "All Images"
+    },
+    "name": "Teenage Mutant Ninja Turtles: The Ultimate Collection",
+    "publisher": {
+      "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+      "id": 1190,
+      "name": "IDW Publishing"
+    },
+    "site_detail_url": "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles-the-ultimate-collecti/4050-50804/",
+    "start_year": "2011"
+  },
+  "version": "1.0"
+}

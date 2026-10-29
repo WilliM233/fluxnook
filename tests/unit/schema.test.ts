@@ -33,6 +33,8 @@ const catalog = [
   "franchises",
   "franchise_sources",
   "item_franchises",
+  "series",
+  "series_sources",
 ];
 
 const content = [

@@ -71,6 +71,20 @@
       "when": 1793234618409,
       "tag": "20261029004338_editions_publisher_pages",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793298562749,
+      "tag": "20261029182922_series",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1793298569373,
+      "tag": "20261029182929_series_updated_at",
+      "breakpoints": true
     }
   ]
 }

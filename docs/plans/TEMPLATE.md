@@ -1,6 +1,8 @@
 # Plan: <vol>.<n> <Chapter title>
 
-Issue: #<n> · Branch: `chapter/<vol>.<n>-<slug>` · Volume: <Volume name>
+Issue: #<n> · Branch: `chapter/<vol>.<n>-<slug>` (carries the spec, Run 1 and the first Signature) · Volume: <Volume name>
+
+Signatures: <vol>.<n>.1 <name> (#<n>, `docs/plans/<vol>.<n>.1-<slug>.md`) · <vol>.<n>.2 … (filled by the Binder in Run 1)
 
 ## 0. Spec (Nookkeeper)
 
@@ -28,36 +30,18 @@ What exists, what doesn't, what the risk is. File and line where it matters. Pro
 
 What's there today that this chapter touches. File and line. Corrections to section 1 quoted.
 
-## 3. Steps (Cartographer)
+## The Cut (Cartographer, Run 1)
 
-### Step 1: <does>
-- Touches:
-- Observable:
-- Tests:
+One Signature is a valid cut. Measured on new tables, new screens, provider calls and acceptance lines; never a quota. Every acceptance line owned exactly once; no Signature depends on a later one; the last carries the chapter's end-to-end Browse unless a line here says why not.
 
-### Step 2: …
+| Signature | Name, slug | Delivers | Owns | Leaves to the next |
+|---|---|---|---|---|
+| <vol>.<n>.1 | <name>, `<slug>` | one sentence | A1, A2, … | … |
+| <vol>.<n>.2 | … | … | … | … |
 
-**Stop-for-L**
-- Q1 … Options: a) … costs … b) … costs …
+Exit Browse: Signature <vol>.<n>.<s>.
 
-## 4. Rummage and findings (Raccoon)
-
-**Findings**
-- [blocking] file:line …
-- [should] file:line …
-- [note] …
-
-**Rummage**
-- R1 … → `tests/…` (seen red: <sha or date>, green: <sha or date>)
-- R2 …
-
-## 5. Handoff (Binder)
-
-- Steps: landed / deviations, each named
-- Rummage: every line with its test and red-then-green
-- Deferrals: each with a trigger
-- Docs: files the Scribe changed; release note path
-- PR: #<n>
+Sections 3 to 5 live in each Signature's file, `docs/plans/<vol>.<n>.<s>-<slug>.md`, from `TEMPLATE-signature.md`.
 
 ## Deferrals
 
@@ -66,9 +50,8 @@ What's there today that this chapter touches. File and line. Corrections to sect
 ## History
 
 - <date> Nookkeeper: sections 0-1, issue #<n>
-- <date> Cartographer: sections 2-3, N steps, M Stop-for-L
-- <date> Nookkeeper: Approved / changes
-- <date> Raccoon: B blocking, S should, N note, R rummage
-- <date> Scribe: …
-- <date> Nookkeeper: Signed off …
+- <date> Cartographer: section 2 and the cut, N Signatures
+- <date> Nookkeeper: cut Approved / changes
+- <date> Binder: Signature issues #<n>…, census corrections carried into section 0 (census)
+- <date> Signature <vol>.<n>.<s> merged, v0.<vol>.0-ch.<n>.<s> (one line each)
 - <date> Afterword: worked … / didn't … / changes …

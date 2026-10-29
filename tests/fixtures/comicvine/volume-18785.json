@@ -1,0 +1,35 @@
+{
+  "error": "OK",
+  "limit": 1,
+  "offset": 0,
+  "number_of_page_results": 1,
+  "number_of_total_results": 1,
+  "status_code": 1,
+  "results": {
+    "count_of_issues": 71,
+    "deck": "Volume 2.",
+    "description": "<p>With <a href=\"/mirage/4010-517/\" data-ref-id=\"4010-517\"> Mirage</a> resuming publishing in 2001 with the fourth volume of Teenage Mutant Ninja Turtles <a href=\"/peter-laird/4040-45010/\" data-ref-id=\"4040-45010\"> Peter Laird</a> decided to resurrect Tales of the Teenage Mutant Ninja Turtles to feature stories that don't fit into the storylines of the current book. The book was initially published bi-monthly but in January 2005 the comic began to published monthly.</p><p>Like it's predecessor the second volume of the comic is printed in black and white and contains a frontpiece with a character reciting a monologue about the following story usually ending with a variation of the line \"let me tell you a story\". Unlike the original book it is written and drawn by a revolving door of guest writers but all stories take place within the Mirage canon. While usually single issue stories some multi-part with some of the more popular ones receiving follow ups or \"sequels\" in later issues.</p><p>With the decision to mark the passage between the canonical second TMNT volume and volume four in real time it meant that there was a seven year gap in which stories of the turtles could now be told. The majority of the tales in the book take place during this gap in time. A few times adventures referenced or hinted the current main book are told in this book including the beginnings of the rivalry between <a href=\"/leonardo/4005-44712/\" data-ref-id=\"4005-44712\"> Leonardo</a> and Cha Ocho and <a href=\"/shadow/4005-49930/\" data-ref-id=\"4005-49930\"> Shadow'</a>s encounter with Werewolves that led her to living in Northampton.</p><p>Other stories take place in other definitive time periods which expand upon classic stories such as the third and fourth issues being set straight after the \"<a href=\"/return-to-new-york/4045-49544/\" data-ref-id=\"4045-49544\"> Return to New York</a>\" and issue #46 taking place during \"City at War\" and the popular #36 dealing with the repercussions of \"City at War\". In addition there have been several stories that take place prior to TMNT Vol 1 #, a few that take place in the present time and some set in possible futures and alternate realities.</p><h4>Collected Editions</h4><ul><li><a href=\"/tales-of-the-teenage-mutant-ninja-turtles-omnibus/4050-110479/\" data-ref-id=\"4050-110479\">Tales of the Teenage Mutant Ninja Turtles Omnibus</a> (#1-8)</li><li><a href=\"/tales-of-the-teenage-mutant-ninja-turtles-3-volume/4000-427811/\" data-ref-id=\"4000-427811\">Tales of the Teenage Mutant Ninja Turtles vol. 3</a> (#1-4)</li><li><a href=\"/tales-of-the-teenage-mutant-ninja-turtles-4-volume/4000-452341/\" data-ref-id=\"4000-452341\">Tales of the Teenage Mutant Ninja Turtles vol. 4</a> (#5-8)</li><li><a href=\"/tales-of-the-teenage-mutant-ninja-turtles-5-volume/4000-460991/\" data-ref-id=\"4000-460991\">Tales of the Teenage Mutant Ninja Turtles vol. 5</a> (#9-12)</li><li><a href=\"/tales-of-the-teenage-mutant-ninja-turtles-6-volume/4000-469882/\" data-ref-id=\"4000-469882\">Tales of the Teenage Mutant Ninja Turtles vol. 6</a> (#13-16)</li><li><a href=\"/tales-of-the-teenage-mutant-ninja-turtles-7-volume/4000-494349/\" data-ref-id=\"4000-494349\">Tales of the Teenage Mutant Ninja Turtles vol. 7</a> (#17-20)</li><li><a href=\"/tales-of-the-teenage-mutant-ninja-turtles-8-volume/4000-524919/\" data-ref-id=\"4000-524919\">Tales of the Teenage Mutant Ninja Turtles vol. 8</a> (#21-24)</li></ul>",
+    "id": 18785,
+    "image": {
+      "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/0/2533/140085-18785-111031-1-tales-of-the-tmnt.jpg",
+      "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/0/2533/140085-18785-111031-1-tales-of-the-tmnt.jpg",
+      "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/0/2533/140085-18785-111031-1-tales-of-the-tmnt.jpg",
+      "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/0/2533/140085-18785-111031-1-tales-of-the-tmnt.jpg",
+      "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/0/2533/140085-18785-111031-1-tales-of-the-tmnt.jpg",
+      "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/0/2533/140085-18785-111031-1-tales-of-the-tmnt.jpg",
+      "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/0/2533/140085-18785-111031-1-tales-of-the-tmnt.jpg",
+      "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/0/2533/140085-18785-111031-1-tales-of-the-tmnt.jpg",
+      "original_url": "https://comicvine.gamespot.com/a/uploads/original/0/2533/140085-18785-111031-1-tales-of-the-tmnt.jpg",
+      "image_tags": "All Images"
+    },
+    "name": "Tales of the TMNT",
+    "publisher": {
+      "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-517/",
+      "id": 517,
+      "name": "Mirage"
+    },
+    "site_detail_url": "https://comicvine.gamespot.com/tales-of-the-tmnt/4050-18785/",
+    "start_year": "2004"
+  },
+  "version": "1.0"
+}
