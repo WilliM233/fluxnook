@@ -14,13 +14,15 @@ export const sourceLabel: Record<string, string> = {
   manual: "added by hand",
 };
 
-/** A poster thumbnail, or a quiet box where there is none. */
+/** A poster or cover thumbnail, or a quiet box saying there is none. */
 export function Thumb({
   src,
   size = "row",
+  empty = "no poster",
 }: {
   src: string | null;
   size?: "row" | "sheet";
+  empty?: "no poster" | "no cover";
 }) {
   const box = size === "row" ? "h-27 w-18" : "h-21 w-14";
   return src ? (
@@ -37,7 +39,7 @@ export function Thumb({
       aria-hidden="true"
       className={`${box} flex flex-none items-center justify-center rounded-md border border-dashed border-line-strong text-[10px] text-dim`}
     >
-      no poster
+      {empty}
     </div>
   );
 }
@@ -49,6 +51,7 @@ export function Row({
   year,
   type,
   summary,
+  line,
   status,
   action,
 }: {
@@ -57,12 +60,15 @@ export function Row({
   year: number | null;
   type: string;
   summary?: string | null;
+  // The second line when it isn't a summary: a book's author and editions.
+  line?: ReactNode;
   status?: ReactNode;
   action: ReactNode;
 }) {
+  const printed = type === "book" || type === "comic";
   return (
     <li className="flex items-stretch gap-4 rounded-2xl border bg-card p-3.5">
-      <Thumb src={thumb} />
+      <Thumb src={thumb} empty={printed ? "no cover" : "no poster"} />
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
         <div className="flex flex-wrap items-baseline gap-2.5">
           <span className="font-heading text-[22px] font-semibold">
@@ -78,6 +84,7 @@ export function Row({
             {summary}
           </p>
         )}
+        {line && <p className="text-[15px] text-muted-foreground">{line}</p>}
         {status && <div className="mt-auto text-[13px]">{status}</div>}
       </div>
       <div className="flex items-center">{action}</div>

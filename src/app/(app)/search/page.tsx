@@ -5,18 +5,20 @@ import { readEnv, readServerEnv } from "@/lib/env";
 import { Search } from "./search";
 
 /**
- * `/search` (A7). The server lists the catalog's newest items for an empty
- * query; the client searches as you type. Neither base URL is a secret: one is
- * TMDB's image host, the other the public covers bucket.
+ * `/search` (A7; Ch 1.3 A8, A9). The server lists the catalog's newest items
+ * for an empty query; the client searches as you type. No base URL here is a
+ * secret: TMDB's image host, Open Library's covers host, the public bucket.
  */
 export default async function SearchPage() {
   const recent = await recentItems(serverDb());
+  const env = readServerEnv();
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-col gap-7 px-6 py-10">
       <Suspense>
         <Search
           recent={recent}
-          imageBaseUrl={readServerEnv().tmdbImageBaseUrl}
+          imageBaseUrl={env.tmdbImageBaseUrl}
+          coversBaseUrl={env.openLibraryCoversBaseUrl}
           supabaseUrl={readEnv().supabaseUrl}
         />
       </Suspense>
