@@ -70,7 +70,9 @@ export function ShelfCard({
                 supabaseUrl={supabaseUrl}
               />
             ))}
-            {rest > 0 && <span className="ml-1 text-sm text-dim">+{rest}</span>}
+            {rest > 0 && (
+              <span className="ml-1 text-sm text-dim">{`+${rest}`}</span>
+            )}
           </div>
         )}
       </Link>

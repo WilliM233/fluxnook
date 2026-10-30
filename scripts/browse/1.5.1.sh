@@ -52,6 +52,10 @@ P() { docker exec supabase_db_fluxnook psql -U postgres -tAc "$1" | tr -d '\r'; 
 
 code() { curl -s -o /dev/null -w '%{http_code}' "$@"; }
 
+# Whether a page holds a line: the HTML carries it twice (once rendered,
+# once in Next's payload), so presence is the check, not a count.
+has() { grep -qF -- "$1" <<<"$2" && echo found || echo missing; }
+
 # The newest mail to an address, as Mailpit's id; empty when there is none.
 newest_mail() {
   curl -s "$MAILPIT/api/v1/search?query=to:$1" |
@@ -81,9 +85,11 @@ sign_in() {
   curl -s -c "$jar" -b "$jar" -L -o /dev/null -w '%{url_effective}' "$link"
 }
 
-# Shelves whose positions are not exactly 1..n: the invariant (A2).
+# Shelves whose positions are not exactly 1..n: the invariant (A2). For
+# integers, n distinct values from 1 to n are 1..n.
 VIOLATIONS="select count(*) from (select shelf from shelf_entries group by shelf
-  having array_agg(position order by position) <> array(select generate_series(1, count(*)::int))) v"
+  having count(*) <> count(distinct position) or min(position) <> 1
+    or max(position) <> count(*)) v"
 
 shelf_of() { # owner address, shelf name
   P "select s.id from shelves s join auth.users u on u.id = s.owner where u.email = '$1' and s.name = '$2'"
@@ -137,13 +143,14 @@ BOOKS=$(shelf_of "$EMAIL" "Stephen King, publication order")
 
 # 3. The nook's three cards (A6)
 NOOK=$(curl -s -b "$JAR_A" "$APP/nook")
-check "nook line" 1 "$(grep -c "3 shelves $DOT 398 works on them" <<<"$NOOK")"
+check "nook line" found "$(has "3 shelves $DOT 398 works on them" "$NOOK")"
 check "nook cards in order" "TMNT, the Mirage run|Stephen King Watch List|Stephen King, publication order" "$(nook_names "$JAR_A")"
-check "TMNT card" 1 "$(grep -c "326 works $DOT 14 sections" <<<"$NOOK")"
-check "TMNT card's rest" 1 "$(grep -c '+321' <<<"$NOOK")"
-check "Watch List card" 1 "$(grep -c "61 works $DOT from Letterboxd" <<<"$NOOK")"
-check "publication order card" 1 "$(grep -c "11 works $DOT from Letterboxd" <<<"$NOOK")"
-check "the stranger's nook is empty" 1 "$(curl -s -b "$JAR_B" "$APP/nook" | grep -c 'No shelves yet')"
+check "TMNT card" found "$(has "326 works $DOT 14 sections" "$NOOK")"
+check "TMNT card's rest" found "$(has '>+321<' "$NOOK")"
+check "Watch List card" found "$(has "61 works $DOT from Letterboxd" "$NOOK")"
+check "Watch List card's rest" found "$(has '>+56<' "$NOOK")"
+check "publication order card" found "$(has "11 works $DOT from Letterboxd" "$NOOK")"
+check "the stranger's nook is empty" found "$(has 'No shelves yet. Make one and it stops being quiet.' "$(curl -s -b "$JAR_B" "$APP/nook")")"
 
 # 4. The TMNT page, all 326 rows on one page (A7), and timed
 check "TMNT page" 200 "$(code -b "$JAR_A" "$APP/shelves/$TMNT")"
@@ -174,9 +181,12 @@ check "red 3, shelves" 3 "$(P 'select count(*) from shelves')"
 check "red 4, the throw mid-transaction" 0 "$(npm run test:db -- tests/db/shelf-writes.test.ts -t 'throw mid-transaction' >/dev/null 2>&1; echo $?)"
 
 # Fifth: a section named as one the shelf has is 409, naming it.
-body=$(curl -s -b "$JAR_A" -w ' %{http_code}' -X POST "$APP/api/v1/shelves/$TMNT/sections" -H 'content-type: application/json' -d '{"name":"Volume 1 · Main Series"}')
+# The body goes in on stdin: as an argument, curl would get the dot in the
+# console's code page and the name would come out a different name.
+body=$(printf '{"name":"Volume 1 %s Main Series"}' "$DOT" |
+  curl -s -b "$JAR_A" -w ' %{http_code}' -X POST "$APP/api/v1/shelves/$TMNT/sections" -H 'content-type: application/json' --data-binary @-)
 check "red 5, a section's name twice" 409 "${body##* }"
-check "red 5, the 409 names it" 1 "$(grep -c "named Volume 1 $DOT Main Series" <<<"$body")"
+check "red 5, the 409 names it" found "$(has "named Volume 1 $DOT Main Series." "$body")"
 check "red 5, TMNT's sections" 14 "$(P "select count(*) from shelf_sections where shelf = '$TMNT'")"
 
 # Seventh: the stranger marking one of your works is 404, the status kept.
