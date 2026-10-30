@@ -50,7 +50,14 @@ export async function itemFor(sql: postgres.Sql, source: string, key: string) {
   return row.item as string;
 }
 
-/** The Browse's three imports undone on the fixture rows (Ch 1.4.2). */
+/**
+ * The Browse's three imports undone on the fixture rows (Ch 1.4.2), behind
+ * the loader's lock: a load in another file updates the same items, and the
+ * two in opposite orders deadlocked once the shelf files loaded too (1.5.1).
+ */
 export async function resetComicVine(sql: postgres.Sql) {
-  for (const statement of RESET_COMICVINE) await sql.unsafe(statement);
+  await sql.begin(async (tx) => {
+    await tx`select pg_advisory_xact_lock(hashtext('fixtures:load'))`;
+    for (const statement of RESET_COMICVINE) await tx.unsafe(statement);
+  });
 }
