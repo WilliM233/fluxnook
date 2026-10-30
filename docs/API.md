@@ -30,6 +30,16 @@ Every error body has one shape:
 | `POST /api/v1/series/import` `{ "source": "comicvine", "key": "volume/20281", "form": "issue"\|"collected", "format"?: "tpb"\|"hardcover"\|"omnibus", "attachTo"?: { "series": string } \| { "collected": string } }` | 201 `{ "id", "created", "attached" }` the series id and how many issues were made and attached; 200 `{ "id" }` the volume was already in | 401 `unauthorized`, 415 `unsupported_media_type`, 400 `invalid_request`, 404 `not_found`, 409 `conflict`, 503 `provider_unavailable` |
 | `PUT /api/v1/editions/<id>/contents` `{ "items": [uuid, ...] }` | 200 `{ "count" }` how many it now holds | 401 `unauthorized`, 415 `unsupported_media_type`, 400 `invalid_request`, 404 `not_found`, 409 `conflict` |
 | `POST /api/v1/items` | 201 `{ "id" }` | 401 `unauthorized`, 415 `unsupported_media_type`, 400 `invalid_request` |
+| `POST /api/v1/shelves` `{ "name": string, "description"?: string }` | 201 `{ "id" }` | 401 `unauthorized`, 415 `unsupported_media_type`, 400 `invalid_request` |
+| `PATCH /api/v1/shelves/<id>` `{ "name"?: string, "description"?: string }` | 200 `{ "id", "name", "description" }` as it now stands | 401, 415, 400 (`{}` is 400 "Nothing to change."), 404 `not_found` |
+| `DELETE /api/v1/shelves/<id>` | 204 | 401, 404 |
+| `POST /api/v1/shelves/<id>/sections` `{ "name": string }` | 201 `{ "id" }`, last on the shelf | 401, 415, 400, 404, 409 `conflict` |
+| `PATCH /api/v1/shelves/<id>/sections/<sid>` `{ "name"?: string, "position"?: int }` | 200 `{ "id", "name", "position" }` | 401, 415, 400, 404, 409 |
+| `DELETE /api/v1/shelves/<id>/sections/<sid>` | 204, its works kept | 401, 404 |
+| `POST /api/v1/shelves/<id>/entries` `{ "items": [uuid, ...], "section"?: uuid \| null }` | 201 `{ "added", "skipped" }` | 401, 415, 400 (also a work not in the catalog, with `error.fields.items`), 404 |
+| `PATCH /api/v1/shelves/<id>/entries/<eid>` `{ "status": "unmarked"\|"done"\|"skipped" }` | 200 `{ "id", "item", "section", "position", "status" }` | 401, 415, 400, 404 |
+| `PATCH /api/v1/shelves/<id>/entries/<eid>` `{ "section": uuid \| null, "index": int }` | 200 `{ "positions": [{ "id", "position" }, ...] }`, every entry on the shelf | 401, 415, 400, 404 |
+| `DELETE /api/v1/shelves/<id>/entries/<eid>` | 204 | 401, 404 |
 
 `POST /api/v1/items/import` takes `source` `tmdb` or `openlibrary`; the `key` pattern follows the source (`movie/<digits>` or `tv/<digits>`; `works/OL<digits>W`). A 400 from either search, the edition import or `POST /api/v1/items` also carries `error.fields`, `{ "<field>": "<what to fix>" }`, one entry per field.
 
@@ -48,6 +58,8 @@ Comic Vine's `catalog` is one of `{ "status": "in", "seriesId" }` (a `series_sou
 `POST /api/v1/series/import` takes `source` `comicvine`, `key` as `volume/<1 to 10 digits, no leading zero>` (the `4050-` prefix Comic Vine shows is 400), `form` and, per the rules below, `format` and `attachTo`. The body is strict: a stray field is 400, and `error.fields` names each field to fix. `format` is required when `form` is `collected` and refused when it is `issue`. `attachTo` is `{ series }` (a run by its series text) or `{ collected }` (a stem of collected editions, `form` `collected` only); a label is 1 to 200 characters. 201 and 200 send `Cache-Control: no-store`.
 
 `PUT /api/v1/editions/<id>/contents` takes `items`: up to 500 uuids, each once (compared case-folded), every one a comic in the catalog and not the edition's own item. The body is strict. A bad body is 400 "That isn't a list of comics." with `error.fields.items`; so is an id that is not a comic in the catalog, with the sentence "Every pick must be a comic in the catalog, and not this edition's own item." A segment that is not a uuid, or an edition that does not exist, is 404. The edition of an item that is not a comic is 409. 200 sends `Cache-Control: no-store`.
+
+The shelf routes take bodies that are strict (a stray field is 400, with `error.fields`) and send `Cache-Control: no-store`. A shelf `name` and a section `name` are trimmed, 1 to 120 characters; a `description` is kept as typed, up to 2000, default `""`. A NUL byte in either is 400 at the field. `items` is 1 to 500 uuids, each once (compared case-folded), in the order they go on. A section's `position` is 1-based, as the column is; an entry's `index` is 0-based, and past the end means last. `section: null` is the part above the first section, and on an add, leaving `section` out means the same. The `PATCH` on an entry takes a status alone or a section and an index together; keys of both, or of neither, are 400 "One change at a time: a status, or a section and an index." The 401 is "Sign in to see your shelves.". The GET list of shelves is not built yet.
 
 ## What someone would get wrong
 
@@ -81,4 +93,13 @@ Comic Vine's `catalog` is one of `{ "status": "in", "seriesId" }` (a `series_sou
 - **Contents are replaced, not merged.** The list is the edition's whole contents afterward, and an empty list clears them (200 `{ "count": 0 }`). The array order is the order of the printing: positions are 1 to n as given.
 - **One bad id writes nothing.** The ids are checked and the rows replaced in one transaction under a lock on the edition, so a film's uuid among good ones leaves the contents as they were, and two puts at once end with one list whole.
 - **Only a comic's edition takes contents.** A book's paperback is 409, whatever the list. Any signed-in person can replace any edition's contents, as with the imports.
+- **Positions are the server's.** Every position on a shelf is 1 to n across the whole shelf, counted through the sections: the entries above the first section, then each section in order. A client never sends one. A move sends a section and an index and reads `positions` back. The only place that numbers a shelf is `src/lib/shelves/order.ts`; an add and a new section store a provisional number that the same transaction renumbers before it commits.
+- **Every write renumbers the whole shelf in one transaction, under a lock on the shelf's row.** Two moves at once serialize and the shelf ends 1 to n. A status, a rename and a remove renumber too; only the rows that changed are written.
+- **Another person's shelf, section or entry is 404, never 403.** Not yours and does not exist are one answer. So is a section or entry that is on another shelf of yours; and a segment that is not a uuid is 404 without a query.
+- **Adding what is there skips, never errors.** `added` and `skipped` add up to the list. A skipped work stays where it was. One id that is not in the catalog is 400 and nothing is added, even the good ones.
+- **A section delete keeps its works.** They move above the first section, after the entries already there and in their own order, in the same transaction as the delete. A failure after the move rolls the move back. The database's own foreign key still cascades, so a `delete from shelf_sections` by hand takes the entries; the routes do not.
+- **A section name is unique on the shelf without regard to case.** "carrie" beside "Carrie" is 409 on create and on rename; the same name on another shelf is fine. The unique index stays the exact-string backstop.
+- **Ids in the path and the body match in any case.** An upper-case uuid names the same row as its lower-case form.
+- **Done on a shelf is not read or watched.** The status is the shelf's own mark; it writes no occurrence.
+- **A write that changes nothing leaves `updated_at` alone.** The nook lists shelves by `updated_at` newest first, so an unchanged Save, a status set to what it was, or a drop in place does not move a shelf to the top. Any real change to the shelf, its sections or its entries does.
 - **Sign-out is every device.** `signOut()` runs with its default global scope. If the auth server errors, the session is kept and the route says 502 rather than 204.
