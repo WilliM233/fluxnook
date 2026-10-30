@@ -316,9 +316,7 @@ export default async function ItemPageView({
           <CollectedIn
             rows={collectedIn}
             line={{
-              own: item.series_id
-                ? { seriesId: item.series_id }
-                : { series: item.series },
+              own: { seriesId: item.series_id, series: item.series },
               omit: item.id,
             }}
             empty="Not collected in anything the catalog knows."

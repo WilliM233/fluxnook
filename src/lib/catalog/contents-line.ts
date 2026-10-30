@@ -53,15 +53,18 @@ export function contentsLine(
   rows: ContentRow[],
   { own, omit }: ContentsLineOptions = {},
 ): string {
+  // A blank series text is no series (Rummage R5).
   const ordered = [...rows]
     .sort((a, b) => a.position - b.position)
-    .filter((r) => r.itemId !== omit);
+    .filter((r) => r.itemId !== omit)
+    .map((r) => (r.series === "" ? { ...r, series: null } : r));
+  // By id or by the held text: an attach gives `series_id` only to the issues
+  // Comic Vine lists, and a hand-entered sibling keeps the text (Rummage R1).
   const isOwn = (r: ContentRow) =>
-    own?.seriesId
-      ? r.seriesId === own.seriesId
-      : own?.series
-        ? r.series === own.series
-        : false;
+    Boolean(
+      (own?.seriesId && r.seriesId === own.seriesId) ||
+        (own?.series && r.series === own.series),
+    );
 
   const mine = ordered.filter(isOwn);
   const bySeries = new Map<string, ContentRow[]>();

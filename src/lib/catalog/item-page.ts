@@ -29,7 +29,7 @@ export type PickerComic = {
 export function contentsOf(edition: SQL): SQL {
   return sql`(select coalesce(json_agg(json_build_object(
       'itemId', ci.id, 'title', ci.title, 'number', cc.number,
-      'series', cc.series, 'seriesId', cc.series_id, 'position', x.position)
+      'series', nullif(cc.series, ''), 'seriesId', cc.series_id, 'position', x.position)
       order by x.position), '[]'::json)
     from edition_contents x join items ci on ci.id = x.item
     left join item_comics cc on cc.item = ci.id
@@ -217,11 +217,11 @@ export async function loadPickerComics(
   { except }: { except: string },
 ): Promise<PickerComic[]> {
   const rows = await db.execute<PickerComic>(sql`
-    select i.id, i.title, c.number, c.series,
+    select i.id, i.title, c.number, nullif(c.series, '') as series,
       i.released_on::text as released_on, i.released_precision
     from items i left join item_comics c on c.item = i.id
     where i.type = 'comic' and i.id <> ${except}
-    order by c.series nulls last, c.number nulls last,
+    order by nullif(c.series, '') nulls last, c.number nulls last,
       i.released_on nulls last, i.title, i.id`);
   return [...rows];
 }

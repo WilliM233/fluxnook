@@ -23,7 +23,7 @@ const REST = "One-shots and the rest";
 function groupsOf(comics: PickerComic[]) {
   const groups = new Map<string, PickerComic[]>();
   for (const comic of comics) {
-    const label = comic.series ?? REST;
+    const label = comic.series || REST;
     groups.set(label, [...(groups.get(label) ?? []), comic]);
   }
   return [...groups];
@@ -77,6 +77,21 @@ export function ContentsEditor({
     setTicked(next);
   }
 
+  /**
+   * What stays keeps its place in the printing; new ticks follow in list
+   * order. A Save that changed nothing writes the order it found (Rummage R2).
+   */
+  function picks() {
+    const held = current
+      .map((row) => row.itemId)
+      .filter((id) => ticked.has(id));
+    const kept = new Set(held);
+    const added = comics
+      .filter((c) => ticked.has(c.id) && !kept.has(c.id))
+      .map((c) => c.id);
+    return [...held, ...added];
+  }
+
   async function save() {
     setBusy(true);
     setError(null);
@@ -84,21 +99,16 @@ export function ContentsEditor({
       const response = await fetch(`/api/v1/editions/${editionId}/contents`, {
         method: "PUT",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          items: comics.filter((c) => ticked.has(c.id)).map((c) => c.id),
-        }),
+        body: JSON.stringify({ items: picks() }),
       });
       if (response.ok) {
         setOpen(false);
         router.refresh();
         return;
       }
+      // Whatever the route said, a lapsed session's 401 included (Rummage R4).
       const body = await response.json().catch(() => null);
-      setError(
-        [400, 404, 409].includes(response.status) && body?.error?.message
-          ? body.error.message
-          : "Couldn't save just now. Try again.",
-      );
+      setError(body?.error?.message ?? "Couldn't save just now. Try again.");
     } catch {
       setError("Couldn't save just now. Try again.");
     } finally {

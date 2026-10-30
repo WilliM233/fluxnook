@@ -8,8 +8,9 @@ export const CONTENTS_LIMIT = 500;
  * edition holds, in the order it prints them, each once.
  */
 export const editionContentsSchema = z.strictObject({
+  // One comic in any case: the ids are folded before "each once" (Rummage R3).
   items: z
-    .array(z.uuid())
+    .array(z.uuid().transform((id) => id.toLowerCase()))
     .max(CONTENTS_LIMIT, `At most ${CONTENTS_LIMIT} comics in one edition.`)
     .refine((ids) => new Set(ids).size === ids.length, "Each comic once."),
 });
