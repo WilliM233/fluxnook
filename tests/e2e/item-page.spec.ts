@@ -27,6 +27,11 @@ test("Carrie (1976): facts, sources, the novel and the shelf", async ({
   const shelves = page.getByRole("region", { name: "On your shelves" });
   await expect(shelves.getByText("Stephen King Watch List")).toBeVisible();
   await expect(shelves.getByText(/^#\d+$/)).toBeVisible();
+  // A film has no comic sections (Ch 1.4.3).
+  await expect(page.getByRole("region", { name: "Collected in" })).toHaveCount(
+    0,
+  );
+  await expect(page.getByText("Contents:")).toHaveCount(0);
 });
 
 test("the novel lists its four adaptations and contains nothing", async ({

@@ -3,12 +3,16 @@ import { join } from "node:path";
 import postgres from "postgres";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createDb } from "@/db/client";
+import { replaceEditionContents } from "@/lib/catalog/contents";
+import { contentsLine } from "@/lib/catalog/contents-line";
+import { loadItemPage } from "@/lib/catalog/item-page";
 import {
   groupOptions,
   seriesGroups,
   seriesStatuses,
 } from "@/lib/catalog/match";
 import { importSeriesFromComicVine } from "@/lib/catalog/series";
+import { loadSeriesPage } from "@/lib/catalog/series-page";
 import { coverStoreFromEnv } from "@/lib/covers";
 import {
   type ComicVine,
@@ -361,7 +365,10 @@ const fixtureItem = (key: string) => itemFor(sql, "manual", key);
 // A5 and A14 on the loaded fixtures, in the Browse's order. Only this file
 // imports the three real volumes, and it does so after every status test
 // above has read the groups as the loader left them.
-describe("the import on the fixtures", () => {
+// The 62-issue attach runs 63 covers through the stub before it answers; past
+// 5 s beside the other db files it timed out and the next statement deadlocked
+// with its open transaction (1.4.3, D-line). 30 s, as `LANDS` in the e2e.
+describe("the import on the fixtures", { timeout: 30_000 }, () => {
   let mirage: string;
   let tales: string;
   let ultimateSeries: string;
@@ -403,6 +410,21 @@ describe("the import on the fixtures", () => {
       (r) => r.key === "volume/20281",
     );
     expect(await status(row)).toEqual({ status: "in", seriesId: mirage });
+  });
+
+  it("lists UC1 to UC5 under the 1984 run's Collected in, undated, UC3 with its gaps (1.4.3 C19)", async () => {
+    const page = await loadSeriesPage(db, { id: mirage });
+    const rows = page?.collectedIn ?? [];
+    expect(rows.map((r) => [r.title, r.released_on])).toEqual([
+      ["Ultimate Collection 1", null],
+      ["Ultimate Collection 2", null],
+      ["Ultimate Collection 3", null],
+      ["Ultimate Collection 4", null],
+      ["Ultimate Collection 5", null],
+    ]);
+    expect(contentsLine(rows[2].contents, { own: { seriesId: mirage } })).toBe(
+      "#12, #14 to #15, #17, #19 to #21",
+    );
   });
 
   it("attaches Tales of the TMNT to the picked Tales Vol. 2 group: 70 attached, #71 created", async () => {
@@ -498,6 +520,44 @@ describe("the import on the fixtures", () => {
       edition_sources: 12,
       edition_contents: 37,
     });
+  });
+
+  it("takes the Browse's pick on Ultimate Collection 6: the 1987 Tales #1 and #2, and counts 39 (1.4.3 C17)", async () => {
+    const before = await walkCounts();
+    const [uc6] = await sql`
+      select e.id, e.item from editions e join item_comics c on c.item = e.item
+      where c.series_id = ${ultimateSeries} and c.number = 6`;
+    const one = await fixtureItem("tmnt-mirage-tales-v1-1");
+    const two = await fixtureItem("tmnt-mirage-tales-v1-2");
+    expect(
+      await replaceEditionContents(db, {
+        editionId: uc6.id,
+        itemIds: [one, two],
+      }),
+    ).toEqual({ count: 2 });
+    const held = await sql`
+      select c.series, c.number, ec.position from edition_contents ec
+      join item_comics c on c.item = ec.item
+      where ec.edition = ${uc6.id} order by ec.position`;
+    expect(held).toEqual([
+      {
+        series: "Tales of the Teenage Mutant Ninja Turtles",
+        number: 1,
+        position: 1,
+      },
+      {
+        series: "Tales of the Teenage Mutant Ninja Turtles",
+        number: 2,
+        position: 2,
+      },
+    ]);
+    expect(await walkCounts()).toEqual({ ...before, edition_contents: 39 });
+
+    const page = await loadItemPage(db, { id: uc6.item, userId: user.id });
+    expect(page?.item.title).toBe("Ultimate Collection 6");
+    expect(contentsLine(page?.editions[0].contentsRows ?? [])).toBe(
+      "Tales of the Teenage Mutant Ninja Turtles #1 to #2",
+    );
   });
 
   /** The Browse's count block over the fixture's rows and this walk's three series. */
