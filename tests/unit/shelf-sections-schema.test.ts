@@ -33,6 +33,15 @@ describe("createSectionSchema", () => {
       position: "Not a field for this type.",
     });
   });
+
+  it("refuses a NUL byte at name, on create and on rename (Rummage R3)", () => {
+    expect(fields({ name: "a\u0000b" })).toEqual({
+      name: "That has a character a shelf can't hold.",
+    });
+    expect(patchSectionSchema.safeParse({ name: "a\u0000b" }).success).toBe(
+      false,
+    );
+  });
 });
 
 describe("patchSectionSchema", () => {

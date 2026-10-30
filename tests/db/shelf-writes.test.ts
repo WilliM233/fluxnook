@@ -224,6 +224,7 @@ describe("sections", () => {
     expect((await sectionsOf(shelf.tmnt))[13].name).toBe(
       "Volume 4 · Movie tie-ins",
     );
+    await numbered(shelf.tmnt);
   });
 
   it("the renumbering made to throw mid-transaction leaves every entry in its section, 14 sections, 326 at 1..326", async () => {
@@ -425,6 +426,7 @@ describe("entries", () => {
     const after = await rowsOf(shelf.books);
     expect(after.slice(0, 14)).toEqual(before);
     expect(after[14]).toMatchObject({ item: films[3], position: 15 });
+    await numbered(shelf.books);
   });
 
   it("adding into a section lands after that section's last work and before the next section's first; removing it closes the gap", async () => {
@@ -526,6 +528,7 @@ describe("entries", () => {
       before.getTime(),
     );
     expect((await rowsOf(shelf.watch))[0]).toEqual(first);
+    await numbered(shelf.watch);
   });
 
   it("status for an entry under another owner id, or on another shelf, is NotFoundError and the status stays", async () => {
@@ -651,7 +654,12 @@ describe("entries", () => {
       section: small.a,
       index: 0,
     });
-    await moveEntry(db, { ...key, entryId: last.id, section: small.b, index: 99 });
+    await moveEntry(db, {
+      ...key,
+      entryId: last.id,
+      section: small.b,
+      index: 99,
+    });
     const upper = await moveEntry(db, {
       ...key,
       entryId: last.id.toUpperCase(),

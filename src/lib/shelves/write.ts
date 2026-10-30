@@ -18,9 +18,11 @@ export type ShelfKey = { shelfId: string; userId: string };
 /**
  * The shape of every write to a shelf's sections and entries: the caller's
  * shelf locked, the write, the whole shelf renumbered (A2), the shelf's
- * `updated_at` touched (C1: its trigger fires on the shelf row alone), all
- * in one transaction. Not the caller's and doesn't exist are one answer.
- * `renumber` is the order rule; a test passes one that throws.
+ * `updated_at` touched when anything changed (C1: its trigger fires on the
+ * shelf row alone), all in one transaction. A write that changed nothing
+ * leaves the nook's order alone (Rummage R2). Not the caller's and doesn't
+ * exist are one answer. `renumber` is the order rule; a test passes one that
+ * throws.
  */
 export async function withShelf<T>(
   db: Db,
@@ -33,13 +35,29 @@ export async function withShelf<T>(
       select id from shelves where id = ${shelfId} and owner = ${userId}
       for update`);
     if (!shelf) throw new NotFoundError(NO_SHELF);
+    const before = await fingerprint(tx, shelfId);
     const result = await write(tx);
     await renumberShelf(tx, shelfId, renumber);
-    await tx.execute(
-      sql`update shelves set updated_at = now() where id = ${shelfId}`,
-    );
+    if ((await fingerprint(tx, shelfId)) !== before) {
+      await tx.execute(
+        sql`update shelves set updated_at = now() where id = ${shelfId}`,
+      );
+    }
     return result;
   });
+}
+
+/** Everything a person sees of a shelf, as one hash: its words, sections and entries. */
+async function fingerprint(tx: Tx, shelfId: string): Promise<string> {
+  const [{ print }] = await tx.execute<{ print: string }>(sql`
+    select md5(concat_ws('|',
+      (select name || chr(31) || description from shelves where id = ${shelfId}),
+      (select string_agg(id || chr(31) || name || chr(31) || position, chr(30) order by id)
+        from shelf_sections where shelf = ${shelfId}),
+      (select string_agg(id || chr(31) || coalesce(section::text, '') || chr(31)
+          || position || chr(31) || status, chr(30) order by id)
+        from shelf_entries where shelf = ${shelfId}))) as print`);
+  return print;
 }
 
 /** A shelf's sections and entries as the order rule reads them. */

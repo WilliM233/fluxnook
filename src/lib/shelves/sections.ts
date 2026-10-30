@@ -32,8 +32,9 @@ export async function sectionOn(tx: Tx, shelfId: string, sectionId: string) {
 }
 
 /**
- * A 409 naming the section, checked under the shelf's lock so two at once
- * can't both pass; the unique key is the backstop, not the message (A4).
+ * A 409 naming the section as the shelf holds it, checked under the shelf's
+ * lock so two at once can't both pass. "carrie" is the shelf's "Carrie" to a
+ * person typing (Rummage R5); the exact unique key is the backstop.
  */
 async function nameFree(
   tx: Tx,
@@ -42,17 +43,19 @@ async function nameFree(
   except?: string,
 ) {
   const [taken] = await tx
-    .select({ id: shelfSections.id })
+    .select({ name: shelfSections.name })
     .from(shelfSections)
     .where(
       and(
         eq(shelfSections.shelf, shelfId),
-        eq(shelfSections.name, name),
+        sql`lower(${shelfSections.name}) = lower(${name})`,
         except ? ne(shelfSections.id, except) : undefined,
       ),
     );
   if (taken) {
-    throw new ConflictError(`The shelf already has a section named ${name}.`);
+    throw new ConflictError(
+      `The shelf already has a section named ${taken.name}.`,
+    );
   }
 }
 
@@ -61,13 +64,15 @@ export async function createSection(
   db: Db,
   { name, ...key }: ShelfKey & { name: string },
 ): Promise<{ id: string }> {
+  // Trimmed here as at the edge, so " Carrie" can't stand beside "Carrie".
+  const clean = name.trim();
   return withShelf(db, key, async (tx) => {
-    await nameFree(tx, key.shelfId, name);
+    await nameFree(tx, key.shelfId, clean);
     const [section] = await tx
       .insert(shelfSections)
       .values({
         shelf: key.shelfId,
-        name,
+        name: clean,
         position: sql`(select coalesce(max(position), 0) + 1 from shelf_sections where shelf = ${key.shelfId})`,
       })
       .returning({ id: shelfSections.id });
@@ -91,18 +96,21 @@ export async function updateSection(
   return withShelf(db, key, async (tx) => {
     await sectionOn(tx, key.shelfId, sectionId);
     if (name !== undefined) {
-      await nameFree(tx, key.shelfId, name, sectionId);
+      const clean = name.trim();
+      await nameFree(tx, key.shelfId, clean, sectionId);
       await tx
         .update(shelfSections)
-        .set({ name })
+        .set({ name: clean })
         .where(eq(shelfSections.id, sectionId));
     }
     if (position !== undefined) {
       const { sections } = await readShelf(tx, key.shelfId);
+      // In the rows' own case, which the order rule's lookups need (R4).
+      const id = sectionId.toLowerCase();
       await writeSections(
         tx,
         sections,
-        moveSection(sections, { id: sectionId, position }),
+        moveSection(sections, { id, position }),
       );
     }
     const [section] = await tx
@@ -133,10 +141,12 @@ export async function deleteSection(
     key,
     async (tx) => {
       await sectionOn(tx, key.shelfId, sectionId);
+      // In the rows' own case, which the order rule's lookups need (R4).
+      const id = sectionId.toLowerCase();
       const { sections, entries } = await readShelf(tx, key.shelfId);
-      await writePlaced(tx, entries, foldSection(sections, entries, sectionId));
-      await tx.delete(shelfSections).where(eq(shelfSections.id, sectionId));
-      const rest = sections.filter((s) => s.id !== sectionId);
+      await writePlaced(tx, entries, foldSection(sections, entries, id));
+      await tx.delete(shelfSections).where(eq(shelfSections.id, id));
+      const rest = sections.filter((s) => s.id !== id);
       await writeSections(tx, rest, compactSections(rest));
     },
     renumber,

@@ -15,7 +15,8 @@ export const addEntriesSchema = z.strictObject({
     .min(1, "Pick at least one work.")
     .max(ENTRIES_LIMIT, `At most ${ENTRIES_LIMIT} works in one go.`)
     .refine((ids) => new Set(ids).size === ids.length, "Each work once."),
-  section: z.uuid().optional(),
+  // null is no section, as in the move body; so is leaving it out (Rummage R1).
+  section: z.uuid().nullable().optional(),
 });
 
 /** `PATCH /api/v1/shelves/<id>/entries/<eid>` with a status. */

@@ -34,7 +34,7 @@ export async function addEntries(
     items: itemIds,
     section,
     ...key
-  }: ShelfKey & { items: string[]; section?: string },
+  }: ShelfKey & { items: string[]; section?: string | null },
 ): Promise<{ added: number; skipped: number }> {
   return withShelf(db, key, async (tx) => {
     if (section) await sectionOn(tx, key.shelfId, section);
@@ -113,9 +113,11 @@ export async function moveEntry(
     await entryOn(tx, key.shelfId, entryId);
     if (section) await sectionOn(tx, key.shelfId, section);
     const { sections, entries } = await readShelf(tx, key.shelfId);
+    // Postgres matched these in any case; the order rule's lookups don't,
+    // so they go in as the rows came out (Rummage R4).
     const placed = placeMove(sections, entries, {
-      id: entryId,
-      section,
+      id: entryId.toLowerCase(),
+      section: section?.toLowerCase() ?? null,
       index,
     });
     await writePlaced(tx, entries, placed);

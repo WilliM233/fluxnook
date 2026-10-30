@@ -20,7 +20,11 @@ export async function createShelf(
   return shelf;
 }
 
-/** A shelf's name or description, as it now stands. */
+/**
+ * A shelf's name or description, as it now stands. An unchanged Save writes
+ * nothing, since the shelf's trigger stamps `updated_at` on any update and
+ * the card would jump to the top of the nook (Rummage R2).
+ */
 export async function updateShelf(
   db: Db,
   {
@@ -30,16 +34,27 @@ export async function updateShelf(
   }: ShelfKey & { name?: string; description?: string },
 ) {
   return withShelf(db, key, async (tx) => {
-    const [shelf] = await tx
-      .update(shelves)
-      .set({ name, description })
-      .where(eq(shelves.id, key.shelfId))
-      .returning({
+    const [held] = await tx
+      .select({
         id: shelves.id,
         name: shelves.name,
         description: shelves.description,
-      });
-    return shelf;
+      })
+      .from(shelves)
+      .where(eq(shelves.id, key.shelfId));
+    const next = {
+      ...held,
+      ...(name !== undefined && { name }),
+      ...(description !== undefined && { description }),
+    };
+    if (next.name === held.name && next.description === held.description) {
+      return held;
+    }
+    await tx
+      .update(shelves)
+      .set({ name: next.name, description: next.description })
+      .where(eq(shelves.id, key.shelfId));
+    return next;
   });
 }
 
