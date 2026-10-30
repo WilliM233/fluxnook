@@ -30,6 +30,13 @@ describe("createShelfSchema", () => {
     ).toBe("  two\n\nlines ");
   });
 
+  it("refuses a NUL byte, which Postgres text can't hold, at the field (Rummage R3)", () => {
+    expect(refused({ name: "a\u0000b" })).toHaveProperty("name");
+    expect(refused({ name: "x", description: "a\u0000b" })).toHaveProperty(
+      "description",
+    );
+  });
+
   it("refuses a blank name at name", () => {
     expect(refused({ name: "   " })).toEqual({
       name: "Give the shelf a name.",

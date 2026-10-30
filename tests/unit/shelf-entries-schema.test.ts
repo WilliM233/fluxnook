@@ -30,6 +30,12 @@ describe("addEntriesSchema", () => {
     });
   });
 
+  it("takes section: null as no section, the move body's word for it (Rummage R1)", () => {
+    const parsed = addEntriesSchema.safeParse({ items: [a], section: null });
+    expect(parsed.success).toBe(true);
+    expect(parsed.success && (parsed.data.section ?? null)).toBeNull();
+  });
+
   it("refuses an empty list and 501 works", () => {
     expect(fields({ items: [] })).toEqual({ items: "Pick at least one work." });
     const many = Array.from(

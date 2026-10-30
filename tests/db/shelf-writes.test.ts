@@ -621,6 +621,70 @@ describe("entries", () => {
     expect(await count("shelf_entries", shelf.watch)).toBe(61);
   });
 
+  it("an unchanged write leaves updated_at alone, so the nook's order doesn't move (Rummage R2)", async () => {
+    const small = await smallShelf("Unchanged");
+    const key = { shelfId: small.id, userId: user.id };
+    const [first] = await rowsOf(small.id);
+    const [{ name, description }] =
+      await sql`select name, description from shelves where id = ${small.id}`;
+    const before = await updatedAt(small.id);
+    await updateShelf(db, { ...key, name, description });
+    await setEntryStatus(db, { ...key, entryId: first.id, status: "unmarked" });
+    await moveEntry(db, { ...key, entryId: first.id, section: null, index: 0 });
+    await updateSection(db, {
+      ...key,
+      sectionId: small.a,
+      name: "A",
+      position: 1,
+    });
+    expect((await updatedAt(small.id)).getTime()).toBe(before.getTime());
+    await deleteShelf(db, key);
+  });
+
+  it("an id in upper case names the same row everywhere, never a throw (Rummage R4)", async () => {
+    const small = await smallShelf("Upper");
+    const key = { shelfId: small.id, userId: user.id };
+    const last = (await rowsOf(small.id))[4];
+    const expected = await moveEntry(db, {
+      ...key,
+      entryId: last.id,
+      section: small.a,
+      index: 0,
+    });
+    await moveEntry(db, { ...key, entryId: last.id, section: small.b, index: 99 });
+    const upper = await moveEntry(db, {
+      ...key,
+      entryId: last.id.toUpperCase(),
+      section: small.a.toUpperCase(),
+      index: 0,
+    });
+    expect(upper.positions).toEqual(expected.positions);
+    expect(
+      await updateSection(db, {
+        ...key,
+        sectionId: small.b.toUpperCase(),
+        position: 1,
+      }),
+    ).toMatchObject({ position: 1 });
+    await deleteSection(db, { ...key, sectionId: small.b.toUpperCase() });
+    expect(await count("shelf_sections", small.id)).toBe(1);
+    await numbered(small.id);
+    await deleteShelf(db, key);
+  });
+
+  it("a section named as one the shelf has in another case is ConflictError (Rummage R5)", async () => {
+    const small = await smallShelf("Cased");
+    const key = { shelfId: small.id, userId: user.id };
+    await expect(createSection(db, { ...key, name: "a" })).rejects.toThrow(
+      ConflictError,
+    );
+    await expect(
+      updateSection(db, { ...key, sectionId: small.b, name: "A " }),
+    ).rejects.toThrow(ConflictError);
+    expect(await count("shelf_sections", small.id)).toBe(2);
+    await deleteShelf(db, key);
+  });
+
   it("two moves at once end with the shelf 1..n", async () => {
     const small = await smallShelf("Race");
     const rows = await rowsOf(small.id);
