@@ -98,6 +98,13 @@ test("New shelf makes the shelf and lands on its page", async ({
       `select description || ' | ' || visibility from shelves where id = '${id}'`,
     ),
   ).toBe("The book, then its films, one work per section. | private");
+
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Stephen King, in order",
+  );
+  await expect(page.getByText("0 works", { exact: true })).toBeVisible();
+  await expect(page.getByText("Nothing on it yet.")).toBeVisible();
+  await expect(page.getByTestId("entry")).toHaveCount(0);
 });
 
 test("a blank name shows the field's sentence and stays on the sheet", async ({

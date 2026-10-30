@@ -52,6 +52,15 @@ export function Thumb({
   );
 }
 
+/** A work's type as the rows print it: Film, TV, Book, Comic. */
+export function TypePill({ type }: { type: string }) {
+  return (
+    <span className="rounded-full border border-line-strong px-2 py-0.5 text-[11px] font-semibold tracking-widest text-muted-foreground uppercase">
+      {typeLabel[type] ?? type}
+    </span>
+  );
+}
+
 /** One row of results or of the recent list, as the design draws it. */
 export function Row({
   thumb,
@@ -83,9 +92,7 @@ export function Row({
             {title}
           </span>
           {year && <span className="text-muted-foreground">{year}</span>}
-          <span className="rounded-full border border-line-strong px-2 py-0.5 text-[11px] font-semibold tracking-widest text-muted-foreground uppercase">
-            {typeLabel[type] ?? type}
-          </span>
+          <TypePill type={type} />
         </div>
         {summary && (
           <p className="line-clamp-2 text-sm text-muted-foreground">
