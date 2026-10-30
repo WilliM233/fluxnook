@@ -62,6 +62,7 @@ const updatedAt = async (id: string) =>
   (await sql`select updated_at from shelves where id = ${id}`)[0]
     .updated_at as Date;
 
+// A fixture load waits its turn behind every other file's (the loader's lock).
 beforeAll(async () => {
   user = await signUpWithFixtures(sql);
   const rows = await sql`select id, name from shelves where owner = ${user.id}`;
@@ -69,7 +70,7 @@ beforeAll(async () => {
   shelf.tmnt = named("TMNT, the Mirage run");
   shelf.watch = named("Stephen King Watch List");
   shelf.books = named("Stephen King, publication order");
-});
+}, 60_000);
 
 afterAll(async () => {
   await sql`delete from shelves where owner = ${user.id}`;
