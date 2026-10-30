@@ -21,7 +21,7 @@ export const NO_SECTION = "No section by that id on this shelf.";
 type SectionKey = ShelfKey & { sectionId: string };
 
 /** The section, when it is on this shelf; a section of any other shelf is none. */
-async function sectionOn(tx: Tx, shelfId: string, sectionId: string) {
+export async function sectionOn(tx: Tx, shelfId: string, sectionId: string) {
   const [section] = await tx
     .select({ id: shelfSections.id })
     .from(shelfSections)

@@ -5,6 +5,13 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createDb } from "@/db/client";
 import { fixture } from "@/fixtures/shape";
 import { ConflictError, NotFoundError } from "@/lib/catalog/import";
+import {
+  addEntries,
+  BadItems,
+  moveEntry,
+  removeEntry,
+  setEntryStatus,
+} from "@/lib/shelves/entries";
 import { isNumbered } from "@/lib/shelves/order";
 import {
   createSection,
@@ -22,6 +29,7 @@ import { required, signUpWithFixtures } from "./harness";
 const sql = postgres(required("DATABASE_URL"), { max: 1, onnotice: () => {} });
 const { db, close } = createDb();
 const stranger = crypto.randomUUID();
+const tag = `shelf-writes ${crypto.randomUUID()}`;
 
 const fixtureItems = readdirSync("supabase/seed/fixtures")
   .filter((name) => name.endsWith(".json"))
@@ -65,6 +73,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await sql`delete from shelves where owner = ${user.id}`;
+  await sql`delete from items where source_note = ${tag}`;
   await close();
   await sql.end();
 });
@@ -354,6 +363,294 @@ describe("sections", () => {
   });
 });
 
+const watchItems = async (from: number, n: number) =>
+  (
+    await sql`select item from shelf_entries where shelf = ${shelf.watch}
+      order by position offset ${from - 1} limit ${n}`
+  ).map((r) => r.item as string);
+
+const rowsOf = (shelfId: string) =>
+  sql<{ id: string; item: string; section: string | null; position: number }[]>`
+    select id, item, section, position from shelf_entries
+    where shelf = ${shelfId} order by position`;
+
+/** A shelf of the caller's with sections A and B, two works each, and one unsectioned. */
+async function smallShelf(name: string) {
+  const { id } = await createShelf(db, {
+    userId: user.id,
+    name,
+    description: "",
+  });
+  const key = { shelfId: id, userId: user.id };
+  const { id: a } = await createSection(db, { ...key, name: "A" });
+  const { id: b } = await createSection(db, { ...key, name: "B" });
+  const works = await watchItems(10, 5);
+  await addEntries(db, { ...key, items: [works[0]] });
+  await addEntries(db, { ...key, items: works.slice(1, 3), section: a });
+  await addEntries(db, { ...key, items: works.slice(3, 5), section: b });
+  return { id, a, b, works };
+}
+
+describe("entries", () => {
+  it("addEntries of three works onto the publication-order shelf lands them 12, 13, 14 in the order given", async () => {
+    const films = await watchItems(1, 3);
+    const order = [films[2], films[0], films[1]];
+    expect(
+      await addEntries(db, {
+        shelfId: shelf.books,
+        userId: user.id,
+        items: order,
+      }),
+    ).toEqual({ added: 3, skipped: 0 });
+    const rows = await rowsOf(shelf.books);
+    expect(rows.slice(11).map((r) => [r.item, r.position])).toEqual([
+      [order[0], 12],
+      [order[1], 13],
+      [order[2], 14],
+    ]);
+    await numbered(shelf.books);
+  });
+
+  it("adding two of them again with a new one answers added 1, skipped 2, and the two stay where they were", async () => {
+    const films = await watchItems(1, 4);
+    const before = await rowsOf(shelf.books);
+    expect(
+      await addEntries(db, {
+        shelfId: shelf.books,
+        userId: user.id,
+        items: [films[0], films[3], films[1]],
+      }),
+    ).toEqual({ added: 1, skipped: 2 });
+    const after = await rowsOf(shelf.books);
+    expect(after.slice(0, 14)).toEqual(before);
+    expect(after[14]).toMatchObject({ item: films[3], position: 15 });
+  });
+
+  it("adding into a section lands after that section's last work and before the next section's first; removing it closes the gap", async () => {
+    const main = await sectionNamed(shelf.tmnt, "Volume 1 · Main Series");
+    const [film] = await watchItems(20, 1);
+    const before = await rowsOf(shelf.tmnt);
+    await addEntries(db, {
+      shelfId: shelf.tmnt,
+      userId: user.id,
+      items: [film],
+      section: main,
+    });
+    const after = await rowsOf(shelf.tmnt);
+    const at = after.findIndex((r) => r.item === film);
+    expect(after[at - 1].section).toBe(main);
+    expect(after[at + 1].section).not.toBe(main);
+    expect(after).toHaveLength(327);
+    await numbered(shelf.tmnt);
+
+    await removeEntry(db, {
+      shelfId: shelf.tmnt,
+      userId: user.id,
+      entryId: after[at].id,
+    });
+    expect(await rowsOf(shelf.tmnt)).toEqual(before);
+    await numbered(shelf.tmnt);
+  });
+
+  it("500 works in one call are all added in order", async () => {
+    const fixture = (
+      await sql`select distinct item from item_sources
+        where source || ':' || key = any(${sql.array(fixtureItems)})`
+    ).map((r) => r.item as string);
+    expect(fixture).toHaveLength(454);
+    const made = (
+      await sql`
+        insert into items (type, title, source_note)
+        select 'film', ${tag} || ' ' || n, ${tag} from generate_series(1, 46) n
+        returning id`
+    ).map((r) => r.id as string);
+    const all = [...fixture, ...made];
+    const { id } = await createShelf(db, {
+      userId: user.id,
+      name: "Five hundred",
+      description: "",
+    });
+    expect(
+      await addEntries(db, { shelfId: id, userId: user.id, items: all }),
+    ).toEqual({ added: 500, skipped: 0 });
+    expect((await rowsOf(id)).map((r) => r.item)).toEqual(all);
+    await numbered(id);
+    await deleteShelf(db, { shelfId: id, userId: user.id });
+  });
+
+  it("a film's id beside an unknown uuid is BadItems and nothing is added", async () => {
+    const [carrie] = await sql`
+      select item from item_sources where source = 'letterboxd' and key = '20ZQ'`;
+    const before = await rowsOf(shelf.books);
+    await expect(
+      addEntries(db, {
+        shelfId: shelf.books,
+        userId: user.id,
+        items: [carrie.item, crypto.randomUUID()],
+      }),
+    ).rejects.toThrow(new BadItems("Every work must be in the catalog."));
+    expect(await rowsOf(shelf.books)).toEqual(before);
+  });
+
+  it("a section of another shelf is NotFoundError and nothing is added", async () => {
+    const main = await sectionNamed(shelf.tmnt, "Volume 1 · Main Series");
+    const before = await rowsOf(shelf.books);
+    await expect(
+      addEntries(db, {
+        shelfId: shelf.books,
+        userId: user.id,
+        items: await watchItems(30, 1),
+        section: main,
+      }),
+    ).rejects.toThrow(
+      new NotFoundError("No section by that id on this shelf."),
+    );
+    expect(await rowsOf(shelf.books)).toEqual(before);
+  });
+
+  it("setEntryStatus round-trips done, skipped, unmarked, moves nothing and touches updated_at", async () => {
+    const [first] = await rowsOf(shelf.watch);
+    const key = { shelfId: shelf.watch, userId: user.id, entryId: first.id };
+    const before = await updatedAt(shelf.watch);
+    for (const status of ["done", "skipped", "unmarked"] as const) {
+      expect(await setEntryStatus(db, { ...key, status })).toEqual({
+        id: first.id,
+        item: first.item,
+        section: null,
+        position: 1,
+        status,
+      });
+    }
+    expect((await updatedAt(shelf.watch)).getTime()).toBeGreaterThan(
+      before.getTime(),
+    );
+    expect((await rowsOf(shelf.watch))[0]).toEqual(first);
+  });
+
+  it("status for an entry under another owner id, or on another shelf, is NotFoundError and the status stays", async () => {
+    const [first] = await rowsOf(shelf.watch);
+    await expect(
+      setEntryStatus(db, {
+        shelfId: shelf.watch,
+        userId: stranger,
+        entryId: first.id,
+        status: "done",
+      }),
+    ).rejects.toThrow(NotFoundError);
+    await expect(
+      setEntryStatus(db, {
+        shelfId: shelf.books,
+        userId: user.id,
+        entryId: first.id,
+        status: "done",
+      }),
+    ).rejects.toThrow(new NotFoundError("No entry by that id on this shelf."));
+    const [{ status }] =
+      await sql`select status from shelf_entries where id = ${first.id}`;
+    expect(status).toBe("unmarked");
+  });
+
+  it("moveEntry into a section at 0, above the first section, and past the end; the answer is the table", async () => {
+    const small = await smallShelf("Moves");
+    const key = { shelfId: small.id, userId: user.id };
+    const rows = await rowsOf(small.id);
+    // 1 unsectioned, A at 2..3, B at 4..5
+    const last = rows[4];
+
+    const intoA = await moveEntry(db, {
+      ...key,
+      entryId: last.id,
+      section: small.a,
+      index: 0,
+    });
+    const table = async () =>
+      (await rowsOf(small.id)).map(({ id, position }) => ({ id, position }));
+    expect(intoA.positions).toEqual(await table());
+    expect((await rowsOf(small.id))[1]).toMatchObject({
+      id: last.id,
+      section: small.a,
+      position: 2,
+    });
+
+    await moveEntry(db, { ...key, entryId: last.id, section: null, index: 0 });
+    expect((await rowsOf(small.id))[0]).toMatchObject({
+      id: last.id,
+      section: null,
+      position: 1,
+    });
+
+    const end = await moveEntry(db, {
+      ...key,
+      entryId: last.id,
+      section: small.b,
+      index: 99,
+    });
+    expect(end.positions.at(-1)).toEqual({ id: last.id, position: 5 });
+    expect(end.positions).toEqual(await table());
+    await numbered(small.id);
+    await deleteShelf(db, key);
+  });
+
+  it("a move with a section from another shelf is NotFoundError and the positions stay", async () => {
+    const main = await sectionNamed(shelf.tmnt, "Volume 1 · Main Series");
+    const before = await rowsOf(shelf.watch);
+    await expect(
+      moveEntry(db, {
+        shelfId: shelf.watch,
+        userId: user.id,
+        entryId: before[0].id,
+        section: main,
+        index: 0,
+      }),
+    ).rejects.toThrow(
+      new NotFoundError("No section by that id on this shelf."),
+    );
+    expect(await rowsOf(shelf.watch)).toEqual(before);
+  });
+
+  it("removeEntry of an entry not on the shelf is NotFoundError", async () => {
+    const [first] = await rowsOf(shelf.watch);
+    await expect(
+      removeEntry(db, {
+        shelfId: shelf.books,
+        userId: user.id,
+        entryId: first.id,
+      }),
+    ).rejects.toThrow(NotFoundError);
+    expect(await count("shelf_entries", shelf.watch)).toBe(61);
+  });
+
+  it("two moves at once end with the shelf 1..n", async () => {
+    const small = await smallShelf("Race");
+    const rows = await rowsOf(small.id);
+    const other = createDb();
+    try {
+      await Promise.all([
+        moveEntry(db, {
+          shelfId: small.id,
+          userId: user.id,
+          entryId: rows[0].id,
+          section: small.b,
+          index: 99,
+        }),
+        moveEntry(other.db, {
+          shelfId: small.id,
+          userId: user.id,
+          entryId: rows[4].id,
+          section: null,
+          index: 0,
+        }),
+      ]);
+    } finally {
+      await other.close();
+    }
+    const after = await rowsOf(small.id);
+    expect(after).toHaveLength(5);
+    await numbered(small.id);
+    await deleteShelf(db, { shelfId: small.id, userId: user.id });
+  });
+});
+
 // Last: the section and entry tests above need the TMNT shelf whole.
 describe("deleteShelf", () => {
   it("deleteShelf of another owner's id is NotFoundError and the shelf stays", async () => {
@@ -363,7 +660,9 @@ describe("deleteShelf", () => {
     expect(await count("shelf_entries", shelf.watch)).toBe(61);
   });
 
-  it("deleteShelf on the TMNT shelf takes its 14 sections and 326 entries, and leaves the catalog's 454 and the other two shelves", async () => {
+  // By here the section tests left the TMNT shelf 13 sections and the entry
+  // tests left the publication-order shelf 15 works.
+  it("deleteShelf on the TMNT shelf takes its 13 sections and 326 entries, and leaves the catalog's 454 and the other two shelves", async () => {
     const catalog = async () =>
       (
         await sql`
@@ -375,6 +674,7 @@ describe("deleteShelf", () => {
       await sql`select item from shelf_entries where shelf = ${shelf.tmnt}`
     ).map((r) => r.item);
     expect(held).toHaveLength(326);
+    expect(await count("shelf_sections", shelf.tmnt)).toBe(13);
 
     await deleteShelf(db, { shelfId: shelf.tmnt, userId: user.id });
 
@@ -387,7 +687,7 @@ describe("deleteShelf", () => {
     ).toBe(326);
     expect(await catalog()).toBe(454);
     expect(await count("shelf_entries", shelf.watch)).toBe(61);
-    expect(await count("shelf_entries", shelf.books)).toBe(11);
+    expect(await count("shelf_entries", shelf.books)).toBe(15);
   });
 
   it("deleteShelf twice is NotFoundError the second time", async () => {
