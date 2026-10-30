@@ -15,6 +15,13 @@ export const sourceLabel: Record<string, string> = {
   manual: "added by hand",
 };
 
+// A shelf row and a nook card's strip are the smallest (Ch 1.5).
+const thumbSizes = {
+  row: { box: "h-27 w-18", width: 72, height: 108 },
+  sheet: { box: "h-21 w-14", width: 56, height: 84 },
+  shelf: { box: "h-18 w-12", width: 48, height: 72 },
+};
+
 /** A poster or cover thumbnail, or a quiet box saying there is none. */
 export function Thumb({
   src,
@@ -22,17 +29,17 @@ export function Thumb({
   empty = "no poster",
 }: {
   src: string | null;
-  size?: "row" | "sheet";
+  size?: "row" | "sheet" | "shelf";
   empty?: "no poster" | "no cover";
 }) {
-  const box = size === "row" ? "h-27 w-18" : "h-21 w-14";
+  const { box, width, height } = thumbSizes[size];
   return src ? (
     // biome-ignore lint/performance/noImgElement: plain img this chapter (next/image is a Deferral)
     <img
       src={src}
       alt=""
-      width={size === "row" ? 72 : 56}
-      height={size === "row" ? 108 : 84}
+      width={width}
+      height={height}
       className={`${box} flex-none rounded-md bg-card object-cover`}
     />
   ) : (
