@@ -1,6 +1,9 @@
 import type { Page } from "@playwright/test";
-import { db } from "./harness/fixtures";
+import { db, itemFor, loadFixturesFor } from "./harness/fixtures";
 import { expect, test } from "./harness/signed-in";
+
+// Serial: the picker tests write the probe editions' contents in turn.
+test.describe.configure({ mode: "serial" });
 
 // A10 on probe comics this file makes itself (Ch 1.4.3): the pill row, the
 // Series fact, Collected in and a collected edition's Contents line. Probe
@@ -196,4 +199,158 @@ test("an empty trade paperback: Contents nothing yet, no Comic Vine link", async
     row.getByText("Contents: Nothing yet", { exact: true }),
   ).toBeVisible();
   await expect(row.getByRole("link", { name: "Comic Vine" })).toHaveCount(0);
+});
+
+// The picker (A11), on the same probe rows, then once on the fixture's
+// Tales 1987 run as the Browse picks it (1.4.3 C17).
+
+/** The picker's sheet, opened from the one Edit contents on the page. */
+async function openPicker(page: Page) {
+  await page.getByRole("button", { name: "Edit contents" }).click();
+  return page.getByRole("dialog");
+}
+
+/** The edition's contents as `<item>:<position>`, in order. */
+const stored = (edition: string) =>
+  db(
+    `select item || ':' || position from edition_contents where edition = '${edition}' order by position`,
+  );
+
+test("Collection 2's picker: nothing ticked, the probe's comics in two groups, two picked and saved", async ({
+  signedIn: { page },
+}) => {
+  await page.goto(`/items/${ids.uc2}`);
+  const sheet = await openPicker(page);
+  await expect(
+    sheet.getByRole("heading", {
+      name: "What does this trade paperback collect?",
+    }),
+  ).toBeVisible();
+  await expect(sheet.getByText("0 picked")).toBeVisible();
+  await sheet.getByLabel("A series or a title").fill(tag);
+  const groups = sheet.getByRole("group");
+  await expect(groups).toHaveCount(2);
+  const run = sheet.getByRole("group", { name: RUN, exact: true });
+  const rest = sheet.getByRole("group", { name: "One-shots and the rest" });
+  await expect(run.getByRole("checkbox")).toHaveCount(3);
+  await expect(rest.getByRole("checkbox")).toHaveCount(2);
+  await expect(sheet.getByText("#1", { exact: true })).toBeVisible();
+  await expect(sheet.getByText("May 1984")).toBeVisible();
+  await expect(sheet.getByText(`${tag} Collection 2`)).toHaveCount(0);
+
+  await run.getByRole("checkbox", { name: `${tag} #2` }).check();
+  await rest.getByRole("checkbox", { name: `${tag} Micro: Me` }).check();
+  await expect(sheet.getByText("2 picked")).toBeVisible();
+  await sheet.getByRole("button", { name: "Save contents" }).click();
+  await expect(sheet).toBeHidden();
+  await expect(
+    page.getByText(`Contents: ${RUN} #2, ${tag} Micro: Me`, { exact: true }),
+  ).toBeVisible();
+  expect(stored(ids.tpb)).toBe(`${ids.two}:1\n${ids.shot}:2`);
+});
+
+test("reopened: the two ticked; untick both and Save clears the contents", async ({
+  signedIn: { page },
+}) => {
+  await page.goto(`/items/${ids.uc2}`);
+  const sheet = await openPicker(page);
+  await expect(sheet.getByText("2 picked")).toBeVisible();
+  await expect(
+    sheet.getByRole("checkbox", { name: `${tag} #2` }),
+  ).toBeChecked();
+  await sheet.getByRole("checkbox", { name: `${tag} #2` }).uncheck();
+  await sheet.getByRole("checkbox", { name: `${tag} Micro: Me` }).uncheck();
+  await expect(sheet.getByText("0 picked")).toBeVisible();
+  await sheet.getByRole("button", { name: "Save contents" }).click();
+  await expect(sheet).toBeHidden();
+  await expect(
+    page.getByText("Contents: Nothing yet", { exact: true }),
+  ).toBeVisible();
+  expect(stored(ids.tpb)).toBe("");
+});
+
+test("Cancel after a tick writes nothing", async ({ signedIn: { page } }) => {
+  await page.goto(`/items/${ids.uc2}`);
+  const sheet = await openPicker(page);
+  await sheet.getByLabel("A series or a title").fill(tag);
+  await sheet.getByRole("checkbox", { name: `${tag} #4` }).check();
+  await expect(sheet.getByText("1 picked")).toBeVisible();
+  await sheet.getByRole("button", { name: "Cancel" }).click();
+  await expect(sheet).toBeHidden();
+  await expect(
+    page.getByText("Contents: Nothing yet", { exact: true }),
+  ).toBeVisible();
+  expect(stored(ids.tpb)).toBe("");
+});
+
+test("Collection 1's picker opens with its three ticked; a filter keeps the ticks", async ({
+  signedIn: { page },
+}) => {
+  await page.goto(`/items/${ids.uc1}`);
+  const sheet = await openPicker(page);
+  await expect(
+    sheet.getByRole("heading", { name: "What does this hardcover collect?" }),
+  ).toBeVisible();
+  await expect(sheet.getByText("3 picked")).toBeVisible();
+  await sheet.getByLabel("A series or a title").fill(`${tag} micro`);
+  const rows = sheet.getByRole("checkbox");
+  await expect(rows).toHaveCount(1);
+  await expect(rows).toBeChecked();
+  await expect(sheet.getByText("3 picked")).toBeVisible();
+  await sheet.getByRole("button", { name: "Cancel" }).click();
+  expect(stored(ids.hc)).toBe(`${ids.one}:1\n${ids.two}:2\n${ids.shot}:3`);
+});
+
+test("the Browse's pick: filter 'tales', tick the 1987 run's #1 and #2, Save", async ({
+  signedIn: { page, email },
+}) => {
+  loadFixturesFor(email);
+  await page.goto(`/items/${ids.uc2}`);
+  const sheet = await openPicker(page);
+  await sheet.getByLabel("A series or a title").fill("tales");
+  // The serial comics spec can create Tales of the TMNT's #71 in the Vol. 2
+  // group while this runs beside it, so that group is 70 or 71.
+  await expect(sheet.getByRole("group")).toHaveText([
+    /^Tales of Leonardo: Blind Sight#1/,
+    /^Tales of the Teenage Mutant Ninja Turtles#1/,
+    /^Tales of the Teenage Mutant Ninja Turtles Vol\. 2#1/,
+    /^One-shots and the rest/,
+  ]);
+  const tales = sheet.getByRole("group", {
+    name: "Tales of the Teenage Mutant Ninja Turtles",
+    exact: true,
+  });
+  await expect(tales.getByRole("checkbox")).toHaveCount(7);
+  await expect(
+    sheet
+      .getByRole("group", { name: "Tales of Leonardo: Blind Sight" })
+      .getByRole("checkbox"),
+  ).toHaveCount(4);
+  await expect(
+    sheet
+      .getByRole("group", { name: "One-shots and the rest" })
+      .getByRole("checkbox"),
+  ).toHaveCount(2);
+  await tales
+    .getByRole("checkbox", {
+      name: "A Tale of the Teenage Mutant Ninja Turtles",
+    })
+    .check();
+  await tales.getByRole("checkbox", { name: "Nobody's Fool!" }).check();
+  await sheet.getByRole("button", { name: "Save contents" }).click();
+  await expect(sheet).toBeHidden();
+  await expect(
+    page.getByText(
+      "Contents: Tales of the Teenage Mutant Ninja Turtles #1 to #2",
+      { exact: true },
+    ),
+  ).toBeVisible();
+
+  await page.goto(`/items/${itemFor("manual", "tmnt-mirage-tales-v1-1")}`);
+  await expect(
+    page
+      .getByRole("list", { name: "Collected in", exact: true })
+      .getByRole("listitem")
+      .filter({ hasText: tag }),
+  ).toHaveText([`${tag} Collection 2 · Trade paperback · with #2`]);
 });

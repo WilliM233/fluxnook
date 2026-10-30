@@ -7,6 +7,8 @@ import { contentsLine } from "@/lib/catalog/contents-line";
 import {
   type ItemPage,
   loadItemPage,
+  loadPickerComics,
+  type PickerComic,
   releasedLabel,
 } from "@/lib/catalog/item-page";
 import { coverPublicUrl } from "@/lib/covers";
@@ -14,6 +16,7 @@ import { readEnv } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 import { CollectedIn, formatLabel } from "./collected-in";
 import { comicPills, SeriesLine } from "./comic-parts";
+import { ContentsEditor } from "./contents-editor";
 
 const typeLabel = { film: "Film", tv: "TV", book: "Book", comic: "Comic" };
 const sourceLabel: Record<string, string> = {
@@ -73,11 +76,11 @@ function editionLine(edition: ItemPage["editions"][number]): string {
 
 function Editions({
   editions,
-  collected,
+  picker,
 }: {
   editions: ItemPage["editions"];
-  /** A collected comic's printings say what they hold (A10). */
-  collected: boolean;
+  /** A collected comic's printings say what they hold and take the picker (A10, A11). */
+  picker: PickerComic[] | null;
 }) {
   return (
     <section
@@ -128,9 +131,17 @@ function Editions({
                   Comic Vine
                 </a>
               )}
-              {collected && (
-                <span className="basis-full text-sm text-muted-foreground">
-                  Contents: {contentsLine(e.contentsRows) || "Nothing yet"}
+              {picker && (
+                <span className="flex basis-full flex-wrap items-center justify-between gap-2">
+                  <span className="text-sm text-muted-foreground">
+                    Contents: {contentsLine(e.contentsRows) || "Nothing yet"}
+                  </span>
+                  <ContentsEditor
+                    editionId={e.id}
+                    format={e.format}
+                    current={e.contentsRows}
+                    comics={picker}
+                  />
                 </span>
               )}
             </li>
@@ -169,8 +180,14 @@ export default async function ItemPageView({
   // The (app) layout has already sent anyone signed out to /.
   if (!user) notFound();
 
-  const page = await loadItemPage(serverDb(), { id, userId: user.id });
+  const db = serverDb();
+  const page = await loadItemPage(db, { id, userId: user.id });
   if (!page) notFound();
+  // Only a collected comic's printing takes the picker, so only it lists the catalog.
+  const picker =
+    page.item.type === "comic" && page.item.form === "collected"
+      ? await loadPickerComics(db, { except: id })
+      : null;
   const {
     item,
     series,
@@ -309,12 +326,7 @@ export default async function ItemPageView({
           />
         )}
 
-        {printed && (
-          <Editions
-            editions={editions}
-            collected={item.type === "comic" && item.form === "collected"}
-          />
-        )}
+        {printed && <Editions editions={editions} picker={picker} />}
 
         <section
           aria-labelledby="connected"
