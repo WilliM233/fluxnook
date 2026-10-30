@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { z } from "zod";
 import { Badge } from "@/components/ui/badge";
 import { serverDb } from "@/db/client";
+import { contentsLine } from "@/lib/catalog/contents-line";
 import {
   type ItemPage,
   loadItemPage,
@@ -11,18 +12,22 @@ import {
 import { coverPublicUrl } from "@/lib/covers";
 import { readEnv } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
+import { CollectedIn, formatLabel } from "./collected-in";
+import { comicPills, SeriesLine } from "./comic-parts";
 
 const typeLabel = { film: "Film", tv: "TV", book: "Book", comic: "Comic" };
 const sourceLabel: Record<string, string> = {
   tmdb: "TMDB",
   letterboxd: "Letterboxd",
   openlibrary: "Open Library",
+  comicvine: "Comic Vine",
 };
 
 // Who a cached cover came from, read off its path (`tmdb/…`, `openlibrary/…`).
 const coverCaption: Record<string, string> = {
   tmdb: "Poster via TMDB",
   openlibrary: "Cover from Open Library",
+  comicvine: "Cover from Comic Vine",
 };
 
 const capital = (word: string) => word.charAt(0).toUpperCase() + word.slice(1);
@@ -49,11 +54,8 @@ function facts(item: ItemPage["item"]): string[] {
         (f): f is string => Boolean(f),
       );
     case "comic":
-      return [
-        item.series,
-        item.series_kind && capital(item.series_kind),
-        item.number !== null && `#${item.number}`,
-      ].filter((f): f is string => Boolean(f));
+      // A comic's facts carry the series link: `comicPills` (Ch 1.4.3).
+      return [];
   }
 }
 
@@ -69,7 +71,14 @@ function editionLine(edition: ItemPage["editions"][number]): string {
     .join(" · ");
 }
 
-function Editions({ editions }: { editions: ItemPage["editions"] }) {
+function Editions({
+  editions,
+  collected,
+}: {
+  editions: ItemPage["editions"];
+  /** A collected comic's printings say what they hold (A10). */
+  collected: boolean;
+}) {
   return (
     <section
       aria-labelledby="editions"
@@ -90,7 +99,7 @@ function Editions({ editions }: { editions: ItemPage["editions"] }) {
               className="flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-xl border bg-card px-4 py-3"
             >
               <span className="font-heading text-lg font-semibold text-foreground">
-                {capital(e.format)}
+                {formatLabel(e.format)}
               </span>
               <span className="sr-only"> · </span>
               <span className="text-sm text-muted-foreground">
@@ -109,6 +118,20 @@ function Editions({ editions }: { editions: ItemPage["editions"] }) {
                 >
                   Open Library
                 </a>
+              )}
+              {e.comicvine_url && (
+                <a
+                  href={e.comicvine_url}
+                  rel="noreferrer"
+                  className="ml-auto text-sm text-primary hover:text-accent-hover"
+                >
+                  Comic Vine
+                </a>
+              )}
+              {collected && (
+                <span className="basis-full text-sm text-muted-foreground">
+                  Contents: {contentsLine(e.contentsRows) || "Nothing yet"}
+                </span>
               )}
             </li>
           ))}
@@ -148,8 +171,23 @@ export default async function ItemPageView({
 
   const page = await loadItemPage(serverDb(), { id, userId: user.id });
   if (!page) notFound();
-  const { item, sources, relations, franchises, shelves, editions } = page;
+  const {
+    item,
+    series,
+    collectedIn,
+    sources,
+    relations,
+    franchises,
+    shelves,
+    editions,
+  } = page;
   const released = releasedLabel(item.released_on, item.released_precision);
+  const pills = [
+    ...[year(item.released_on), ...facts(item)]
+      .filter((fact): fact is string => Boolean(fact))
+      .map((fact) => ({ key: fact, node: fact as React.ReactNode })),
+    ...(item.type === "comic" ? comicPills(item, series) : []),
+  ];
   const caption = item.cover_path
     ? coverCaption[item.cover_path.split("/")[0]]
     : undefined;
@@ -178,23 +216,24 @@ export default async function ItemPageView({
 
       <article className="flex min-w-0 flex-col gap-8">
         <div className="flex flex-col gap-2.5">
-          <div className="flex flex-wrap items-center gap-2.5 text-[13px] text-muted-foreground">
+          <div
+            data-testid="pills"
+            className="flex flex-wrap items-center gap-2.5 text-[13px] text-muted-foreground"
+          >
             <Badge
               variant="outline"
               className="border-line-strong tracking-widest text-muted-foreground uppercase"
             >
               {typeLabel[item.type]}
             </Badge>
-            {[year(item.released_on), ...facts(item)]
-              .filter(Boolean)
-              .flatMap((fact, i) => [
-                i > 0 && (
-                  <span key={`dot-${fact}`} aria-hidden="true">
-                    ·
-                  </span>
-                ),
-                <span key={fact}>{fact}</span>,
-              ])}
+            {pills.flatMap((pill, i) => [
+              i > 0 && (
+                <span key={`dot-${pill.key}`} aria-hidden="true">
+                  ·
+                </span>
+              ),
+              <span key={pill.key}>{pill.node}</span>,
+            ])}
           </div>
           <h1 className="font-heading text-5xl leading-none font-semibold tracking-tight">
             {item.title}
@@ -208,6 +247,11 @@ export default async function ItemPageView({
 
         <dl className="grid grid-cols-1 gap-x-7 gap-y-4 text-sm sm:grid-cols-2">
           {released && <Fact term="Released">{released}</Fact>}
+          {series && (
+            <Fact term="Series">
+              <SeriesLine series={series} number={item.number} />
+            </Fact>
+          )}
           {item.type === "book" && item.author && (
             <Fact term="Author">{item.author}</Fact>
           )}
@@ -251,7 +295,26 @@ export default async function ItemPageView({
           </Fact>
         </dl>
 
-        {printed && <Editions editions={editions} />}
+        {item.type === "comic" && (
+          <CollectedIn
+            rows={collectedIn}
+            line={{
+              own: item.series_id
+                ? { seriesId: item.series_id }
+                : { series: item.series },
+              omit: item.id,
+            }}
+            empty="Not collected in anything the catalog knows."
+            note="An edition whose contents hold this issue. Owning one comes with the collection chapter, and then this line says “owned via”."
+          />
+        )}
+
+        {printed && (
+          <Editions
+            editions={editions}
+            collected={item.type === "comic" && item.form === "collected"}
+          />
+        )}
 
         <section
           aria-labelledby="connected"
