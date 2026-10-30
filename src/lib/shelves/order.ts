@@ -114,6 +114,13 @@ export function moveSection(
   return ordered.map((s, i) => ({ id: s.id, position: i + 1 }));
 }
 
+/** The sections in their order at 1..m, so a deleted one leaves no gap. */
+export function compactSections(sections: SectionRow[]): SectionRow[] {
+  return [...sections]
+    .sort(byPosition)
+    .map((s, i) => ({ id: s.id, position: i + 1 }));
+}
+
 /** The invariant every write keeps: positions exactly 1..n, none repeated. */
 export function isNumbered(entries: { position: number }[]) {
   const positions = entries.map((e) => e.position).sort((a, b) => a - b);

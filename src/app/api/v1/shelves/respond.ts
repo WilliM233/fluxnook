@@ -26,15 +26,17 @@ export const signInFirst = () =>
   apiError(401, "unauthorized", "Sign in to see your shelves.");
 
 /**
- * The path's ids, or null when one isn't a uuid: such an id names nothing,
- * so it is the route's 404 without a query.
+ * The path's ids, or the 404 for the first that isn't a uuid: such an id
+ * names nothing, so it is answered without a query, in the words `missing`
+ * gives for that segment.
  */
 export async function pathIds<K extends string>(
   params: Promise<Record<K, string>>,
-): Promise<Record<K, string> | null> {
+  missing: Record<K, string>,
+): Promise<Record<K, string> | Response> {
   const ids = await params;
-  for (const id of Object.values<string>(ids)) {
-    if (!z.uuid().safeParse(id).success) return null;
+  for (const key of Object.keys(missing) as K[]) {
+    if (!z.uuid().safeParse(ids[key]).success) return notFound(missing[key]);
   }
   return ids;
 }

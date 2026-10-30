@@ -89,6 +89,25 @@ export async function writePlaced(
     where e.id = v.id`);
 }
 
+/** Stores section positions the order rule computed, the changed ones only. */
+export async function writeSections(
+  tx: Tx,
+  before: SectionRow[],
+  after: SectionRow[],
+) {
+  const held = new Map(before.map((s) => [s.id, s.position]));
+  const changed = after.filter((s) => held.get(s.id) !== s.position);
+  if (changed.length === 0) return;
+  const rows = sql.join(
+    changed.map((s) => sql`(${s.id}::uuid, ${s.position}::int)`),
+    sql`, `,
+  );
+  await tx.execute(sql`
+    update shelf_sections s set position = v.position
+    from (values ${rows}) as v(id, position)
+    where s.id = v.id`);
+}
+
 /** The shelf read, placed by `renumber`, and stored; what it placed comes back. */
 export async function renumberShelf(
   tx: Tx,

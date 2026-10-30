@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  compactSections,
   displayOrder,
   type EntryRow,
   foldSection,
@@ -210,6 +211,20 @@ describe("moveSection", () => {
     expect(moveSection(sections, { id: "A", position: 9 })).toEqual([
       { id: "B", position: 1 },
       { id: "A", position: 2 },
+    ]);
+  });
+});
+
+describe("compactSections", () => {
+  it("closes the gap a deleted section leaves, in their order", () => {
+    expect(
+      compactSections([
+        { id: "C", position: 3 },
+        { id: "A", position: 1 },
+      ]),
+    ).toEqual([
+      { id: "A", position: 1 },
+      { id: "C", position: 2 },
     ]);
   });
 });

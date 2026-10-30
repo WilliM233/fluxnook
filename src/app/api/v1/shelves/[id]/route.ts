@@ -2,24 +2,18 @@ import { serverDb } from "@/db/client";
 import { noStore } from "@/lib/api/errors";
 import { deleteShelf, updateShelf } from "@/lib/shelves/shelves";
 import { NO_SHELF } from "@/lib/shelves/write";
-import {
-  callerId,
-  notFound,
-  pathIds,
-  readBody,
-  refusal,
-  signInFirst,
-} from "../respond";
+import { callerId, pathIds, readBody, refusal, signInFirst } from "../respond";
 import { patchShelfSchema } from "../schema";
 
 type Params = { params: Promise<{ id: string }> };
+const missing = { id: NO_SHELF };
 
 /** A shelf's name or description (A3): 200 with the shelf as it now stands. */
 export async function PATCH(request: Request, { params }: Params) {
   const userId = await callerId();
   if (!userId) return signInFirst();
-  const ids = await pathIds(params);
-  if (!ids) return notFound(NO_SHELF);
+  const ids = await pathIds(params, missing);
+  if (ids instanceof Response) return ids;
 
   const body = await readBody(request, patchShelfSchema, "That isn't a shelf.");
   if ("response" in body) return body.response;
@@ -40,8 +34,8 @@ export async function PATCH(request: Request, { params }: Params) {
 export async function DELETE(_request: Request, { params }: Params) {
   const userId = await callerId();
   if (!userId) return signInFirst();
-  const ids = await pathIds(params);
-  if (!ids) return notFound(NO_SHELF);
+  const ids = await pathIds(params, missing);
+  if (ids instanceof Response) return ids;
 
   try {
     await deleteShelf(serverDb(), { shelfId: ids.id, userId });
