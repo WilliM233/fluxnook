@@ -35,7 +35,7 @@ test("a signed-in page has the header, the TMDB footer and the look", async ({
   ).toHaveAttribute("href", "https://comicvine.gamespot.com");
 
   await expect(
-    page.getByRole("heading", { name: "Your nook is empty" }),
+    page.getByRole("heading", { name: "Your nook", exact: true }),
   ).toBeVisible();
   expect(
     await page.evaluate(() => getComputedStyle(document.body).backgroundColor),
