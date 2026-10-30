@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
+import { CollectedIn } from "@/app/(app)/items/[id]/collected-in";
 import { Badge } from "@/components/ui/badge";
 import { serverDb } from "@/db/client";
 import { releasedLabel } from "@/lib/catalog/released";
@@ -84,7 +85,7 @@ export default async function SeriesPageView({
   // catalog, the same for everyone.
   const page = await loadSeriesPage(serverDb(), { id });
   if (!page) notFound();
-  const { series, sources, issues } = page;
+  const { series, sources, issues, collectedIn } = page;
   const header = [
     years(series),
     series.publisher,
@@ -174,6 +175,13 @@ export default async function SeriesPageView({
           </ul>
         )}
       </section>
+
+      <CollectedIn
+        rows={collectedIn}
+        line={{ own: { seriesId: series.id } }}
+        empty="Nothing collected yet."
+        note="An edition whose contents hold an issue of this run. Which ones you own comes with the collection chapter."
+      />
     </main>
   );
 }

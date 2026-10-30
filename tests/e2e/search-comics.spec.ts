@@ -260,6 +260,26 @@ test.describe("the series page", () => {
       "src",
       /\/storage\/v1\/object\/public\/covers\/comicvine\/issue-121041\.jpg$/,
     );
+
+    // Collected in, from the fixture's contents; the hardcovers are undated
+    // until the Ultimate Collection import (1.4.3 C19).
+    const collected = page
+      .getByRole("list", { name: "Collected in", exact: true })
+      .getByRole("listitem");
+    await expect(collected).toHaveCount(5);
+    await expect(collected).toHaveText([
+      "Ultimate Collection 1 · Hardcover · #1 to #7, and Raphael: Me, Myself and I",
+      "Ultimate Collection 2 · Hardcover · #8 to #11, and Michelangelo: The Christmas Aliens, Donatello: Kirby and the Warp Crystal, Leonardo: What Goes Around... ...Comes Around!",
+      "Ultimate Collection 3 · Hardcover · #12, #14 to #15, #17, #19 to #21",
+      "Ultimate Collection 4 · Hardcover · #48 to #55",
+      "Ultimate Collection 5 · Hardcover · #56 to #62",
+    ]);
+    await expect(
+      collected.first().getByRole("link", { name: "Ultimate Collection 1" }),
+    ).toHaveAttribute(
+      "href",
+      `/items/${itemFor("manual", "tmnt-ultimate-collection-1")}`,
+    );
   });
 
   test("a run with no end year prints its start alone", async ({
@@ -275,6 +295,7 @@ test.describe("the series page", () => {
     ).toBeVisible();
     await expect(page.getByText("0 issues", { exact: true })).toBeVisible();
     await expect(page.getByText("None in the catalog.")).toBeVisible();
+    await expect(page.getByText("Nothing collected yet.")).toBeVisible();
   });
 
   test("a bad uuid and an unknown one are the in-shell not-found", async ({
