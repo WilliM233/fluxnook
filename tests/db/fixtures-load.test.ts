@@ -297,6 +297,15 @@ describe("fixtures:load, the user's content", spawning, () => {
       expect(row.source_url).toBe(shelf.url ?? null);
       expect(row.sections).toBe(shelf.sections?.length ?? 0);
       expect(row.flat).toBe(shelf.entries?.length ?? 0);
+
+      // One numbering across the shelf, 1..n, whatever the file's sections say.
+      const n =
+        shelf.entries?.length ??
+        (shelf.sections ?? []).reduce((sum, s) => sum + s.entries.length, 0);
+      const [{ positions }] = await sql`
+        select array_agg(position order by position) as positions
+        from shelf_entries where shelf = ${row.id}`;
+      expect(positions).toEqual(Array.from({ length: n }, (_, i) => i + 1));
     }
   });
 

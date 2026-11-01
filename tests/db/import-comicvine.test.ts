@@ -92,10 +92,20 @@ function copy(
   writeFileSync(join(dir, `issues-${to}-o0.json`), JSON.stringify(list));
 }
 
+// This file's rows, as afterAll scopes them: the series on its own volume
+// keys, the comics on them, and the runs it enters by hand. A count of every
+// row raced the other db files that write items (1.5.1, D2).
 const counts = async () => {
+  const keys = Object.values(ids).map((id) => `volume/${id}`);
   const [row] = await sql<{ series: number; items: number }[]>`
-    select (select count(*)::int from series) as series,
-      (select count(*)::int from items) as items`;
+    with mine as (
+      select series from series_sources
+      where source = 'comicvine' and key = any(${keys}))
+    select (select count(*)::int from mine) as series,
+      (select count(*)::int from items
+        where id in (select item from item_comics
+            where series_id in (select series from mine))
+          or title like ${`${tag}%`}) as items`;
   return row;
 };
 

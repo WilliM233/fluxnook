@@ -343,6 +343,9 @@ async function loadContent(
       written.shelves++;
 
       // A flat shelf is one unnamed group whose entries carry no section.
+      // The file numbers each section from 1; the table numbers the whole
+      // shelf 1..n in display order (Ch 1.5 Q1 b)), so count through it.
+      let next = 0;
       const groups: {
         name: string | null;
         entries: { item: string; position: number }[];
@@ -362,7 +365,7 @@ async function loadContent(
             shelf: shelfId,
             section: sectionId,
             item: itemUuid(entry.item),
-            position: entry.position,
+            position: ++next,
           })),
         );
         written.entries += section.entries.length;
