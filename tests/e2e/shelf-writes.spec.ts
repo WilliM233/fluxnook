@@ -105,3 +105,28 @@ test("Cancel on the confirm deletes nothing", async ({
   await expect(page).toHaveURL(new RegExp(`/shelves/${shelf.id}$`));
   expect(db(`select count(*) from shelves where id = '${shelf.id}'`)).toBe("1");
 });
+
+test("Remove takes the row off and closes the gap", async ({
+  signedIn: { page },
+}) => {
+  const shelf = await makeShelf(page, { top: 3 });
+  const removed = db(
+    `select item from shelf_entries where shelf = '${shelf.id}' and position = 2`,
+  );
+  await page.goto(`/shelves/${shelf.id}`);
+  await page
+    .getByRole("button", { name: `Remove ${shelf.title("Top2")}` })
+    .click();
+
+  const rows = page.getByTestId("entry");
+  await expect(rows.getByRole("link")).toHaveText([
+    shelf.title("Top1"),
+    shelf.title("Top3"),
+  ]);
+  await expect(rows.nth(1).getByText("2", { exact: true })).toBeVisible();
+  await expect(page.getByText("2 works", { exact: true })).toBeVisible();
+  expect(
+    db(`select count(*) from shelf_entries where shelf = '${shelf.id}'`),
+  ).toBe("2");
+  expect(db(`select count(*) from items where id = '${removed}'`)).toBe("1");
+});

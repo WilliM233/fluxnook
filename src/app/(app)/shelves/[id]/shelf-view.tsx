@@ -12,6 +12,7 @@ import {
   tally,
 } from "@/lib/shelves/shelf-page";
 import { ConfirmSheet } from "../confirm-sheet";
+import { NameSheet } from "../name-sheet";
 import { ShelfSheet } from "../shelf-sheet";
 import { ShelfRow } from "./shelf-row";
 import { type Status, StatusControl } from "./status-control";
@@ -19,8 +20,15 @@ import { type Status, StatusControl } from "./status-control";
 /** A row as the view holds it: the read's row and the section it is in. */
 export type ViewRow = Row & { section: string | null };
 
+type Section = ShelfPage["sections"][number];
+
 /** The one sheet open on the page, if any. */
-type Sheet = { kind: "edit-shelf" } | { kind: "delete-shelf" };
+type Sheet =
+  | { kind: "edit-shelf" }
+  | { kind: "delete-shelf" }
+  | { kind: "new-section" }
+  | { kind: "rename"; section: Section }
+  | { kind: "delete-section"; section: Section; works: number };
 
 const json = (method: string, body?: unknown): RequestInit => ({
   method,
@@ -112,18 +120,56 @@ export function ShelfView({
     }
   }
 
+  /** A work off the shelf, asking nothing: the catalog keeps it (A7). */
+  async function remove(row: ViewRow) {
+    hold(row.id, true);
+    try {
+      const response = await fetch(
+        `/api/v1/shelves/${shelf.id}/entries/${row.id}`,
+        json("DELETE"),
+      );
+      if (response.ok) {
+        setAlert(null);
+        router.refresh();
+      } else {
+        setAlert(await refusal(response, SAVE_FAILED));
+      }
+    } catch {
+      setAlert(SAVE_FAILED);
+    } finally {
+      hold(row.id, false);
+    }
+  }
+
+  /** A sheet's write is done: close it and read the shelf again. */
+  const saved = () => {
+    setSheet(null);
+    router.refresh();
+  };
+
   const rowOf = (row: ViewRow) => (
     <ShelfRow
       key={row.id}
       row={row}
       supabaseUrl={supabaseUrl}
       aside={
-        <StatusControl
-          title={row.item.title}
-          status={row.status}
-          busy={busy.has(row.id)}
-          onPick={(status) => setStatus(row, status)}
-        />
+        <>
+          <StatusControl
+            title={row.item.title}
+            status={row.status}
+            busy={busy.has(row.id)}
+            onPick={(status) => setStatus(row, status)}
+          />
+          <button
+            type="button"
+            aria-label={`Remove ${row.item.title}`}
+            disabled={busy.has(row.id)}
+            className={TEXT_BUTTON}
+            onClick={() => remove(row)}
+          >
+            Remove
+          </button>
+        </>
       }
     />
   );
@@ -152,6 +198,13 @@ export function ShelfView({
           <Button
             size="lg"
             variant="outline"
+            onClick={() => setSheet({ kind: "new-section" })}
+          >
+            New section
+          </Button>
+          <Button
+            size="lg"
+            variant="outline"
             onClick={() => setSheet({ kind: "edit-shelf" })}
           >
             Edit shelf
@@ -176,10 +229,57 @@ export function ShelfView({
           send={(words) =>
             fetch(`/api/v1/shelves/${shelf.id}`, json("PATCH", words))
           }
-          onSaved={() => {
-            setSheet(null);
-            router.refresh();
-          }}
+          onSaved={saved}
+          onClose={() => setSheet(null)}
+        />
+      )}
+      {sheet?.kind === "new-section" && (
+        <NameSheet
+          title="New section"
+          lede="It goes after the last section, empty until you drag or add works into it."
+          initial=""
+          submit="Make section"
+          failed="Couldn't make the section just now. Try again."
+          send={(name) =>
+            fetch(
+              `/api/v1/shelves/${shelf.id}/sections`,
+              json("POST", { name }),
+            )
+          }
+          onSaved={saved}
+          onClose={() => setSheet(null)}
+        />
+      )}
+      {sheet?.kind === "rename" && (
+        <NameSheet
+          title={`Rename ${sheet.section.name}`}
+          lede="Its works and their order stay as they are."
+          initial={sheet.section.name}
+          submit="Rename"
+          failed="Couldn't rename the section just now. Try again."
+          send={(name) =>
+            fetch(
+              `/api/v1/shelves/${shelf.id}/sections/${sheet.section.id}`,
+              json("PATCH", { name }),
+            )
+          }
+          onSaved={saved}
+          onClose={() => setSheet(null)}
+        />
+      )}
+      {sheet?.kind === "delete-section" && (
+        <ConfirmSheet
+          title="Delete section"
+          sentence={`Delete ${sheet.section.name}? Its ${plural(sheet.works, "work")} ${sheet.works === 1 ? "moves" : "move"} above the first section.`}
+          confirm="Delete section"
+          failed="Couldn't delete the section just now. Try again."
+          send={() =>
+            fetch(
+              `/api/v1/shelves/${shelf.id}/sections/${sheet.section.id}`,
+              json("DELETE"),
+            )
+          }
+          onDone={saved}
           onClose={() => setSheet(null)}
         />
       )}
@@ -234,6 +334,30 @@ export function ShelfView({
                 </h2>
                 <span className="text-[13px] text-dim">
                   {countsLine(tally(held))}
+                </span>
+                <span className="ml-auto flex gap-4">
+                  <button
+                    type="button"
+                    aria-label={`Rename ${section.name}`}
+                    className={TEXT_BUTTON}
+                    onClick={() => setSheet({ kind: "rename", section })}
+                  >
+                    Rename
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={`Delete section ${section.name}`}
+                    className={TEXT_BUTTON}
+                    onClick={() =>
+                      setSheet({
+                        kind: "delete-section",
+                        section,
+                        works: held.length,
+                      })
+                    }
+                  >
+                    Delete section
+                  </button>
                 </span>
               </div>
               {held.length > 0 && (
