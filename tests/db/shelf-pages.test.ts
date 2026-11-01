@@ -1,6 +1,8 @@
 import postgres from "postgres";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { createDb } from "@/db/client";
+import { normalizeName } from "@/lib/catalog/normalize";
+import { loadPickerWorks, matchesFind } from "@/lib/catalog/picker-works";
 import { workLine } from "@/lib/catalog/work-line";
 import { addEntries, setEntryStatus } from "@/lib/shelves/entries";
 import { loadNook } from "@/lib/shelves/nook-page";
@@ -171,6 +173,16 @@ describe("loadShelfPage", () => {
     });
   });
 
+  it("is one statement, so its sections and rows share one snapshot", async () => {
+    const execute = vi.spyOn(db, "execute");
+    try {
+      await loadShelfPage(db, { id: shelf.tmnt, userId: user.id });
+      expect(execute).toHaveBeenCalledTimes(1);
+    } finally {
+      execute.mockRestore();
+    }
+  });
+
   it("is null for a uuid that is no shelf, and for the caller's shelf under another owner id", async () => {
     expect(
       await loadShelfPage(db, { id: crypto.randomUUID(), userId: user.id }),
@@ -178,5 +190,66 @@ describe("loadShelfPage", () => {
     expect(
       await loadShelfPage(db, { id: shelf.tmnt, userId: crypto.randomUUID() }),
     ).toBeNull();
+  });
+});
+
+describe("loadPickerWorks", () => {
+  // The catalog is shared with every other db file, so what's asserted is
+  // the fixture's own rows: one load wrote them, so they share a created_at.
+  async function loaded() {
+    const carrie = await itemFor(sql, "manual", "carrie-1974");
+    const rows = await sql`select id from items where created_at =
+      (select created_at from items where id = ${carrie})`;
+    return { carrie, ids: new Set(rows.map((r) => r.id as string)) };
+  }
+
+  it("lists the loaded catalog in year order, and the fold finds the Browse's rows in that order", async () => {
+    const { ids } = await loaded();
+    expect(ids.size).toBe(454);
+    const works = (await loadPickerWorks(db)).filter((w) => ids.has(w.id));
+    expect(works).toHaveLength(454);
+    const years = works.map((w) => w.released_on ?? "9999");
+    expect(years).toEqual([...years].sort());
+
+    const found = (box: string) =>
+      works
+        .filter((w) => matchesFind(w, normalizeName(box)))
+        .map((w) => `${w.title} ${w.released_on?.slice(0, 4)}`);
+    expect(found("carrie")).toEqual([
+      "Carrie 1974",
+      "Carrie 1976",
+      "The Rage: Carrie 2 1999",
+      "Carrie 2002",
+      "Carrie 2013",
+    ]);
+    expect(found("salem")).toEqual([
+      "Salem's Lot 1975",
+      "Jerusalem's Lot 1977",
+      "Salem's Lot 1979",
+      "A Return to Salem's Lot 1987",
+      "Salem's Lot 2004",
+      "Salem's Lot 2024",
+    ]);
+    expect(found("the shining")).toEqual([
+      "The Shining 1977",
+      "The Shining 1980",
+      "The Shining 1997",
+    ]);
+    expect(found("night shift")).toEqual(["Night Shift 1977"]);
+  });
+
+  it("puts a work made after the load before the loaded ones", async () => {
+    const { carrie } = await loaded();
+    const [{ id }] = await sql`
+      insert into items (type, title, source_note)
+      values ('film', 'Picker probe', 'shelf-pages picker probe') returning id`;
+    try {
+      const works = await loadPickerWorks(db);
+      const probe = works.findIndex((w) => w.id === id);
+      expect(probe).toBeGreaterThanOrEqual(0);
+      expect(probe).toBeLessThan(works.findIndex((w) => w.id === carrie));
+    } finally {
+      await sql`delete from items where id = ${id}`;
+    }
   });
 });
