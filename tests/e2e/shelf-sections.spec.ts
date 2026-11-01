@@ -37,7 +37,7 @@ test("New section appends an empty heading", async ({ signedIn: { page } }) => {
 test("a name the shelf has, in another case, is refused in the sheet", async ({
   signedIn: { page },
 }) => {
-  const shelf = await makeShelf(page, { sections: [["Carrie", 1]] });
+  const shelf = await makeShelf(page, { sections: [["Carrie", 0]] });
   await page.goto(`/shelves/${shelf.id}`);
   await page.getByRole("button", { name: "New section" }).click();
   const sheet = page.getByRole("dialog", { name: "New section" });

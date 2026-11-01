@@ -28,7 +28,9 @@ export async function post(page: Page, path: string, data: unknown) {
 /**
  * A shelf of the test's own: `top` films above the first section, then each
  * section with its films. A film is titled by its place and the shelf's
- * tag ("Top1 <tag>", "A2 <tag>"), so `title("A2")` names it.
+ * tag ("Top1 <tag>", "A2 <tag>"), so `title("A2")` names it. The catalog
+ * is shared with the whole run, so a section that holds films is named with
+ * a letter: "Carrie" would put "Carrie1 <tag>" in every "carrie" search.
  */
 export async function makeShelf(
   page: Page,

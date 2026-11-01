@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { z } from "zod";
 import { serverDb } from "@/db/client";
+import { loadPickerWorks } from "@/lib/catalog/picker-works";
 import { readEnv } from "@/lib/env";
 import { loadShelfPage } from "@/lib/shelves/shelf-page";
 import { createClient } from "@/lib/supabase/server";
@@ -23,13 +24,18 @@ export default async function ShelfPageView({
   // The (app) layout has already sent anyone signed out to /.
   if (!user) notFound();
 
-  const page = await loadShelfPage(serverDb(), { id, userId: user.id });
+  const db = serverDb();
+  // The picker's list rides the page, as the 1.4 picker's does (A11).
+  const [page, works] = await Promise.all([
+    loadShelfPage(db, { id, userId: user.id }),
+    loadPickerWorks(db),
+  ]);
   if (!page) notFound();
   const { supabaseUrl } = readEnv();
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-11">
-      <ShelfView page={page} supabaseUrl={supabaseUrl} />
+      <ShelfView page={page} works={works} supabaseUrl={supabaseUrl} />
     </main>
   );
 }

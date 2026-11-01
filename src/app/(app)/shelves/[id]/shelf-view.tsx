@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import type { PickerWork } from "@/lib/catalog/picker-works";
 import { plural } from "@/lib/catalog/work-line";
 import { headingId } from "@/lib/shelves/drop";
 import { countsLine } from "@/lib/shelves/lines";
@@ -20,6 +21,7 @@ import {
 import { ConfirmSheet } from "../confirm-sheet";
 import { NameSheet } from "../name-sheet";
 import { ShelfSheet } from "../shelf-sheet";
+import { AddWorks } from "./add-works";
 import { KEYS, useDragMove } from "./drag";
 import { SortableHeading, SortableRow } from "./sortable-row";
 import { type Status, StatusControl } from "./status-control";
@@ -31,6 +33,7 @@ type Section = ShelfPage["sections"][number];
 
 /** The one sheet open on the page, if any. */
 type Sheet =
+  | { kind: "add-works" }
   | { kind: "edit-shelf" }
   | { kind: "delete-shelf" }
   | { kind: "new-section" }
@@ -73,9 +76,11 @@ async function refusal(response: Response, fallback: string) {
  */
 export function ShelfView({
   page,
+  works,
   supabaseUrl,
 }: {
   page: ShelfPage;
+  works: PickerWork[];
   supabaseUrl: string;
 }) {
   const router = useRouter();
@@ -210,6 +215,9 @@ export function ShelfView({
           </p>
         )}
         <div className="mt-2.5 flex flex-wrap items-center gap-2.5">
+          <Button size="lg" onClick={() => setSheet({ kind: "add-works" })}>
+            Add works
+          </Button>
           <Button
             size="lg"
             variant="outline"
@@ -234,6 +242,16 @@ export function ShelfView({
         </div>
       </div>
 
+      {sheet?.kind === "add-works" && (
+        <AddWorks
+          shelf={shelf}
+          sections={sections}
+          held={new Map(rows.map((row) => [row.item.id, row.position]))}
+          works={works}
+          onAdded={saved}
+          onClose={() => setSheet(null)}
+        />
+      )}
       {sheet?.kind === "edit-shelf" && (
         <ShelfSheet
           title={`Edit ${shelf.name}`}
