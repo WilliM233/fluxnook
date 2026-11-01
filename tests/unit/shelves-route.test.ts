@@ -4,12 +4,14 @@ import { NotFoundError } from "@/lib/catalog/import";
 // POST /api/v1/shelves and PATCH, DELETE /api/v1/shelves/<id> without a
 // database: auth and the lib are mocked, so this is the routes' own logic,
 // their errors and their silence in the log (A3).
-const { getUser, createShelf, updateShelf, deleteShelf } = vi.hoisted(() => ({
-  getUser: vi.fn(),
-  createShelf: vi.fn(),
-  updateShelf: vi.fn(),
-  deleteShelf: vi.fn(),
-}));
+const { getUser, createShelf, updateShelf, deleteShelf, listShelves } =
+  vi.hoisted(() => ({
+    getUser: vi.fn(),
+    createShelf: vi.fn(),
+    updateShelf: vi.fn(),
+    deleteShelf: vi.fn(),
+    listShelves: vi.fn(),
+  }));
 
 vi.mock("@/lib/supabase/server", () => ({
   createClient: async () => ({ auth: { getUser } }),
@@ -20,8 +22,9 @@ vi.mock("@/lib/shelves/shelves", () => ({
   updateShelf,
   deleteShelf,
 }));
+vi.mock("@/lib/shelves/list", () => ({ listShelves }));
 
-const { POST } = await import("@/app/api/v1/shelves/route");
+const { GET, POST } = await import("@/app/api/v1/shelves/route");
 const { PATCH, DELETE } = await import("@/app/api/v1/shelves/[id]/route");
 
 const user = { id: "af58f162-9de1-4c3f-a84c-be3d0769432f", email: "l@x.dev" };
@@ -37,6 +40,8 @@ const params = (id = shelf) => ({ params: Promise.resolve({ id }) });
 
 const post = (sent: unknown, type?: string) =>
   POST(request("POST", sent, type));
+const get = (query = "") =>
+  GET(new Request(`http://localhost/api/v1/shelves${query}`));
 const patch = (sent: unknown, id?: string, type?: string) =>
   PATCH(request("PATCH", sent, type), params(id));
 const del = (id?: string) => DELETE(request("DELETE"), params(id));
@@ -114,6 +119,62 @@ describe("POST /api/v1/shelves", () => {
   });
 });
 
+describe("GET /api/v1/shelves", () => {
+  const listed = [
+    { id: shelf, name: "Watch List", count: 61, sections: [], has: 1 },
+  ];
+  const other = "7a1b2c3d-0000-4000-8000-0000000000b2";
+
+  it("is 401 without a session, and reads nothing", async () => {
+    getUser.mockResolvedValue({ data: { user: null } });
+    expect((await get()).status).toBe(401);
+    expect(listShelves).not.toHaveBeenCalled();
+  });
+
+  it("is 200 with the list, no-store, the caller and no works asked about", async () => {
+    listShelves.mockResolvedValue(listed);
+    const response = await get();
+    expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(await response.json()).toEqual(listed);
+    expect(listShelves).toHaveBeenCalledWith(
+      {},
+      { userId: user.id, items: [] },
+    );
+  });
+
+  it("asks about one work with ?item= and many with ?items=", async () => {
+    listShelves.mockResolvedValue([]);
+    await get(`?item=${shelf}`);
+    expect(listShelves).toHaveBeenLastCalledWith(
+      {},
+      { userId: user.id, items: [shelf] },
+    );
+    await get(`?items=${shelf},${other}`);
+    expect(listShelves).toHaveBeenLastCalledWith(
+      {},
+      { userId: user.id, items: [shelf, other] },
+    );
+  });
+
+  it("is 400 with the field's sentence, without a read", async () => {
+    const response = await get("?items=nope");
+    expect(response.status).toBe(400);
+    expect((await response.json()).error).toEqual({
+      code: "invalid_request",
+      message: "That isn't a question about shelves.",
+      fields: { items: "Each one a work's id." },
+    });
+    expect((await get(`?item=${shelf}&items=${other}`)).status).toBe(400);
+    expect(listShelves).not.toHaveBeenCalled();
+  });
+
+  it("rethrows what it doesn't know, for Next to answer 500", async () => {
+    listShelves.mockRejectedValue(new RangeError("bug"));
+    await expect(get()).rejects.toThrow(RangeError);
+  });
+});
+
 describe("PATCH /api/v1/shelves/<id>", () => {
   it("is 200 with the shelf as it now stands", async () => {
     const row = { id: shelf, name: "New", description: "" };
@@ -162,6 +223,7 @@ describe("DELETE /api/v1/shelves/<id>", () => {
 it("logs nothing on any of these", async () => {
   updateShelf.mockRejectedValue(new NotFoundError("No shelf by that id."));
   await post({ name: "" });
+  await get("?item=nope");
   await patch({ name: "x" });
   await del("nope");
   for (const spy of said) expect(spy).not.toHaveBeenCalled();

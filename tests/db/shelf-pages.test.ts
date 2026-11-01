@@ -5,6 +5,7 @@ import { normalizeName } from "@/lib/catalog/normalize";
 import { loadPickerWorks, matchesFind } from "@/lib/catalog/picker-works";
 import { workLine } from "@/lib/catalog/work-line";
 import { addEntries, setEntryStatus } from "@/lib/shelves/entries";
+import { listShelves, type ShelfListed } from "@/lib/shelves/list";
 import { loadNook } from "@/lib/shelves/nook-page";
 import { createSection } from "@/lib/shelves/sections";
 import { loadShelfPage } from "@/lib/shelves/shelf-page";
@@ -250,6 +251,84 @@ describe("loadPickerWorks", () => {
       expect(probe).toBeLessThan(works.findIndex((w) => w.id === carrie));
     } finally {
       await sql`delete from items where id = ${id}`;
+    }
+  });
+});
+
+// The tests above write to this account (a "Mixed" shelf, a status on the
+// Watch List), so the order is asserted as the nook's own and the fixture
+// shelves are read by id, not by place.
+describe("listShelves", () => {
+  const fixtures = (listed: ShelfListed[]) =>
+    [shelf.tmnt, shelf.watch, shelf.books].map((id) => {
+      const s = listed.find((x) => x.id === id);
+      if (!s) throw new Error(`no shelf ${id}`);
+      return s;
+    });
+
+  it("lists the caller's shelves in the nook's order", async () => {
+    const listed = await listShelves(db, { userId: user.id, items: [] });
+    const nook = await loadNook(db, user.id);
+    expect(listed.map((s) => s.id)).toEqual(nook.shelves.map((s) => s.id));
+  });
+
+  it("the fixture shelves with their counts and sections, has 0 with nothing asked", async () => {
+    const listed = await listShelves(db, { userId: user.id, items: [] });
+    expect(
+      fixtures(listed).map((s) => [s.name, s.count, s.sections.length, s.has]),
+    ).toEqual([
+      ["TMNT, the Mirage run", 326, 14, 0],
+      ["Stephen King Watch List", 61, 0, 0],
+      ["Stephen King, publication order", 11, 0, 0],
+    ]);
+    expect(listed.every((s) => s.has === 0)).toBe(true);
+  });
+
+  it("the TMNT shelf's sections are its fourteen in position order", async () => {
+    const [tmnt] = fixtures(
+      await listShelves(db, { userId: user.id, items: [] }),
+    );
+    expect(tmnt.sections[0].name).toBe("Volume 1 · Main Series");
+    expect(tmnt.sections.at(-1)?.name).toBe("Volume 4 · Movie tie-ins");
+    const ids = await sql`
+      select id from shelf_sections where shelf = ${shelf.tmnt} order by position`;
+    expect(tmnt.sections.map((x) => x.id)).toEqual(ids.map((r) => r.id));
+  });
+
+  it("has for Carrie (1976) is 1 on the Watch List and 0 elsewhere", async () => {
+    const carrie = await itemFor(sql, "letterboxd", "20ZQ");
+    const listed = await listShelves(db, { userId: user.id, items: [carrie] });
+    expect(fixtures(listed).map((s) => s.has)).toEqual([0, 1, 0]);
+  });
+
+  it("has for the 62 Mirage Vol. 1 issues is 62 on the TMNT shelf and 0 elsewhere", async () => {
+    const run = await sql`
+      select item from item_sources where source = 'manual'
+        and key in ${sql(Array.from({ length: 62 }, (_, i) => `tmnt-mirage-v1-${i + 1}`))}`;
+    expect(run).toHaveLength(62);
+    const listed = await listShelves(db, {
+      userId: user.id,
+      items: run.map((r) => r.item),
+    });
+    expect(fixtures(listed).map((s) => s.has)).toEqual([62, 0, 0]);
+  });
+
+  it("lists nothing for someone with no shelves", async () => {
+    expect(
+      await listShelves(db, { userId: crypto.randomUUID(), items: [] }),
+    ).toEqual([]);
+  });
+
+  it("puts the shelf just written first (C1)", async () => {
+    const [first] = await sql`
+      select id from shelf_entries where shelf = ${shelf.books} and position = 1`;
+    const key = { shelfId: shelf.books, userId: user.id, entryId: first.id };
+    await setEntryStatus(db, { ...key, status: "done" });
+    try {
+      const [top] = await listShelves(db, { userId: user.id, items: [] });
+      expect(top.name).toBe("Stephen King, publication order");
+    } finally {
+      await setEntryStatus(db, { ...key, status: "unmarked" });
     }
   });
 });

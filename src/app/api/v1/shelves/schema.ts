@@ -28,6 +28,42 @@ export const createShelfSchema = z.strictObject({
   description: description.default(""),
 });
 
+/** The most works one `?items=` may ask about, as one add may carry. */
+export const ASKED_LIMIT = 500;
+
+const isUuid = (id: string) => z.uuid().safeParse(id).success;
+
+// Checked as one list, so a bad id is a sentence at `items`, not `items.3`.
+// Folded first, so one work in two cases is asked about once (1.4.3's R3).
+const askedItems = z
+  .string()
+  .transform((list) => list.split(",").map((id) => id.trim().toLowerCase()))
+  .refine((ids) => ids.every(isUuid), "Each one a work's id.")
+  .refine(
+    (ids) => ids.length <= ASKED_LIMIT,
+    `At most ${ASKED_LIMIT} works in one go.`,
+  )
+  .refine((ids) => new Set(ids).size === ids.length, "Each work once.");
+
+/**
+ * Query of `GET /api/v1/shelves` (A3, C9): one work (`item`), many
+ * (`items`, comma-separated), or neither; parsed to the one list `has`
+ * counts against.
+ */
+export const listShelvesQuerySchema = z
+  .strictObject({
+    item: z
+      .uuid("A work's id.")
+      .transform((id) => id.toLowerCase())
+      .optional(),
+    items: askedItems.optional(),
+  })
+  .refine((query) => !(query.item && query.items), {
+    message: "One question at a time: item, or items.",
+    path: ["items"],
+  })
+  .transform(({ item, items }) => ({ items: item ? [item] : (items ?? []) }));
+
 /** Request body of `PATCH /api/v1/shelves/<id>` (A3): either field, at least one. */
 export const patchShelfSchema = z
   .strictObject({
