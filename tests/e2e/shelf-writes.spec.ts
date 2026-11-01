@@ -130,3 +130,15 @@ test("Remove takes the row off and closes the gap", async ({
   ).toBe("2");
   expect(db(`select count(*) from items where id = '${removed}'`)).toBe("1");
 });
+
+test("an empty shelf's confirm says it holds no works", async ({
+  signedIn: { page },
+}) => {
+  const shelf = await makeShelf(page, {});
+  await page.goto(`/shelves/${shelf.id}`);
+  await page.getByRole("button", { name: "Delete shelf" }).click();
+  const sheet = page.getByRole("dialog", { name: "Delete shelf" });
+  await expect(
+    sheet.getByText(`Delete ${shelf.name}? It holds no works.`),
+  ).toBeVisible();
+});

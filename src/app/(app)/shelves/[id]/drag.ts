@@ -11,7 +11,8 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { type Dispatch, type SetStateAction, useState } from "react";
 import { dragSequence, moveInSequence, placeIn } from "@/lib/shelves/drop";
 import { moveEntry } from "@/lib/shelves/order";
 import type { ViewRow } from "./shelf-view";
@@ -24,11 +25,34 @@ export const KEYS =
 
 type Section = { id: string; name: string; position: number };
 
+type Place = { section?: string | null; position: number };
+
+/**
+ * The rows as they are now, with the places given put on them and put back
+ * in order. Applied to the current rows, never to a copy taken at the drop,
+ * so a status marked or a work removed while a move is out stays as it is
+ * (Rummage R1 to R3). A place without a section keeps the row's own.
+ */
+function placeRows(current: ViewRow[], places: Map<string, Place>) {
+  return current
+    .map((row) => {
+      const place = places.get(row.id);
+      if (!place) return row;
+      return {
+        ...row,
+        section: place.section !== undefined ? place.section : row.section,
+        position: place.position,
+      };
+    })
+    .sort((a, b) => a.position - b.position);
+}
+
 /**
  * The grip's drag (A8): pointer, touch and keyboard sensors; a drop posts
  * the move, shows the rule's numbering at once (the function the server
- * runs), then the server's answer; a refusal puts every row back and says
- * so. One live region, dnd-kit's, says where the work went.
+ * runs), then the server's answer and its sections; a refusal puts the
+ * moved rows back and says so. One live region, dnd-kit's, says where the
+ * work went.
  */
 export function useDragMove({
   shelfId,
@@ -40,9 +64,10 @@ export function useDragMove({
   shelfId: string;
   sections: Section[];
   rows: ViewRow[];
-  setRows: (rows: ViewRow[]) => void;
+  setRows: Dispatch<SetStateAction<ViewRow[]>>;
   setAlert: (alert: string | null) => void;
 }) {
+  const router = useRouter();
   const [moving, setMoving] = useState(false);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
@@ -102,22 +127,13 @@ export function useDragMove({
     if (!over || over.id === active.id) return;
     const activeId = String(active.id);
     const { place, placed } = landing(activeId, String(over.id));
-    const before = rows;
-    const at = new Map(placed.map((p) => [p.id, p]));
-    // The rule placed every row; null is a section too (above the first).
-    const shown = (positions: Map<string, { position: number }>) =>
-      rows
-        .map((row) => {
-          const placedAt = at.get(row.id);
-          return {
-            ...row,
-            section: placedAt ? placedAt.section : row.section,
-            position: positions.get(row.id)?.position ?? row.position,
-          };
-        })
-        .sort((a, b) => a.position - b.position);
+    const before = new Map(
+      rows.map(({ id, section, position }) => [id, { section, position }]),
+    );
 
-    setRows(shown(at));
+    setRows((current) =>
+      placeRows(current, new Map(placed.map((p) => [p.id, p]))),
+    );
     setMoving(true);
     try {
       const response = await fetch(
@@ -131,10 +147,16 @@ export function useDragMove({
       if (!response.ok) throw new Error(String(response.status));
       const { positions }: { positions: { id: string; position: number }[] } =
         await response.json();
-      setRows(shown(new Map(positions.map((p) => [p.id, p]))));
+      setRows((current) =>
+        placeRows(current, new Map(positions.map((p) => [p.id, p]))),
+      );
       setAlert(null);
+      // The answer numbers the shelf but names no sections; a tab another
+      // tab has moved past reads the shelf again to show the server's
+      // (Rummage R4).
+      router.refresh();
     } catch {
-      setRows(before);
+      setRows((current) => placeRows(current, before));
       setAlert(MOVE_FAILED);
     } finally {
       setMoving(false);

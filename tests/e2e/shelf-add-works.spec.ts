@@ -53,7 +53,8 @@ test("Add works with the filter, Into and the ticked rows", async ({
   ]);
 
   await sheet.getByLabel("Into").selectOption({ label: "Carrie" });
-  for (const i of [0, 1, 3, 4]) {
+  // Ticked out of list order: the add posts them in list order (A11).
+  for (const i of [4, 3, 1, 0]) {
     await picks(sheet).nth(i).getByRole("checkbox").check();
   }
   await expect(sheet.getByText("4 picked")).toBeVisible();

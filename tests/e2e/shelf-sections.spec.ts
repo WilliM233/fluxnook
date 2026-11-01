@@ -132,3 +132,13 @@ test("Cancel keeps the section", async ({ signedIn: { page } }) => {
     db(`select count(*) from shelf_sections where shelf = '${shelf.id}'`),
   ).toBe("1");
 });
+
+test("an empty section's confirm says it holds no works", async ({
+  signedIn: { page },
+}) => {
+  const shelf = await makeShelf(page, { sections: [["A", 0]] });
+  await page.goto(`/shelves/${shelf.id}`);
+  await page.getByRole("button", { name: "Delete section A" }).click();
+  const sheet = page.getByRole("dialog", { name: "Delete section" });
+  await expect(sheet.getByText("Delete A? It holds no works.")).toBeVisible();
+});

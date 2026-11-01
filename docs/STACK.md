@@ -31,7 +31,7 @@ Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js fil
 | class-variance-authority | 0.7.1 | shadcn component variants |
 | cn | 0.5.0 | shadcn's class merger; replaces clsx and tailwind-merge |
 | lucide-react | 1.58.0 | shadcn's default icon set |
-| @dnd-kit/core | 6.3.1 | The shelf page's grip (Ch 1.5.2): pointer, touch and keyboard sensors in one, its own live region, where HTML5 drag has no touch and the PWA is Volume 2. The first UI dependency since shadcn's; replaces nothing. `@dnd-kit/utilities` and `tslib` come with it and nothing imports them by name |
+| @dnd-kit/core | 6.3.1 | The shelf page's grip (Ch 1.5.2): pointer, touch and keyboard sensors in one, its own live region, where HTML5 drag has no touch and the PWA is Volume 2. The first UI dependency since shadcn's; replaces nothing. `@dnd-kit/utilities`, `@dnd-kit/accessibility` and `tslib` come with it and nothing imports them by name |
 | @dnd-kit/sortable | 10.0.0 | The sortable preset on `@dnd-kit/core`: the list's moving-aside transforms and its keyboard walk, one place per arrow (`sortableKeyboardCoordinates`) |
 | zod | 4.6.7 | Validation at the `/api/v1` edge, requests and responses |
 | @supabase/supabase-js | 2.118.0 | Supabase Auth: magic links, sessions, `getUser()`. Its bundled Storage client writes covers to the `covers` bucket from `src/lib/covers.ts`, server-side with the secret key |

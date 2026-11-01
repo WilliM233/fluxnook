@@ -62,6 +62,18 @@ function flatten(page: ShelfPage): ViewRow[] {
 
 const SAVE_FAILED = "Couldn't save that. Try again.";
 
+/** Delete section's question (A7); an empty section has nothing to move. */
+const deleteSectionSentence = (name: string, works: number) =>
+  works === 0
+    ? `Delete ${name}? It holds no works.`
+    : `Delete ${name}? Its ${plural(works, "work")} ${works === 1 ? "moves" : "move"} above the first section.`;
+
+/** Delete shelf's question (A7); an empty shelf has no works to keep. */
+const deleteShelfSentence = (name: string, works: number) =>
+  works === 0
+    ? `Delete ${name}? It holds no works.`
+    : `Delete ${name} and its ${plural(works, "work")} from it? The works stay in the catalog.`;
+
 /** What a refused write says: the route's own words when it has them. */
 async function refusal(response: Response, fallback: string) {
   const body = await response.json().catch(() => null);
@@ -303,7 +315,7 @@ export function ShelfView({
       {sheet?.kind === "delete-section" && (
         <ConfirmSheet
           title="Delete section"
-          sentence={`Delete ${sheet.section.name}? Its ${plural(sheet.works, "work")} ${sheet.works === 1 ? "moves" : "move"} above the first section.`}
+          sentence={deleteSectionSentence(sheet.section.name, sheet.works)}
           confirm="Delete section"
           failed="Couldn't delete the section just now. Try again."
           send={() =>
@@ -319,7 +331,7 @@ export function ShelfView({
       {sheet?.kind === "delete-shelf" && (
         <ConfirmSheet
           title="Delete shelf"
-          sentence={`Delete ${shelf.name} and its ${plural(counts.works, "work")} from it? The works stay in the catalog.`}
+          sentence={deleteShelfSentence(shelf.name, counts.works)}
           confirm="Delete shelf"
           failed="Couldn't delete the shelf just now. Try again."
           send={() => fetch(`/api/v1/shelves/${shelf.id}`, json("DELETE"))}
