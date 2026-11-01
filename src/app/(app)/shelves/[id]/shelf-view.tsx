@@ -1,10 +1,16 @@
 "use client";
 
+import { closestCenter, DndContext } from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { plural } from "@/lib/catalog/work-line";
+import { headingId } from "@/lib/shelves/drop";
 import { countsLine } from "@/lib/shelves/lines";
 import {
   type ShelfRow as Row,
@@ -14,7 +20,8 @@ import {
 import { ConfirmSheet } from "../confirm-sheet";
 import { NameSheet } from "../name-sheet";
 import { ShelfSheet } from "../shelf-sheet";
-import { ShelfRow } from "./shelf-row";
+import { KEYS, useDragMove } from "./drag";
+import { SortableHeading, SortableRow } from "./sortable-row";
 import { type Status, StatusControl } from "./status-control";
 
 /** A row as the view holds it: the read's row and the section it is in. */
@@ -85,6 +92,13 @@ export function ShelfView({
   const { shelf, sections } = page;
   const counts = { ...tally(rows), sections: sections.length };
   const unsectioned = rows.filter((row) => row.section === null);
+  const drag = useDragMove({
+    shelfId: shelf.id,
+    sections,
+    rows,
+    setRows,
+    setAlert,
+  });
 
   const hold = (id: string, held: boolean) =>
     setBusy((current) => {
@@ -148,10 +162,11 @@ export function ShelfView({
   };
 
   const rowOf = (row: ViewRow) => (
-    <ShelfRow
+    <SortableRow
       key={row.id}
       row={row}
       supabaseUrl={supabaseUrl}
+      disabled={drag.moving}
       aside={
         <>
           <StatusControl
@@ -300,72 +315,83 @@ export function ShelfView({
           <p className="text-muted-foreground">Nothing on it yet.</p>
         )}
 
-        {unsectioned.length > 0 && (
-          <div className="flex flex-col gap-3">
-            <ol
-              aria-label="Above the first section"
-              className="flex flex-col gap-3"
-            >
-              {unsectioned.map(rowOf)}
-            </ol>
-            {sections.length > 0 && (
-              <p className="text-[13px] text-dim">
-                A work above the first section is on the shelf, not in a
-                section. Drag it into one, or leave it.
-              </p>
-            )}
-          </div>
-        )}
-
-        {sections.map((section) => {
-          const held = rows.filter((row) => row.section === section.id);
-          return (
-            <section
-              key={section.id}
-              aria-labelledby={`section-${section.id}`}
-              className="flex flex-col gap-3"
-            >
-              <div className="flex flex-wrap items-baseline gap-2.5">
-                <h2
-                  id={`section-${section.id}`}
-                  className="font-heading text-[19px] font-semibold"
+        <DndContext
+          id={`shelf-${shelf.id}`}
+          collisionDetection={closestCenter}
+          {...drag.context}
+        >
+          <SortableContext
+            items={drag.sequence}
+            strategy={verticalListSortingStrategy}
+          >
+            {unsectioned.length > 0 && (
+              <div className="flex flex-col gap-3">
+                <ol
+                  aria-label="Above the first section"
+                  className="flex flex-col gap-3"
                 >
-                  {section.name}
-                </h2>
-                <span className="text-[13px] text-dim">
-                  {countsLine(tally(held))}
-                </span>
-                <span className="ml-auto flex gap-4">
-                  <button
-                    type="button"
-                    aria-label={`Rename ${section.name}`}
-                    className={TEXT_BUTTON}
-                    onClick={() => setSheet({ kind: "rename", section })}
-                  >
-                    Rename
-                  </button>
-                  <button
-                    type="button"
-                    aria-label={`Delete section ${section.name}`}
-                    className={TEXT_BUTTON}
-                    onClick={() =>
-                      setSheet({
-                        kind: "delete-section",
-                        section,
-                        works: held.length,
-                      })
-                    }
-                  >
-                    Delete section
-                  </button>
-                </span>
+                  {unsectioned.map(rowOf)}
+                </ol>
+                {sections.length > 0 && (
+                  <p className="text-[13px] text-dim">
+                    A work above the first section is on the shelf, not in a
+                    section. Drag it into one, or leave it.
+                  </p>
+                )}
               </div>
-              {held.length > 0 && (
-                <ol className="flex flex-col gap-3">{held.map(rowOf)}</ol>
-              )}
-            </section>
-          );
-        })}
+            )}
+
+            {sections.map((section) => {
+              const held = rows.filter((row) => row.section === section.id);
+              return (
+                <section
+                  key={section.id}
+                  aria-labelledby={`section-${section.id}`}
+                  className="flex flex-col gap-3"
+                >
+                  <SortableHeading id={headingId(section.id)}>
+                    <h2
+                      id={`section-${section.id}`}
+                      className="font-heading text-[19px] font-semibold"
+                    >
+                      {section.name}
+                    </h2>
+                    <span className="text-[13px] text-dim">
+                      {countsLine(tally(held))}
+                    </span>
+                    <span className="ml-auto flex gap-4">
+                      <button
+                        type="button"
+                        aria-label={`Rename ${section.name}`}
+                        className={TEXT_BUTTON}
+                        onClick={() => setSheet({ kind: "rename", section })}
+                      >
+                        Rename
+                      </button>
+                      <button
+                        type="button"
+                        aria-label={`Delete section ${section.name}`}
+                        className={TEXT_BUTTON}
+                        onClick={() =>
+                          setSheet({
+                            kind: "delete-section",
+                            section,
+                            works: held.length,
+                          })
+                        }
+                      >
+                        Delete section
+                      </button>
+                    </span>
+                  </SortableHeading>
+                  {held.length > 0 && (
+                    <ol className="flex flex-col gap-3">{held.map(rowOf)}</ol>
+                  )}
+                </section>
+              );
+            })}
+          </SortableContext>
+        </DndContext>
 
         {alert && (
           <p role="alert" className="text-sm text-destructive">
@@ -375,7 +401,11 @@ export function ShelfView({
 
         {counts.works > 0 && (
           <p className="text-[13px] text-dim">
-            Numbers are the shelf's order, counted through the sections.
+            Numbers are the shelf's order, counted through the sections. {KEYS}{" "}
+            A row's status is this shelf's: done here means past it on this
+            list, not read or watched, which the journal keeps. Delete section
+            moves its works above the first section; nothing is lost by deleting
+            a section.
           </p>
         )}
       </div>

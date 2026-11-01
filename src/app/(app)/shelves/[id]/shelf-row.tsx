@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode, Ref } from "react";
 import { StripThumb } from "@/app/(app)/nook/shelf-card";
 import { TypePill } from "@/app/(app)/search/rows";
 import { workLine } from "@/lib/catalog/work-line";
@@ -16,18 +16,26 @@ export function ShelfRow({
   supabaseUrl,
   grip,
   aside,
+  ref,
+  style,
+  dragging = false,
 }: {
   row: Row;
   supabaseUrl: string;
   grip?: ReactNode;
   aside?: ReactNode;
+  ref?: Ref<HTMLLIElement>;
+  style?: CSSProperties;
+  dragging?: boolean;
 }) {
   const skipped = row.status === "skipped";
   const line = workLine(row.item);
   return (
     <li
+      ref={ref}
+      style={style}
       data-testid="entry"
-      className="flex flex-wrap items-center gap-4 rounded-2xl border bg-card p-3.5"
+      className={`flex flex-wrap items-center gap-4 rounded-2xl border bg-card p-3.5 ${dragging ? "border-primary" : ""}`}
     >
       <span className="w-8 flex-none text-right text-[13px] text-dim tabular-nums">
         {row.position}
