@@ -8,6 +8,7 @@ import { releasedLabel } from "@/lib/catalog/released";
 import { loadSeriesPage, type SeriesPage } from "@/lib/catalog/series-page";
 import { coverPublicUrl } from "@/lib/covers";
 import { readEnv } from "@/lib/env";
+import { AddRun } from "./add-run";
 
 const sourceLabel: Record<string, string> = { comicvine: "Comic Vine" };
 
@@ -161,6 +162,10 @@ export default async function SeriesPageView({
           <span className="text-[13px] text-dim">
             {issues.length} in the catalog, in cover-date order
           </span>
+          <AddRun
+            series={{ name: series.name, volume: series.volume }}
+            issues={issues.map((issue) => issue.id)}
+          />
         </div>
         {issues.length === 0 ? (
           <p className="text-sm text-muted-foreground">None in the catalog.</p>

@@ -1,5 +1,6 @@
 import type { Page } from "@playwright/test";
 import { db, itemFor, loadFixturesFor, resetComics } from "./harness/fixtures";
+import { shelfId } from "./harness/shelves";
 import { expect, test } from "./harness/signed-in";
 
 // A7's comics group on the three stubs and the loaded fixtures (Ch 1.4.1),
@@ -596,5 +597,143 @@ test.describe("the import sheet", () => {
     expect(
       db(`select count(*) from editions where item = '${fixtureOne}'`),
     ).toBe("0");
+  });
+});
+
+// The series page's door (A11's series part, Ch 1.5.3): the whole run onto
+// a shelf in the page's order, through the item page's sheet.
+test.describe("the series door", () => {
+  // The run's items in the series page's order (series-page.ts).
+  const runOrder = (series: string) =>
+    db(`select string_agg(i.id::text, ',' order by i.released_on nulls last,
+        c.number nulls last, i.title)
+      from item_comics c join items i on i.id = c.item where c.series_id = '${series}'`);
+  const shelfItems = (shelf: string) =>
+    db(`select string_agg(item::text, ',' order by position)
+      from shelf_entries where shelf = '${shelf}'`);
+
+  test("Add the run from the series page on the Comic Vine stub", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    await page.goto(`${TURTLES}&type=comic`);
+    await seriesRow(page, 1984, "Mirage · 62 issues")
+      .getByRole("button", { name: "Add" })
+      .click();
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: "Same, add Comic Vine's details to it" })
+      .click();
+    await expect(page).toHaveURL(/\/series\/[0-9a-f-]{36}$/, LANDS);
+    const series = page.url().split("/series/")[1];
+    await expect(
+      page
+        .getByRole("list", { name: "Issues", exact: true })
+        .getByRole("listitem"),
+    ).toHaveCount(62);
+
+    await page.getByRole("button", { name: "Add the run to a shelf" }).click();
+    const sheet = page.getByRole("dialog", {
+      name: "Add 62 issues to a shelf",
+    });
+    await expect(sheet).toContainText(
+      "Teenage Mutant Ninja Turtles, Vol. 1, in cover-date order, after whatever is already there.",
+    );
+    const tmnt = sheet
+      .getByTestId("shelf-choice")
+      .filter({ hasText: "TMNT, the Mirage run" });
+    await expect(tmnt).toContainText(
+      "326 works · 14 sections · 62 of these already on it",
+    );
+    await expect(
+      sheet.getByRole("radio", { name: /^TMNT, the Mirage run/ }),
+    ).toBeEnabled();
+    await sheet.getByRole("radio", { name: "Or a new shelf" }).check();
+    await sheet.getByLabel("Name").fill("Mirage, reading order");
+    await sheet.getByRole("button", { name: "Add 62 issues" }).click();
+
+    await expect(sheet).toBeHidden();
+    const status = page.getByRole("status");
+    await expect(status).toContainText("62 added");
+    const mirage = shelfId(email, "Mirage, reading order");
+    await expect(
+      status.getByRole("link", { name: "Mirage, reading order" }),
+    ).toHaveAttribute("href", `/shelves/${mirage}`);
+    expect(shelfItems(mirage)).toBe(runOrder(series));
+
+    await status.getByRole("link", { name: "Mirage, reading order" }).click();
+    const rows = page.getByTestId("entry");
+    await expect(rows).toHaveCount(62);
+    await expect(
+      rows.first().getByRole("link", { name: "The Turtles' Origin is Told" }),
+    ).toBeVisible();
+    await expect(rows.first()).toContainText("1");
+    await expect(rows.last()).toContainText("62");
+
+    await page.goto(`/series/${series}`);
+    await page.getByRole("button", { name: "Add the run to a shelf" }).click();
+    const again = page.getByRole("dialog", {
+      name: "Add 62 issues to a shelf",
+    });
+    await expect(
+      again
+        .getByTestId("shelf-choice")
+        .filter({ hasText: "Mirage, reading order" }),
+    ).toContainText("62 works · 62 of these already on it");
+    await again.getByRole("radio", { name: /^Mirage, reading order/ }).check();
+    await again.getByRole("button", { name: "Add 62 issues" }).click();
+    await expect(page.getByRole("status")).toContainText(
+      "0 added, 62 already there",
+    );
+    expect(
+      db(`select count(*) from shelf_entries where shelf = '${mirage}'`),
+    ).toBe("62");
+  });
+
+  test("a run partly on a shelf adds the rest after what is there", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    const response = await page.request.post("/api/v1/series/import", {
+      data: {
+        source: "comicvine",
+        key: "volume/20281",
+        form: "issue",
+        attachTo: { series: MIRAGE_VOL_1 },
+      },
+    });
+    expect(response.status()).toBe(201);
+    const { id: series } = await response.json();
+    const three = [3, 1, 2].map((n) =>
+      itemFor("manual", `tmnt-mirage-v1-${n}`),
+    );
+    const { id: shelf } = await (
+      await page.request.post("/api/v1/shelves", { data: { name: "Partly" } })
+    ).json();
+    expect(
+      (
+        await page.request.post(`/api/v1/shelves/${shelf}/entries`, {
+          data: { items: three },
+        })
+      ).status(),
+    ).toBe(201);
+
+    await page.goto(`/series/${series}`);
+    await page.getByRole("button", { name: "Add the run to a shelf" }).click();
+    const sheet = page.getByRole("dialog", {
+      name: "Add 62 issues to a shelf",
+    });
+    await expect(
+      sheet.getByTestId("shelf-choice").filter({ hasText: "Partly" }),
+    ).toContainText("3 works · 3 of these already on it");
+    await sheet.getByRole("radio", { name: /^Partly/ }).check();
+    await sheet.getByRole("button", { name: "Add 62 issues" }).click();
+    await expect(page.getByRole("status")).toContainText(
+      "59 added, 3 already there",
+    );
+    const rest = runOrder(series)
+      .split(",")
+      .filter((id) => !three.includes(id));
+    expect(shelfItems(shelf)).toBe([...three, ...rest].join(","));
   });
 });
