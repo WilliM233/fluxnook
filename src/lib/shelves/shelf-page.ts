@@ -32,7 +32,8 @@ export type ShelfPage = {
   sections: ShelfSection[];
 };
 
-const tally = (rows: ShelfRow[]): Counts => ({
+/** A list's works, done and skipped: the header's and each section's counts. */
+export const tally = (rows: Pick<ShelfRow, "status">[]): Counts => ({
   works: rows.length,
   done: rows.filter((r) => r.status === "done").length,
   skipped: rows.filter((r) => r.status === "skipped").length,

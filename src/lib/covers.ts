@@ -1,13 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
+import { COVERS_BUCKET, coverPublicUrl } from "@/lib/cover-url";
 import { readEnv, readServerEnv } from "@/lib/env";
 
-/** The one bucket covers live in; public, written only by the server. */
-export const COVERS_BUCKET = "covers";
-
-/** A cover's public URL from its bucket-relative path. Needs no key. */
-export function coverPublicUrl(supabaseUrl: string, path: string) {
-  return `${supabaseUrl.replace(/\/$/, "")}/storage/v1/object/public/${COVERS_BUCKET}/${path}`;
-}
+export { COVERS_BUCKET, coverPublicUrl };
 
 /**
  * Storage with the secret key, which RLS does not stop: the bucket has no
