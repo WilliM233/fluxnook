@@ -1,18 +1,36 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { plural } from "@/lib/catalog/work-line";
 import { countsLine } from "@/lib/shelves/lines";
 import {
   type ShelfRow as Row,
   type ShelfPage,
   tally,
 } from "@/lib/shelves/shelf-page";
+import { ConfirmSheet } from "../confirm-sheet";
+import { ShelfSheet } from "../shelf-sheet";
 import { ShelfRow } from "./shelf-row";
 import { type Status, StatusControl } from "./status-control";
 
 /** A row as the view holds it: the read's row and the section it is in. */
 export type ViewRow = Row & { section: string | null };
+
+/** The one sheet open on the page, if any. */
+type Sheet = { kind: "edit-shelf" } | { kind: "delete-shelf" };
+
+const json = (method: string, body?: unknown): RequestInit => ({
+  method,
+  headers: { "content-type": "application/json" },
+  body: body === undefined ? undefined : JSON.stringify(body),
+});
+
+// The page's text buttons, as drawn: dim words that light on hover.
+const TEXT_BUTTON =
+  "rounded text-[13px] text-dim outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50";
 
 /** The read's rows as one list in display order, each knowing its section. */
 function flatten(page: ShelfPage): ViewRow[] {
@@ -45,6 +63,8 @@ export function ShelfView({
   page: ShelfPage;
   supabaseUrl: string;
 }) {
+  const router = useRouter();
+  const [sheet, setSheet] = useState<Sheet | null>(null);
   const [seed, setSeed] = useState(page);
   const [rows, setRows] = useState(() => flatten(page));
   const [busy, setBusy] = useState<ReadonlySet<string>>(new Set());
@@ -72,11 +92,7 @@ export function ShelfView({
     try {
       const response = await fetch(
         `/api/v1/shelves/${shelf.id}/entries/${row.id}`,
-        {
-          method: "PATCH",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ status }),
-        },
+        json("PATCH", { status }),
       );
       if (response.ok) {
         const entry: { status: Status } = await response.json();
@@ -132,7 +148,52 @@ export function ShelfView({
             {shelf.description}
           </p>
         )}
+        <div className="mt-2.5 flex flex-wrap items-center gap-2.5">
+          <Button
+            size="lg"
+            variant="outline"
+            onClick={() => setSheet({ kind: "edit-shelf" })}
+          >
+            Edit shelf
+          </Button>
+          <button
+            type="button"
+            className={`ml-auto ${TEXT_BUTTON}`}
+            onClick={() => setSheet({ kind: "delete-shelf" })}
+          >
+            Delete shelf
+          </button>
+        </div>
       </div>
+
+      {sheet?.kind === "edit-shelf" && (
+        <ShelfSheet
+          title={`Edit ${shelf.name}`}
+          lede="Its name and the words under it. Only you can see it."
+          initial={shelf}
+          submit="Save"
+          failed="Couldn't save the shelf just now. Try again."
+          send={(words) =>
+            fetch(`/api/v1/shelves/${shelf.id}`, json("PATCH", words))
+          }
+          onSaved={() => {
+            setSheet(null);
+            router.refresh();
+          }}
+          onClose={() => setSheet(null)}
+        />
+      )}
+      {sheet?.kind === "delete-shelf" && (
+        <ConfirmSheet
+          title="Delete shelf"
+          sentence={`Delete ${shelf.name} and its ${plural(counts.works, "work")} from it? The works stay in the catalog.`}
+          confirm="Delete shelf"
+          failed="Couldn't delete the shelf just now. Try again."
+          send={() => fetch(`/api/v1/shelves/${shelf.id}`, json("DELETE"))}
+          onDone={() => router.push("/nook")}
+          onClose={() => setSheet(null)}
+        />
+      )}
 
       <div className="flex flex-col gap-7 border-t pt-7">
         {counts.works === 0 && (
