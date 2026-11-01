@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Thumb } from "@/app/(app)/search/rows";
-import { coverPublicUrl } from "@/lib/covers";
+import { coverPublicUrl } from "@/lib/cover-url";
 import { countsLine } from "@/lib/shelves/lines";
 import type { NookShelf, StripCover } from "@/lib/shelves/nook-page";
 

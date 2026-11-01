@@ -95,6 +95,7 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## Calls made (with reason)
 
+- 2026-11-01 A section's name is unique on its shelf without regard to case; the unique index stays the exact backstop. "carrie" beside "Carrie" is two names to the index and one to the person typing them (1.5.1 R5, L at sign-off)
 - 2026-10-30 Aggregate stars across a shelf move to Ch 1.6: stars live on occurrences, nothing writes one before then, and an acceptance line the Browse can't see isn't one (Ch 1.5 design talk)
 - 2026-10-30 A shelf entry's status (unmarked, done, skipped) is the shelf's own flow and writes no occurrence; read and watched stay computed from occurrences, and Ch 1.6 may offer to log one when an entry is marked done (Ch 1.5)
 - 2026-10-30 A shelf's order is integer positions 1..n across the whole shelf, renumbered by the server on every write that moves anything, in display order: unsectioned entries first, then each section by its position; a move is "into this section at this index" and the server does the numbering (Ch 1.5)
@@ -218,6 +219,7 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## History
 
+- 2026-11-01 Ch 1.5.1 merged, v0.1.0-ch.5.1 (#75, PR #78); one call carried from its sign-off (section names without case, 1.5.1 R5). 1.5.2 is next
 - 2026-10-30 Ch 1.5 design talk: ten leans on stars, status, the nook, the shelf page, section delete, drag, the three doors, the 1.4.3 Deferral, visibility and the QA model, all taken; five screens drawn on Deep Field. Ch 1.5 spec written, docs/plans/1.5-shelves.md; the Ch 1.4 Afterword addendum (the providers skill's record-first line) rides the same commit
 - 2026-10-30 Ch 1.4 closed, v0.1.0-ch.4.1 to ch.4.3 (#67; PRs #71, #72, #73); Ch 1.5 is next. The third provider and the first chapter bound from Signatures; five calls added from the Afterword (the publisher and contents gates, the forms an attach reaches, a doubled number, the printing's order) and four Deferrals (mark owned from the series page, a cover over the cap, the repeated deck, the select that doubles a run). From Ch 1.5 the Browse's commands are a script and L's Browse is the clicks (House Rules step 7)
 - 2026-10-29 Ch 1.4 design talk: Metron probed from outside (API 401 without an account, the site behind bot protection and down for the afternoon), its commercial terms read, Comic Vine's public pages checked against the Mirage fixture; Comic Vine chosen on the no-second-account rule. Eight calls on the provider, the series table, matching, forms, dates, keys, covers and the contents picker; two Deferrals; the spike-as-a-chapter question closed by the Signature cut. Four screens drawn on Deep Field. Ch 1.4 spec written, docs/plans/1.4-providers-comics.md
