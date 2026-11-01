@@ -169,6 +169,20 @@ describe("GET /api/v1/shelves", () => {
     expect(listShelves).not.toHaveBeenCalled();
   });
 
+  it("is 400 for a key given twice, never an answer about the last (Rummage R6)", async () => {
+    for (const query of [
+      `?item=${shelf}&item=${other}`,
+      `?items=${shelf}&items=${other}`,
+    ]) {
+      const response = await get(query);
+      expect(response.status).toBe(400);
+      expect((await response.json()).error.fields).toEqual({
+        [query.slice(1).split("=")[0]]: "Ask it once.",
+      });
+    }
+    expect(listShelves).not.toHaveBeenCalled();
+  });
+
   it("rethrows what it doesn't know, for Next to answer 500", async () => {
     listShelves.mockRejectedValue(new RangeError("bug"));
     await expect(get()).rejects.toThrow(RangeError);

@@ -603,11 +603,18 @@ test.describe("the import sheet", () => {
 // The series page's door (A11's series part, Ch 1.5.3): the whole run onto
 // a shelf in the page's order, through the item page's sheet.
 test.describe("the series door", () => {
-  // The run's items in the series page's order (series-page.ts).
-  const runOrder = (series: string) =>
-    db(`select string_agg(i.id::text, ',' order by i.released_on nulls last,
-        c.number nulls last, i.title)
-      from item_comics c join items i on i.id = c.item where c.series_id = '${series}'`);
+  // The run's items as the series page shows its tiles, read off the page
+  // (Rummage S4: the page's order, not a copy of its query).
+  const tileOrder = async (page: Page) =>
+    (
+      await page
+        .getByRole("list", { name: "Issues", exact: true })
+        .getByRole("listitem")
+        .getByRole("link")
+        .evaluateAll((links) =>
+          links.map((a) => a.getAttribute("href")?.replace("/items/", "")),
+        )
+    ).join(",");
   const shelfItems = (shelf: string) =>
     db(`select string_agg(item::text, ',' order by position)
       from shelf_entries where shelf = '${shelf}'`);
@@ -631,6 +638,7 @@ test.describe("the series door", () => {
         .getByRole("list", { name: "Issues", exact: true })
         .getByRole("listitem"),
     ).toHaveCount(62);
+    const tiles = await tileOrder(page);
 
     await page.getByRole("button", { name: "Add the run to a shelf" }).click();
     const sheet = page.getByRole("dialog", {
@@ -659,7 +667,7 @@ test.describe("the series door", () => {
     await expect(
       status.getByRole("link", { name: "Mirage, reading order" }),
     ).toHaveAttribute("href", `/shelves/${mirage}`);
-    expect(shelfItems(mirage)).toBe(runOrder(series));
+    expect(shelfItems(mirage)).toBe(tiles);
 
     await status.getByRole("link", { name: "Mirage, reading order" }).click();
     const rows = page.getByTestId("entry");
@@ -667,8 +675,9 @@ test.describe("the series door", () => {
     await expect(
       rows.first().getByRole("link", { name: "The Turtles' Origin is Told" }),
     ).toBeVisible();
-    await expect(rows.first()).toContainText("1");
-    await expect(rows.last()).toContainText("62");
+    // The number is the row's first span (shelf-row.tsx).
+    await expect(rows.first().locator("span").first()).toHaveText("1");
+    await expect(rows.last().locator("span").first()).toHaveText("62");
 
     await page.goto(`/series/${series}`);
     await page.getByRole("button", { name: "Add the run to a shelf" }).click();
@@ -719,6 +728,7 @@ test.describe("the series door", () => {
     ).toBe(201);
 
     await page.goto(`/series/${series}`);
+    const tiles = await tileOrder(page);
     await page.getByRole("button", { name: "Add the run to a shelf" }).click();
     const sheet = page.getByRole("dialog", {
       name: "Add 62 issues to a shelf",
@@ -731,9 +741,7 @@ test.describe("the series door", () => {
     await expect(page.getByRole("status")).toContainText(
       "59 added, 3 already there",
     );
-    const rest = runOrder(series)
-      .split(",")
-      .filter((id) => !three.includes(id));
+    const rest = tiles.split(",").filter((id) => !three.includes(id));
     expect(shelfItems(shelf)).toBe([...three, ...rest].join(","));
   });
 });

@@ -28,8 +28,14 @@ export const createShelfSchema = z.strictObject({
   description: description.default(""),
 });
 
-/** The most works one `?items=` may ask about, as one add may carry. */
-export const ASKED_LIMIT = 500;
+/**
+ * The most works one `?items=` may ask about. A uuid is 37 bytes of query
+ * string, and the session cookie (about 3.3 kB) shares Node's 16,384-byte
+ * header budget with the URL, so 500 never reached the route: Node answered
+ * 431 from about 345 (1.5.3 Rummage B1). A longer run is asked about in
+ * chunks by the sheet (L, B1).
+ */
+export const ASKED_LIMIT = 200;
 
 const isUuid = (id: string) => z.uuid().safeParse(id).success;
 

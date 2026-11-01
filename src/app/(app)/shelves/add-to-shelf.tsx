@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useState } from "react";
 import { selectClass } from "@/app/(app)/search/isbn-card";
+import { ASKED_LIMIT } from "@/app/api/v1/shelves/schema";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -37,12 +38,50 @@ async function message(response: Response, fallback: string) {
 }
 
 /**
+ * The caller's shelves with `has` for `items`. A run longer than one query
+ * string carries (`ASKED_LIMIT`, Rummage B1) is asked about in chunks and
+ * each shelf's `has` added up; the first answer gives the list and its order.
+ */
+async function readShelves(
+  items: string[],
+): Promise<{ shelves: ShelfListed[] } | { error: string }> {
+  const chunks =
+    items.length === 1
+      ? [`item=${items[0]}`]
+      : Array.from(
+          { length: Math.ceil(items.length / ASKED_LIMIT) },
+          (_, i) =>
+            `items=${items.slice(i * ASKED_LIMIT, (i + 1) * ASKED_LIMIT).join(",")}`,
+        );
+  try {
+    const answers = await Promise.all(
+      chunks.map((query) => fetch(`/api/v1/shelves?${query}`)),
+    );
+    const lists: ShelfListed[][] = [];
+    for (const response of answers) {
+      if (!response.ok)
+        return { error: (await message(response, UNREAD)).text };
+      lists.push(await response.json());
+    }
+    const has = new Map<string, number>();
+    for (const s of lists.flat()) has.set(s.id, (has.get(s.id) ?? 0) + s.has);
+    return {
+      shelves: lists[0].map((s) => ({ ...s, has: has.get(s.id) ?? 0 })),
+    };
+  } catch {
+    return { error: UNREAD };
+  }
+}
+
+/**
  * Add to shelf (A10), and Add the run (A11) on the same frame: the caller's
  * shelves as radio rows, read when the sheet opens, the picked one's Into
  * beneath it, and "Or a new shelf", which makes the shelf and adds to it in
- * two calls. A shelf in `held` already holds the work and can't be picked;
- * otherwise `has` says how many of `items` a shelf holds, and adding them
- * again skips those (A5).
+ * two calls. `has`, read as the sheet opens, decides: for one work, a shelf
+ * that holds it can't be picked, and `held` (the page's chips) only gives
+ * its number, since another tab may have moved past the page (Rummage R3,
+ * R4); for a run, a shelf says how many it holds, and adding them again
+ * skips those (A5).
  */
 export function AddToShelf({
   title,
@@ -73,31 +112,25 @@ export function AddToShelf({
   // rather than making a second of the same name.
   const [made, setMade] = useState<{ id: string; name: string } | null>(null);
 
-  const query =
-    items.length === 1 ? `item=${items[0]}` : `items=${items.join(",")}`;
+  const single = items.length === 1;
+  const asked = items.join(",");
 
   useEffect(() => {
     let live = true;
     (async () => {
-      try {
-        const response = await fetch(`/api/v1/shelves?${query}`);
-        if (!live) return;
-        if (!response.ok) {
-          setError((await message(response, UNREAD)).text);
-          return;
-        }
-        const listed: ShelfListed[] = await response.json();
-        if (!live) return;
-        setShelves(listed);
-        if (listed.length === 0) setPicked(NEW);
-      } catch {
-        if (live) setError(UNREAD);
+      const listed = await readShelves(asked.split(","));
+      if (!live) return;
+      if ("error" in listed) {
+        setError(listed.error);
+        return;
       }
+      setShelves(listed.shelves);
+      if (listed.shelves.length === 0) setPicked(NEW);
     })();
     return () => {
       live = false;
     };
-  }, [query]);
+  }, [asked]);
 
   const shelf = shelves?.find((s) => s.id === picked);
   // A blank new name is the route's to refuse, so its sentence shows.
@@ -132,8 +165,9 @@ export function AddToShelf({
     setBusy(true);
     setError(null);
     setNameError(null);
+    let target: { id: string; name: string } | null | undefined;
     try {
-      const target = picked === NEW ? await makeShelf() : shelf;
+      target = picked === NEW ? await makeShelf() : shelf;
       if (!target) {
         setBusy(false);
         return;
@@ -155,7 +189,8 @@ export function AddToShelf({
       const refused = (await message(response, FAILED)).text;
       setError(picked === NEW ? `${MADE} ${refused}` : refused);
     } catch {
-      setError(FAILED);
+      // A shelf made before the add threw is still made (Rummage R5).
+      setError(picked === NEW && target ? MADE : FAILED);
     }
     setBusy(false);
   }
@@ -187,28 +222,30 @@ export function AddToShelf({
             </p>
           )}
           {shelves?.map((s) => {
+            const holds = single && s.has > 0;
             const at = held.get(s.id);
             const on = picked === s.id;
-            const line =
-              at !== undefined
+            const line = holds
+              ? at !== undefined
                 ? `Already on it, #${at}`
-                : [
-                    countsLine({
-                      works: s.count,
-                      done: 0,
-                      skipped: 0,
-                      sections: s.sections.length,
-                    }),
-                    s.has > 0 && `${s.has} of these already on it`,
-                  ]
-                    .filter(Boolean)
-                    .join(" · ");
+                : "Already on it"
+              : [
+                  countsLine({
+                    works: s.count,
+                    done: 0,
+                    skipped: 0,
+                    sections: s.sections.length,
+                  }),
+                  s.has > 0 && `${s.has} of these already on it`,
+                ]
+                  .filter(Boolean)
+                  .join(" · ");
             return (
               <div key={s.id} className="flex flex-col gap-2.5">
                 <label
                   data-testid="shelf-choice"
                   className={`flex min-h-11 items-center gap-3.5 rounded-xl border px-3.5 py-3 ${
-                    at !== undefined
+                    holds
                       ? "opacity-60"
                       : on
                         ? "border-primary"
@@ -220,7 +257,7 @@ export function AddToShelf({
                     name={`${ids}-shelf`}
                     value={s.id}
                     checked={on}
-                    disabled={at !== undefined}
+                    disabled={holds}
                     onChange={() => pick(s.id)}
                     className="size-4 accent-primary"
                   />

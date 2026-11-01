@@ -125,18 +125,18 @@ describe("listShelvesQuerySchema", () => {
     });
   });
 
-  it("refuses 501, and takes 500", () => {
+  it("refuses 201, and takes 200 (B1: what a signed-in URL carries)", () => {
     const ids = (n: number) =>
       Array.from(
         { length: n },
         (_, i) => `7a1b2c3d-0000-4000-8000-${String(i).padStart(12, "0")}`,
       ).join(",");
-    expect(refused({ items: ids(501) })).toEqual({
-      items: "At most 500 works in one go.",
+    expect(refused({ items: ids(201) })).toEqual({
+      items: "At most 200 works in one go.",
     });
     expect(
-      listShelvesQuerySchema.parse({ items: ids(500) }).items,
-    ).toHaveLength(500);
+      listShelvesQuerySchema.parse({ items: ids(200) }).items,
+    ).toHaveLength(200);
   });
 
   it("refuses a work twice, in any case", () => {

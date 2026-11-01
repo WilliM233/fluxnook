@@ -10,17 +10,21 @@ import { expect, test } from "./harness/signed-in";
 const uuids = (n: number) =>
   Array.from({ length: n }, () => crypto.randomUUID());
 
-test("R1 the GET takes the 500 works A3 says it does, signed in", async ({
+test("R1 the GET takes the 200 works A3 says it does, signed in, and refuses 201 itself", async ({
   signedIn: { page },
 }) => {
-  // 350 is under the Deferral's "about 430"; 500 is A3's cap. A signed-in
-  // session's cookies ride the same 16,384-byte header budget as the URL.
-  for (const n of [350, 500]) {
-    const response = await page.request.get(
-      `/api/v1/shelves?items=${uuids(n).join(",")}`,
-    );
-    expect(response.status(), `${n} works asked about`).toBe(200);
-  }
+  // A signed-in session's cookies ride the same 16,384-byte header budget as
+  // the URL, so 500 never reached the route (431 from ~345). L's call on B1:
+  // the cap is 200 and the sheet asks in chunks. 201 is the route's own 400,
+  // with a sentence, never Node's bare 431.
+  const at = (n: number) =>
+    page.request.get(`/api/v1/shelves?items=${uuids(n).join(",")}`);
+  expect((await at(200)).status(), "200 works asked about").toBe(200);
+  const over = await at(201);
+  expect(over.status(), "201 works asked about").toBe(400);
+  expect((await over.json()).error.fields).toEqual({
+    items: "At most 200 works in one go.",
+  });
 });
 
 test("R2 a 350-issue run's sheet lists your shelves", async ({
