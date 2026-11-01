@@ -140,7 +140,7 @@ nook_names() {
 # GET /api/v1/shelves as a jar, each shelf as "<name>:<has>", in list order.
 listed() { # jar, query string
   curl -s -b "$1" "$APP/api/v1/shelves$2" |
-    node.exe -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const j=JSON.parse(s);console.log(Array.isArray(j)?j.map(x=>x.name+":"+x.has).join("|"):JSON.stringify(j))})' |
+    node.exe -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const j=JSON.parse(s);console.log(Array.isArray(j)?(j.length?j.map(x=>x.name+":"+x.has).join("|"):"(none)"):JSON.stringify(j))})' |
     tr -d '\r'
 }
 
@@ -448,7 +448,7 @@ check "the Watch List's works" 62 "$(P "select count(*) from shelf_entries where
 check "Carrie 1974 on the Watch List" 62 "$(P "select position from shelf_entries where shelf = '$WATCH' and item = '$CARRIE'")"
 check "its chips, in order, as links" "/shelves/$WATCH|/shelves/$KING|/shelves/$BOOKS" "$(curl -s -b "$JAR_A" "$APP/items/$CARRIE" | grep -o '<a[^>]*href="/shelves/[^"]*"' | grep -o '/shelves/[^"]*' | paste -sd '|')"
 check "Carrie 1974 on the GET, after" "Stephen King Watch List:1|Stephen King, in order:1|TMNT, the Mirage run:0|Stephen King, publication order:1" "$(listed "$JAR_A" "?item=$CARRIE")"
-check "the GET as the stranger" "" "$(listed "$JAR_B" "?item=$CARRIE")"
+check "the GET as the stranger" "(none)" "$(listed "$JAR_B" "?item=$CARRIE")"
 counts "after the item page's door:" 4 17 411 454
 
 # 5. The series door (A11), on the live Comic Vine
@@ -467,7 +467,7 @@ by_hand step_run "$N"
 MIRAGE=$(shelf_of "$EMAIL" "Mirage, reading order")
 check "Mirage, reading order's works" "$N" "$(P "select count(*) from shelf_entries where shelf = '$MIRAGE'")"
 check "its number 1" "The Turtles' Origin is Told" "$(P "select i.title from shelf_entries e join items i on i.id = e.item where e.shelf = '$MIRAGE' and e.position = 1")"
-check "its order is the series page's" "$(P "select string_agg(i.id::text, ',' order by i.released_on nulls last, c.number nulls last, i.title) from item_comics c join items i on i.id = c.item where c.series_id = '$SERIES'")" "$(P "select string_agg(item::text, ',' order by position) from shelf_entries where shelf = '$MIRAGE'")"
+check "its order is the series page's (md5)" "$(P "select md5(string_agg(i.id::text, ',' order by i.released_on nulls last, c.number nulls last, i.title)) from item_comics c join items i on i.id = c.item where c.series_id = '$SERIES'")" "$(P "select md5(string_agg(item::text, ',' order by position)) from shelf_entries where shelf = '$MIRAGE'")"
 RUN=$(P "select string_agg(c.item::text, ',') from item_comics c where c.series_id = '$SERIES'")
 check "the run on the GET" "Mirage, reading order:$N|Stephen King Watch List:0|Stephen King, in order:0|TMNT, the Mirage run:62|Stephen King, publication order:0" "$(listed "$JAR_A" "?items=$RUN")"
 counts "after the series door:" 5 17 $((411 + N)) $((454 + N - 62))
