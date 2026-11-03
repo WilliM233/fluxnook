@@ -224,6 +224,10 @@ describe("updateRead", () => {
       startedOn: "2026-10-28",
       finishedOn: "2026-11-02",
       stars: 4,
+      // The read's version, UTC text with microseconds (1.6.2 Rummage R1).
+      updatedAt: expect.stringMatching(
+        /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{6}Z$/,
+      ),
     });
     expect(
       await updateRead(db, {

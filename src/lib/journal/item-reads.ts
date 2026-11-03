@@ -13,8 +13,11 @@ export type ItemEntry = {
   anchorValue: string | null;
 };
 
-/** One of the caller's reads of a work, with its entries newest first. */
-export type ItemRead = ReadLike & { entries: ItemEntry[] };
+/**
+ * One of the caller's reads of a work, with its entries newest first and
+ * its version (`updatedAt`, as the PATCH answers it).
+ */
+export type ItemRead = ReadLike & { updatedAt: string; entries: ItemEntry[] };
 
 /**
  * The caller's reads of a work for its Journal section (Ch 1.6 A5): one
@@ -30,6 +33,7 @@ export async function loadItemReads(
     select o.id, o.status, o.started_on::text as "startedOn",
       o.finished_on::text as "finishedOn", o.stars::float8 as stars,
       ${timestampText(sql`o.created_at`)} as "createdAt",
+      ${timestampText(sql`o.updated_at`)} as "updatedAt",
       coalesce(json_agg(json_build_object(
           'id', j.id, 'writtenAt', ${timestampText(sql`j.written_at`)},
           'body', j.body, 'anchorKind', j.anchor_kind, 'anchorValue', j.anchor_value)

@@ -36,6 +36,16 @@ export type Words = {
   now: string;
   /** The Journal section with no read. */
   empty: string;
+  /** The Log sheet's lede, under its title. */
+  lede: string;
+  /** Where it stands: the three statuses in the sheet's order. */
+  whereItStands: [Status, string][];
+  /** The Edit sheet's title, and the card's Edit for a reader. */
+  editRead: string;
+  /** The read's delete confirm: its title, and the card's Delete for a reader. */
+  deleteRead: string;
+  /** The confirm's sentence, naming the entries that go with it (A7, C7). */
+  deleteReadQuestion: (entries: number) => string;
 };
 
 export function words(type: ItemType): Words {
@@ -51,6 +61,18 @@ export function words(type: ItemType): Words {
     ask: `${v === "read" ? "Read" : "Watched"} it?`,
     now: `${NOW[v].toLowerCase()} now`,
     empty: `Nothing logged yet. Log a ${v} and the journal starts here.`,
+    lede: `One time through. Dates and stars are yours to leave empty; a first entry starts the journal for this ${v}.`,
+    whereItStands: [
+      ["in_progress", NOW[v]],
+      ["done", "Done"],
+      ["abandoned", "Abandoned"],
+    ],
+    editRead: `Edit this ${v}`,
+    deleteRead: `Delete ${v}`,
+    deleteReadQuestion: (n) =>
+      n === 0
+        ? `Delete this ${v}?`
+        : `Delete this ${v} and its ${n} ${n === 1 ? "entry" : "entries"}?`,
   };
 }
 

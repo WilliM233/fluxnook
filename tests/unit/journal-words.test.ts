@@ -98,3 +98,41 @@ describe("anchorKindSentence", () => {
     );
   });
 });
+
+// The sheets' and the confirms' words (1.6.2): the verb follows the type.
+
+describe("words for the sheets", () => {
+  it("Edit and Delete name a read or a watch", () => {
+    expect(words("book").editRead).toBe("Edit this read");
+    expect(words("film").editRead).toBe("Edit this watch");
+    expect(words("book").deleteRead).toBe("Delete read");
+    expect(words("film").deleteRead).toBe("Delete watch");
+  });
+
+  it("the delete confirm counts its entries, one in the singular (C7)", () => {
+    const read = words("comic").deleteReadQuestion;
+    expect(read(0)).toBe("Delete this read?");
+    expect(read(1)).toBe("Delete this read and its 1 entry?");
+    expect(read(2)).toBe("Delete this read and its 2 entries?");
+    const watch = words("tv").deleteReadQuestion;
+    expect(watch(0)).toBe("Delete this watch?");
+    expect(watch(1)).toBe("Delete this watch and its 1 entry?");
+    expect(watch(2)).toBe("Delete this watch and its 2 entries?");
+  });
+
+  it("the lede ends on the verb", () => {
+    expect(words("comic").lede).toBe(
+      "One time through. Dates and stars are yours to leave empty; a first entry starts the journal for this read.",
+    );
+    expect(words("tv").lede).toMatch(/for this watch\.$/);
+  });
+
+  it("Where it stands runs Reading or Watching, Done, Abandoned", () => {
+    expect(words("comic").whereItStands).toEqual([
+      ["in_progress", "Reading"],
+      ["done", "Done"],
+      ["abandoned", "Abandoned"],
+    ]);
+    expect(words("film").whereItStands[0]).toEqual(["in_progress", "Watching"]);
+  });
+});

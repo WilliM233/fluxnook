@@ -20,10 +20,25 @@ test("TMNT #1's fixture read: one Done card, no dates, five empty stars, 1 read"
   await expect(reads).not.toContainText("Started");
   await expect(reads).not.toContainText("Finished");
   await expect(reads).not.toContainText(" to ");
-  await expect(reads.getByRole("img", { name: "Unrated" })).toBeVisible();
+  await expect(reads.getByRole("group", { name: "Unrated" })).toBeVisible();
   await expect(reads.locator('svg[data-fill="empty"]')).toHaveCount(5);
   await expect(journal.getByTestId("entry")).toHaveCount(0);
   await expect(journal.getByText(CLOSING)).toBeVisible();
+});
+
+test("the card's stars are a control, and the page's static stars are gone", async ({
+  signedIn: { page, email },
+}) => {
+  loadFixturesFor(email);
+  await page.goto(`/items/${itemFor("manual", "tmnt-mirage-v1-1")}`);
+  const journal = page.getByRole("region", { name: "Journal" });
+  const stars = journal.getByRole("group", { name: "Unrated" });
+  for (const name of ["1 star", "2 stars", "3 stars", "4 stars", "5 stars"]) {
+    await expect(
+      stars.getByRole("button", { name, exact: true }),
+    ).toBeVisible();
+  }
+  await expect(journal.getByRole("img")).toHaveCount(0);
 });
 
 test("a work with no read says so, and Journal sits between the facts and On your shelves", async ({
