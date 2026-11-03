@@ -85,6 +85,13 @@
       "when": 1793298569373,
       "tag": "20261029182929_series_updated_at",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1793670835910,
+      "tag": "20261103015355_occurrences_one_open",
+      "breakpoints": true
     }
   ]
 }

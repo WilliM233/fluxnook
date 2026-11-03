@@ -2,6 +2,7 @@
 
 One line per chapter, newest first. Release notes live in `docs/releases/`.
 
+- 1.6 Occurrences (in progress; 1.6.1 done): an item page shows your reads of a work as a Journal, with their dates, stars and entries, and reads and entries are written through the API, one open read per work ([1.6.1](docs/releases/1.6.1.md))
 - 1.5 Shelves: the nook lists your shelves, a shelf opens as a page of numbered works, and on it you add works from the catalog, make sections, drag works by a grip or the keyboard, mark each Done or Skipped, rename, remove and delete; add a work from its item page, or a whole comic run from its series page, onto a shelf or a new one, and the series import sheet asks once before doubling a run ([1.5.1](docs/releases/1.5.1.md), [1.5.2](docs/releases/1.5.2.md), [1.5.3](docs/releases/1.5.3.md))
 - 1.4 Providers, comics: search Comic Vine for a comic series, add it with every issue or onto a run you entered by hand, open it as a series page, see what each issue is collected in, and pick what a collected edition holds ([1.4.1](docs/releases/1.4.1.md), [1.4.2](docs/releases/1.4.2.md), [1.4.3](docs/releases/1.4.3.md))
 - 1.3 Providers, books: search Open Library or type an ISBN, add a book with its cover and an edition under it, and see a book's Editions on its page ([note](docs/releases/1.3.md))

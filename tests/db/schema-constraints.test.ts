@@ -130,6 +130,28 @@ describe("content tables", () => {
     expect(inserted).toHaveLength(1);
   });
 
+  it("one open read per owner and work: a second in_progress is refused, done twice is fine, and the open read turned done frees the slot", async () => {
+    const [{ id: open }] = await sql`
+      insert into occurrences (owner, item, status)
+      values (${owner}, ${item}, 'in_progress') returning id`;
+    await rejects(
+      sql`insert into occurrences (owner, item, status)
+          values (${owner}, ${item}, 'in_progress')`,
+      /occurrences_one_open/,
+    );
+    // The file's first read is done; a second done beside it is fine.
+    const twice = await sql`
+      insert into occurrences (owner, item, status)
+      values (${owner}, ${item}, 'done') returning id`;
+    expect(twice).toHaveLength(1);
+
+    await sql`update occurrences set status = 'done' where id = ${open}`;
+    const reopened = await sql`
+      insert into occurrences (owner, item, status)
+      values (${owner}, ${item}, 'in_progress') returning id`;
+    expect(reopened).toHaveLength(1);
+  });
+
   it("the catalog refuses a delete while content points at it; a bare item takes its links", async () => {
     await rejects(
       sql`delete from items where id = ${item}`,

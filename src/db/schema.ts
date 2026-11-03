@@ -11,6 +11,7 @@ import {
   text,
   timestamp,
   unique,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 import { authUsers } from "drizzle-orm/supabase";
@@ -497,6 +498,11 @@ export const occurrences = pgTable(
       sql`${t.stars} is null or (${t.stars} >= 0.5 and ${t.stars} <= 5.0 and ${t.stars} * 2 = trunc(${t.stars} * 2))`,
     ),
     check("occurrences_visibility", oneOf(t.visibility, visibilities)),
+    // One open read per person and work (2026-11-02 call): a second Reading
+    // is a 409, and under a race this index is what makes it true.
+    uniqueIndex("occurrences_one_open")
+      .on(t.owner, t.item)
+      .where(sql`${t.status} = 'in_progress'`),
   ],
 );
 
