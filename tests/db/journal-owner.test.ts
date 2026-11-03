@@ -35,11 +35,12 @@ const everything = async () => ({
 });
 
 // A fixture load waits its turn behind every other file's (the loader's lock).
+// The load comes first: from a fresh reset the catalog is empty until it lands.
 beforeAll(async () => {
+  const one = await signUpWithFixtures(sql);
   tmnt = await itemFor(sql, "manual", "tmnt-mirage-v1-1");
   carrie = await itemFor(sql, "manual", "carrie-1974");
 
-  const one = await signUpWithFixtures(sql);
   const [{ id: read }] = await sql`
     select id from occurrences where owner = ${one.id} and item = ${tmnt}`;
   const { id: entry } = await createEntry(db, {
