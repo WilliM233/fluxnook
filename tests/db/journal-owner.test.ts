@@ -4,6 +4,7 @@ import { createDb } from "@/db/client";
 import { NotFoundError } from "@/lib/catalog/import";
 import { createEntry, deleteEntry, updateEntry } from "@/lib/journal/entries";
 import { loadItemReads } from "@/lib/journal/item-reads";
+import { loadJournalPage } from "@/lib/journal/journal-page";
 import { createRead, deleteRead, updateRead } from "@/lib/journal/reads";
 import { loadShelfPage, ratedOf } from "@/lib/shelves/shelf-page";
 import { itemFor, required, signUp, signUpWithFixtures } from "./harness";
@@ -133,6 +134,16 @@ describe("the journal's owner rule", () => {
     });
     expect(theirs.map((r) => r.id)).toEqual([stranger.read]);
     expect(theirs[0].entries.map((e) => e.body)).toEqual(["Mine."]);
+  });
+
+  it("the Journal page's query lists only the caller's (1.6 A8)", async () => {
+    const mine = await loadJournalPage(db, { userId: caller.userId });
+    expect(mine.rows.map((r) => r.entry.id)).toEqual([caller.entry]);
+    expect(mine.totals).toEqual({ entries: 1, works: 1 });
+
+    const theirs = await loadJournalPage(db, { userId: stranger.userId });
+    expect(theirs.rows.map((r) => r.entry.body)).toEqual(["Mine."]);
+    expect(theirs.totals).toEqual({ entries: 1, works: 1 });
   });
 
   it("a stranger's starred read moves nothing on the caller's shelf (1.6 A9)", async () => {

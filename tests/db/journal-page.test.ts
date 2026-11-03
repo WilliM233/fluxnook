@@ -1,7 +1,11 @@
 import postgres from "postgres";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createDb } from "@/db/client";
+import { workLine } from "@/lib/catalog/work-line";
+import { type Cursor, nextCursor, parseCursor } from "@/lib/journal/cursor";
+import { createEntry } from "@/lib/journal/entries";
 import { loadItemReads } from "@/lib/journal/item-reads";
+import { loadJournalPage } from "@/lib/journal/journal-page";
 import { latestStarred } from "@/lib/journal/order";
 import { createRead, updateRead } from "@/lib/journal/reads";
 import {
@@ -173,5 +177,107 @@ describe("a shelf's stars (A9)", () => {
       1,
     ]);
     expect(ratedOf(rows)).toEqual({ mean: 3.5, n: 1 });
+  });
+});
+
+describe("the Journal page's read (A8)", () => {
+  // 51 rows (A13): Carrie's first read takes 50, two on one instant, the
+  // oldest, and 48 a minute apart after them; Salem's Lot's read takes one.
+  const TIE = "2019-03-09T21:14:03.512345Z";
+  const written: string[] = [];
+
+  beforeAll(async () => {
+    const [{ id: carrieRead }] = await sql`select id from occurrences
+      where owner = ${userId} and item = ${work.carrie} and stars = 4.5`;
+    const [{ id: salemsRead }] = await sql`select id from occurrences
+      where owner = ${userId} and item = ${work.salems}`;
+    for (let k = 1; k <= 50; k++) {
+      const at =
+        k > 48 ? TIE : `2019-03-10T00:${String(k).padStart(2, "0")}:00.000000Z`;
+      const { id } = await createEntry(db, {
+        userId,
+        readId: carrieRead,
+        body: `Entry ${k}.`,
+        writtenAt: at,
+      });
+      written.push(id);
+    }
+    await createEntry(db, {
+      userId,
+      readId: salemsRead,
+      body: "Ben Mears comes home.",
+      anchorKind: "chapter",
+      anchorValue: "1",
+      writtenAt: "2019-03-11T09:00:00Z",
+    });
+  });
+
+  it("the totals count entries and distinct works", async () => {
+    const page = await loadJournalPage(db, { userId });
+    expect(page.totals).toEqual({ entries: 51, works: 2 });
+  });
+
+  it("51 entries page at 50 by keyset, and the two on one instant never repeat or vanish", async () => {
+    const first = await loadJournalPage(db, { userId });
+    expect(first.rows).toHaveLength(50);
+    const last = first.rows[49].entry;
+    expect(first.older).toEqual({ writtenAt: last.writtenAt, id: last.id });
+    // Row 50 is one of the tied pair, so the cut falls inside the tie.
+    expect(last.writtenAt).toBe(TIE);
+    expect(parseCursor(nextCursor(first.older as Cursor))).toEqual(first.older);
+
+    const second = await loadJournalPage(db, {
+      userId,
+      before: first.older as Cursor,
+    });
+    expect(second.rows).toHaveLength(1);
+    expect(second.older).toBeNull();
+    expect(second.totals).toEqual(first.totals);
+
+    const ids = [...first.rows, ...second.rows].map((r) => r.entry.id);
+    expect(new Set(ids).size).toBe(51);
+    for (const id of written) expect(ids).toContain(id);
+    const tied = [...first.rows, ...second.rows].filter(
+      (r) => r.entry.writtenAt === TIE,
+    );
+    expect(tied.map((r) => r.entry.id)).toEqual(
+      written.slice(48).sort().reverse(),
+    );
+  });
+
+  it("rows come newest first, each with its work's line, its read's state fields and the time's text", async () => {
+    const { rows } = await loadJournalPage(db, { userId });
+    const times = rows.map((r) => r.entry.writtenAt);
+    expect(times).toEqual([...times].sort().reverse());
+    expect(rows[0].entry).toMatchObject({
+      body: "Ben Mears comes home.",
+      anchorKind: "chapter",
+      anchorValue: "1",
+    });
+    expect(rows[0].work.title).toBe("Salem's Lot");
+    expect(rows[0].read).toMatchObject({ status: "done", stars: 5 });
+    const carrie = rows[1];
+    expect(carrie.work.title).toBe("Carrie");
+    expect(workLine(carrie.work)).toBe("1974 · Novel · Stephen King");
+    expect(carrie.read).toMatchObject({
+      status: "done",
+      startedOn: "2026-10-28",
+      finishedOn: TODAY,
+      stars: 4.5,
+    });
+    for (const r of rows) {
+      expect(r.entry.writtenAt).toMatch(
+        /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{6}Z$/,
+      );
+    }
+  });
+
+  it("an account with no entries has an empty journal", async () => {
+    const page = await loadJournalPage(db, { userId: crypto.randomUUID() });
+    expect(page).toEqual({
+      totals: { entries: 0, works: 0 },
+      rows: [],
+      older: null,
+    });
   });
 });
