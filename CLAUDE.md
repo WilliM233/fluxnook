@@ -37,8 +37,8 @@ Any org-level or user-level CLAUDE.md that names `develop`, `feature/*` branches
 
 Spawn one at a time. Give each the issue number, the plan path, and the diff. Never give them your summary of the work; they read the artifacts.
 
-- **Cartographer** (`.claude/agents/cartographer.md`): after the issue is opened, before any code. Writes sections 2 and 3 and the Stop-for-L list. Hand its output to the Nookkeeper for review; build only on `Approved`.
-- **Raccoon** (`.claude/agents/raccoon.md`): after the last step, before the PR. Fix blocking findings in the chapter. Turn every Rummage line into a test and watch it fail before it passes. Record should-findings you don't fix as deviations in section 5. Spawn it with `model: fable` when the spec's QA model line says Fable; otherwise the file's default.
+- **Cartographer** (`.claude/agents/cartographer.md`): after the issue is opened, before any code. Writes sections 2 and 3 and the Stop-for-L list. Run 1 uses the file's Fable; in a Signature's run spawn it with `model: opus`. Hand its output to the Nookkeeper for review; build only on `Approved`.
+- **Raccoon** (`.claude/agents/raccoon.md`): after the last step, before the PR. Fix blocking findings in the chapter. Turn every Rummage line into a test and watch it fail before it passes. Record should-findings you don't fix as deviations in section 5. Spawn it with `model: fable` when the cut's row for this Signature names Fable; otherwise the file's default.
 - **Scribe** (`.claude/agents/scribe.md`): after the Raccoon's tests are green. Takes the diff, updates docs, drafts the release note.
 
 ## The PR

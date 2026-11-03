@@ -18,7 +18,7 @@ Signatures: <vol>.<n>.1 <name> (#<n>, `docs/plans/<vol>.<n>.1-<slug>.md`) · <vo
 
 **Browse.** What L does by hand before sign-off, as a short script: open this, do that, see this.
 
-**QA model.** `Opus` or `Fable`. Fable when the chapter opens a door: auth, visibility, migrations on content tables, import or export, anything that can lose or expose a person's data.
+**QA model.** `Opus` or `Fable`, and the door if there is one. Fable when the chapter opens a door: auth, visibility, migrations on content tables, import or export, anything that can lose or expose a person's data. The cut names each Signature's model: Fable for the one that opens it, Opus for the rest.
 
 **Out of scope.** Named so the Cartographer doesn't plan it and the Raccoon doesn't flag its absence.
 
@@ -34,9 +34,9 @@ What's there today that this chapter touches. File and line. Corrections to sect
 
 One Signature is a valid cut. Measured on new tables, new screens, provider calls and acceptance lines; never a quota. Every acceptance line owned exactly once; no Signature depends on a later one; the last carries the chapter's end-to-end Browse unless a line here says why not.
 
-| Signature | Name, slug | Delivers | Owns | Leaves to the next |
-|---|---|---|---|---|
-| <vol>.<n>.1 | <name>, `<slug>` | one sentence | A1, A2, … | … |
+| Signature | Name, slug | Delivers | Owns | Leaves to the next | QA model |
+|---|---|---|---|---|---|
+| <vol>.<n>.1 | <name>, `<slug>` | one sentence | A1, A2, … | … | Opus or Fable |
 | <vol>.<n>.2 | … | … | … | … |
 
 Exit Browse: Signature <vol>.<n>.<s>.

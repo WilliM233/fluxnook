@@ -7,14 +7,22 @@ import {
 } from "@dnd-kit/sortable";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { LogReadSheet } from "@/app/(app)/journal/log-read-sheet";
+import { AccentStar } from "@/components/ui/accent-star";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { TEXT_BUTTON, TextButton } from "@/components/ui/text-button";
+import { json } from "@/lib/api/request";
 import type { PickerWork } from "@/lib/catalog/picker-works";
 import { plural } from "@/lib/catalog/work-line";
+import { localToday } from "@/lib/journal/forms";
+import { starText } from "@/lib/journal/stars";
+import { words } from "@/lib/journal/words";
 import { headingId } from "@/lib/shelves/drop";
-import { countsLine } from "@/lib/shelves/lines";
+import { countsLine, type Rated } from "@/lib/shelves/lines";
 import {
   type ShelfRow as Row,
+  ratedOf,
   type ShelfPage,
   tally,
 } from "@/lib/shelves/shelf-page";
@@ -38,17 +46,8 @@ type Sheet =
   | { kind: "delete-shelf" }
   | { kind: "new-section" }
   | { kind: "rename"; section: Section }
-  | { kind: "delete-section"; section: Section; works: number };
-
-const json = (method: string, body?: unknown): RequestInit => ({
-  method,
-  headers: { "content-type": "application/json" },
-  body: body === undefined ? undefined : JSON.stringify(body),
-});
-
-// The page's text buttons, as drawn: dim words that light on hover.
-const TEXT_BUTTON =
-  "rounded text-[13px] text-dim outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50";
+  | { kind: "delete-section"; section: Section; works: number }
+  | { kind: "log-read"; row: ViewRow };
 
 /** The read's rows as one list in display order, each knowing its section. */
 function flatten(page: ShelfPage): ViewRow[] {
@@ -73,6 +72,21 @@ const deleteShelfSentence = (name: string, works: number) =>
   works === 0
     ? `Delete ${name}? It holds no works.`
     : `Delete ${name} and its ${plural(works, "work")} from it? The works stay in the catalog.`;
+
+/**
+ * A shelf's or a section's line (A7, 1.6 A9), its star in accent as drawn;
+ * the text is `countsLine`'s, so a test reads it whole.
+ */
+function CountsText({
+  counts,
+  rated,
+}: {
+  counts: Parameters<typeof countsLine>[0];
+  rated: Rated;
+}) {
+  const star = rated.n > 0 && rated.mean !== null ? starText(rated.mean) : null;
+  return <AccentStar text={countsLine({ ...counts, rated })} star={star} />;
+}
 
 /** What a refused write says: the route's own words when it has them. */
 async function refusal(response: Response, fallback: string) {
@@ -101,9 +115,23 @@ export function ShelfView({
   const [rows, setRows] = useState(() => flatten(page));
   const [busy, setBusy] = useState<ReadonlySet<string>>(new Set());
   const [alert, setAlert] = useState<string | null>(null);
+  // Rows just marked Done that offer to log the read (1.6 A10): view state
+  // only, so a reload shows Remove again.
+  const [offers, setOffers] = useState<ReadonlySet<string>>(new Set());
   if (seed !== page) {
+    const fresh = flatten(page);
     setSeed(page);
-    setRows(flatten(page));
+    setRows(fresh);
+    // An offer follows a Done the server answered; a read that shows the
+    // row isn't Done any more takes it away (1.6.3 Rummage R2).
+    const done = new Set(
+      fresh.filter((r) => r.status === "done").map((r) => r.id),
+    );
+    setOffers((current) =>
+      [...current].every((id) => done.has(id))
+        ? current
+        : new Set([...current].filter((id) => done.has(id))),
+    );
   }
 
   const { shelf, sections } = page;
@@ -125,6 +153,15 @@ export function ShelfView({
       return next;
     });
 
+  const offer = (id: string, on: boolean) =>
+    setOffers((current) => {
+      if (current.has(id) === on) return current;
+      const next = new Set(current);
+      if (on) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+
   async function setStatus(row: ViewRow, status: Status) {
     if (status === row.status) return;
     hold(row.id, true);
@@ -140,6 +177,8 @@ export function ShelfView({
             r.id === row.id ? { ...r, status: entry.status } : r,
           ),
         );
+        // Only a Done the server has answered offers to log; a failure never.
+        offer(row.id, entry.status === "done");
         setAlert(null);
       } else {
         setAlert(await refusal(response, SAVE_FAILED));
@@ -178,6 +217,30 @@ export function ShelfView({
     router.refresh();
   };
 
+  /** The offer under a row just marked Done, in Remove's place (1.6 A10). */
+  const offerOf = (row: ViewRow) => {
+    const w = words(row.item.type);
+    return (
+      <span className="flex items-center gap-3 text-[13px]">
+        <span className="text-muted-foreground">{w.ask}</span>
+        <button
+          type="button"
+          disabled={busy.has(row.id)}
+          className="rounded text-primary outline-none hover:text-accent-hover focus-visible:ring-3 focus-visible:ring-ring/50"
+          onClick={() => setSheet({ kind: "log-read", row })}
+        >
+          {w.log}
+        </button>
+        <TextButton
+          disabled={busy.has(row.id)}
+          onClick={() => offer(row.id, false)}
+        >
+          Not now
+        </TextButton>
+      </span>
+    );
+  };
+
   const rowOf = (row: ViewRow) => (
     <SortableRow
       key={row.id}
@@ -192,15 +255,19 @@ export function ShelfView({
             busy={busy.has(row.id)}
             onPick={(status) => setStatus(row, status)}
           />
-          <button
-            type="button"
-            aria-label={`Remove ${row.item.title}`}
-            disabled={busy.has(row.id)}
-            className={TEXT_BUTTON}
-            onClick={() => remove(row)}
-          >
-            Remove
-          </button>
+          {offers.has(row.id) ? (
+            offerOf(row)
+          ) : (
+            <button
+              type="button"
+              aria-label={`Remove ${row.item.title}`}
+              disabled={busy.has(row.id)}
+              className={TEXT_BUTTON}
+              onClick={() => remove(row)}
+            >
+              Remove
+            </button>
+          )}
         </>
       }
     />
@@ -216,7 +283,9 @@ export function ShelfView({
           >
             Shelf
           </Badge>
-          <span>{countsLine(counts)}</span>
+          <span>
+            <CountsText counts={counts} rated={ratedOf(rows)} />
+          </span>
         </div>
         <h1 className="font-heading text-5xl leading-none font-semibold tracking-tight">
           {shelf.name}
@@ -254,6 +323,32 @@ export function ShelfView({
         </div>
       </div>
 
+      {sheet?.kind === "log-read" && (
+        <LogReadSheet
+          item={{
+            id: sheet.row.item.id,
+            title: sheet.row.item.title,
+            type: sheet.row.item.type,
+            form: sheet.row.item.form ?? null,
+          }}
+          // An open read is the one Done means: finish it, never log a
+          // second (1.6.3 Raccoon N9, L at the exit Browse).
+          read={
+            sheet.row.open
+              ? {
+                  ...sheet.row.open,
+                  status: "done",
+                  finishedOn: localToday(),
+                }
+              : undefined
+          }
+          onSaved={() => {
+            offer(sheet.row.id, false);
+            saved();
+          }}
+          onClose={() => setSheet(null)}
+        />
+      )}
       {sheet?.kind === "add-works" && (
         <AddWorks
           shelf={shelf}
@@ -387,7 +482,7 @@ export function ShelfView({
                       {section.name}
                     </h2>
                     <span className="text-[13px] text-dim">
-                      {countsLine(tally(held))}
+                      <CountsText counts={tally(held)} rated={ratedOf(held)} />
                     </span>
                     <span className="ml-auto flex gap-4">
                       <button
@@ -435,7 +530,11 @@ export function ShelfView({
             A row's status is this shelf's: done here means past it on this
             list, not read or watched, which the journal keeps. Delete section
             moves its works above the first section; nothing is lost by deleting
-            a section.
+            a section. Stars on a row are its latest starred read or watch; the
+            shelf's star is the mean over the works that have one, with how many
+            that is. The offer under a row just marked Done logs the read or
+            watch in the journal, once, or finishes the one you have open, and
+            goes away on its own.
           </p>
         )}
       </div>

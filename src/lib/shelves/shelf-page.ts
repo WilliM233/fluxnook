@@ -2,13 +2,36 @@ import { sql } from "drizzle-orm";
 import type { Db } from "@/db/client";
 import type { entryStatuses } from "@/db/vocabulary";
 import type { WorkFacts } from "@/lib/catalog/work-line";
+import { meanStars } from "@/lib/journal/stars";
+import type { ItemType } from "@/lib/journal/words";
+import type { Rated } from "./lines";
 
-/** One work on the shelf, with what its row prints (A7). */
+/** The shelf owner's open Reading read of a work: there is at most one (A1). */
+export type OpenRead = {
+  id: string;
+  startedOn: string | null;
+  stars: number | null;
+};
+
+/**
+ * One work on the shelf, with what its row prints (A7): and from Ch 1.6 the
+ * work's stars, its latest starred read's, and how many reads it has (A9),
+ * both the shelf owner's, and the open read Done's offer finishes (N9).
+ */
 export type ShelfRow = {
   id: string;
   position: number;
   status: (typeof entryStatuses)[number];
-  item: WorkFacts & { id: string; title: string; cover_path: string | null };
+  // The column's check holds the four types the journal's words know.
+  item: WorkFacts & {
+    id: string;
+    type: ItemType;
+    title: string;
+    cover_path: string | null;
+  };
+  stars: number | null;
+  reads: number;
+  open: OpenRead | null;
 };
 
 type Counts = { works: number; done: number; skipped: number };
@@ -38,6 +61,16 @@ export const tally = (rows: Pick<ShelfRow, "status">[]): Counts => ({
   done: rows.filter((r) => r.status === "done").length,
   skipped: rows.filter((r) => r.status === "skipped").length,
 });
+
+/**
+ * A list's star part (1.6 A9): the mean over its works that have stars, and
+ * how many. A skipped work counts like any other: its status is the shelf's,
+ * its stars the journal's.
+ */
+export const ratedOf = (rows: Pick<ShelfRow, "stars">[]): Rated => {
+  const starred = rows.flatMap((r) => (r.stars === null ? [] : [r.stars]));
+  return { mean: meanStars(starred), n: starred.length };
+};
 
 type Read = ShelfPage["shelf"] & {
   sections: { id: string; name: string; position: number }[];
@@ -69,7 +102,22 @@ export async function loadShelfPage(
             'cover_path', i.cover_path, 'released_on', i.released_on::text,
             'form', i.form, 'runtime_minutes', f.runtime_minutes,
             'seasons', t.seasons, 'author', b.author,
-            'series', nullif(c.series, ''), 'number', c.number)
+            'series', nullif(c.series, ''), 'number', c.number),
+          -- latestStarred in SQL: A5's order, as sortReads holds it
+          'stars', (select o.stars::float8 from occurrences o
+            where o.owner = s.owner and o.item = i.id and o.stars is not null
+            order by coalesce(o.finished_on, o.started_on,
+                (o.created_at at time zone 'UTC')::date) desc,
+              o.created_at desc, o.id desc
+            limit 1),
+          'reads', (select count(*)::int from occurrences o
+            where o.owner = s.owner and o.item = i.id),
+          'open', (select json_build_object('id', o.id,
+              'startedOn', o.started_on::text, 'stars', o.stars::float8)
+            from occurrences o
+            where o.owner = s.owner and o.item = i.id
+              and o.status = 'in_progress'
+            limit 1)
         ) order by e.position), '[]')
         from shelf_entries e
         join items i on i.id = e.item

@@ -490,7 +490,15 @@ test.describe("the import sheet", () => {
     db(
       `insert into item_sources (item, source, key) values ('${fixtureOne}', 'comicvine', 'issue/999999999')`,
     );
-    const before = db("select count(*) from items");
+    // What the attach would write, read on the fixture's run alone: another
+    // worker's shelf makes works meanwhile, so a count of every item can't
+    // hold (1.6.3 D12).
+    const onTheRun = () =>
+      db(`select count(distinct c.item) || ',' || count(s.item)
+        from item_comics c
+        left join item_sources s on s.item = c.item and s.source = 'comicvine'
+        where c.series = (select series from item_comics where item = '${fixtureOne}')`);
+    const before = onTheRun();
     await sheet
       .getByRole("button", { name: "Same, add Comic Vine's details to it" })
       .click();
@@ -498,7 +506,7 @@ test.describe("the import sheet", () => {
       "That run is already attached to another Comic Vine volume.",
       LANDS,
     );
-    expect(db("select count(*) from items")).toBe(before);
+    expect(onTheRun()).toBe(before);
     expect(
       db("select count(*) from series_sources where key = 'volume/20281'"),
     ).toBe("0");

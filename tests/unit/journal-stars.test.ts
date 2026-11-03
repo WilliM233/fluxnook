@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { halfFor, starText, stepStars } from "@/lib/journal/stars";
+import { halfFor, meanStars, starText, stepStars } from "@/lib/journal/stars";
 
 // The star text (Ch 1.6 A9): one decimal, a trailing .0 dropped.
 
@@ -46,5 +46,35 @@ describe("halfFor", () => {
     expect(halfFor(4, "right")).toBe(4);
     expect(halfFor(5, "left")).toBe(4.5);
     expect(halfFor(1, "left")).toBe(0.5);
+  });
+});
+
+describe("meanStars", () => {
+  it("none rated is no mean", () => {
+    expect(meanStars([])).toBeNull();
+  });
+
+  it("one work is its own stars", () => {
+    expect(meanStars([4.5])).toBe(4.5);
+    expect(meanStars([5])).toBe(5);
+    expect(starText(meanStars([5]) as number)).toBe("★ 5");
+  });
+
+  it("4.75 rounds half up to 4.8", () => {
+    expect(meanStars([4.5, 5])).toBe(4.8);
+    expect(starText(meanStars([4.5, 5]) as number)).toBe("★ 4.8");
+  });
+
+  it("ten works summing 43.5 are 4.4, where toFixed reads 4.3 (census C2)", () => {
+    const ten = [...Array(9).fill(4.5), 3];
+    expect(ten.reduce((a, b) => a + b, 0)).toBe(43.5);
+    expect((4.35).toFixed(1)).toBe("4.3");
+    expect(meanStars(ten)).toBe(4.4);
+  });
+
+  it("a mean in thirds goes to the nearest tenth, up or down", () => {
+    expect(meanStars([0.5, 0.5, 1])).toBe(0.7);
+    expect(meanStars([4.5, 4.5, 3.5])).toBe(4.2);
+    expect(meanStars([5, 4, 4])).toBe(4.3);
   });
 });

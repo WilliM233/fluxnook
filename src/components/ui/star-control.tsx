@@ -2,12 +2,9 @@
 
 import type { KeyboardEvent, MouseEvent } from "react";
 import { fillFor, Star } from "@/components/ui/stars";
+import { TEXT_BUTTON } from "@/components/ui/text-button";
 import { halfFor, stepStars } from "@/lib/journal/stars";
 import { cn } from "@/lib/utils";
-
-// The page's text buttons, as drawn: dim words that light on hover.
-const TEXT_BUTTON =
-  "rounded text-[13px] text-dim outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50";
 
 const STEP: Record<string, 1 | -1> = {
   ArrowRight: 1,

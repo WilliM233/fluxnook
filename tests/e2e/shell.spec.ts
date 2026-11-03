@@ -16,6 +16,10 @@ test("a signed-in page has the header, the TMDB footer and the look", async ({
   await expect(
     header.getByRole("link", { name: "Nook", exact: true }),
   ).toBeVisible();
+  await expect(header.getByRole("link", { name: "Journal" })).toHaveAttribute(
+    "href",
+    "/journal",
+  );
   await expect(header.getByRole("button", { name: "Sign out" })).toBeVisible();
 
   const footer = page.getByRole("contentinfo");

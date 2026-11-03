@@ -4,7 +4,9 @@ import { createDb } from "@/db/client";
 import { NotFoundError } from "@/lib/catalog/import";
 import { createEntry, deleteEntry, updateEntry } from "@/lib/journal/entries";
 import { loadItemReads } from "@/lib/journal/item-reads";
+import { loadJournalPage } from "@/lib/journal/journal-page";
 import { createRead, deleteRead, updateRead } from "@/lib/journal/reads";
+import { loadShelfPage, ratedOf } from "@/lib/shelves/shelf-page";
 import { itemFor, required, signUp, signUpWithFixtures } from "./harness";
 
 // A3's and A4's rule as two people (Ch 1.6.1): every write to a read or an
@@ -35,11 +37,12 @@ const everything = async () => ({
 });
 
 // A fixture load waits its turn behind every other file's (the loader's lock).
+// The load comes first: from a fresh reset the catalog is empty until it lands.
 beforeAll(async () => {
+  const one = await signUpWithFixtures(sql);
   tmnt = await itemFor(sql, "manual", "tmnt-mirage-v1-1");
   carrie = await itemFor(sql, "manual", "carrie-1974");
 
-  const one = await signUpWithFixtures(sql);
   const [{ id: read }] = await sql`
     select id from occurrences where owner = ${one.id} and item = ${tmnt}`;
   const { id: entry } = await createEntry(db, {
@@ -131,6 +134,36 @@ describe("the journal's owner rule", () => {
     });
     expect(theirs.map((r) => r.id)).toEqual([stranger.read]);
     expect(theirs[0].entries.map((e) => e.body)).toEqual(["Mine."]);
+  });
+
+  it("the Journal page's query lists only the caller's (1.6 A8)", async () => {
+    const mine = await loadJournalPage(db, { userId: caller.userId });
+    expect(mine.rows.map((r) => r.entry.id)).toEqual([caller.entry]);
+    expect(mine.totals).toEqual({ entries: 1, works: 1 });
+
+    const theirs = await loadJournalPage(db, { userId: stranger.userId });
+    expect(theirs.rows.map((r) => r.entry.body)).toEqual(["Mine."]);
+    expect(theirs.totals).toEqual({ entries: 1, works: 1 });
+  });
+
+  it("a stranger's starred open read moves nothing on the caller's shelf (1.6 A9, 1.6.3 N9)", async () => {
+    await sql`update occurrences set stars = 1, status = 'in_progress'
+      where id = ${stranger.read}`;
+    try {
+      const [{ id }] = await sql`select id from shelves
+        where owner = ${caller.userId} and name = 'TMNT, the Mirage run'`;
+      const page = await loadShelfPage(db, { id, userId: caller.userId });
+      const rows = [
+        ...(page?.unsectioned ?? []),
+        ...(page?.sections.flatMap((s) => s.rows) ?? []),
+      ];
+      const row = rows.find((r) => r.item.id === tmnt);
+      expect([row?.stars, row?.reads, row?.open]).toEqual([null, 1, null]);
+      expect(ratedOf(rows).n).toBe(0);
+    } finally {
+      await sql`update occurrences set stars = null, status = 'done'
+        where id = ${stranger.read}`;
+    }
   });
 
   it("two people may each have one open read of the same work", async () => {
