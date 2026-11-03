@@ -21,8 +21,10 @@ const STEP: Record<string, 1 | -1> = {
  * half of a star its half, the arrow keys a half step. On a sheet the number
  * sits beside it with Clear; on a card it is the stars alone.
  *
- * A busy control ignores input rather than disabling its buttons, so the
- * focused star keeps focus while a change saves and the arrows go on working.
+ * A busy control still takes input and says so with `aria-busy`: its
+ * buttons stay enabled, so the focused star keeps focus while a change saves,
+ * and the caller decides what a change made meanwhile does (the card queues
+ * it, 1.6.2 Rummage R5).
  */
 export function StarControl({
   value,
@@ -43,7 +45,7 @@ export function StarControl({
   className?: string;
 }) {
   function pick(stars: number | null) {
-    if (!busy && stars !== value) onChange(stars);
+    if (stars !== value) onChange(stars);
   }
 
   function click(k: number, event: MouseEvent<HTMLButtonElement>) {

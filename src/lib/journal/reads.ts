@@ -6,6 +6,7 @@ import {
   checkAnchorKind,
   insertEntry,
   type NewEntry,
+  timestampText,
   type WorkKind,
 } from "./entries";
 import {
@@ -31,12 +32,17 @@ export type Read = {
   startedOn: string | null;
   finishedOn: string | null;
   stars: number | null;
+  /** When it last changed, as UTC text with microseconds. */
+  updatedAt: string;
 };
 
 type ReadFields = Pick<Read, "status" | "startedOn" | "finishedOn">;
 
+// `updatedAt` is the read's version: a page holding an answer and a refresh
+// keeps the newer of the two (1.6.2 Rummage R1).
 const READ_COLUMNS = sql`id, item, status, started_on::text as "startedOn",
-  finished_on::text as "finishedOn", stars::float8 as stars`;
+  finished_on::text as "finishedOn", stars::float8 as stars,
+  ${timestampText(sql`updated_at`)} as "updatedAt"`;
 
 /** A3's rules on a read as it will stand; the schemas say the same first. */
 export function checkRules({ status, startedOn, finishedOn }: ReadFields) {

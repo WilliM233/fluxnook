@@ -177,6 +177,13 @@ test("R5 an arrow pressed before the last click's answer is kept, not dropped", 
   await fourth.press("ArrowRight");
 
   await expect(card.getByRole("group", { name: "★ 4.5" })).toBeVisible();
+  // Both saves land before the reload: a reload mid-save drops what the
+  // browser hasn't sent (Binder, at green).
+  await expect(card.getByRole("group", { name: "★ 4.5" })).not.toHaveAttribute(
+    "aria-busy",
+    "true",
+    { timeout: 10_000 },
+  );
   await page.reload();
   await expect(card.getByRole("group", { name: "★ 4.5" })).toBeVisible();
   expect(db(`select stars from occurrences where id = '${read}'`)).toBe("4.5");

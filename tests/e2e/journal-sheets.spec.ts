@@ -410,9 +410,9 @@ test("add an entry and see it first, then edit its text and clear its anchor", a
   await sheet.getByLabel("Where in it, the place").fill("7");
   const posted = page.waitForRequest((r) => r.method() === "POST");
   await sheet.getByRole("button", { name: "Save" }).click();
-  expect(JSON.parse((await posted).postData() ?? "{}")).not.toHaveProperty(
-    "writtenAt",
-  );
+  // Written untouched in its own minute: now, to the millisecond (R6).
+  const sent = JSON.parse((await posted).postData() ?? "{}").writtenAt;
+  expect(Math.abs(Date.parse(sent) - Date.now())).toBeLessThan(60_000);
   await expect(sheet).toBeHidden();
 
   const entries = card.getByTestId("entry");

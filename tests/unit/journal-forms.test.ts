@@ -99,6 +99,21 @@ describe("readPost", () => {
     expect(body).not.toHaveProperty("entry");
   });
 
+  it("a place with no words sends the entry, for the route to refuse (R4)", () => {
+    const body = readPost(ITEM, done, {
+      body: "",
+      anchorKind: "page",
+      anchorValue: "112",
+    });
+    expect(body.entry).toEqual({
+      body: "",
+      anchorKind: "page",
+      anchorValue: "112",
+    });
+    const parsed = createReadSchema.safeParse(body);
+    expect(parsed.error?.issues[0].path).toEqual(["entry", "body"]);
+  });
+
   it("a kind with no place pins nothing", () => {
     const body = readPost(ITEM, done, {
       body: "Finished in a weekend.",
@@ -151,18 +166,30 @@ describe("entryPost and entryChange", () => {
     writtenAt: opened,
   };
 
-  it("an add left at now sends no time, so the server's now is used", () => {
-    const body = entryPost(form, opened);
+  // The moment of the save: the field still shows its minute.
+  const saved = new Date(2026, 10, 2, 21, 14, 37, 512);
+
+  it("an add showing this minute sends now to the millisecond", () => {
+    const body = entryPost(form, saved);
     expect(body).toEqual({
       body: "Ben Mears comes home.",
       anchorKind: "chapter",
       anchorValue: "1",
+      writtenAt: saved.toISOString(),
     });
     expect(createEntrySchema.safeParse(body).success).toBe(true);
   });
 
+  it("an add left open past the minute sends the time it shows (R6)", () => {
+    const later = new Date(2026, 10, 2, 21, 19, 5);
+    const body = entryPost(form, later);
+    expect(new Date(body.writtenAt as string).getTime()).toBe(
+      new Date(2026, 10, 2, 21, 14).getTime(),
+    );
+  });
+
   it("an add set back sends the instant the field shows", () => {
-    const body = entryPost({ ...form, writtenAt: "2019-03-09T21:14" }, opened);
+    const body = entryPost({ ...form, writtenAt: "2019-03-09T21:14" }, saved);
     expect(new Date(body.writtenAt as string).getTime()).toBe(
       new Date(2019, 2, 9, 21, 14).getTime(),
     );

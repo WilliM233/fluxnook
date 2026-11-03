@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { EntrySheet } from "@/app/(app)/journal/entry-sheet";
 import {
   LogReadSheet,
@@ -42,6 +42,9 @@ const json = (method: string, body?: unknown): RequestInit => ({
   body: body === undefined ? undefined : JSON.stringify(body),
 });
 
+/** The stars as A3's `PATCH` answers them, with the read's version. */
+type Answer = { stars: number | null; updatedAt: string };
+
 const STARS_FAILED = "Couldn't save that. Try again.";
 
 // The page's text buttons, as drawn: dim words that light on hover.
@@ -49,9 +52,24 @@ const TEXT_BUTTON =
   "rounded text-[13px] text-dim outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50";
 
 /**
+ * A delete whose thing is already gone (another tab) did what it asked: the
+ * confirm closes and the page's read shows it (1.6.2 Rummage R3).
+ */
+async function goneIsDone(sent: Promise<Response>) {
+  const response = await sent;
+  return response.status === 404
+    ? new Response(null, { status: 204 })
+    : response;
+}
+
+/**
  * The Journal section's heading row and cards (Ch 1.6 A5): each card's stars
  * a live control posting A3's `PATCH`. A click shows at once and rolls back
- * on a refusal; the page's own read replaces it once the read agrees.
+ * on a refusal; a click made while one is saving waits its turn, and the
+ * last one wins. Once saved, the card shows the newer of the route's answer
+ * and the page's read, by the read's `updatedAt`: a refresh asked for before
+ * the last save can't put older stars back under the arrow keys, and a
+ * change made in another tab after it shows here (1.6.2 Rummage R1).
  */
 export function JournalCards({
   item,
@@ -65,24 +83,24 @@ export function JournalCards({
   const router = useRouter();
   const w = words(item.type);
   const [sheet, setSheet] = useState<Sheet | null>(null);
-  // Stars clicked but not yet read back from the server, by read id.
+  // Stars clicked and not yet answered, by read id.
   const [clicked, setClicked] = useState<Record<string, number | null>>({});
+  // The route's last answer per read, with its version.
+  const [answered, setAnswered] = useState<Record<string, Answer>>({});
   const [busy, setBusy] = useState<Set<string>>(new Set());
   const [alerts, setAlerts] = useState<Record<string, string>>({});
-  // A click gives way to the server's read only once the read agrees with
-  // it: a refresh asked for after one click can render before the next click
-  // commits, and would put the older stars back under the arrow keys.
-  const [seen, setSeen] = useState(cards);
-  if (seen !== cards) {
-    setSeen(cards);
-    setClicked((current) =>
-      Object.fromEntries(
-        Object.entries(current).filter(([id, stars]) => {
-          const card = cards.find((c) => c.id === id);
-          return card !== undefined && card.stars !== stars;
-        }),
-      ),
-    );
+  // The cards saving now, and the stars each will send next.
+  const saving = useRef(new Set<string>());
+  const queued = useRef(new Map<string, number | null>());
+
+  /** The stars a card shows: a click saving, else the newer version. */
+  function shown(card: Card): number | null {
+    if (card.id in clicked) return clicked[card.id];
+    const answer = answered[card.id];
+    // Fixed-width UTC text, so the newer compares greater.
+    return answer && answer.updatedAt > card.updatedAt
+      ? answer.stars
+      : card.stars;
   }
 
   const hold = (id: string, held: boolean) =>
@@ -99,35 +117,50 @@ export function JournalCards({
   }
 
   async function rate(card: Card, stars: number | null) {
-    hold(card.id, true);
     setClicked((current) => ({ ...current, [card.id]: stars }));
     setAlerts((current) => forget(current, card.id));
+    // A click while one saves waits its turn (1.6.2 Rummage R5).
+    if (saving.current.has(card.id)) {
+      queued.current.set(card.id, stars);
+      return;
+    }
+    saving.current.add(card.id);
+    hold(card.id, true);
+    let next: number | null | undefined = stars;
     try {
-      const response = await fetch(
-        `/api/v1/occurrences/${card.id}`,
-        json("PATCH", { stars }),
-      );
-      if (response.ok) {
-        router.refresh();
-      } else {
-        const body = await response.json().catch(() => null);
-        throw new Error(body?.error?.message ?? STARS_FAILED);
+      while (next !== undefined) {
+        const response = await fetch(
+          `/api/v1/occurrences/${card.id}`,
+          json("PATCH", { stars: next }),
+        );
+        // Deleted in another tab: the refresh takes the card away (R2).
+        if (response.status === 404) break;
+        if (!response.ok) {
+          const body = await response.json().catch(() => null);
+          throw new Error(body?.error?.message ?? STARS_FAILED);
+        }
+        const answer: Answer = await response.json();
+        setAnswered((current) => ({ ...current, [card.id]: answer }));
+        next = queued.current.get(card.id);
+        queued.current.delete(card.id);
       }
     } catch (error) {
-      setClicked((current) => forget(current, card.id));
       setAlerts((current) => ({
         ...current,
         [card.id]: error instanceof Error ? error.message : STARS_FAILED,
       }));
     } finally {
+      queued.current.delete(card.id);
+      saving.current.delete(card.id);
+      setClicked((current) => forget(current, card.id));
       hold(card.id, false);
+      router.refresh();
     }
   }
 
   /** A sheet saved: the page's read is the one to show now. */
   function saved() {
     setSheet(null);
-    setClicked({});
     router.refresh();
   }
 
@@ -151,7 +184,7 @@ export function JournalCards({
       {cards.length > 0 && (
         <ul className="flex flex-col gap-3">
           {cards.map((card) => {
-            const stars = card.id in clicked ? clicked[card.id] : card.stars;
+            const stars = shown(card);
             return (
               <li
                 key={card.id}
@@ -289,9 +322,11 @@ export function JournalCards({
           confirm="Delete"
           failed="Couldn't delete the entry just now. Try again."
           send={() =>
-            fetch(
-              `/api/v1/occurrences/${sheet.card.id}/entries/${sheet.entry.id}`,
-              json("DELETE"),
+            goneIsDone(
+              fetch(
+                `/api/v1/occurrences/${sheet.card.id}/entries/${sheet.entry.id}`,
+                json("DELETE"),
+              ),
             )
           }
           onDone={saved}
@@ -306,7 +341,9 @@ export function JournalCards({
           confirm="Delete"
           failed={`Couldn't delete the ${verb(item.type)} just now. Try again.`}
           send={() =>
-            fetch(`/api/v1/occurrences/${sheet.card.id}`, json("DELETE"))
+            goneIsDone(
+              fetch(`/api/v1/occurrences/${sheet.card.id}`, json("DELETE")),
+            )
           }
           onDone={saved}
           onClose={() => setSheet(null)}

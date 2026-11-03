@@ -67,6 +67,9 @@ export function EntrySheet({
   const [refused, setRefused] = useState<Refusal>(NONE);
   const [busy, setBusy] = useState(false);
   const errors = refused.fields;
+  // Words typed close only on Cancel: an overlay click or Escape would
+  // throw a paragraph away without a word (1.6.2 Raccoon S3).
+  const typed = form.body.trim() !== "" && form.body !== (entry?.body ?? "");
 
   async function save(event: React.FormEvent) {
     event.preventDefault();
@@ -78,7 +81,7 @@ export function EntrySheet({
         method: entry ? "PATCH" : "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(
-          entry ? entryChange(form, opened) : entryPost(form, opened),
+          entry ? entryChange(form, opened) : entryPost(form),
         ),
       });
       if (response.ok) {
@@ -93,7 +96,7 @@ export function EntrySheet({
   }
 
   return (
-    <Dialog open onOpenChange={(next) => !next && onClose()}>
+    <Dialog open onOpenChange={(next) => !next && !typed && onClose()}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] gap-5 overflow-y-auto border border-line-strong p-7 sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="font-heading text-[28px] leading-tight font-semibold">

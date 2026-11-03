@@ -66,7 +66,9 @@ function readKeys(form: ReadForm) {
 
 /**
  * `POST /api/v1/occurrences` from the Log sheet (A3): the read, and a first
- * entry when the textarea holds something.
+ * entry when the textarea holds something or a place is typed. A place with
+ * no words goes too, so the route says "Write something." instead of the
+ * place being dropped in silence (1.6.2 Rummage R4).
  */
 export function readPost(
   item: string,
@@ -77,7 +79,9 @@ export function readPost(
   return {
     item,
     ...readKeys(form),
-    ...(entry.body.trim() ? { entry: { body: entry.body, ...pin } } : {}),
+    ...(entry.body.trim() || pin
+      ? { entry: { body: entry.body, ...pin } }
+      : {}),
   };
 }
 
@@ -90,22 +94,34 @@ export function readChange(form: ReadForm) {
 export type EntryForm = Pin & { body: string; writtenAt: string };
 
 /**
- * The time only when the person moved it from where the sheet opened it: a
- * `datetime-local` holds minutes, so an untouched "now" would date a new
- * entry before one written earlier in the same minute, and an untouched
- * edit would lose the entry's seconds.
+ * An edit's time only when the person moved it from where the sheet opened
+ * it: a `datetime-local` holds minutes, and an untouched edit would lose the
+ * entry's seconds.
  */
 function movedTime(form: EntryForm, opened: string) {
   const at = form.writtenAt === opened ? null : isoFromLocal(form.writtenAt);
   return at ? { writtenAt: at } : null;
 }
 
+/**
+ * An add's time is what Written shows (1.6.2 Rummage R6). When it shows
+ * this minute, it is now to the millisecond, so an entry added in the same
+ * minute as another still sorts after it.
+ */
+function shownTime(form: EntryForm, now: Date) {
+  const at =
+    form.writtenAt === localNow(now)
+      ? now.toISOString()
+      : isoFromLocal(form.writtenAt);
+  return at ? { writtenAt: at } : null;
+}
+
 /** `POST /api/v1/occurrences/<id>/entries` from Add an entry (A4). */
-export function entryPost(form: EntryForm, opened: string) {
+export function entryPost(form: EntryForm, now = new Date()) {
   return {
     body: form.body,
     ...pinned(form),
-    ...movedTime(form, opened),
+    ...shownTime(form, now),
   };
 }
 

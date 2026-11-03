@@ -58,11 +58,16 @@ export function AnchorFields({
           placeholder={type === "tv" ? "e.g. S02E03" : "e.g. 112"}
           maxLength={40}
           aria-invalid={error ? true : undefined}
+          aria-describedby={error ? `${id}-error` : undefined}
           className="h-11 w-32 rounded-[10px] bg-background px-3"
         />
         <span className="text-sm text-dim">or leave it</span>
       </div>
-      {error && <p className="text-[13px] text-destructive">{error}</p>}
+      {error && (
+        <p id={`${id}-error`} className="text-[13px] text-destructive">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
