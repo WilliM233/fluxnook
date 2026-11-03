@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { EntrySheet } from "@/app/(app)/journal/entry-sheet";
 import {
   LogReadSheet,
   type SheetItem,
@@ -16,7 +17,11 @@ import { words } from "@/lib/journal/words";
 export type JournalItem = SheetItem;
 
 /** The one sheet open over the section, if any. */
-type Sheet = { kind: "log" } | { kind: "edit-read"; card: Card };
+type Sheet =
+  | { kind: "log" }
+  | { kind: "edit-read"; card: Card }
+  | { kind: "add-entry"; card: Card }
+  | { kind: "edit-entry"; card: Card; entry: CardEntry };
 
 /** An entry with its date and pill printed on the server. */
 export type CardEntry = ItemEntry & { written: string; pill: string | null };
@@ -198,12 +203,33 @@ export function JournalCards({
                           {entry.pill}
                         </span>
                       )}
+                      <span className="ml-auto flex gap-3">
+                        <button
+                          type="button"
+                          aria-label="Edit entry"
+                          className={TEXT_BUTTON}
+                          onClick={() =>
+                            setSheet({ kind: "edit-entry", card, entry })
+                          }
+                        >
+                          Edit
+                        </button>
+                      </span>
                     </div>
                     <p className="max-w-[62ch] text-sm whitespace-pre-line">
                       {entry.body}
                     </p>
                   </div>
                 ))}
+                <div>
+                  <button
+                    type="button"
+                    className="rounded text-sm text-primary outline-none hover:text-accent-hover focus-visible:ring-3 focus-visible:ring-ring/50"
+                    onClick={() => setSheet({ kind: "add-entry", card })}
+                  >
+                    Add an entry
+                  </button>
+                </div>
               </li>
             );
           })}
@@ -220,6 +246,15 @@ export function JournalCards({
         <LogReadSheet
           item={item}
           read={sheet.card}
+          onSaved={saved}
+          onClose={() => setSheet(null)}
+        />
+      )}
+      {(sheet?.kind === "add-entry" || sheet?.kind === "edit-entry") && (
+        <EntrySheet
+          item={item}
+          readId={sheet.card.id}
+          entry={sheet.kind === "edit-entry" ? sheet.entry : undefined}
           onSaved={saved}
           onClose={() => setSheet(null)}
         />

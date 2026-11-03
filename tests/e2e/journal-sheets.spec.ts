@@ -1,5 +1,5 @@
 import type { Locator, Page } from "@playwright/test";
-import { localLong, localToday } from "./harness/dates";
+import { localLong, localNow, localToday } from "./harness/dates";
 import { db, itemFor, loadFixturesFor } from "./harness/fixtures";
 import { film, post } from "./harness/shelves";
 import { expect, test } from "./harness/signed-in";
@@ -375,4 +375,131 @@ test("Clear on the Edit sheet sends stars null and the card goes unrated", async
   );
   await expect(sheet).toBeHidden();
   await expect(card.getByRole("group", { name: "Unrated" })).toBeVisible();
+});
+
+/** A book with one done read and its first entry; the book's and read's ids. */
+async function bookWithEntry(page: Page, title: string, body: string) {
+  const id = await book(page, title);
+  const read = await post(page, "/api/v1/occurrences", {
+    item: id,
+    status: "done",
+    entry: { body },
+  });
+  return { id, read: read.id as string };
+}
+
+const SHOWER = "The shower scene lands harder knowing where it goes.";
+
+test("add an entry and see it first, then edit its text and clear its anchor", async ({
+  signedIn: { page },
+}) => {
+  const { id } = await bookWithEntry(
+    page,
+    `Entries ${crypto.randomUUID()}`,
+    WEEKEND,
+  );
+  await page.goto(`/items/${id}`);
+  const card = page.getByTestId("read");
+  await card.getByRole("button", { name: "Add an entry" }).click();
+
+  const sheet = page.getByRole("dialog", { name: "Add an entry" });
+  const before = localNow();
+  const written = await sheet.getByLabel("Written").inputValue();
+  expect([before, localNow(new Date(Date.now() - 60_000))]).toContain(written);
+  await sheet.getByLabel("Entry").fill(SHOWER);
+  await sheet.getByLabel("Where in it, the place").fill("7");
+  const posted = page.waitForRequest((r) => r.method() === "POST");
+  await sheet.getByRole("button", { name: "Save" }).click();
+  expect(JSON.parse((await posted).postData() ?? "{}")).not.toHaveProperty(
+    "writtenAt",
+  );
+  await expect(sheet).toBeHidden();
+
+  const entries = card.getByTestId("entry");
+  await expect(entries).toHaveCount(2);
+  await expect(entries.first().getByText(SHOWER)).toBeVisible();
+  await expect(
+    entries.first().getByText("p. 7", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    entries.first().getByText(localLong(), { exact: true }),
+  ).toBeVisible();
+  await expect(entries.nth(1).getByText(WEEKEND)).toBeVisible();
+
+  await entries.first().getByRole("button", { name: "Edit entry" }).click();
+  const edit = page.getByRole("dialog", { name: "Edit entry" });
+  await expect(edit.getByLabel("Entry")).toHaveValue(SHOWER);
+  await expect(edit.getByLabel("Where in it, the place")).toHaveValue("7");
+  await edit.getByLabel("Entry").fill(`${SHOWER} Edited.`);
+  await edit.getByLabel("Where in it, the place").fill("");
+  const patched = page.waitForRequest((r) => r.method() === "PATCH");
+  await edit.getByRole("button", { name: "Save" }).click();
+  const body = JSON.parse((await patched).postData() ?? "{}");
+  expect(body).toEqual({
+    body: `${SHOWER} Edited.`,
+    anchorKind: null,
+    anchorValue: null,
+  });
+  await expect(edit).toBeHidden();
+  await expect(entries.first().getByText(`${SHOWER} Edited.`)).toBeVisible();
+  await expect(entries.first().getByText("p. 7")).toHaveCount(0);
+});
+
+test("a blank entry is Write something. under the field", async ({
+  signedIn: { page },
+}) => {
+  const { id } = await bookWithEntry(
+    page,
+    `Blank ${crypto.randomUUID()}`,
+    "One.",
+  );
+  await page.goto(`/items/${id}`);
+  const card = page.getByTestId("read");
+  await card.getByRole("button", { name: "Add an entry" }).click();
+  const sheet = page.getByRole("dialog", { name: "Add an entry" });
+  await sheet.getByLabel("Entry").fill("   ");
+  await sheet.getByRole("button", { name: "Save" }).click();
+  await expect(sheet.locator("#entry-body-error")).toHaveText(
+    "Write something.",
+  );
+  await expect(sheet).toBeVisible();
+  await expect(card.getByTestId("entry")).toHaveCount(1);
+});
+
+test("an entry's time can be set back, and a future one is refused", async ({
+  signedIn: { page },
+}) => {
+  const { id } = await bookWithEntry(
+    page,
+    `Catching up ${crypto.randomUUID()}`,
+    "Today's.",
+  );
+  await page.goto(`/items/${id}`);
+  const card = page.getByTestId("read");
+
+  await card.getByRole("button", { name: "Add an entry" }).click();
+  let sheet = page.getByRole("dialog", { name: "Add an entry" });
+  await sheet.getByLabel("Entry").fill("Back then.");
+  await sheet.getByLabel("Written").fill("2019-03-09T21:14");
+  await sheet.getByRole("button", { name: "Save" }).click();
+  await expect(sheet).toBeHidden();
+  const entries = card.getByTestId("entry");
+  await expect(entries).toHaveCount(2);
+  await expect(entries.nth(1).getByText("Back then.")).toBeVisible();
+  await expect(
+    entries.nth(1).getByText("9 March 2019", { exact: true }),
+  ).toBeVisible();
+
+  await card.getByRole("button", { name: "Add an entry" }).click();
+  sheet = page.getByRole("dialog", { name: "Add an entry" });
+  await sheet.getByLabel("Entry").fill("Not yet.");
+  await sheet
+    .getByLabel("Written")
+    .fill(localNow(new Date(Date.now() + 60 * 60_000)));
+  await sheet.getByRole("button", { name: "Save" }).click();
+  await expect(sheet.locator("#entry-written-error")).toHaveText(
+    "That's in the future.",
+  );
+  await expect(sheet).toBeVisible();
+  await expect(entries).toHaveCount(2);
 });
