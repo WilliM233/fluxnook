@@ -2,13 +2,11 @@ import postgres from "postgres";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { createDb } from "@/db/client";
 import { ConflictError, NotFoundError } from "@/lib/catalog/import";
-import { RuleError } from "@/lib/journal/errors";
+import { FINISHED_BEFORE, RuleError, STILL_GOING } from "@/lib/journal/errors";
 import {
   createRead,
   deleteRead,
-  FINISHED_BEFORE,
   OPEN_ALREADY,
-  STILL_GOING,
   updateRead,
 } from "@/lib/journal/reads";
 import { itemFor, required, signUpWithFixtures } from "./harness";
@@ -161,6 +159,22 @@ describe("createRead", () => {
     expect(error).toMatchObject({
       field: "finishedOn",
       message: FINISHED_BEFORE,
+    });
+    expect(await readsOf(carrie)).toHaveLength(0);
+  });
+
+  it("a first entry's kind the work doesn't take is RuleError at entry.anchorKind, and nothing is written", async () => {
+    const error = await refused(
+      createRead(db, {
+        userId,
+        item: carrie,
+        status: "done",
+        entry: { body: "x", anchorKind: "episode", anchorValue: "S02E03" },
+      }),
+    );
+    expect(error).toMatchObject({
+      field: "entry.anchorKind",
+      message: "A book takes page or chapter.",
     });
     expect(await readsOf(carrie)).toHaveLength(0);
   });

@@ -20,9 +20,13 @@ export type NewEntry = {
 export type WorkKind = { type: ItemType; form: string | null };
 
 /** A kind the work doesn't take is a 400 naming the ones it does (A4). */
-export function checkAnchorKind(work: WorkKind, kind: AnchorKind | null) {
+export function checkAnchorKind(
+  work: WorkKind,
+  kind: AnchorKind | null,
+  field = "anchorKind",
+) {
   if (kind && !anchorKindsFor(work.type, work.form).includes(kind)) {
-    throw new RuleError("anchorKind", anchorKindSentence(work.type, work.form));
+    throw new RuleError(field, anchorKindSentence(work.type, work.form));
   }
 }
 

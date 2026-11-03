@@ -2,15 +2,18 @@ import { sql } from "drizzle-orm";
 import type { Db } from "@/db/client";
 import type { occurrenceStatuses } from "@/db/vocabulary";
 import { ConflictError, NotFoundError, type Tx } from "@/lib/catalog/import";
-import { insertEntry, type NewEntry, type WorkKind } from "./entries";
-import { isOpenTwice, RuleError } from "./errors";
+import {
+  checkAnchorKind,
+  insertEntry,
+  type NewEntry,
+  type WorkKind,
+} from "./entries";
+import { FINISHED_BEFORE, isOpenTwice, RuleError, STILL_GOING } from "./errors";
 
 export const OPEN_ALREADY =
   "You're already reading this. Finish or abandon that read first.";
 export const NO_READ = "No read by that id.";
 export const NO_WORK = "No work by that id.";
-export const FINISHED_BEFORE = "Finished can't be before Started.";
-export const STILL_GOING = "Still going, so no Finished date yet.";
 
 type Status = (typeof occurrenceStatuses)[number];
 
@@ -91,6 +94,10 @@ export async function createRead(
         finishedOn: fields.finishedOn ?? null,
       };
       checkRules(read);
+      // Under the body's own key, before anything is written.
+      if (entry) {
+        checkAnchorKind(work, entry.anchorKind ?? null, "entry.anchorKind");
+      }
       if (read.status === "in_progress") {
         await noOtherOpen(tx, { userId, item });
       }

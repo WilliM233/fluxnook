@@ -1,3 +1,7 @@
+// A3's date rules, said once for the schemas and the lib.
+export const FINISHED_BEFORE = "Finished can't be before Started.";
+export const STILL_GOING = "Still going, so no Finished date yet.";
+
 /** A journal rule a route answers as a 400 at one field (Ch 1.6 A3, A4). */
 export class RuleError extends Error {
   constructor(
