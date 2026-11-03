@@ -146,9 +146,62 @@ describe("createReadSchema", () => {
       fields(createReadSchema, { item, status: "done", visibility: "public" }),
     ).toEqual({ visibility: "Not a field for this type." });
   });
+
+  // Rummage R1 (1.6.1): the ISO shape has a year 0, Postgres doesn't
+  // ("date/time field value out of range"), so today it is a 500 from the
+  // database instead of a 400 at the field.
+  it("R1 a date Postgres can't hold is refused at its field, never passed on", () => {
+    expect(
+      fields(createReadSchema, {
+        item,
+        status: "done",
+        startedOn: "0000-01-01",
+      }),
+    ).toHaveProperty("startedOn");
+    expect(
+      fields(createReadSchema, {
+        item,
+        status: "done",
+        finishedOn: "0000-12-31",
+      }),
+    ).toHaveProperty("finishedOn");
+  });
+
+  // Rummage R3 (1.6.1): the body takes `stars: null` but not a date as null,
+  // so a sheet whose Finished is cleared and disabled (A6, Reading picked)
+  // must strip the key or eat a 400 on a field it can't edit. One shape for
+  // POST and PATCH: null is the date left out.
+  it("R3 a date as null is the date left out, as PATCH takes it", () => {
+    const reading = createReadSchema.safeParse({
+      item,
+      status: "in_progress",
+      startedOn: "2026-11-02",
+      finishedOn: null,
+    });
+    expect(reading.success).toBe(true);
+    expect(reading.data?.finishedOn ?? null).toBeNull();
+    const done = createReadSchema.safeParse({
+      item,
+      status: "done",
+      startedOn: null,
+      finishedOn: "2026-11-02",
+    });
+    expect(done.success).toBe(true);
+    expect(done.data?.startedOn ?? null).toBeNull();
+  });
 });
 
 describe("patchReadSchema", () => {
+  // Rummage R1 (1.6.1), the PATCH side: the same hole on both dates.
+  it("R1 a date Postgres can't hold is refused at its field on a change too", () => {
+    expect(fields(patchReadSchema, { startedOn: "0000-01-01" })).toHaveProperty(
+      "startedOn",
+    );
+    expect(
+      fields(patchReadSchema, { finishedOn: "0000-01-01" }),
+    ).toHaveProperty("finishedOn");
+  });
+
   it("{} is Nothing to change.", () => {
     expect(fields(patchReadSchema, {})).toEqual({ form: "Nothing to change." });
   });

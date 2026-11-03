@@ -42,6 +42,40 @@ describe("createEntrySchema", () => {
     ).toHaveProperty("writtenAt");
   });
 
+  // Rummage R2 (1.6.1): Zod's offset is any hh:mm and its year may be 0000;
+  // Postgres holds neither ("time zone displacement out of range",
+  // "date/time field value out of range"), so each is a 500 today where A4
+  // says a 400 at writtenAt. On create and on change.
+  it("R2 a writtenAt Postgres can't hold is refused at writtenAt, never passed on", () => {
+    for (const writtenAt of [
+      "0000-01-01T00:00:00Z",
+      "2026-11-02T21:14:03+16:00",
+      "2026-11-02T21:14:03-16:00",
+    ]) {
+      expect(
+        fields(createEntrySchema, { body: "x", writtenAt }),
+        writtenAt,
+      ).toHaveProperty("writtenAt");
+      expect(fields(patchEntrySchema, { writtenAt }), writtenAt).toHaveProperty(
+        "writtenAt",
+      );
+    }
+    // The widest zones there are still pass: Postgres takes up to ±15:59.
+    // A month back, so the far side of the date line is never "the future".
+    expect(
+      createEntrySchema.safeParse({
+        body: "x",
+        writtenAt: "2026-10-02T21:14:03+14:00",
+      }).success,
+    ).toBe(true);
+    expect(
+      createEntrySchema.safeParse({
+        body: "x",
+        writtenAt: "2026-10-02T21:14:03-12:00",
+      }).success,
+    ).toBe(true);
+  });
+
   it("refuses a time two minutes ahead; thirty seconds ahead is the clock", () => {
     const ahead = (ms: number) => new Date(Date.now() + ms).toISOString();
     expect(
@@ -51,6 +85,21 @@ describe("createEntrySchema", () => {
       createEntrySchema.safeParse({ body: "x", writtenAt: ahead(30_000) })
         .success,
     ).toBe(true);
+  });
+
+  // Rummage R5 (1.6.1): a paste from a web page or a phone keyboard carries
+  // a zero-width space or a BOM; JavaScript's trim leaves both, so a body
+  // of nothing visible passes `min(1)` and lands as a blank entry on the
+  // card with no way to see why. Nothing visible is nothing written.
+  it("R5 a body of nothing visible is Write something.", () => {
+    for (const body of ["​", "﻿", " ​\n​ "]) {
+      expect(fields(createEntrySchema, { body }), JSON.stringify(body)).toEqual(
+        { body: "Write something." },
+      );
+      expect(fields(patchEntrySchema, { body }), JSON.stringify(body)).toEqual({
+        body: "Write something.",
+      });
+    }
   });
 
   it("the body: trimmed at its ends, line breaks kept, 1 to 20,000, no NUL", () => {

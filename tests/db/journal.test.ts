@@ -529,6 +529,33 @@ describe("entries", () => {
       createEntry(db, { userId, readId: crypto.randomUUID(), body: "x" }),
     ).rejects.toBeInstanceOf(NotFoundError);
   });
+
+  // Rummage R4 (1.6.1), two tabs: one deletes the read while the other saves
+  // an entry on it. createEntry's select still sees the read (the delete
+  // isn't committed), its insert waits on the foreign key, and when the
+  // delete lands the insert dies on `journal_entries_occurrence_occurrences_id_fk`,
+  // which the route rethrows as a 500. The read is gone, so it is a 404.
+  it("R4 an entry posted under a read being deleted is NotFoundError, never the database's error", async () => {
+    const { id: readId } = await createRead(db, {
+      userId,
+      item: salemsLot,
+      status: "done",
+    });
+    const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    // The delete, held open past the entry's write.
+    const deleting = sql.begin(async (tx) => {
+      await tx`delete from occurrences where id = ${readId}`;
+      await wait(600);
+    });
+    await wait(150);
+    const error = await refused(
+      createEntry(db, { userId, readId, body: "too late" }),
+    );
+    await deleting;
+    expect(error).toBeInstanceOf(NotFoundError);
+    expect(await readsOf(salemsLot)).toHaveLength(0);
+    expect(await entriesOf(readId)).toHaveLength(0);
+  });
 });
 
 describe("loadItemReads", () => {
@@ -562,7 +589,11 @@ describe("loadItemReads", () => {
   });
 
   it("the caller's reads of a work come back in A5's order with their entries newest first", async () => {
-    const today = new Date().toISOString().slice(0, 10);
+    // Today as the sheet's date input gives it: local parts, never
+    // toISOString, which is tomorrow after 18:00 on the box (S2).
+    const now = new Date();
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const today = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
     const { id: march } = await createRead(db, {
       userId,
       item: carrie,

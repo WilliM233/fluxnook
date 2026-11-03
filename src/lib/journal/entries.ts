@@ -73,7 +73,11 @@ type EntryKey = { userId: string; readId: string; entryId: string };
 const ENTRY_COLUMNS = sql`e.id, e.occurrence, ${timestampText(sql`e.written_at`)} as "writtenAt",
   e.body, e.anchor_kind as "anchorKind", e.anchor_value as "anchorValue"`;
 
-/** An entry on the caller's read (A4). The read must be the caller's. */
+/**
+ * An entry on the caller's read (A4). The read is held while the entry is
+ * written, so a delete in another tab finishes first and this is a 404,
+ * never the foreign key's 500 (Rummage R4).
+ */
 export async function createEntry(
   db: Db,
   { userId, readId, ...entry }: NewEntry & { userId: string; readId: string },
@@ -81,7 +85,8 @@ export async function createEntry(
   return db.transaction(async (tx) => {
     const [work] = await tx.execute<WorkKind>(sql`
       select i.type, i.form from occurrences o join items i on i.id = o.item
-      where o.id = ${readId} and o.owner = ${userId}`);
+      where o.id = ${readId} and o.owner = ${userId}
+      for key share of o`);
     if (!work) throw new NotFoundError(NO_READ);
     return insertEntry(tx, { readId, work, entry });
   });

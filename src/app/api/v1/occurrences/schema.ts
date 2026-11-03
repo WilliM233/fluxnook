@@ -18,15 +18,30 @@ export const halfStep = z
   .max(5, HALF)
   .refine((stars) => Number.isInteger(stars * 2), HALF);
 
-const isoDate = z.iso.date("A date as YYYY-MM-DD.");
+// The ISO shape has a year 0; Postgres doesn't, so it is a 400 here, never
+// the database's 500 (Rummage R1, R2).
+export const NO_YEAR_ZERO = "There was no year 0.";
+export const notYearZero = (iso: string) => !iso.startsWith("0000");
+
+const isoDate = z.iso
+  .date("A date as YYYY-MM-DD.")
+  .refine(notYearZero, NO_YEAR_ZERO);
+
+// A paste from a page or a phone keyboard carries zero-width spaces and
+// BOMs that `trim` keeps; nothing visible is nothing written (Rummage R5).
+const EDGES = /^[\s​-‍⁠﻿]+|[\s​-‍⁠﻿]+$/g;
 
 /** An entry's text: trimmed at its ends, line breaks inside kept (A4). */
 export const entryBody = z
   .string("Write something.")
-  .trim()
-  .min(1, "Write something.")
-  .max(20_000, "At most 20,000 characters.")
-  .refine(noNul, NUL);
+  .transform((body) => body.replace(EDGES, ""))
+  .pipe(
+    z
+      .string()
+      .min(1, "Write something.")
+      .max(20_000, "At most 20,000 characters.")
+      .refine(noNul, NUL),
+  );
 
 /** Where in the work: "112", "S02E03", "xii". */
 export const anchorValue = z
@@ -97,8 +112,9 @@ export const createReadSchema = z
     // One work in any case (1.4.3's R3).
     item: z.uuid("A work's id.").transform((id) => id.toLowerCase()),
     status: z.enum(occurrenceStatuses),
-    startedOn: isoDate.optional(),
-    finishedOn: isoDate.optional(),
+    // null is the date left out, as on a PATCH (Rummage R3, S1).
+    startedOn: isoDate.nullable().optional(),
+    finishedOn: isoDate.nullable().optional(),
     stars: halfStep.nullable().optional(),
     entry: firstEntry.optional(),
   })

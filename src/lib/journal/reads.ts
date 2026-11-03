@@ -76,8 +76,8 @@ export type NewRead = {
   userId: string;
   item: string;
   status: Status;
-  startedOn?: string;
-  finishedOn?: string;
+  startedOn?: string | null;
+  finishedOn?: string | null;
   stars?: number | null;
   entry?: NewEntry;
 };
