@@ -503,3 +503,125 @@ test("an entry's time can be set back, and a future one is refused", async ({
   await expect(sheet).toBeVisible();
   await expect(entries).toHaveCount(2);
 });
+
+/** A book with one done read holding `bodies` as entries; the ids. */
+async function bookWithEntries(page: Page, title: string, bodies: string[]) {
+  const { id, read } = await bookWithEntry(page, title, bodies[0]);
+  for (const body of bodies.slice(1)) {
+    await post(page, `/api/v1/occurrences/${read}/entries`, { body });
+  }
+  return { id, read };
+}
+
+const entriesOf = (read: string) =>
+  db(`select count(*) from journal_entries where occurrence = '${read}'`);
+
+test("delete an entry: asks once, the read and its other entry stay", async ({
+  signedIn: { page },
+}) => {
+  const { id, read } = await bookWithEntries(
+    page,
+    `Pruned ${crypto.randomUUID()}`,
+    ["Kept.", "Gone."],
+  );
+  await page.goto(`/items/${id}`);
+  const entries = page.getByTestId("entry");
+  await expect(entries.first().getByText("Gone.")).toBeVisible();
+  await entries.first().getByRole("button", { name: "Delete entry" }).click();
+
+  const confirm = page.getByRole("dialog", { name: "Delete entry" });
+  await expect(confirm.getByText("Delete this entry?")).toBeVisible();
+  await confirm.getByRole("button", { name: "Delete" }).click();
+  await expect(confirm).toBeHidden();
+  await expect(entries).toHaveCount(1);
+  await expect(entries.getByText("Kept.")).toBeVisible();
+  await expect(page.getByTestId("read")).toHaveCount(1);
+  expect(entriesOf(read)).toBe("1");
+});
+
+test("delete a read with two entries names the count, and takes them", async ({
+  signedIn: { page },
+}) => {
+  const { id, read } = await bookWithEntries(
+    page,
+    `Unread ${crypto.randomUUID()}`,
+    ["First.", "Second."],
+  );
+  await post(page, "/api/v1/occurrences", {
+    item: id,
+    status: "done",
+    finishedOn: "2019-03-09",
+  });
+  await page.goto(`/items/${id}`);
+  const journal = page.getByRole("region", { name: "Journal" });
+  const cards = journal.getByTestId("read");
+  await expect(cards).toHaveCount(2);
+  const withEntries = cards.filter({ hasText: "First." });
+  await withEntries.getByRole("button", { name: "Delete this read" }).click();
+
+  const confirm = page.getByRole("dialog", { name: "Delete read" });
+  await expect(
+    confirm.getByText("Delete this read and its 2 entries?"),
+  ).toBeVisible();
+  await confirm.getByRole("button", { name: "Delete" }).click();
+  await expect(confirm).toBeHidden();
+  await expect(cards).toHaveCount(1);
+  await expect(journal.getByText("1 read", { exact: true })).toBeVisible();
+  expect(entriesOf(read)).toBe("0");
+  expect(db(`select count(*) from occurrences where id = '${read}'`)).toBe("0");
+});
+
+test("a read with one entry says entry, and with none asks plainly", async ({
+  signedIn: { page },
+}) => {
+  const { id } = await bookWithEntry(
+    page,
+    `Asked ${crypto.randomUUID()}`,
+    "Only.",
+  );
+  await page.goto(`/items/${id}`);
+  const card = page.getByTestId("read");
+  const confirm = page.getByRole("dialog", { name: "Delete read" });
+
+  await card.getByRole("button", { name: "Delete this read" }).click();
+  await expect(
+    confirm.getByText("Delete this read and its 1 entry?"),
+  ).toBeVisible();
+  await confirm.getByRole("button", { name: "Cancel" }).click();
+  await expect(confirm).toBeHidden();
+
+  await card.getByRole("button", { name: "Delete entry" }).click();
+  await page
+    .getByRole("dialog", { name: "Delete entry" })
+    .getByRole("button", { name: "Delete" })
+    .click();
+  await expect(card.getByTestId("entry")).toHaveCount(0);
+
+  await card.getByRole("button", { name: "Delete this read" }).click();
+  await expect(
+    confirm.getByText("Delete this read?", { exact: true }),
+  ).toBeVisible();
+  await confirm.getByRole("button", { name: "Cancel" }).click();
+  await expect(card).toHaveCount(1);
+});
+
+test("a watch's delete speaks of a watch", async ({ signedIn: { page } }) => {
+  const id = await film(page, `Unwatched ${crypto.randomUUID()}`, 1976);
+  await post(page, "/api/v1/occurrences", { item: id, status: "done" });
+  await page.goto(`/items/${id}`);
+  await page
+    .getByTestId("read")
+    .getByRole("button", { name: "Delete this watch" })
+    .click();
+  const confirm = page.getByRole("dialog", { name: "Delete watch" });
+  await expect(
+    confirm.getByText("Delete this watch?", { exact: true }),
+  ).toBeVisible();
+  await confirm.getByRole("button", { name: "Delete" }).click();
+  await expect(page.getByTestId("read")).toHaveCount(0);
+  await expect(
+    page.getByText(
+      "Nothing logged yet. Log a watch and the journal starts here.",
+    ),
+  ).toBeVisible();
+});

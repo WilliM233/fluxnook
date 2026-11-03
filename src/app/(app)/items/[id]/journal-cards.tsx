@@ -7,11 +7,12 @@ import {
   LogReadSheet,
   type SheetItem,
 } from "@/app/(app)/journal/log-read-sheet";
+import { ConfirmSheet } from "@/app/(app)/shelves/confirm-sheet";
 import { Button } from "@/components/ui/button";
 import { StarControl } from "@/components/ui/star-control";
 import type { ItemEntry, ItemRead } from "@/lib/journal/item-reads";
 import { starText } from "@/lib/journal/stars";
-import { words } from "@/lib/journal/words";
+import { verb, words } from "@/lib/journal/words";
 
 /** The work the section belongs to, as its sheets need it. */
 export type JournalItem = SheetItem;
@@ -21,7 +22,9 @@ type Sheet =
   | { kind: "log" }
   | { kind: "edit-read"; card: Card }
   | { kind: "add-entry"; card: Card }
-  | { kind: "edit-entry"; card: Card; entry: CardEntry };
+  | { kind: "edit-entry"; card: Card; entry: CardEntry }
+  | { kind: "delete-entry"; card: Card; entry: CardEntry }
+  | { kind: "delete-read"; card: Card };
 
 /** An entry with its date and pill printed on the server. */
 export type CardEntry = ItemEntry & { written: string; pill: string | null };
@@ -182,6 +185,16 @@ export function JournalCards({
                   >
                     Edit
                   </button>
+                  {/* Not drawn: the walk deletes a read, and beside Edit is
+                      where a read's own action lives (1.6.2 plan, step 7). */}
+                  <button
+                    type="button"
+                    aria-label={`Delete this ${verb(item.type)}`}
+                    className={TEXT_BUTTON}
+                    onClick={() => setSheet({ kind: "delete-read", card })}
+                  >
+                    Delete
+                  </button>
                 </div>
                 {alerts[card.id] && (
                   <p role="alert" className="text-sm text-destructive">
@@ -213,6 +226,16 @@ export function JournalCards({
                           }
                         >
                           Edit
+                        </button>
+                        <button
+                          type="button"
+                          aria-label="Delete entry"
+                          className={TEXT_BUTTON}
+                          onClick={() =>
+                            setSheet({ kind: "delete-entry", card, entry })
+                          }
+                        >
+                          Delete
                         </button>
                       </span>
                     </div>
@@ -256,6 +279,36 @@ export function JournalCards({
           readId={sheet.card.id}
           entry={sheet.kind === "edit-entry" ? sheet.entry : undefined}
           onSaved={saved}
+          onClose={() => setSheet(null)}
+        />
+      )}
+      {sheet?.kind === "delete-entry" && (
+        <ConfirmSheet
+          title="Delete entry"
+          sentence="Delete this entry?"
+          confirm="Delete"
+          failed="Couldn't delete the entry just now. Try again."
+          send={() =>
+            fetch(
+              `/api/v1/occurrences/${sheet.card.id}/entries/${sheet.entry.id}`,
+              json("DELETE"),
+            )
+          }
+          onDone={saved}
+          onClose={() => setSheet(null)}
+        />
+      )}
+      {sheet?.kind === "delete-read" && (
+        <ConfirmSheet
+          title={w.deleteRead}
+          // The count is the page's: the entries the card shows (A7).
+          sentence={w.deleteReadQuestion(sheet.card.entries.length)}
+          confirm="Delete"
+          failed={`Couldn't delete the ${verb(item.type)} just now. Try again.`}
+          send={() =>
+            fetch(`/api/v1/occurrences/${sheet.card.id}`, json("DELETE"))
+          }
+          onDone={saved}
           onClose={() => setSheet(null)}
         />
       )}
