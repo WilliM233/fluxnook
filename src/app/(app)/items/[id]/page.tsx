@@ -315,7 +315,15 @@ export default async function ItemPageView({
           </Fact>
         </dl>
 
-        <JournalSection type={item.type} reads={reads} />
+        <JournalSection
+          item={{
+            id: item.id,
+            title: item.title,
+            type: item.type,
+            form: item.form,
+          }}
+          reads={reads}
+        />
 
         <ShelvesSection
           item={{ id: item.id, title: item.title }}

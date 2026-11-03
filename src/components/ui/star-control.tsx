@@ -30,7 +30,7 @@ export function StarControl({
   label,
   clear = false,
   busy = false,
-  size = 30,
+  compact = false,
   className,
 }: {
   value: number | null;
@@ -38,7 +38,8 @@ export function StarControl({
   label: string;
   clear?: boolean;
   busy?: boolean;
-  size?: number;
+  /** A card's stars, set tight as drawn: 18px in 24×32 targets, not 30 in 44×44. */
+  compact?: boolean;
   className?: string;
 }) {
   function pick(stars: number | null) {
@@ -75,9 +76,12 @@ export function StarControl({
             aria-pressed={value !== null && value >= k}
             onClick={(event) => click(k, event)}
             onKeyDown={key}
-            className="inline-flex size-11 items-center justify-center rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+            className={cn(
+              "inline-flex items-center justify-center rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+              compact ? "h-8 w-6" : "size-11",
+            )}
           >
-            <Star fill={fillFor(value, k)} size={size} />
+            <Star fill={fillFor(value, k)} size={compact ? 18 : 30} />
           </button>
         ))}
       </fieldset>
