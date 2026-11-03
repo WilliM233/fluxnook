@@ -42,7 +42,7 @@ Every error body has one shape:
 | `PATCH /api/v1/shelves/<id>/entries/<eid>` `{ "section": uuid \| null, "index": int }` | 200 `{ "positions": [{ "id", "position" }, ...] }`, every entry on the shelf | 401, 415, 400, 404 |
 | `DELETE /api/v1/shelves/<id>/entries/<eid>` | 204 | 401, 404 |
 | `POST /api/v1/occurrences` `{ "item": uuid, "status": "in_progress"\|"done"\|"abandoned", "startedOn"?: "YYYY-MM-DD", "finishedOn"?: "YYYY-MM-DD", "stars"?: number, "entry"?: { "body": string, "anchorKind"?: string, "anchorValue"?: string } }` | 201 `{ "id" }`, plus `"entryId"` when `entry` was given | 401 `unauthorized`, 415 `unsupported_media_type`, 400 `invalid_request` (with `error.fields`), 404 `not_found` (no such work), 409 `conflict` |
-| `PATCH /api/v1/occurrences/<id>` `{ "status"?, "startedOn"?, "finishedOn"?, "stars"? }` | 200 `{ "id", "item", "status", "startedOn", "finishedOn", "stars" }` as it now stands | 401, 415, 400 (`{}` is 400 "Nothing to change."), 404, 409 |
+| `PATCH /api/v1/occurrences/<id>` `{ "status"?, "startedOn"?, "finishedOn"?, "stars"? }` | 200 `{ "id", "item", "status", "startedOn", "finishedOn", "stars", "updatedAt" }` as it now stands, `updatedAt` as UTC text with microseconds | 401, 415, 400 (`{}` is 400 "Nothing to change."), 404, 409 |
 | `DELETE /api/v1/occurrences/<id>` | 204, its entries gone with it | 401, 404 |
 | `POST /api/v1/occurrences/<id>/entries` `{ "body": string, "anchorKind"?, "anchorValue"?, "writtenAt"?: ISO timestamp }` | 201 `{ "id" }` | 401, 415, 400, 404 |
 | `PATCH /api/v1/occurrences/<id>/entries/<eid>` `{ "body"?, "anchorKind"?, "anchorValue"?, "writtenAt"? }` | 200 `{ "id", "occurrence", "writtenAt", "body", "anchorKind", "anchorValue" }` as it now stands | 401, 415, 400, 404 |
