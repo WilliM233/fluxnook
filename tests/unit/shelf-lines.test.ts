@@ -31,6 +31,41 @@ describe("countsLine", () => {
       "1 work · 1 section",
     );
   });
+
+  it("the page's line ends in the star part (1.6 A9)", () => {
+    expect(
+      countsLine({
+        works: 11,
+        done: 1,
+        skipped: 0,
+        rated: { mean: 4.8, n: 2 },
+      }),
+    ).toBe("11 works · 1 done · ★ 4.8 from 2 rated");
+    expect(
+      countsLine({
+        works: 326,
+        done: 0,
+        skipped: 0,
+        sections: 14,
+        rated: { mean: 4, n: 1 },
+      }),
+    ).toBe("326 works · 14 sections · ★ 4 from 1 rated");
+  });
+
+  it("nothing rated, or no star part passed, prints as before", () => {
+    expect(
+      countsLine({
+        works: 326,
+        done: 0,
+        skipped: 0,
+        sections: 14,
+        rated: { mean: null, n: 0 },
+      }),
+    ).toBe("326 works · 14 sections");
+    expect(countsLine({ works: 326, done: 0, skipped: 0, sections: 14 })).toBe(
+      "326 works · 14 sections",
+    );
+  });
 });
 
 describe("nookLine", () => {

@@ -1,26 +1,37 @@
 import { plural } from "@/lib/catalog/work-line";
+import { starText } from "@/lib/journal/stars";
+
+/** The works on a shelf or a section that have stars, and their mean (1.6 A9). */
+export type Rated = { mean: number | null; n: number };
 
 /**
  * A shelf's counts as its card, its page and a section heading print them
  * (A6, A7): the works always, every other part left out at zero (census C4).
  * A section's line has no sections part, so `sections` is left undefined.
+ * The page's lines end in the star part (1.6 A9); the nook's cards pass none.
  */
 export function countsLine({
   works,
   done,
   skipped,
   sections,
+  rated,
 }: {
   works: number;
   done: number;
   skipped: number;
   sections?: number;
+  rated?: Rated;
 }): string {
   return [
     plural(works, "work"),
     done > 0 && `${done} done`,
     skipped > 0 && `${skipped} skipped`,
     sections !== undefined && sections > 0 && plural(sections, "section"),
+    rated !== undefined &&
+      rated.n > 0 &&
+      rated.mean !== null &&
+      `${starText(rated.mean)} from ${rated.n} rated`,
   ]
     .filter(Boolean)
     .join(" · ");

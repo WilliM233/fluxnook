@@ -10,6 +10,19 @@ export function starText(stars: number): string {
 }
 
 /**
+ * A shelf's or a section's star (A9, census C2): the mean over the works that
+ * have stars, to one decimal, rounded half up on the exact mean. In integers,
+ * since stars are half steps: S the stars doubled and summed, n how many, the
+ * tenths are floor((10·S + n) / 2n). `toFixed` reads 4.35 as 4.3; this is 4.4.
+ */
+export function meanStars(values: readonly number[]): number | null {
+  const n = values.length;
+  if (n === 0) return null;
+  const doubled = values.reduce((sum, stars) => sum + Math.round(stars * 2), 0);
+  return Math.floor((10 * doubled + n) / (2 * n)) / 10;
+}
+
+/**
  * The star control's arrow keys (A6): a half step up or down from the value,
  * 0.5 to 5. Unrated stays unrated going down; Clear is the only way to none.
  */
