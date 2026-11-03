@@ -146,8 +146,9 @@ describe("the journal's owner rule", () => {
     expect(theirs.totals).toEqual({ entries: 1, works: 1 });
   });
 
-  it("a stranger's starred read moves nothing on the caller's shelf (1.6 A9)", async () => {
-    await sql`update occurrences set stars = 1 where id = ${stranger.read}`;
+  it("a stranger's starred open read moves nothing on the caller's shelf (1.6 A9, 1.6.3 N9)", async () => {
+    await sql`update occurrences set stars = 1, status = 'in_progress'
+      where id = ${stranger.read}`;
     try {
       const [{ id }] = await sql`select id from shelves
         where owner = ${caller.userId} and name = 'TMNT, the Mirage run'`;
@@ -157,10 +158,11 @@ describe("the journal's owner rule", () => {
         ...(page?.sections.flatMap((s) => s.rows) ?? []),
       ];
       const row = rows.find((r) => r.item.id === tmnt);
-      expect([row?.stars, row?.reads]).toEqual([null, 1]);
+      expect([row?.stars, row?.reads, row?.open]).toEqual([null, 1, null]);
       expect(ratedOf(rows).n).toBe(0);
     } finally {
-      await sql`update occurrences set stars = null where id = ${stranger.read}`;
+      await sql`update occurrences set stars = null, status = 'done'
+        where id = ${stranger.read}`;
     }
   });
 

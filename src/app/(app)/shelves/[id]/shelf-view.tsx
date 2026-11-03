@@ -15,6 +15,7 @@ import { TEXT_BUTTON, TextButton } from "@/components/ui/text-button";
 import { json } from "@/lib/api/request";
 import type { PickerWork } from "@/lib/catalog/picker-works";
 import { plural } from "@/lib/catalog/work-line";
+import { localToday } from "@/lib/journal/forms";
 import { starText } from "@/lib/journal/stars";
 import { words } from "@/lib/journal/words";
 import { headingId } from "@/lib/shelves/drop";
@@ -330,6 +331,17 @@ export function ShelfView({
             type: sheet.row.item.type,
             form: sheet.row.item.form ?? null,
           }}
+          // An open read is the one Done means: finish it, never log a
+          // second (1.6.3 Raccoon N9, L at the exit Browse).
+          read={
+            sheet.row.open
+              ? {
+                  ...sheet.row.open,
+                  status: "done",
+                  finishedOn: localToday(),
+                }
+              : undefined
+          }
           onSaved={() => {
             offer(sheet.row.id, false);
             saved();
@@ -521,7 +533,8 @@ export function ShelfView({
             a section. Stars on a row are its latest starred read or watch; the
             shelf's star is the mean over the works that have one, with how many
             that is. The offer under a row just marked Done logs the read or
-            watch in the journal, once, and goes away on its own.
+            watch in the journal, once, or finishes the one you have open, and
+            goes away on its own.
           </p>
         )}
       </div>

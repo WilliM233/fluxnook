@@ -137,6 +137,43 @@ test("Done offers to log, and Log through the sheet puts the row's stars and mov
   expect(statusIn(shelf.id)).toBe("done,unmarked");
 });
 
+test("Log over an open watch finishes it with Done and today, and logs no second (1.6.3 N9)", async ({
+  signedIn: { page },
+}) => {
+  const shelf = await makeShelf(page, { top: 1 });
+  const top1 = shelf.title("Top1");
+  await post(page, "/api/v1/occurrences", {
+    item: itemId(top1),
+    status: "in_progress",
+    startedOn: "2020-01-05",
+    stars: 3.5,
+  });
+  await page.goto(`/shelves/${shelf.id}`);
+  await mark(page, top1, "Done");
+  await rowOf(page, top1).getByRole("button", { name: "Log a watch" }).click();
+
+  const sheet = page.getByRole("dialog", { name: "Edit this watch" });
+  await expect(
+    sheet
+      .getByRole("group", { name: "Where it stands" })
+      .getByRole("button", { name: "Done", pressed: true }),
+  ).toBeVisible();
+  await expect(sheet.getByLabel("Started")).toHaveValue("2020-01-05");
+  await expect(sheet.getByLabel("Finished")).toHaveValue(localToday());
+  await expect(sheet.getByTestId("stars-value")).toHaveText("3.5");
+  await sheet.getByRole("button", { name: "Save" }).click();
+  await expect(sheet).toHaveCount(0);
+
+  const row = rowOf(page, top1);
+  await expect(row.getByText("★ 3.5", { exact: true })).toBeVisible();
+  await expect(row.getByText(/watched/)).toHaveCount(0);
+  await expect(row.getByText("Watched it?")).toHaveCount(0);
+  expect(
+    db(`select string_agg(status || ',' || started_on || ',' || finished_on, ';')
+      from occurrences where item = '${itemId(top1)}'`),
+  ).toBe(`done,2020-01-05,${localToday()}`);
+});
+
 test("Not now puts Remove back and writes no read, and a reload shows Remove", async ({
   signedIn: { page },
 }) => {
