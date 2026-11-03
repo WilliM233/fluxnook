@@ -5,6 +5,7 @@ import { NotFoundError } from "@/lib/catalog/import";
 import { createEntry, deleteEntry, updateEntry } from "@/lib/journal/entries";
 import { loadItemReads } from "@/lib/journal/item-reads";
 import { createRead, deleteRead, updateRead } from "@/lib/journal/reads";
+import { loadShelfPage, ratedOf } from "@/lib/shelves/shelf-page";
 import { itemFor, required, signUp, signUpWithFixtures } from "./harness";
 
 // A3's and A4's rule as two people (Ch 1.6.1): every write to a read or an
@@ -132,6 +133,24 @@ describe("the journal's owner rule", () => {
     });
     expect(theirs.map((r) => r.id)).toEqual([stranger.read]);
     expect(theirs[0].entries.map((e) => e.body)).toEqual(["Mine."]);
+  });
+
+  it("a stranger's starred read moves nothing on the caller's shelf (1.6 A9)", async () => {
+    await sql`update occurrences set stars = 1 where id = ${stranger.read}`;
+    try {
+      const [{ id }] = await sql`select id from shelves
+        where owner = ${caller.userId} and name = 'TMNT, the Mirage run'`;
+      const page = await loadShelfPage(db, { id, userId: caller.userId });
+      const rows = [
+        ...(page?.unsectioned ?? []),
+        ...(page?.sections.flatMap((s) => s.rows) ?? []),
+      ];
+      const row = rows.find((r) => r.item.id === tmnt);
+      expect([row?.stars, row?.reads]).toEqual([null, 1]);
+      expect(ratedOf(rows).n).toBe(0);
+    } finally {
+      await sql`update occurrences set stars = null where id = ${stranger.read}`;
+    }
   });
 
   it("two people may each have one open read of the same work", async () => {

@@ -17,6 +17,7 @@ import { headingId } from "@/lib/shelves/drop";
 import { countsLine } from "@/lib/shelves/lines";
 import {
   type ShelfRow as Row,
+  ratedOf,
   type ShelfPage,
   tally,
 } from "@/lib/shelves/shelf-page";
@@ -208,7 +209,7 @@ export function ShelfView({
           >
             Shelf
           </Badge>
-          <span>{countsLine(counts)}</span>
+          <span>{countsLine({ ...counts, rated: ratedOf(rows) })}</span>
         </div>
         <h1 className="font-heading text-5xl leading-none font-semibold tracking-tight">
           {shelf.name}
@@ -379,7 +380,7 @@ export function ShelfView({
                       {section.name}
                     </h2>
                     <span className="text-[13px] text-dim">
-                      {countsLine(tally(held))}
+                      {countsLine({ ...tally(held), rated: ratedOf(held) })}
                     </span>
                     <span className="ml-auto flex gap-4">
                       <button
@@ -427,7 +428,9 @@ export function ShelfView({
             A row's status is this shelf's: done here means past it on this
             list, not read or watched, which the journal keeps. Delete section
             moves its works above the first section; nothing is lost by deleting
-            a section.
+            a section. Stars on a row are its latest starred read or watch; the
+            shelf's star is the mean over the works that have one, with how many
+            that is.
           </p>
         )}
       </div>
