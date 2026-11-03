@@ -1,0 +1,105 @@
+"use client";
+
+import type { KeyboardEvent, MouseEvent } from "react";
+import { fillFor, Star } from "@/components/ui/stars";
+import { halfFor, stepStars } from "@/lib/journal/stars";
+import { cn } from "@/lib/utils";
+
+// The page's text buttons, as drawn: dim words that light on hover.
+const TEXT_BUTTON =
+  "rounded text-[13px] text-dim outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50";
+
+const STEP: Record<string, 1 | -1> = {
+  ArrowRight: 1,
+  ArrowUp: 1,
+  ArrowLeft: -1,
+  ArrowDown: -1,
+};
+
+/**
+ * Stars as a control (Ch 1.6 A6, A5's card): five 44×44 buttons, the left
+ * half of a star its half, the arrow keys a half step. On a sheet the number
+ * sits beside it with Clear; on a card it is the stars alone.
+ *
+ * A busy control ignores input rather than disabling its buttons, so the
+ * focused star keeps focus while a change saves and the arrows go on working.
+ */
+export function StarControl({
+  value,
+  onChange,
+  label,
+  clear = false,
+  busy = false,
+  size = 30,
+  className,
+}: {
+  value: number | null;
+  onChange: (stars: number | null) => void;
+  label: string;
+  clear?: boolean;
+  busy?: boolean;
+  size?: number;
+  className?: string;
+}) {
+  function pick(stars: number | null) {
+    if (!busy && stars !== value) onChange(stars);
+  }
+
+  function click(k: number, event: MouseEvent<HTMLButtonElement>) {
+    // A keyboard's Enter or Space is a click with no pointer: the whole star.
+    if (event.detail === 0) return pick(k);
+    const box = event.currentTarget.getBoundingClientRect();
+    const side = event.clientX < box.left + box.width / 2 ? "left" : "right";
+    pick(halfFor(k, side));
+  }
+
+  function key(event: KeyboardEvent<HTMLButtonElement>) {
+    const by = STEP[event.key];
+    if (!by) return;
+    event.preventDefault();
+    pick(stepStars(value, by));
+  }
+
+  return (
+    <div className={cn("inline-flex items-center gap-3", className)}>
+      <fieldset
+        aria-label={label}
+        aria-busy={busy || undefined}
+        className="m-0 inline-flex min-w-0 items-center border-0 p-0"
+      >
+        {[1, 2, 3, 4, 5].map((k) => (
+          <button
+            key={k}
+            type="button"
+            aria-label={k === 1 ? "1 star" : `${k} stars`}
+            aria-pressed={value !== null && value >= k}
+            onClick={(event) => click(k, event)}
+            onKeyDown={key}
+            className="inline-flex size-11 items-center justify-center rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          >
+            <Star fill={fillFor(value, k)} size={size} />
+          </button>
+        ))}
+      </fieldset>
+      {clear && (
+        <>
+          <span
+            data-testid="stars-value"
+            className="min-w-[2ch] text-base tabular-nums"
+          >
+            {value ?? ""}
+          </span>
+          {value !== null && (
+            <button
+              type="button"
+              className={TEXT_BUTTON}
+              onClick={() => pick(null)}
+            >
+              Clear
+            </button>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
