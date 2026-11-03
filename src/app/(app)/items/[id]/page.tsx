@@ -17,6 +17,7 @@ import { createClient } from "@/lib/supabase/server";
 import { CollectedIn, formatLabel } from "./collected-in";
 import { comicPills, SeriesLine } from "./comic-parts";
 import { ContentsEditor } from "./contents-editor";
+import { JournalSection } from "./journal-section";
 import { ShelvesSection } from "./shelves-section";
 
 const typeLabel = { film: "Film", tv: "TV", book: "Book", comic: "Comic" };
@@ -198,6 +199,7 @@ export default async function ItemPageView({
     franchises,
     shelves,
     editions,
+    reads,
   } = page;
   const released = releasedLabel(item.released_on, item.released_precision);
   const pills = [
@@ -313,6 +315,13 @@ export default async function ItemPageView({
           </Fact>
         </dl>
 
+        <JournalSection type={item.type} reads={reads} />
+
+        <ShelvesSection
+          item={{ id: item.id, title: item.title }}
+          shelves={shelves}
+        />
+
         {item.type === "comic" && (
           <CollectedIn
             rows={collectedIn}
@@ -364,11 +373,6 @@ export default async function ItemPageView({
             </ul>
           )}
         </section>
-
-        <ShelvesSection
-          item={{ id: item.id, title: item.title }}
-          shelves={shelves}
-        />
       </article>
     </main>
   );
