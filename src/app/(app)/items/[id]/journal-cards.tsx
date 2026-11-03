@@ -10,6 +10,8 @@ import {
 import { ConfirmSheet } from "@/app/(app)/shelves/confirm-sheet";
 import { Button } from "@/components/ui/button";
 import { StarControl } from "@/components/ui/star-control";
+import { TEXT_BUTTON } from "@/components/ui/text-button";
+import { goneIsDone, json } from "@/lib/api/request";
 import type { ItemEntry, ItemRead } from "@/lib/journal/item-reads";
 import { starText } from "@/lib/journal/stars";
 import { verb, words } from "@/lib/journal/words";
@@ -36,31 +38,10 @@ export type Card = Omit<ItemRead, "entries"> & {
   entries: CardEntry[];
 };
 
-const json = (method: string, body?: unknown): RequestInit => ({
-  method,
-  headers: { "content-type": "application/json" },
-  body: body === undefined ? undefined : JSON.stringify(body),
-});
-
 /** The stars as A3's `PATCH` answers them, with the read's version. */
 type Answer = { stars: number | null; updatedAt: string };
 
 const STARS_FAILED = "Couldn't save that. Try again.";
-
-// The page's text buttons, as drawn: dim words that light on hover.
-const TEXT_BUTTON =
-  "rounded text-[13px] text-dim outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50";
-
-/**
- * A delete whose thing is already gone (another tab) did what it asked: the
- * confirm closes and the page's read shows it (1.6.2 Rummage R3).
- */
-async function goneIsDone(sent: Promise<Response>) {
-  const response = await sent;
-  return response.status === 404
-    ? new Response(null, { status: 204 })
-    : response;
-}
 
 /**
  * The Journal section's heading row and cards (Ch 1.6 A5): each card's stars

@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { TEXT_BUTTON } from "@/components/ui/text-button";
+import { json } from "@/lib/api/request";
 import type { PickerWork } from "@/lib/catalog/picker-works";
 import { plural } from "@/lib/catalog/work-line";
 import { headingId } from "@/lib/shelves/drop";
@@ -39,16 +41,6 @@ type Sheet =
   | { kind: "new-section" }
   | { kind: "rename"; section: Section }
   | { kind: "delete-section"; section: Section; works: number };
-
-const json = (method: string, body?: unknown): RequestInit => ({
-  method,
-  headers: { "content-type": "application/json" },
-  body: body === undefined ? undefined : JSON.stringify(body),
-});
-
-// The page's text buttons, as drawn: dim words that light on hover.
-const TEXT_BUTTON =
-  "rounded text-[13px] text-dim outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50";
 
 /** The read's rows as one list in display order, each knowing its section. */
 function flatten(page: ShelfPage): ViewRow[] {
