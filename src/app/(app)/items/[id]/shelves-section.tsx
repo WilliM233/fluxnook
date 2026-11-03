@@ -61,7 +61,7 @@ export function ShelvesSection({
       {open && (
         <AddToShelf
           title={`Add ${item.title} to a shelf`}
-          lede="It goes at the end of the shelf, or of the section you pick. A work sits on a shelf once."
+          lede="It goes after what's already there, in the section you pick or outside the sections. A work sits on a shelf once."
           items={[item.id]}
           held={held}
           submit="Add to shelf"

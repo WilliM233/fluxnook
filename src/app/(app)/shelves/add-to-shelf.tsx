@@ -284,7 +284,7 @@ export function AddToShelf({
                       onChange={(e) => setInto(e.target.value)}
                       className={selectClass}
                     >
-                      <option value="">At the end</option>
+                      <option value="">No section</option>
                       {s.sections.map((section) => (
                         <option key={section.id} value={section.id}>
                           {section.name}

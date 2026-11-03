@@ -23,6 +23,11 @@ test("Add to shelf from the item page to the chip", async ({
 
   await shelves.getByRole("button", { name: "Add to shelf" }).click();
   const sheet = page.getByRole("dialog", { name: "Add Carrie to a shelf" });
+  await expect(
+    sheet.getByText(
+      "It goes after what's already there, in the section you pick or outside the sections. A work sits on a shelf once.",
+    ),
+  ).toBeVisible();
   const choice = (name: string) =>
     sheet.getByTestId("shelf-choice").filter({ hasText: name });
   await expect(
@@ -65,6 +70,10 @@ test("Into a section names it on the chip", async ({ signedIn: { page } }) => {
   await sheet
     .getByRole("radio", { name: new RegExp(`^${shelf.name}`) })
     .check();
+  // Unsectioned works sit above the first section, so it isn't "the end".
+  await expect(sheet.getByLabel("Into").locator("option").first()).toHaveText(
+    "No section",
+  );
   await sheet.getByLabel("Into").selectOption({ label: "A" });
   await sheet.getByRole("button", { name: "Add to shelf" }).click();
 

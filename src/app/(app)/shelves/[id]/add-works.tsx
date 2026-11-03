@@ -136,7 +136,11 @@ export function AddWorks({
             onChange={(e) => setInto(e.target.value)}
             className={selectClass}
           >
-            <option value="">At the end</option>
+            {/* With sections, the unsectioned works sit above the first one,
+                so "end" would point the wrong way. */}
+            <option value="">
+              {sections.length > 0 ? "No section" : "At the end"}
+            </option>
             {sections.map((section) => (
               <option key={section.id} value={section.id}>
                 {section.name}

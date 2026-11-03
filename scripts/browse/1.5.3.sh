@@ -236,7 +236,7 @@ step_king() {
   echo "Click Add 3 works. They read:"
   echo "    9 to 11"
   echo ""
-  echo "Add works. Find: night shift. Into: At the end. Tick Night Shift."
+  echo "Add works. Find: night shift. Into: No section. Tick Night Shift."
   echo "Click Add 1 work. Night Shift sits above the first section as:"
   echo "    1"
   echo "The rest read 2 to 12, with the dim line under Night Shift."

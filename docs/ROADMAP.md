@@ -95,6 +95,7 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## Calls made (with reason)
 
+- 2026-11-02 On a shelf with sections, the Into choice that puts a work in none of them reads "No section", not "At the end": the unsectioned works sit above the first section, so "end" was the wrong word. A shelf with no sections keeps "At the end". The add sheet's lede says "It goes after what's already there, in the section you pick or outside the sections." (1.5.3, the Raccoon's note, L at sign-off)
 - 2026-11-01 A section's name is unique on its shelf without regard to case; the unique index stays the exact backstop. "carrie" beside "Carrie" is two names to the index and one to the person typing them (1.5.1 R5, L at sign-off)
 - 2026-10-30 Aggregate stars across a shelf move to Ch 1.6: stars live on occurrences, nothing writes one before then, and an acceptance line the Browse can't see isn't one (Ch 1.5 design talk)
 - 2026-10-30 A shelf entry's status (unmarked, done, skipped) is the shelf's own flow and writes no occurrence; read and watched stay computed from occurrences, and Ch 1.6 may offer to log one when an entry is marked done (Ch 1.5)
