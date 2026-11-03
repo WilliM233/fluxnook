@@ -1,5 +1,6 @@
 import { type SQL, sql } from "drizzle-orm";
 import type { Db } from "@/db/client";
+import { type ItemRead, loadItemReads } from "@/lib/journal/item-reads";
 import type { ContentRow } from "./contents-line";
 
 export { releasedLabel } from "./released";
@@ -113,6 +114,8 @@ export type ItemPage = {
     contents: number;
     contentsRows: ContentRow[];
   }[];
+  /** The caller's reads of the work, in the Journal's order (Ch 1.6 A5). */
+  reads: ItemRead[];
 };
 
 /** Everything `/items/<id>` shows, or null for an id the catalog doesn't hold. */
@@ -143,6 +146,7 @@ export async function loadItemPage(
     editions,
     series,
     collectedIn,
+    reads,
   ] = await Promise.all([
     db.execute<ItemPage["sources"][number]>(sql`
       select source, key, url from item_sources
@@ -202,6 +206,7 @@ export async function loadItemPage(
         sql`i.title, e.id`,
       ),
     ),
+    loadItemReads(db, { itemId: id, userId }),
   ]);
 
   return {
@@ -213,6 +218,7 @@ export async function loadItemPage(
     franchises: franchises.map((f) => f.name),
     shelves: [...shelves],
     editions: [...editions],
+    reads,
   };
 }
 

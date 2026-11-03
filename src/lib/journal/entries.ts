@@ -12,11 +12,11 @@ import {
 export const NO_ENTRY = "No entry by that id on this read.";
 
 /**
- * A `written_at` as the one text every read returns: UTC with microseconds,
+ * A timestamp as the one text every read returns: UTC with microseconds,
  * `2026-11-02T21:14:03.512345Z`, so a cursor built from it never passes
  * through a JavaScript Date, which keeps milliseconds (census, C1).
  */
-export const writtenAtText = (column: SQL) =>
+export const timestampText = (column: SQL) =>
   sql`to_char(${column} at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')`;
 
 /** An entry as a write gives it; the anchor is both or neither. */
@@ -70,7 +70,7 @@ export async function insertEntry(
 
 type EntryKey = { userId: string; readId: string; entryId: string };
 
-const ENTRY_COLUMNS = sql`e.id, e.occurrence, ${writtenAtText(sql`e.written_at`)} as "writtenAt",
+const ENTRY_COLUMNS = sql`e.id, e.occurrence, ${timestampText(sql`e.written_at`)} as "writtenAt",
   e.body, e.anchor_kind as "anchorKind", e.anchor_value as "anchorValue"`;
 
 /** An entry on the caller's read (A4). The read must be the caller's. */

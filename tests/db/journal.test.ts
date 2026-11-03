@@ -1,9 +1,13 @@
+import { readFileSync } from "node:fs";
 import postgres from "postgres";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { createDb } from "@/db/client";
 import { ConflictError, NotFoundError } from "@/lib/catalog/import";
+import { loadItemPage } from "@/lib/catalog/item-page";
 import { createEntry, deleteEntry, updateEntry } from "@/lib/journal/entries";
 import { FINISHED_BEFORE, RuleError, STILL_GOING } from "@/lib/journal/errors";
+import { loadItemReads } from "@/lib/journal/item-reads";
+import { sortReads } from "@/lib/journal/order";
 import {
   createRead,
   deleteRead,
@@ -524,5 +528,104 @@ describe("entries", () => {
     await expect(
       createEntry(db, { userId, readId: crypto.randomUUID(), body: "x" }),
     ).rejects.toBeInstanceOf(NotFoundError);
+  });
+});
+
+describe("loadItemReads", () => {
+  it("the 26 fixture reads read back one per issue page: done, no dates, no stars, no entries, one created_at", async () => {
+    const fixture = JSON.parse(
+      readFileSync("supabase/seed/fixtures/tmnt-mirage.json", "utf8"),
+    ) as { occurrences: { item: string; status: string }[] };
+    expect(fixture.occurrences).toHaveLength(26);
+
+    const createdAt = new Set<string>();
+    for (const { item } of fixture.occurrences) {
+      const [source, key] = item.split(/:(.*)/);
+      const reads = await loadItemReads(db, {
+        itemId: await itemFor(sql, source, key),
+        userId,
+      });
+      expect(reads, item).toHaveLength(1);
+      expect(reads[0], item).toMatchObject({
+        status: "done",
+        startedOn: null,
+        finishedOn: null,
+        stars: null,
+        entries: [],
+      });
+      createdAt.add(reads[0].createdAt);
+    }
+    expect(createdAt.size).toBe(1);
+    expect([...createdAt][0]).toMatch(
+      /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{6}Z$/,
+    );
+  });
+
+  it("the caller's reads of a work come back in A5's order with their entries newest first", async () => {
+    const today = new Date().toISOString().slice(0, 10);
+    const { id: march } = await createRead(db, {
+      userId,
+      item: carrie,
+      status: "done",
+      startedOn: "2019-03-03",
+      finishedOn: "2019-03-09",
+      stars: 4.5,
+      entry: { body: "Finished.", writtenAt: "2019-03-09T21:00:00Z" },
+    });
+    const { id: later } = await createEntry(db, {
+      userId,
+      readId: march,
+      body: "Still thinking about it.",
+      anchorKind: "page",
+      anchorValue: "112",
+      writtenAt: "2019-03-10T08:00:00.000001Z",
+    });
+    const { id: open } = await createRead(db, {
+      userId,
+      item: carrie,
+      status: "in_progress",
+      startedOn: today,
+    });
+    const { id: done } = await createRead(db, {
+      userId,
+      item: carrie,
+      status: "done",
+      finishedOn: today,
+    });
+
+    const reads = await loadItemReads(db, { itemId: carrie, userId });
+    expect(reads.map((r) => r.id)).toEqual([done, open, march]);
+    expect(reads.map((r) => r.id)).toEqual(sortReads(reads).map((r) => r.id));
+    expect(reads[2].stars).toBe(4.5);
+    expect(reads[2].entries.map((e) => e.id)).toEqual([
+      later,
+      expect.any(String),
+    ]);
+    expect(reads[2].entries[0]).toEqual({
+      id: later,
+      writtenAt: "2019-03-10T08:00:00.000001Z",
+      body: "Still thinking about it.",
+      anchorKind: "page",
+      anchorValue: "112",
+    });
+    expect(reads[0].entries).toEqual([]);
+  });
+
+  it("loadItemPage carries the reads and the rest of the page as before", async () => {
+    await createRead(db, { userId, item: carrie, status: "done", stars: 4 });
+    const page = await loadItemPage(db, { id: carrie, userId });
+    expect(page?.reads).toHaveLength(1);
+    expect(page?.reads[0].stars).toBe(4);
+    expect(page?.shelves.map((s) => s.name)).toContain(
+      "Stephen King, publication order",
+    );
+  });
+
+  it("a work with no read is an empty list, and so is someone else's", async () => {
+    expect(await loadItemReads(db, { itemId: carrie, userId })).toEqual([]);
+    const tmnt = await itemFor(sql, "manual", "tmnt-mirage-v1-1");
+    expect(
+      await loadItemReads(db, { itemId: tmnt, userId: crypto.randomUUID() }),
+    ).toEqual([]);
   });
 });
