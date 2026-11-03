@@ -8,7 +8,7 @@ const NUL = "That has a character the journal can't hold.";
 const noNul = (text: string) => !text.includes("\0");
 
 const HALF = "Stars go in half steps from 0.5 to 5.";
-const NOTHING = "Nothing to change.";
+export const NOTHING = "Nothing to change.";
 const BOTH = "Say where, or leave both out.";
 
 /** Stars in half steps, 0.5 to 5 (A3); 4.3 is a 400 before the database. */
@@ -36,21 +36,26 @@ export const anchorValue = z
   .max(40, "At most 40 characters.")
   .refine(noNul, NUL);
 
-/** The anchor's two keys are both there or both absent, as the schema's check says. */
+/**
+ * The anchor's two keys come together, and are both set or both null, as the
+ * table's check says; the 400 lands on the one missing or cleared alone.
+ */
 export function bothOrNeither(
   body: { anchorKind?: unknown; anchorValue?: unknown },
   ctx: z.RefinementCtx,
-  path: (string | number)[] = [],
 ) {
-  const kind = body.anchorKind !== undefined;
-  const value = body.anchorValue !== undefined;
-  if (kind !== value) {
-    ctx.addIssue({
-      code: "custom",
-      path: [...path, kind ? "anchorValue" : "anchorKind"],
-      message: BOTH,
-    });
-  }
+  const missing =
+    (body.anchorKind === undefined) !== (body.anchorValue === undefined)
+      ? body.anchorKind === undefined
+      : (body.anchorKind == null) !== (body.anchorValue == null)
+        ? body.anchorKind == null
+        : null;
+  if (missing === null) return;
+  ctx.addIssue({
+    code: "custom",
+    path: [missing ? "anchorKind" : "anchorValue"],
+    message: BOTH,
+  });
 }
 
 /** A3's date rules, at `finishedOn` as the lib says them. */
