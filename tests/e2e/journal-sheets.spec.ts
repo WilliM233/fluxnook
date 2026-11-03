@@ -1,6 +1,7 @@
 import type { Locator, Page } from "@playwright/test";
+import { localLong, localToday } from "./harness/dates";
 import { db, itemFor, loadFixturesFor } from "./harness/fixtures";
-import { post } from "./harness/shelves";
+import { film, post } from "./harness/shelves";
 import { expect, test } from "./harness/signed-in";
 
 // Ch 1.6.2: the Journal section's controls and sheets, from a person's side.
@@ -113,4 +114,182 @@ test("a 500 on the stars leaves the card as it was and says so", async ({
     "Couldn't save that. Try again.",
   );
   await expect(card.getByRole("group", { name: "Unrated" })).toBeVisible();
+});
+
+/** How many reads of `item` there are, anyone's. */
+const readsOf = (item: string) =>
+  db(`select count(*) from occurrences where item = '${item}'`);
+
+const WEEKEND =
+  "Finished in a weekend. The epistolary pieces are the trick: the town is testifying before the thing has happened.";
+
+test("log a read with a first entry and see the card", async ({
+  signedIn: { page },
+}) => {
+  const title = `Logged ${crypto.randomUUID()}`;
+  const id = await book(page, title);
+  await page.goto(`/items/${id}`);
+  const journal = page.getByRole("region", { name: "Journal" });
+  await journal.getByRole("button", { name: "Log a read" }).click();
+
+  const sheet = page.getByRole("dialog", { name: `Log a read of ${title}` });
+  await expect(
+    sheet
+      .getByRole("group", { name: "Where it stands" })
+      .getByRole("button", { name: "Done", pressed: true }),
+  ).toBeVisible();
+  await sheet.getByLabel("Started").fill("2026-10-28");
+  await expect(sheet.getByLabel("Finished")).toHaveValue(localToday());
+  await half(sheet.getByRole("button", { name: "5 stars" }), "left");
+  await expect(sheet.getByTestId("stars-value")).toHaveText("4.5");
+  await expect(sheet.getByRole("button", { name: "Clear" })).toBeVisible();
+  await sheet.getByLabel("A first entry, if you like").fill(WEEKEND);
+  const where = sheet.getByLabel("Where in it", { exact: true });
+  await expect(where.locator("option")).toHaveText(["Page", "Chapter"]);
+  await sheet.getByLabel("Where in it, the place").fill("112");
+  await sheet.getByRole("button", { name: "Log it" }).click();
+
+  await expect(sheet).toBeHidden();
+  const card = journal.getByTestId("read");
+  await expect(card).toHaveCount(1);
+  await expect(card.getByText("Done", { exact: true })).toBeVisible();
+  await expect(
+    card.getByText(`28 October 2026 to ${localLong()}`, { exact: true }),
+  ).toBeVisible();
+  await expect(card.getByRole("group", { name: "★ 4.5" })).toBeVisible();
+  const entry = card.getByTestId("entry");
+  await expect(entry).toHaveCount(1);
+  await expect(entry.getByText("p. 112", { exact: true })).toBeVisible();
+  await expect(entry.getByText(localLong(), { exact: true })).toBeVisible();
+  await expect(entry.getByText(WEEKEND)).toBeVisible();
+  await expect(
+    journal.getByText("1 read · last finished at ★ 4.5", { exact: true }),
+  ).toBeVisible();
+});
+
+test("Reading sends finishedOn as null, never stripped", async ({
+  signedIn: { page },
+}) => {
+  const id = await book(page, `Still going ${crypto.randomUUID()}`);
+  await page.goto(`/items/${id}`);
+  const journal = page.getByRole("region", { name: "Journal" });
+  await journal.getByRole("button", { name: "Log a read" }).click();
+  const sheet = page.getByRole("dialog");
+  await sheet.getByRole("button", { name: "Reading" }).click();
+  await expect(sheet.getByLabel("Finished")).toBeDisabled();
+  await expect(sheet.getByLabel("Finished")).toHaveValue("");
+  await sheet.getByLabel("Started").fill(localToday());
+
+  const sent = page.waitForRequest(
+    (r) =>
+      r.method() === "POST" &&
+      new URL(r.url()).pathname === "/api/v1/occurrences",
+  );
+  await sheet.getByRole("button", { name: "Log it" }).click();
+  const body = JSON.parse((await sent).postData() ?? "{}");
+  expect(body).toHaveProperty("finishedOn", null);
+  expect(body).toHaveProperty("startedOn", localToday());
+  expect(body).toHaveProperty("status", "in_progress");
+
+  await expect(sheet).toBeHidden();
+  const card = journal.getByTestId("read");
+  await expect(card.getByText("Reading", { exact: true })).toBeVisible();
+  await expect(
+    card.getByText(`Started ${localLong()}`, { exact: true }),
+  ).toBeVisible();
+  await expect(
+    journal.getByText("1 read · reading now", { exact: true }),
+  ).toBeVisible();
+});
+
+test("the 409 line on the sheet", async ({ signedIn: { page } }) => {
+  const id = await book(page, `Twice ${crypto.randomUUID()}`);
+  await post(page, "/api/v1/occurrences", { item: id, status: "in_progress" });
+  await page.goto(`/items/${id}`);
+  const journal = page.getByRole("region", { name: "Journal" });
+  await journal.getByRole("button", { name: "Log a read" }).click();
+  const sheet = page.getByRole("dialog");
+  await sheet.getByRole("button", { name: "Reading" }).click();
+  await sheet.getByRole("button", { name: "Log it" }).click();
+
+  await expect(sheet.getByRole("alert")).toHaveText(
+    "You're already reading this. Finish or abandon that read first.",
+  );
+  await expect(sheet).toBeVisible();
+  await sheet.getByRole("button", { name: "Cancel" }).click();
+  await expect(sheet).toBeHidden();
+  await expect(journal.getByTestId("read")).toHaveCount(1);
+  expect(readsOf(id)).toBe("1");
+});
+
+test("a film's sheet is a watch with no Where in it", async ({
+  signedIn: { page },
+}) => {
+  const title = `Watched ${crypto.randomUUID()}`;
+  const id = await film(page, title, 1976);
+  await page.goto(`/items/${id}`);
+  const journal = page.getByRole("region", { name: "Journal" });
+  await journal.getByRole("button", { name: "Log a watch" }).click();
+  const sheet = page.getByRole("dialog", { name: `Log a watch of ${title}` });
+  await expect(
+    sheet
+      .getByRole("group", { name: "Where it stands" })
+      .getByRole("button", { name: "Watching" }),
+  ).toBeVisible();
+  await expect(sheet.getByText("Where in it")).toHaveCount(0);
+
+  const fourth = sheet.getByRole("button", { name: "4 stars" });
+  await fourth.press("Enter");
+  await expect(sheet.getByTestId("stars-value")).toHaveText("4");
+  await fourth.press("ArrowLeft");
+  await expect(sheet.getByTestId("stars-value")).toHaveText("3.5");
+  await sheet.getByRole("button", { name: "Log it" }).click();
+
+  await expect(sheet).toBeHidden();
+  await expect(
+    journal.getByTestId("read").getByRole("group", { name: "★ 3.5" }),
+  ).toBeVisible();
+  await expect(
+    journal.getByText("1 watch · last finished at ★ 3.5", { exact: true }),
+  ).toBeVisible();
+});
+
+test("a field error stays on the sheet under its field", async ({
+  signedIn: { page },
+}) => {
+  const id = await book(page, `Backwards ${crypto.randomUUID()}`);
+  await page.goto(`/items/${id}`);
+  const journal = page.getByRole("region", { name: "Journal" });
+  await journal.getByRole("button", { name: "Log a read" }).click();
+  const sheet = page.getByRole("dialog");
+  await sheet.getByLabel("Started").fill("2026-11-02");
+  await sheet.getByLabel("Finished").fill("2026-10-28");
+  await sheet.getByRole("button", { name: "Log it" }).click();
+
+  await expect(sheet.locator("#read-finished-error")).toHaveText(
+    "Finished can't be before Started.",
+  );
+  await expect(sheet.getByRole("alert")).toHaveCount(0);
+  await expect(sheet).toBeVisible();
+  expect(readsOf(id)).toBe("0");
+});
+
+test("Cancel and Escape close the sheet and write nothing", async ({
+  signedIn: { page },
+}) => {
+  const id = await book(page, `Not yet ${crypto.randomUUID()}`);
+  await page.goto(`/items/${id}`);
+  const journal = page.getByRole("region", { name: "Journal" });
+  const sheet = page.getByRole("dialog");
+
+  await journal.getByRole("button", { name: "Log a read" }).click();
+  await sheet.getByRole("button", { name: "Cancel" }).click();
+  await expect(sheet).toBeHidden();
+  await journal.getByRole("button", { name: "Log a read" }).click();
+  await expect(sheet).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(sheet).toBeHidden();
+
+  await expect(journal.getByTestId("read")).toHaveCount(0);
+  expect(readsOf(id)).toBe("0");
 });

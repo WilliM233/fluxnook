@@ -2,18 +2,21 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import {
+  LogReadSheet,
+  type SheetItem,
+} from "@/app/(app)/journal/log-read-sheet";
+import { Button } from "@/components/ui/button";
 import { StarControl } from "@/components/ui/star-control";
 import type { ItemEntry, ItemRead } from "@/lib/journal/item-reads";
 import { starText } from "@/lib/journal/stars";
-import type { ItemType } from "@/lib/journal/words";
+import { words } from "@/lib/journal/words";
 
 /** The work the section belongs to, as its sheets need it. */
-export type JournalItem = {
-  id: string;
-  title: string;
-  type: ItemType;
-  form: string | null;
-};
+export type JournalItem = SheetItem;
+
+/** The one sheet open over the section, if any. */
+type Sheet = { kind: "log" };
 
 /** An entry with its date and pill printed on the server. */
 export type CardEntry = ItemEntry & { written: string; pill: string | null };
@@ -48,6 +51,8 @@ export function JournalCards({
   cards: Card[];
 }) {
   const router = useRouter();
+  const w = words(item.type);
+  const [sheet, setSheet] = useState<Sheet | null>(null);
   // Stars clicked but not yet read back from the server, by read id.
   const [clicked, setClicked] = useState<Record<string, number | null>>({});
   const [busy, setBusy] = useState<Set<string>>(new Set());
@@ -107,13 +112,29 @@ export function JournalCards({
     }
   }
 
+  /** A sheet saved: the page's read is the one to show now. */
+  function saved() {
+    setSheet(null);
+    setClicked({});
+    router.refresh();
+  }
+
   return (
     <>
-      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <h2 id="journal" className="font-heading text-[22px] font-semibold">
-          Journal
-        </h2>
-        <p className="text-[13px] text-dim">{heading}</p>
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <h2 id="journal" className="font-heading text-[22px] font-semibold">
+            Journal
+          </h2>
+          <p className="text-[13px] text-dim">{heading}</p>
+        </div>
+        <Button
+          size="lg"
+          className="ml-auto"
+          onClick={() => setSheet({ kind: "log" })}
+        >
+          {w.log}
+        </Button>
       </div>
       {cards.length > 0 && (
         <ul className="flex flex-col gap-3">
@@ -173,6 +194,13 @@ export function JournalCards({
             );
           })}
         </ul>
+      )}
+      {sheet?.kind === "log" && (
+        <LogReadSheet
+          item={item}
+          onSaved={saved}
+          onClose={() => setSheet(null)}
+        />
       )}
     </>
   );
