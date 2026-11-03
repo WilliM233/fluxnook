@@ -73,6 +73,20 @@ export default async function JournalPage({
           Journal
         </h1>
         <p className="text-muted-foreground">{journalLede(totals)}</p>
+        {cursor && rows.length === 0 && totals.entries > 0 && (
+          // Past the end: a page kept after a delete, or a kept address
+          // (1.6.3 Rummage R4).
+          <p className="text-[13px] text-dim">
+            Nothing older than this.{" "}
+            <Link
+              href="/journal"
+              className="text-primary hover:text-accent-hover"
+            >
+              Back to the newest
+            </Link>
+            .
+          </p>
+        )}
       </div>
 
       {days.length > 0 && <JournalRows days={days} />}

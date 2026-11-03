@@ -22,7 +22,24 @@ export function parseCursor(before: unknown): Cursor | null {
   const writtenAt = before.slice(0, comma);
   const id = before.slice(comma + 1).toLowerCase();
   if (!TIMESTAMP.test(writtenAt) || !uuid.safeParse(id).success) return null;
+  if (!isInstant(writtenAt)) return null;
   return { writtenAt, id };
+}
+
+/**
+ * Whether the shape names a moment Postgres will read: February 30th, a
+ * thirteenth month or hour 25 roll over in a Date, so its text no longer
+ * matches; year zero doesn't exist in Postgres (1.6.3 Rummage R1). The
+ * microseconds past the milliseconds are digits the shape already checked.
+ */
+function isInstant(writtenAt: string): boolean {
+  const millis = `${writtenAt.slice(0, 23)}Z`;
+  const at = new Date(millis);
+  return (
+    !Number.isNaN(at.getTime()) &&
+    at.getUTCFullYear() >= 1 &&
+    at.toISOString() === millis
+  );
 }
 
 /** The Older entries link's `before`, from the page's last row. */

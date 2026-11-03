@@ -66,6 +66,11 @@ export function EntrySheet({
   }));
   const [refused, setRefused] = useState<Refusal>(NONE);
   const [busy, setBusy] = useState(false);
+  // A 404 means the entry or its read is gone (another tab): the sheet says
+  // so, and closing it reads the page again, so no ghost is left behind to
+  // edit (1.6.3 Rummage R5; the card's rule from 1.6.2 R2 and R3).
+  const [gone, setGone] = useState(false);
+  const close = () => (gone ? onSaved() : onClose());
   const errors = refused.fields;
   // Words typed close only on Cancel: an overlay click or Escape would
   // throw a paragraph away without a word (1.6.2 Raccoon S3).
@@ -88,6 +93,7 @@ export function EntrySheet({
         onSaved();
         return;
       }
+      if (response.status === 404) setGone(true);
       setRefused(await refusalOf(response, DRAWN, FAILED));
     } catch {
       setRefused({ fields: {}, line: FAILED });
@@ -96,7 +102,7 @@ export function EntrySheet({
   }
 
   return (
-    <Dialog open onOpenChange={(next) => !next && !typed && onClose()}>
+    <Dialog open onOpenChange={(next) => !next && (gone || !typed) && close()}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] gap-5 overflow-y-auto border border-line-strong p-7 sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="font-heading text-[28px] leading-tight font-semibold">
@@ -158,7 +164,7 @@ export function EntrySheet({
           )}
 
           <div className="flex flex-wrap items-center justify-end gap-2.5 border-t pt-5">
-            <Button type="button" size="lg" variant="outline" onClick={onClose}>
+            <Button type="button" size="lg" variant="outline" onClick={close}>
               Cancel
             </Button>
             <Button type="submit" size="lg" disabled={busy}>

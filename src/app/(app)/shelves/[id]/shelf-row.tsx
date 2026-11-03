@@ -4,7 +4,7 @@ import { StripThumb } from "@/app/(app)/nook/shelf-card";
 import { TypePill } from "@/app/(app)/search/rows";
 import { workLine } from "@/lib/catalog/work-line";
 import { starText } from "@/lib/journal/stars";
-import { type ItemType, words } from "@/lib/journal/words";
+import { words } from "@/lib/journal/words";
 import type { ShelfRow as Row } from "@/lib/shelves/shelf-page";
 
 /**
@@ -33,8 +33,7 @@ export function ShelfRow({
 }) {
   const skipped = row.status === "skipped";
   const line = workLine(row.item);
-  // The column's check holds the four types the journal's words know.
-  const times = words(row.item.type as ItemType).times(row.reads);
+  const times = words(row.item.type).times(row.reads);
   return (
     <li
       ref={ref}

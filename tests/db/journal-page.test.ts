@@ -28,7 +28,8 @@ const { db, close } = createDb();
 let userId: string;
 const shelf = { tmnt: "", watch: "", books: "" };
 const work = { tmnt1: "", tmnt2: "", carrie: "", salems: "", carrie1976: "" };
-const TODAY = "2026-11-03";
+// Any day: Carrie's two reads tie on it, which is the point, not the date.
+const FINISHED = "2026-11-03";
 
 const page = async (id: string) =>
   (await loadShelfPage(db, { id, userId })) as ShelfPage;
@@ -67,27 +68,27 @@ beforeAll(async () => {
     item: work.carrie,
     status: "done",
     startedOn: "2026-10-28",
-    finishedOn: TODAY,
+    finishedOn: FINISHED,
     stars: 4.5,
   });
   await createRead(db, {
     userId,
     item: work.carrie,
     status: "done",
-    finishedOn: TODAY,
+    finishedOn: FINISHED,
   });
   await createRead(db, {
     userId,
     item: work.salems,
     status: "done",
-    finishedOn: TODAY,
+    finishedOn: FINISHED,
     stars: 5,
   });
   await createRead(db, {
     userId,
     item: work.carrie1976,
     status: "done",
-    finishedOn: TODAY,
+    finishedOn: FINISHED,
     stars: 3.5,
   });
   await updateRead(db, {
@@ -262,7 +263,7 @@ describe("the Journal page's read (A8)", () => {
     expect(carrie.read).toMatchObject({
       status: "done",
       startedOn: "2026-10-28",
-      finishedOn: TODAY,
+      finishedOn: FINISHED,
       stars: 4.5,
     });
     for (const r of rows) {

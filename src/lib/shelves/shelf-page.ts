@@ -3,6 +3,7 @@ import type { Db } from "@/db/client";
 import type { entryStatuses } from "@/db/vocabulary";
 import type { WorkFacts } from "@/lib/catalog/work-line";
 import { meanStars } from "@/lib/journal/stars";
+import type { ItemType } from "@/lib/journal/words";
 import type { Rated } from "./lines";
 
 /**
@@ -14,7 +15,13 @@ export type ShelfRow = {
   id: string;
   position: number;
   status: (typeof entryStatuses)[number];
-  item: WorkFacts & { id: string; title: string; cover_path: string | null };
+  // The column's check holds the four types the journal's words know.
+  item: WorkFacts & {
+    id: string;
+    type: ItemType;
+    title: string;
+    cover_path: string | null;
+  };
   stars: number | null;
   reads: number;
 };

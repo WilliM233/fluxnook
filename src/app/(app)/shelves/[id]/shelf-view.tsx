@@ -16,7 +16,7 @@ import { json } from "@/lib/api/request";
 import type { PickerWork } from "@/lib/catalog/picker-works";
 import { plural } from "@/lib/catalog/work-line";
 import { starText } from "@/lib/journal/stars";
-import { type ItemType, words } from "@/lib/journal/words";
+import { words } from "@/lib/journal/words";
 import { headingId } from "@/lib/shelves/drop";
 import { countsLine, type Rated } from "@/lib/shelves/lines";
 import {
@@ -118,8 +118,19 @@ export function ShelfView({
   // only, so a reload shows Remove again.
   const [offers, setOffers] = useState<ReadonlySet<string>>(new Set());
   if (seed !== page) {
+    const fresh = flatten(page);
     setSeed(page);
-    setRows(flatten(page));
+    setRows(fresh);
+    // An offer follows a Done the server answered; a read that shows the
+    // row isn't Done any more takes it away (1.6.3 Rummage R2).
+    const done = new Set(
+      fresh.filter((r) => r.status === "done").map((r) => r.id),
+    );
+    setOffers((current) =>
+      [...current].every((id) => done.has(id))
+        ? current
+        : new Set([...current].filter((id) => done.has(id))),
+    );
   }
 
   const { shelf, sections } = page;
@@ -207,18 +218,24 @@ export function ShelfView({
 
   /** The offer under a row just marked Done, in Remove's place (1.6 A10). */
   const offerOf = (row: ViewRow) => {
-    const w = words(row.item.type as ItemType);
+    const w = words(row.item.type);
     return (
       <span className="flex items-center gap-3 text-[13px]">
         <span className="text-muted-foreground">{w.ask}</span>
         <button
           type="button"
+          disabled={busy.has(row.id)}
           className="rounded text-primary outline-none hover:text-accent-hover focus-visible:ring-3 focus-visible:ring-ring/50"
           onClick={() => setSheet({ kind: "log-read", row })}
         >
           {w.log}
         </button>
-        <TextButton onClick={() => offer(row.id, false)}>Not now</TextButton>
+        <TextButton
+          disabled={busy.has(row.id)}
+          onClick={() => offer(row.id, false)}
+        >
+          Not now
+        </TextButton>
       </span>
     );
   };
@@ -310,7 +327,7 @@ export function ShelfView({
           item={{
             id: sheet.row.item.id,
             title: sheet.row.item.title,
-            type: sheet.row.item.type as ItemType,
+            type: sheet.row.item.type,
             form: sheet.row.item.form ?? null,
           }}
           onSaved={() => {

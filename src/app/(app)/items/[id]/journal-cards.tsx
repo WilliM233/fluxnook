@@ -253,7 +253,7 @@ export function JournalCards({
                         </button>
                       </span>
                     </div>
-                    <p className="max-w-[62ch] text-sm whitespace-pre-line">
+                    <p className="max-w-[62ch] text-sm wrap-anywhere whitespace-pre-line">
                       {entry.body}
                     </p>
                   </div>

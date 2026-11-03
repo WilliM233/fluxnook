@@ -68,7 +68,7 @@ export function JournalRows({ days }: { days: DayGroup[] }) {
                 <div className="flex flex-col gap-1.5 md:w-56 md:flex-none">
                   <Link
                     href={`/items/${row.work.id}`}
-                    className="font-heading text-lg leading-tight font-semibold hover:text-accent-hover"
+                    className="font-heading text-lg leading-tight font-semibold wrap-anywhere hover:text-accent-hover"
                   >
                     {row.work.title}
                   </Link>
@@ -85,7 +85,7 @@ export function JournalRows({ days }: { days: DayGroup[] }) {
                   </span>
                 </div>
                 <div className="flex min-w-0 flex-1 flex-col gap-2">
-                  <p className="max-w-[62ch] text-sm whitespace-pre-line">
+                  <p className="max-w-[62ch] text-sm wrap-anywhere whitespace-pre-line">
                     {row.entry.body}
                   </p>
                   <div className="flex flex-wrap items-center gap-3">
