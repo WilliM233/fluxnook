@@ -2,6 +2,7 @@ import postgres from "postgres";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { createDb } from "@/db/client";
 import { ConflictError, NotFoundError } from "@/lib/catalog/import";
+import { createEntry, deleteEntry, updateEntry } from "@/lib/journal/entries";
 import { FINISHED_BEFORE, RuleError, STILL_GOING } from "@/lib/journal/errors";
 import {
   createRead,
@@ -293,6 +294,235 @@ describe("deleteRead", () => {
   it("a random id is NotFoundError", async () => {
     await expect(
       deleteRead(db, { userId, readId: crypto.randomUUID() }),
+    ).rejects.toBeInstanceOf(NotFoundError);
+  });
+});
+
+describe("entries", () => {
+  const writtenAtOf = async (entry: string) => {
+    const [row] = await sql`
+      select to_char(written_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"') as at,
+        extract(epoch from now() - written_at) as age
+      from journal_entries where id = ${entry}`;
+    return row as { at: string; age: string };
+  };
+
+  it("createEntry with page 112 on the caller's read reads back with its anchor, written now", async () => {
+    const { id: readId } = await createRead(db, {
+      userId,
+      item: carrie,
+      status: "done",
+    });
+    const { id } = await createEntry(db, {
+      userId,
+      readId,
+      body: "The shower scene.",
+      anchorKind: "page",
+      anchorValue: "112",
+    });
+    expect(await entriesOf(readId)).toEqual([
+      {
+        id,
+        body: "The shower scene.",
+        anchor_kind: "page",
+        anchor_value: "112",
+      },
+    ]);
+    expect(Math.abs(Number((await writtenAtOf(id)).age))).toBeLessThan(60);
+  });
+
+  it("createEntry with writtenAt set keeps the microseconds, in the cursor's text form", async () => {
+    const { id: readId } = await createRead(db, {
+      userId,
+      item: carrie,
+      status: "done",
+    });
+    const at = "2019-03-09T21:14:03.512345Z";
+    const { id } = await createEntry(db, {
+      userId,
+      readId,
+      body: "Caught up.",
+      writtenAt: at,
+    });
+    expect((await writtenAtOf(id)).at).toBe(at);
+  });
+
+  it("episode on a book and page on a film are RuleError; episode on a show is fine", async () => {
+    const { id: book } = await createRead(db, {
+      userId,
+      item: carrie,
+      status: "done",
+    });
+    await expect(
+      createEntry(db, {
+        userId,
+        readId: book,
+        body: "x",
+        anchorKind: "episode",
+        anchorValue: "S02E03",
+      }),
+    ).rejects.toMatchObject({
+      field: "anchorKind",
+      message: "A book takes page or chapter.",
+    });
+
+    const { id: film } = await createRead(db, {
+      userId,
+      item: carrieFilm,
+      status: "done",
+    });
+    await expect(
+      createEntry(db, {
+        userId,
+        readId: film,
+        body: "x",
+        anchorKind: "page",
+        anchorValue: "1",
+      }),
+    ).rejects.toBeInstanceOf(RuleError);
+    expect(await entriesOf(book)).toHaveLength(0);
+    expect(await entriesOf(film)).toHaveLength(0);
+
+    const title = `journal tv ${crypto.randomUUID()}`;
+    const [{ id: show }] = await sql`
+      insert into items (type, title) values ('tv', ${title}) returning id`;
+    try {
+      const { id: watch } = await createRead(db, {
+        userId,
+        item: show,
+        status: "in_progress",
+      });
+      await createEntry(db, {
+        userId,
+        readId: watch,
+        body: "The cold open.",
+        anchorKind: "episode",
+        anchorValue: "S02E03",
+      });
+      expect(await entriesOf(watch)).toMatchObject([
+        { anchor_kind: "episode", anchor_value: "S02E03" },
+      ]);
+    } finally {
+      await sql`delete from occurrences where item = ${show}`;
+      await sql`delete from items where id = ${show}`;
+    }
+  });
+
+  it("updateEntry changes the body alone, the anchor pair together, clears it, and moves written_at", async () => {
+    const { id: readId } = await createRead(db, {
+      userId,
+      item: carrie,
+      status: "done",
+    });
+    const { id: entryId } = await createEntry(db, {
+      userId,
+      readId,
+      body: "First.",
+      anchorKind: "page",
+      anchorValue: "12",
+    });
+    const key = { userId, readId, entryId };
+
+    expect(await updateEntry(db, { ...key, body: "Second." })).toMatchObject({
+      id: entryId,
+      occurrence: readId,
+      body: "Second.",
+      anchorKind: "page",
+      anchorValue: "12",
+    });
+    expect(
+      await updateEntry(db, {
+        ...key,
+        anchorKind: "chapter",
+        anchorValue: "7",
+      }),
+    ).toMatchObject({
+      body: "Second.",
+      anchorKind: "chapter",
+      anchorValue: "7",
+    });
+    expect(
+      await updateEntry(db, { ...key, anchorKind: null, anchorValue: null }),
+    ).toMatchObject({ anchorKind: null, anchorValue: null });
+
+    const moved = await updateEntry(db, {
+      ...key,
+      writtenAt: "2026-10-29T08:00:00.000001Z",
+    });
+    expect(moved.writtenAt).toBe("2026-10-29T08:00:00.000001Z");
+    expect(moved.body).toBe("Second.");
+  });
+
+  it("updateEntry to a kind the work doesn't take is RuleError and the entry stands", async () => {
+    const { id: readId } = await createRead(db, {
+      userId,
+      item: carrie,
+      status: "done",
+    });
+    const { id: entryId } = await createEntry(db, {
+      userId,
+      readId,
+      body: "x",
+    });
+    await expect(
+      updateEntry(db, {
+        userId,
+        readId,
+        entryId,
+        anchorKind: "issue",
+        anchorValue: "7",
+      }),
+    ).rejects.toMatchObject({ field: "anchorKind" });
+    expect(await entriesOf(readId)).toMatchObject([{ anchor_kind: null }]);
+  });
+
+  it("deleteEntry takes one and the read stays with the other", async () => {
+    const { id: readId, entryId: first } = await createRead(db, {
+      userId,
+      item: carrie,
+      status: "done",
+      entry: { body: "One." },
+    });
+    const { id: second } = await createEntry(db, {
+      userId,
+      readId,
+      body: "Two.",
+    });
+    await deleteEntry(db, { userId, readId, entryId: first as string });
+    expect((await entriesOf(readId)).map((e) => e.id)).toEqual([second]);
+    expect(await readsOf(carrie)).toHaveLength(1);
+  });
+
+  it("an entry asked for under another of the caller's reads is NotFoundError, and nothing changes", async () => {
+    const tmnt = await itemFor(sql, "manual", "tmnt-mirage-v1-1");
+    const [{ id: fixtureRead }] = await sql`
+      select id from occurrences where owner = ${userId} and item = ${tmnt}`;
+    const { id: readId, entryId } = await createRead(db, {
+      userId,
+      item: carrie,
+      status: "done",
+      entry: { body: "Mine, on Carrie." },
+    });
+    const elsewhere = {
+      userId,
+      readId: fixtureRead as string,
+      entryId: entryId as string,
+    };
+    await expect(
+      updateEntry(db, { ...elsewhere, body: "moved" }),
+    ).rejects.toBeInstanceOf(NotFoundError);
+    await expect(deleteEntry(db, elsewhere)).rejects.toBeInstanceOf(
+      NotFoundError,
+    );
+    expect(await entriesOf(readId)).toMatchObject([
+      { id: entryId, body: "Mine, on Carrie." },
+    ]);
+    expect(await entriesOf(fixtureRead)).toHaveLength(0);
+  });
+
+  it("createEntry on a random read id is NotFoundError", async () => {
+    await expect(
+      createEntry(db, { userId, readId: crypto.randomUUID(), body: "x" }),
     ).rejects.toBeInstanceOf(NotFoundError);
   });
 });

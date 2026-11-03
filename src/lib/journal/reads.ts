@@ -8,11 +8,17 @@ import {
   type NewEntry,
   type WorkKind,
 } from "./entries";
-import { FINISHED_BEFORE, isOpenTwice, RuleError, STILL_GOING } from "./errors";
+import {
+  FINISHED_BEFORE,
+  isOpenTwice,
+  NO_READ,
+  RuleError,
+  STILL_GOING,
+} from "./errors";
 
+export { NO_READ } from "./errors";
 export const OPEN_ALREADY =
   "You're already reading this. Finish or abandon that read first.";
-export const NO_READ = "No read by that id.";
 export const NO_WORK = "No work by that id.";
 
 type Status = (typeof occurrenceStatuses)[number];
