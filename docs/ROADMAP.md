@@ -95,6 +95,7 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## Calls made (with reason)
 
+- 2026-11-03 A row a mutation answers carries its `updated_at` as the version the page compares against: a read's `PATCH` answers with `updatedAt` (UTC text with microseconds), the page's own read carries the same, and a control holding a clicked value shows the newer of the two. Without a version, a refresh that rendered before a later click put the old stars back, and a later write in another tab hid behind this tab's answer (1.6.2 D3, L at sign-off)
 - 2026-11-02 One open read per work: at most one `in_progress` occurrence per owner and item, a partial unique index, a second one a 409 that says to finish or abandon the open read. A read is one time through; two open at once is a data-entry slip, not a state anyone means (Ch 1.6 design talk)
 - 2026-11-02 The word follows the type: a read for a book or a comic, a watch for a film or a show; a play waits for games. One function gives every label, so the sheet, the card, the shelf's offer and the counts agree (Ch 1.6)
 - 2026-11-02 Anchor kinds are narrowed per type at the API, as the Ch 1.1 vocabulary note promised: book page and chapter, comic issue page, collected comic issue and page, TV episode, film none. The pill prints "p. 112", "Ch. 7", "S02E03" as typed, "#7" (Ch 1.6)
@@ -230,6 +231,7 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## History
 
+- 2026-11-03 Ch 1.6.2 merged, v0.1.0-ch.6.2 (#83, PR #86); one call carried from its sign-off (a mutation's row carries its version, 1.6.2 D3). 1.6.3 is next
 - 2026-11-02 Ch 1.6 design talk: ten leans on where logging lives, one open read, stars any time, the shelf's mean, plain-text entries with the type's anchors, a Journal page, the Done offer, edit and delete, the fixture's 26 reads and the QA model, all taken; four screens drawn on Deep Field; nine calls added. Ch 1.6 spec written, docs/plans/1.6-occurrences.md
 - 2026-11-02 Ch 1.5 closed, v0.1.0-ch.5.1 to ch.5.3 (#74; PRs #78, #79, #80); Ch 1.6 is next. The nook holds shelves: sections, numbered works, a status per entry, the drag by pointer, finger and keyboard, and three doors onto a shelf. From the Afterword: two calls (the `?items=` cap of 200, B1; "No section" on a shelf with sections, 1.5.3), the import sheet's select Deferral closed (built as A12 in 1.5.3, its line naming the runs, Q1 b)), and the chapter's paging Deferral carried here with its trigger on a production build, which its one measurement already passes (1,236,237 bytes)
 - 2026-11-01 Ch 1.5.1 merged, v0.1.0-ch.5.1 (#75, PR #78); one call carried from its sign-off (section names without case, 1.5.1 R5). 1.5.2 is next
