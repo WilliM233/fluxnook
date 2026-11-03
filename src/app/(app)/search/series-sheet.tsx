@@ -74,6 +74,9 @@ export function SeriesSheet({
   );
   const [format, setFormat] = useState<SeriesFormat>("hardcover");
   const [picked, setPicked] = useState("");
+  // Add with the select on No asks once before a run goes in beside the
+  // ones entered by hand (A12, the 1.4.3 Deferral).
+  const [confirming, setConfirming] = useState(false);
   const catalog = result.catalog;
   const candidates = catalog.status === "match" ? catalog.candidates : [];
   const collected = form === "collected";
@@ -84,6 +87,15 @@ export function SeriesSheet({
     ...(attachTo ? { attachTo } : {}),
   });
   const chosen = options.find((g) => `${g.group}:${g.label}` === picked);
+  const asking = confirming && !chosen && options.length > 0;
+
+  function add() {
+    if (!chosen && options.length > 0 && !confirming) {
+      setConfirming(true);
+      return;
+    }
+    onSubmit(choice(chosen && pick(chosen)));
+  }
 
   function chooseForm(next: "issue" | "collected") {
     setForm(next);
@@ -222,7 +234,10 @@ export function SeriesSheet({
             Same as a run you added by hand?
             <select
               value={chosen ? picked : ""}
-              onChange={(e) => setPicked(e.target.value)}
+              onChange={(e) => {
+                setPicked(e.target.value);
+                setConfirming(false);
+              }}
               className={selectClass}
             >
               <option value="">No</option>
@@ -244,45 +259,67 @@ export function SeriesSheet({
           </p>
         )}
 
-        <div className="flex flex-wrap items-center gap-2.5">
-          {candidates.length === 1 && (
+        {asking ? (
+          <div className="flex flex-col gap-3">
+            <p className="text-sm">
+              Adds{" "}
+              {result.issueCount !== null
+                ? plural(result.issueCount, "comic")
+                : "its comics"}{" "}
+              as a new run beside the {plural(options.length, "run")} you
+              entered by hand. If it is one of them, pick it above. Add anyway?
+            </p>
+            <div className="flex flex-wrap items-center gap-2.5">
+              <Button size="lg" disabled={busy} onClick={add}>
+                Add anyway
+              </Button>
+              <Button
+                size="lg"
+                variant="ghost"
+                className="ml-auto text-muted-foreground"
+                onClick={() => setConfirming(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-wrap items-center gap-2.5">
+            {candidates.length === 1 && (
+              <Button
+                size="lg"
+                disabled={
+                  busy || (candidates[0].group === "collected" && !collected)
+                }
+                onClick={() => onSubmit(choice(pick(candidates[0])))}
+              >
+                Same, add Comic Vine's details to it
+              </Button>
+            )}
+            {candidates.length > 0 ? (
+              <Button
+                size="lg"
+                variant="outline"
+                disabled={busy}
+                onClick={() => onSubmit(choice())}
+              >
+                Different, add as a new run
+              </Button>
+            ) : (
+              <Button size="lg" disabled={busy} onClick={add}>
+                Add
+              </Button>
+            )}
             <Button
               size="lg"
-              disabled={
-                busy || (candidates[0].group === "collected" && !collected)
-              }
-              onClick={() => onSubmit(choice(pick(candidates[0])))}
+              variant="ghost"
+              className="ml-auto text-muted-foreground"
+              onClick={onClose}
             >
-              Same, add Comic Vine's details to it
+              Cancel
             </Button>
-          )}
-          {candidates.length > 0 ? (
-            <Button
-              size="lg"
-              variant="outline"
-              disabled={busy}
-              onClick={() => onSubmit(choice())}
-            >
-              Different, add as a new run
-            </Button>
-          ) : (
-            <Button
-              size="lg"
-              disabled={busy}
-              onClick={() => onSubmit(choice(chosen && pick(chosen)))}
-            >
-              Add
-            </Button>
-          )}
-          <Button
-            size="lg"
-            variant="ghost"
-            className="ml-auto text-muted-foreground"
-            onClick={onClose}
-          >
-            Cancel
-          </Button>
-        </div>
+          </div>
+        )}
         {candidates.some((c) => c.group === "collected") && !collected && (
           <p className="text-[13px] text-dim">
             A run of collected editions attaches as collected editions; choose

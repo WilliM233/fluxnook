@@ -91,7 +91,14 @@ export type ItemPage = {
     released_precision: string | null;
   }[];
   franchises: string[];
-  shelves: { name: string; position: number }[];
+  /** The caller's shelves holding this work, each with its section and number (A10). */
+  shelves: {
+    id: string;
+    entry: string;
+    name: string;
+    section: string | null;
+    position: number;
+  }[];
   editions: {
     id: string;
     format: string;
@@ -156,7 +163,9 @@ export async function loadItemPage(
       select f.name from item_franchises i join franchises f on f.id = i.franchise
       where i.item = ${id} order by f.name`),
     db.execute<ItemPage["shelves"][number]>(sql`
-      select s.name, e.position from shelf_entries e join shelves s on s.id = e.shelf
+      select s.id, e.id as entry, s.name, x.name as section, e.position
+      from shelf_entries e join shelves s on s.id = e.shelf
+        left join shelf_sections x on x.id = e.section
       where e.item = ${id} and s.owner = ${userId}
       order by s.name, e.position`),
     // The printings the catalog knows (Ch 1.3, A10), oldest first.

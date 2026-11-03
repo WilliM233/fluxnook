@@ -177,7 +177,7 @@ prose "In the browser, sign in at $APP with $EMAIL (the link is in Mailpit, $MAI
   Add works, Find 'carrie', Into Carrie: five rows in this order, Carrie 1974 (book), Carrie 1976, The Rage: Carrie 2 1999, Carrie 2002, Carrie 2013. Tick the four Carries, '4 picked', Add 4 works: the Carrie section reads 1 to 4.
   Add works, Find 'salem', Into 'Salem's Lot: six rows in this order, Salem's Lot 1975 (book), Jerusalem's Lot 1977, Salem's Lot 1979, A Return to Salem's Lot 1987, Salem's Lot 2004, Salem's Lot 2024. Tick the book, 1979, 2004 and 2024, Add 4 works: 5 to 8.
   Add works, Find 'the shining', Into The Shining: three rows, tick all three, Add 3 works: 9 to 11.
-  Add works, Find 'night shift', Into At the end: tick Night Shift, Add 1 work. It reads 1 above the first section, the rest 2 to 12, and the dim line sits under it.
+  Add works, Find 'night shift', Into No section: tick Night Shift, Add 1 work. It reads 1 above the first section, the rest 2 to 12, and the dim line sits under it.
   Status: Carrie 1974 Done, Carrie 1976 Done, Carrie 2002 Skipped (struck through), Salem's Lot 1975 Done, Salem's Lot 1979 Done, The Shining 1977 Done. The header reads '12 works $DOT 5 done $DOT 1 skipped $DOT 3 sections' and Carrie's line '4 works $DOT 2 done $DOT 1 skipped'.
   Keyboard: Tab to the grip of Salem's Lot 2024 (number 9), Space, Up arrow, Space: it reads 8, above 2004.
   Pointer: drag Night Shift by its grip into The Shining, under 1997: it reads 12 and the dim line is gone. Drag it back above Carrie's heading: 1 again, the line back. Try a drag low on the TMNT shelf too (row 300 or so) and note how it feels.

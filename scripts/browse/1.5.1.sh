@@ -5,7 +5,7 @@
 # Every check prints its name, what was expected, what came back, and pass or
 # fail. A step that isn't a command for this terminal (start the dev server,
 # a walk in the browser) is printed as a numbered step and the script waits
-# for Enter. The whole report lands in test-results/browse-1.5.1.txt for the
+# for Enter. The whole report lands in browse-results/1.5.1.txt for the
 # PR. The address you sign in with: BROWSE_EMAIL, or the script asks.
 
 set -u
@@ -13,12 +13,12 @@ cd "$(dirname "$0")/../.." || exit 1
 
 APP=http://localhost:3000
 MAILPIT=http://127.0.0.1:54324
-REPORT=test-results/browse-1.5.1.txt
+REPORT=browse-results/1.5.1.txt
 # A middle dot, as bytes: a literal one in an argument to a Windows program
 # reaches it in the console's code page, not UTF-8 (1.5.1, step 5).
 DOT=$(printf '\302\267')
 
-mkdir -p test-results
+mkdir -p browse-results
 : >"$REPORT"
 checks=0
 failed=0

@@ -106,7 +106,7 @@ test("an empty box shows fifty and says to narrow it", async ({
   await expect(sheet.getByText("Narrow it to see the rest.")).toBeVisible();
 });
 
-test("At the end lands above the first section", async ({
+test("No section lands above the first section", async ({
   signedIn: { page, email },
 }) => {
   loadFixturesFor(email);
@@ -116,6 +116,9 @@ test("At the end lands above the first section", async ({
   await sheet.getByLabel("Find").fill("night shift");
   await expect(picks(sheet)).toHaveCount(1);
   await expect(sheet.getByLabel("Into")).toHaveValue("");
+  await expect(sheet.getByLabel("Into").locator("option:checked")).toHaveText(
+    "No section",
+  );
   await picks(sheet).first().getByRole("checkbox").check();
   await sheet.getByRole("button", { name: "Add 1 work" }).click();
 
@@ -134,6 +137,10 @@ test("the lede links to search", async ({ signedIn: { page } }) => {
   const shelf = await makeShelf(page, {});
   await page.goto(`/shelves/${shelf.id}`);
   const sheet = await open(page);
+  // With no sections, everything is unsectioned, so the end is the end.
+  await expect(sheet.getByLabel("Into").locator("option")).toHaveText([
+    "At the end",
+  ]);
   await expect(
     sheet.getByRole("link", { name: "Search the providers" }),
   ).toHaveAttribute("href", "/search");

@@ -3,16 +3,16 @@
 From Ch 1.5 a Signature's Browse is a script here, `<vol>.<n>.<s>.sh` (House Rules step 7). Run one from the repo root in Git Bash, with the local stack up, the dev server stopped and the tree clean:
 
 ```
-BROWSE_EMAIL=<your address> bash scripts/browse/1.5.2.sh
+BROWSE_EMAIL=<your address> bash scripts/browse/1.5.3.sh
 ```
 
 It prints every check as its name, the expected value, the actual one, and pass or fail, and ends with a count. A step that isn't a command for that terminal (start or stop the dev server, a walk in the browser) prints as a numbered step and waits for Enter; the check after it confirms the state it set up.
 
 From 1.5.2 a failed precondition (the tree, the stack, the dev server, the reset, the sign-in, the fixture load) ends the run there with the count, rather than spending minutes on checks that can't pass on a box with Docker down.
 
-Where the report lands:
-- `1.5.2.sh` on: `browse-results/<vol>.<n>.<s>.txt` (ignored by git). Playwright never touches that folder, so a script can run an e2e of its own without losing its report.
-- `1.5.1.sh`: `test-results/browse-1.5.1.txt`, which Playwright empties whenever it starts; copy the report before running `npm run test:e2e`.
+From 1.5.3 a step for your hands prints one action per line, with the names and numbers to expect on lines of their own, never a paragraph (L, 1.5.2 Browse). Every step is also written to `browse-results/<vol>.<n>.<s>-steps.md` before the first pause, to keep open beside the browser; a number a live provider decides reads there as a placeholder, and the script prints it, measured, when the step comes.
+
+Where the report lands: `browse-results/<vol>.<n>.<s>.txt` for every script, 1.5.1's included from 1.5.3 (ignored by git). Playwright never touches that folder, so a script can run an e2e of its own without losing its report.
 
 The report is what goes in the PR's Browse section, with anything that differed.
 

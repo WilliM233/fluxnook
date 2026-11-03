@@ -17,6 +17,7 @@ import { createClient } from "@/lib/supabase/server";
 import { CollectedIn, formatLabel } from "./collected-in";
 import { comicPills, SeriesLine } from "./comic-parts";
 import { ContentsEditor } from "./contents-editor";
+import { ShelvesSection } from "./shelves-section";
 
 const typeLabel = { film: "Film", tv: "TV", book: "Book", comic: "Comic" };
 const sourceLabel: Record<string, string> = {
@@ -364,32 +365,10 @@ export default async function ItemPageView({
           )}
         </section>
 
-        <section
-          aria-labelledby="shelves"
-          className="flex flex-col gap-3 border-t pt-6"
-        >
-          <h2 id="shelves" className="font-heading text-[22px] font-semibold">
-            On your shelves
-          </h2>
-          {shelves.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Not on a shelf. Shelves arrive in a later chapter; this is where
-              they'll show.
-            </p>
-          ) : (
-            <ul className="flex flex-wrap gap-2">
-              {shelves.map((s) => (
-                <li
-                  key={`${s.name}/${s.position}`}
-                  className="inline-flex min-h-10 items-center gap-2 rounded-full border border-line-strong px-3.5 text-sm"
-                >
-                  {s.name}
-                  <span className="text-dim">#{s.position}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+        <ShelvesSection
+          item={{ id: item.id, title: item.title }}
+          shelves={shelves}
+        />
       </article>
     </main>
   );

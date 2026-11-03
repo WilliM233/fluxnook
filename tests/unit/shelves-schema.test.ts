@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   createShelfSchema,
+  listShelvesQuerySchema,
   patchShelfSchema,
 } from "@/app/api/v1/shelves/schema";
 import { fieldErrors } from "@/lib/api/fields";
@@ -82,5 +83,71 @@ describe("patchShelfSchema", () => {
 
   it("refuses a blank name", () => {
     expect(refused({ name: "" })).toEqual({ name: "Give the shelf a name." });
+  });
+});
+
+describe("listShelvesQuerySchema", () => {
+  const a = "7a1b2c3d-0000-4000-8000-0000000000a1";
+  const b = "7a1b2c3d-0000-4000-8000-0000000000b2";
+  const refused = (query: unknown) => {
+    const parsed = listShelvesQuerySchema.safeParse(query);
+    if (parsed.success) throw new Error("parsed");
+    return fieldErrors(parsed.error);
+  };
+
+  it("asks about nothing with neither", () => {
+    expect(listShelvesQuerySchema.parse({})).toEqual({ items: [] });
+  });
+
+  it("asks about one work with item, folded", () => {
+    expect(listShelvesQuerySchema.parse({ item: a.toUpperCase() })).toEqual({
+      items: [a],
+    });
+  });
+
+  it("asks about many with items, comma-separated, trimmed and folded", () => {
+    expect(
+      listShelvesQuerySchema.parse({ items: `${a}, ${b.toUpperCase()}` }),
+    ).toEqual({ items: [a, b] });
+  });
+
+  it("refuses an id that isn't one, at its field", () => {
+    expect(refused({ item: "nope" })).toEqual({ item: "A work's id." });
+    expect(refused({ items: `${a},nope` })).toEqual({
+      items: "Each one a work's id.",
+    });
+    expect(refused({ items: "" })).toEqual({ items: "Each one a work's id." });
+  });
+
+  it("refuses both at once", () => {
+    expect(refused({ item: a, items: b })).toEqual({
+      items: "One question at a time: item, or items.",
+    });
+  });
+
+  it("refuses 201, and takes 200 (B1: what a signed-in URL carries)", () => {
+    const ids = (n: number) =>
+      Array.from(
+        { length: n },
+        (_, i) => `7a1b2c3d-0000-4000-8000-${String(i).padStart(12, "0")}`,
+      ).join(",");
+    expect(refused({ items: ids(201) })).toEqual({
+      items: "At most 200 works in one go.",
+    });
+    expect(
+      listShelvesQuerySchema.parse({ items: ids(200) }).items,
+    ).toHaveLength(200);
+  });
+
+  it("refuses a work twice, in any case", () => {
+    expect(refused({ items: `${a},${a.toUpperCase()}` })).toEqual({
+      items: "Each work once.",
+    });
+  });
+
+  it("refuses a stray key", () => {
+    expect(refused({ shelf: a })).toEqual({
+      shelf: "Not a field for this type.",
+    });
   });
 });

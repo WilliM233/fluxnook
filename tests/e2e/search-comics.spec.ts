@@ -1,5 +1,6 @@
 import type { Page } from "@playwright/test";
 import { db, itemFor, loadFixturesFor, resetComics } from "./harness/fixtures";
+import { shelfId } from "./harness/shelves";
 import { expect, test } from "./harness/signed-in";
 
 // A7's comics group on the three stubs and the loaded fixtures (Ch 1.4.1),
@@ -596,5 +597,279 @@ test.describe("the import sheet", () => {
     expect(
       db(`select count(*) from editions where item = '${fixtureOne}'`),
     ).toBe("0");
+  });
+});
+
+// The series page's door (A11's series part, Ch 1.5.3): the whole run onto
+// a shelf in the page's order, through the item page's sheet.
+test.describe("the series door", () => {
+  // The run's items as the series page shows its tiles, read off the page
+  // (Rummage S4: the page's order, not a copy of its query).
+  const tileOrder = async (page: Page) =>
+    (
+      await page
+        .getByRole("list", { name: "Issues", exact: true })
+        .getByRole("listitem")
+        .getByRole("link")
+        .evaluateAll((links) =>
+          links.map((a) => a.getAttribute("href")?.replace("/items/", "")),
+        )
+    ).join(",");
+  const shelfItems = (shelf: string) =>
+    db(`select string_agg(item::text, ',' order by position)
+      from shelf_entries where shelf = '${shelf}'`);
+
+  test("Add the run from the series page on the Comic Vine stub", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    await page.goto(`${TURTLES}&type=comic`);
+    await seriesRow(page, 1984, "Mirage · 62 issues")
+      .getByRole("button", { name: "Add" })
+      .click();
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: "Same, add Comic Vine's details to it" })
+      .click();
+    await expect(page).toHaveURL(/\/series\/[0-9a-f-]{36}$/, LANDS);
+    const series = page.url().split("/series/")[1];
+    await expect(
+      page
+        .getByRole("list", { name: "Issues", exact: true })
+        .getByRole("listitem"),
+    ).toHaveCount(62);
+    const tiles = await tileOrder(page);
+
+    await page.getByRole("button", { name: "Add the run to a shelf" }).click();
+    const sheet = page.getByRole("dialog", {
+      name: "Add 62 issues to a shelf",
+    });
+    await expect(sheet).toContainText(
+      "Teenage Mutant Ninja Turtles, Vol. 1, in cover-date order, after whatever is already there.",
+    );
+    const tmnt = sheet
+      .getByTestId("shelf-choice")
+      .filter({ hasText: "TMNT, the Mirage run" });
+    await expect(tmnt).toContainText(
+      "326 works · 14 sections · 62 of these already on it",
+    );
+    await expect(
+      sheet.getByRole("radio", { name: /^TMNT, the Mirage run/ }),
+    ).toBeEnabled();
+    await sheet.getByRole("radio", { name: "Or a new shelf" }).check();
+    await sheet.getByLabel("Name").fill("Mirage, reading order");
+    await sheet.getByRole("button", { name: "Add 62 issues" }).click();
+
+    await expect(sheet).toBeHidden();
+    const status = page.getByRole("status");
+    await expect(status).toContainText("62 added");
+    const mirage = shelfId(email, "Mirage, reading order");
+    await expect(
+      status.getByRole("link", { name: "Mirage, reading order" }),
+    ).toHaveAttribute("href", `/shelves/${mirage}`);
+    expect(shelfItems(mirage)).toBe(tiles);
+
+    await status.getByRole("link", { name: "Mirage, reading order" }).click();
+    const rows = page.getByTestId("entry");
+    await expect(rows).toHaveCount(62);
+    await expect(
+      rows.first().getByRole("link", { name: "The Turtles' Origin is Told" }),
+    ).toBeVisible();
+    // The number is the row's first span (shelf-row.tsx).
+    await expect(rows.first().locator("span").first()).toHaveText("1");
+    await expect(rows.last().locator("span").first()).toHaveText("62");
+
+    await page.goto(`/series/${series}`);
+    await page.getByRole("button", { name: "Add the run to a shelf" }).click();
+    const again = page.getByRole("dialog", {
+      name: "Add 62 issues to a shelf",
+    });
+    await expect(
+      again
+        .getByTestId("shelf-choice")
+        .filter({ hasText: "Mirage, reading order" }),
+    ).toContainText("62 works · 62 of these already on it");
+    await again.getByRole("radio", { name: /^Mirage, reading order/ }).check();
+    await again.getByRole("button", { name: "Add 62 issues" }).click();
+    await expect(page.getByRole("status")).toContainText(
+      "0 added, 62 already there",
+    );
+    expect(
+      db(`select count(*) from shelf_entries where shelf = '${mirage}'`),
+    ).toBe("62");
+  });
+
+  test("a run partly on a shelf adds the rest after what is there", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    const response = await page.request.post("/api/v1/series/import", {
+      data: {
+        source: "comicvine",
+        key: "volume/20281",
+        form: "issue",
+        attachTo: { series: MIRAGE_VOL_1 },
+      },
+    });
+    expect(response.status()).toBe(201);
+    const { id: series } = await response.json();
+    const three = [3, 1, 2].map((n) =>
+      itemFor("manual", `tmnt-mirage-v1-${n}`),
+    );
+    const { id: shelf } = await (
+      await page.request.post("/api/v1/shelves", { data: { name: "Partly" } })
+    ).json();
+    expect(
+      (
+        await page.request.post(`/api/v1/shelves/${shelf}/entries`, {
+          data: { items: three },
+        })
+      ).status(),
+    ).toBe(201);
+
+    await page.goto(`/series/${series}`);
+    const tiles = await tileOrder(page);
+    await page.getByRole("button", { name: "Add the run to a shelf" }).click();
+    const sheet = page.getByRole("dialog", {
+      name: "Add 62 issues to a shelf",
+    });
+    await expect(
+      sheet.getByTestId("shelf-choice").filter({ hasText: "Partly" }),
+    ).toContainText("3 works · 3 of these already on it");
+    await sheet.getByRole("radio", { name: /^Partly/ }).check();
+    await sheet.getByRole("button", { name: "Add 62 issues" }).click();
+    await expect(page.getByRole("status")).toContainText(
+      "59 added, 3 already there",
+    );
+    const rest = tiles.split(",").filter((id) => !three.includes(id));
+    expect(shelfItems(shelf)).toBe([...three, ...rest].join(","));
+  });
+});
+
+// A12 (Ch 1.5.3): Add with the select on No asks once before a run goes in
+// beside the ones entered by hand. The line counts the runs in the select,
+// read here from the rule seriesGroups keeps, since other specs attach runs.
+test.describe("A12's line", () => {
+  const TALES = "/search?q=tales%20of%20the%20tmnt&type=comic";
+  const handRuns = () =>
+    Number(
+      db(`select count(*) from (select c.series from items i
+        join item_comics c on c.item = i.id
+        where i.type = 'comic' and c.series is not null group by c.series
+        having not bool_or(exists (select 1 from item_sources s
+          where s.item = i.id and s.source = 'comicvine'))) g`),
+    );
+  const LINE = (runs: number) =>
+    `Adds 71 comics as a new run beside the ${runs} runs you entered by hand. If it is one of them, pick it above. Add anyway?`;
+  const TALES_VOL_2 = "Tales of the Teenage Mutant Ninja Turtles Vol. 2";
+
+  test("Add with the select on No asks once, Cancel imports nothing, Add anyway imports", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    const runs = handRuns();
+    const series = db("select count(*) from series");
+    await page.goto(TALES);
+    await seriesRow(page, 2004, "Mirage · 71 issues")
+      .getByRole("button", { name: "Add" })
+      .click();
+    const sheet = page.getByRole("dialog");
+    await expect(
+      sheet.getByRole("heading", { name: "Add this series" }),
+    ).toBeVisible();
+    await expect(
+      sheet.getByRole("combobox", { name: "Same as a run you added by hand?" }),
+    ).toHaveValue("");
+
+    await sheet.getByRole("button", { name: "Add", exact: true }).click();
+    await expect(sheet.getByText(LINE(runs))).toBeVisible();
+    await expect(
+      sheet.getByRole("button", { name: "Add anyway" }),
+    ).toBeVisible();
+    await expect(
+      sheet.getByRole("button", { name: "Add", exact: true }),
+    ).toHaveCount(0);
+
+    await sheet.getByRole("button", { name: "Cancel" }).click();
+    await expect(sheet).toBeVisible();
+    await expect(sheet.getByText(LINE(runs))).toHaveCount(0);
+    await expect(
+      sheet.getByRole("button", { name: "Add", exact: true }),
+    ).toBeVisible();
+    expect(db("select count(*) from series")).toBe(series);
+    await expect(page).toHaveURL(/\/search\?/);
+
+    await sheet.getByRole("button", { name: "Add", exact: true }).click();
+    await expect(sheet.getByText(LINE(runs))).toBeVisible();
+    await sheet.getByRole("button", { name: "Add anyway" }).click();
+    await expect(page).toHaveURL(/\/series\/[0-9a-f-]{36}$/, LANDS);
+    await expect(
+      page
+        .getByRole("list", { name: "Issues", exact: true })
+        .getByRole("listitem"),
+    ).toHaveCount(71);
+    // A new run beside the fixture's: the hand-entered Vol. 2 is untouched.
+    expect(
+      db(`select count(*) from items i join item_comics c on c.item = i.id
+        where c.series = '${TALES_VOL_2}' and exists (select 1 from item_sources s
+          where s.item = i.id and s.source = 'comicvine')`),
+    ).toBe("0");
+  });
+
+  test("picking a run in the select takes the line away", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    await page.goto(TALES);
+    await seriesRow(page, 2004, "Mirage · 71 issues")
+      .getByRole("button", { name: "Add" })
+      .click();
+    const sheet = page.getByRole("dialog");
+    await sheet.getByRole("button", { name: "Add", exact: true }).click();
+    await expect(
+      sheet.getByRole("button", { name: "Add anyway" }),
+    ).toBeVisible();
+    await sheet
+      .getByRole("combobox", { name: "Same as a run you added by hand?" })
+      .selectOption({ label: `${TALES_VOL_2}, 70 issues` });
+    await expect(sheet.getByRole("button", { name: "Add anyway" })).toHaveCount(
+      0,
+    );
+    await expect(
+      sheet.getByRole("button", { name: "Add", exact: true }),
+    ).toBeVisible();
+  });
+
+  test("with no hand-entered run, Add posts without asking", async ({
+    signedIn: { page },
+  }) => {
+    // The catalog is shared and holds the fixture's runs, so the search's
+    // answer is the one place "none" can be made.
+    await page.route("**/api/v1/providers/comicvine/search*", async (route) => {
+      const response = await route.fetch();
+      const body = await response.json();
+      await route.fulfill({ response, json: { ...body, groups: [] } });
+    });
+    await page.goto(TALES);
+    await seriesRow(page, 2004, "Mirage · 71 issues")
+      .getByRole("button", { name: "Add" })
+      .click();
+    const sheet = page.getByRole("dialog");
+    // The select is there with No alone.
+    await expect(
+      sheet
+        .getByRole("combobox", { name: "Same as a run you added by hand?" })
+        .getByRole("option"),
+    ).toHaveCount(1);
+    await sheet.getByRole("button", { name: "Add", exact: true }).click();
+    await expect(sheet.getByRole("button", { name: "Add anyway" })).toHaveCount(
+      0,
+    );
+    await expect(page).toHaveURL(/\/series\/[0-9a-f-]{36}$/, LANDS);
+    await expect(
+      page
+        .getByRole("list", { name: "Issues", exact: true })
+        .getByRole("listitem"),
+    ).toHaveCount(71);
   });
 });
