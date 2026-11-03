@@ -18,6 +18,7 @@ import {
   localToday,
   type Pin,
   type ReadForm,
+  readChange,
   readPost,
 } from "@/lib/journal/forms";
 import {
@@ -65,28 +66,49 @@ export function FieldError({ id, error }: { id: string; error?: string }) {
   ) : null;
 }
 
+/** A read as Edit this read opens it. */
+export type SheetRead = {
+  id: string;
+  status: Status;
+  startedOn: string | null;
+  finishedOn: string | null;
+  stars: number | null;
+};
+
 /**
  * Log a read (Ch 1.6 A6), as drawn: where it stands, the dates, the stars
- * and a first entry if you like, posted as one write. Finished empties and
- * greys while Reading is pressed, and comes back as it was when it isn't.
- * A refusal stays on the sheet: a 409 is its own line.
+ * and a first entry if you like, posted as one write. Given a `read`, it is
+ * Edit this read (A7): the same fields prefilled, no entry, Save. Finished
+ * empties and greys while Reading is pressed, and comes back as it was when
+ * it isn't. A refusal stays on the sheet: a 409 is its own line.
  */
 export function LogReadSheet({
   item,
+  read,
   onSaved,
   onClose,
 }: {
   item: SheetItem;
+  read?: SheetRead;
   onSaved: () => void;
   onClose: () => void;
 }) {
   const w = words(item.type);
-  const [form, setForm] = useState<ReadForm>(() => ({
-    status: "done",
-    startedOn: "",
-    finishedOn: localToday(),
-    stars: null,
-  }));
+  const [form, setForm] = useState<ReadForm>(() =>
+    read
+      ? {
+          status: read.status,
+          startedOn: read.startedOn ?? "",
+          finishedOn: read.finishedOn ?? "",
+          stars: read.stars,
+        }
+      : {
+          status: "done",
+          startedOn: "",
+          finishedOn: localToday(),
+          stars: null,
+        },
+  );
   const [body, setBody] = useState("");
   const [pin, setPin] = useState<Pin>(() => ({
     anchorKind: anchorKindsFor(item.type, item.form)[0] ?? "",
@@ -113,13 +135,18 @@ export function LogReadSheet({
     event.preventDefault();
     setBusy(true);
     setRefused(NONE);
-    const failed = `Couldn't log that ${verb(item.type)} just now. Try again.`;
+    const failed = `Couldn't ${read ? "save" : "log"} that ${verb(item.type)} just now. Try again.`;
     try {
-      const response = await fetch("/api/v1/occurrences", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(readPost(item.id, form, { body, ...pin })),
-      });
+      const response = await fetch(
+        read ? `/api/v1/occurrences/${read.id}` : "/api/v1/occurrences",
+        {
+          method: read ? "PATCH" : "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(
+            read ? readChange(form) : readPost(item.id, form, { body, ...pin }),
+          ),
+        },
+      );
       if (response.ok) {
         onSaved();
         return;
@@ -136,11 +163,13 @@ export function LogReadSheet({
       <DialogContent className="max-h-[calc(100dvh-2rem)] gap-5 overflow-y-auto border border-line-strong p-7 sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="font-heading text-[28px] leading-tight font-semibold">
-            {w.logOf(item.title)}
+            {read ? w.editRead : w.logOf(item.title)}
           </DialogTitle>
-          <DialogDescription className="text-sm text-muted-foreground">
-            {w.lede}
-          </DialogDescription>
+          {!read && (
+            <DialogDescription className="text-sm text-muted-foreground">
+              {w.lede}
+            </DialogDescription>
+          )}
         </DialogHeader>
 
         <form noValidate onSubmit={save} className="flex flex-col gap-5">
@@ -210,34 +239,36 @@ export function LogReadSheet({
             <FieldError id="read-stars" error={errors.stars} />
           </div>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="read-entry" className={HEADING}>
-              A first entry, if you like
-            </Label>
-            <Textarea
-              id="read-entry"
-              rows={4}
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              aria-invalid={errors["entry.body"] ? true : undefined}
-              aria-describedby={
-                errors["entry.body"] ? "read-entry-error" : undefined
-              }
-              className="min-h-28 rounded-[10px] bg-background px-3 py-2.5 text-base"
-            />
-            <FieldError id="read-entry" error={errors["entry.body"]} />
-            <AnchorFields
-              id="read-entry-where"
-              type={item.type}
-              form={item.form}
-              pin={pin}
-              onPin={setPin}
-              errors={{
-                anchorKind: errors["entry.anchorKind"],
-                anchorValue: errors["entry.anchorValue"],
-              }}
-            />
-          </div>
+          {!read && (
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="read-entry" className={HEADING}>
+                A first entry, if you like
+              </Label>
+              <Textarea
+                id="read-entry"
+                rows={4}
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
+                aria-invalid={errors["entry.body"] ? true : undefined}
+                aria-describedby={
+                  errors["entry.body"] ? "read-entry-error" : undefined
+                }
+                className="min-h-28 rounded-[10px] bg-background px-3 py-2.5 text-base"
+              />
+              <FieldError id="read-entry" error={errors["entry.body"]} />
+              <AnchorFields
+                id="read-entry-where"
+                type={item.type}
+                form={item.form}
+                pin={pin}
+                onPin={setPin}
+                errors={{
+                  anchorKind: errors["entry.anchorKind"],
+                  anchorValue: errors["entry.anchorValue"],
+                }}
+              />
+            </div>
+          )}
 
           {refused.line && (
             <p role="alert" className="text-sm text-destructive">
@@ -250,7 +281,7 @@ export function LogReadSheet({
               Cancel
             </Button>
             <Button type="submit" size="lg" disabled={busy}>
-              Log it
+              {read ? "Save" : "Log it"}
             </Button>
           </div>
         </form>

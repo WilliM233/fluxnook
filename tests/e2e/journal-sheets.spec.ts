@@ -293,3 +293,86 @@ test("Cancel and Escape close the sheet and write nothing", async ({
   await expect(journal.getByTestId("read")).toHaveCount(0);
   expect(readsOf(id)).toBe("0");
 });
+
+test("Edit turns the Reading read to Done, finished today, and the heading drops reading now", async ({
+  signedIn: { page },
+}) => {
+  const id = await book(page, `Finishing ${crypto.randomUUID()}`);
+  await post(page, "/api/v1/occurrences", {
+    item: id,
+    status: "done",
+    startedOn: "2026-10-20",
+    finishedOn: "2026-10-28",
+    stars: 4.5,
+  });
+  await post(page, "/api/v1/occurrences", {
+    item: id,
+    status: "in_progress",
+    startedOn: localToday(),
+  });
+  await page.goto(`/items/${id}`);
+  const journal = page.getByRole("region", { name: "Journal" });
+  await expect(
+    journal.getByText("2 reads · last finished at ★ 4.5 · reading now", {
+      exact: true,
+    }),
+  ).toBeVisible();
+
+  const top = journal.getByTestId("read").first();
+  await top.getByRole("button", { name: "Edit this read" }).click();
+  const sheet = page.getByRole("dialog", { name: "Edit this read" });
+  await expect(
+    sheet.getByRole("button", { name: "Reading", pressed: true }),
+  ).toBeVisible();
+  await expect(sheet.getByLabel("Finished")).toBeDisabled();
+  await expect(sheet.getByLabel("A first entry, if you like")).toHaveCount(0);
+  await sheet.getByRole("button", { name: "Done", exact: true }).click();
+  await expect(sheet.getByLabel("Finished")).toHaveValue(localToday());
+
+  const sent = page.waitForRequest((r) => r.method() === "PATCH");
+  await sheet.getByRole("button", { name: "Save" }).click();
+  const body = JSON.parse((await sent).postData() ?? "{}");
+  expect(body).toHaveProperty("status", "done");
+  expect(body).toHaveProperty("finishedOn", localToday());
+  expect(body).not.toHaveProperty("entry");
+
+  await expect(sheet).toBeHidden();
+  await expect(journal.getByText("2 reads", { exact: true })).toBeVisible();
+  const cards = journal.getByTestId("read");
+  await expect(cards.first().getByText("Done", { exact: true })).toBeVisible();
+  await expect(
+    cards.first().getByText(localLong(), { exact: true }),
+  ).toBeVisible();
+  await expect(
+    cards.nth(1).getByText("20 October 2026 to 28 October 2026", {
+      exact: true,
+    }),
+  ).toBeVisible();
+});
+
+test("Clear on the Edit sheet sends stars null and the card goes unrated", async ({
+  signedIn: { page },
+}) => {
+  const id = await book(page, `Unstarred ${crypto.randomUUID()}`);
+  await post(page, "/api/v1/occurrences", {
+    item: id,
+    status: "done",
+    stars: 3,
+  });
+  await page.goto(`/items/${id}`);
+  const card = page.getByTestId("read");
+  await expect(card.getByRole("group", { name: "★ 3" })).toBeVisible();
+  await card.getByRole("button", { name: "Edit this read" }).click();
+  const sheet = page.getByRole("dialog", { name: "Edit this read" });
+  await expect(sheet.getByTestId("stars-value")).toHaveText("3");
+  await sheet.getByRole("button", { name: "Clear" }).click();
+
+  const sent = page.waitForRequest((r) => r.method() === "PATCH");
+  await sheet.getByRole("button", { name: "Save" }).click();
+  expect(JSON.parse((await sent).postData() ?? "{}")).toHaveProperty(
+    "stars",
+    null,
+  );
+  await expect(sheet).toBeHidden();
+  await expect(card.getByRole("group", { name: "Unrated" })).toBeVisible();
+});

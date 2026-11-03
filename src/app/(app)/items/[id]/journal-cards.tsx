@@ -16,7 +16,7 @@ import { words } from "@/lib/journal/words";
 export type JournalItem = SheetItem;
 
 /** The one sheet open over the section, if any. */
-type Sheet = { kind: "log" };
+type Sheet = { kind: "log" } | { kind: "edit-read"; card: Card };
 
 /** An entry with its date and pill printed on the server. */
 export type CardEntry = ItemEntry & { written: string; pill: string | null };
@@ -35,6 +35,10 @@ const json = (method: string, body?: unknown): RequestInit => ({
 });
 
 const STARS_FAILED = "Couldn't save that. Try again.";
+
+// The page's text buttons, as drawn: dim words that light on hover.
+const TEXT_BUTTON =
+  "rounded text-[13px] text-dim outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50";
 
 /**
  * The Journal section's heading row and cards (Ch 1.6 A5): each card's stars
@@ -163,6 +167,16 @@ export function JournalCards({
                     busy={busy.has(card.id)}
                     onChange={(next) => rate(card, next)}
                   />
+                  <button
+                    type="button"
+                    aria-label={w.editRead}
+                    className={TEXT_BUTTON}
+                    onClick={() =>
+                      setSheet({ kind: "edit-read", card: { ...card, stars } })
+                    }
+                  >
+                    Edit
+                  </button>
                 </div>
                 {alerts[card.id] && (
                   <p role="alert" className="text-sm text-destructive">
@@ -198,6 +212,14 @@ export function JournalCards({
       {sheet?.kind === "log" && (
         <LogReadSheet
           item={item}
+          onSaved={saved}
+          onClose={() => setSheet(null)}
+        />
+      )}
+      {sheet?.kind === "edit-read" && (
+        <LogReadSheet
+          item={item}
+          read={sheet.card}
           onSaved={saved}
           onClose={() => setSheet(null)}
         />
