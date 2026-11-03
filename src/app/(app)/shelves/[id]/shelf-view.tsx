@@ -8,6 +8,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LogReadSheet } from "@/app/(app)/journal/log-read-sheet";
+import { AccentStar } from "@/components/ui/accent-star";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TEXT_BUTTON, TextButton } from "@/components/ui/text-button";
@@ -82,17 +83,8 @@ function CountsText({
   counts: Parameters<typeof countsLine>[0];
   rated: Rated;
 }) {
-  const line = countsLine({ ...counts, rated });
   const star = rated.n > 0 && rated.mean !== null ? starText(rated.mean) : null;
-  const at = star === null ? -1 : line.lastIndexOf(star);
-  if (star === null || at < 0) return <>{line}</>;
-  return (
-    <>
-      {line.slice(0, at)}
-      <span className="text-primary">{star}</span>
-      {line.slice(at + star.length)}
-    </>
-  );
+  return <AccentStar text={countsLine({ ...counts, rated })} star={star} />;
 }
 
 /** What a refused write says: the route's own words when it has them. */

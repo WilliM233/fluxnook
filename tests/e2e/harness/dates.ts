@@ -33,3 +33,14 @@ export function localLong(now = new Date()): string {
 export function localNow(now = new Date()): string {
   return `${localToday(now)}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
 }
+
+/** "21:14": the time a Journal row prints for an instant, 24-hour. */
+export function localTime(iso: string): string {
+  const at = new Date(iso);
+  return `${pad(at.getHours())}:${pad(at.getMinutes())}`;
+}
+
+/** "3 November": a date in this year, as a Journal row's state prints it. */
+export function localShort(now = new Date()): string {
+  return `${now.getDate()} ${MONTHS[now.getMonth()]}`;
+}
