@@ -7,9 +7,7 @@ import { goneIsDone, json } from "@/lib/api/request";
 import { tickLabel, tileVia, untickSentence } from "@/lib/collection/lines";
 import type { HeldCopy } from "@/lib/collection/owned";
 import { asksFirst, newestFloppy } from "@/lib/collection/ticks";
-import { useTickReport } from "./tick-line";
-
-const FAILED = "Couldn't change that. Try again.";
+import { TICK_FAILED, useTickReport } from "./tick-line";
 
 /**
  * A tile's **Owned** box (A8). A tick posts one floppy; an untick asks A4 what
@@ -53,20 +51,28 @@ export function IssueTick({
   const count = known ?? floppies;
   const ticked = wanted ?? count > 0;
 
-  /** A good answer: the count moves now, and the page catches up behind it. */
-  function settle(next: number) {
-    report(false);
+  /** The box holds what it knows, or the page's word, while the page reads again. */
+  function reread(next: number | null) {
     setKnown(next);
     setWanted(null);
     refresh(() => router.refresh());
     setSettling(true);
   }
 
+  /** A good answer: the count moves now, and the page catches up behind it. */
+  function settle(next: number) {
+    report(false);
+    reread(next);
+  }
+
+  /**
+   * No answer isn't no write: a post can land and lose its answer. So the page
+   * reads again before the box takes another click, or "Try again" over a box
+   * left empty makes a second copy (1.7.2 Rummage S1).
+   */
   function refuse() {
-    setKnown(null);
-    setWanted(null);
     report(true);
-    out.current = false;
+    reread(null);
   }
 
   async function tick() {
@@ -146,7 +152,7 @@ export function IssueTick({
       </label>
       {via && (
         <span data-testid="tile-via" className="text-[13px] text-dim">
-          {tileVia(via, ticked)}
+          {tileVia(via, count > 0)}
         </span>
       )}
       {asking && (
@@ -154,16 +160,16 @@ export function IssueTick({
           title="Let go of this floppy?"
           sentence={untickSentence(asking)}
           confirm="Remove"
-          failed={FAILED}
+          failed={TICK_FAILED}
           send={() => letGo(asking)}
           onDone={() => {
             setAsking(null);
             settle(count - 1);
           }}
           onClose={() => {
+            // Kept, and what the read learned stands until the page has caught up.
             setAsking(null);
-            setKnown(null);
-            out.current = false;
+            reread(count);
           }}
         />
       )}

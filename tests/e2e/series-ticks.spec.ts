@@ -399,7 +399,8 @@ test("A14: an untick on a noted floppy: the confirm, Cancel keeps it", async ({
       where e.item = '${run.three}'`),
   ).toBe("Signed.");
 
-  // Remove takes it.
+  // Remove takes it, once the page has read again behind the Cancel.
+  await settled(three);
   await three.click();
   await sheet.getByRole("button", { name: "Remove" }).click();
   await expect(label(page, run.title(3))).toHaveText("Owned");
@@ -425,8 +426,10 @@ test("A14: the tick's route answered 500: the box back and the line", async ({
   await expect(label(page, run.title(3))).toHaveText("Owned");
   expect(copiesOf(email, run.three)).toBe(0);
 
-  // The route off, a tick lands and the line is gone.
+  // The route off, a tick lands and the line is gone. The box takes it once the
+  // page has read again behind the refusal (Rummage S1).
   await page.unroute("**/api/v1/copies");
+  await settled(three);
   await three.click();
   await expect(label(page, run.title(3))).toHaveText("Owned · Floppy");
   await expect(line(page)).toHaveCount(0);

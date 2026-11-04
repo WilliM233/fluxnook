@@ -170,6 +170,41 @@ test("Carrie with the box on, through the sheet's Same: her page, you hold 1 (1.
   await expect(page.getByTestId("copy")).toContainText("Your copy");
 });
 
+test("R8 back to the shelf after Add with the box on: Carrie's row reads owned", async ({
+  signedIn: { page, email },
+}) => {
+  loadFixturesFor(email);
+  const shelf =
+    db(`select s.id from shelves s join auth.users u on u.id = s.owner
+    where u.email = '${email}' and s.name = 'Stephen King, publication order'`);
+  const carrie = itemFor("manual", "carrie-1974");
+  const row = page.getByTestId("entry").filter({
+    has: page.locator(`a[href="/items/${carrie}"]`),
+  });
+  await page.goto(`/shelves/${shelf}`);
+  await expect(row.getByTestId("shelf-mark")).toHaveCount(0);
+
+  // Client navigations all the way, as a person goes: the header's Search, then Back.
+  await page.getByRole("link", { name: "Search", exact: true }).click();
+  await expect(page).toHaveURL(/\/search/);
+  await page.getByLabel("What are you looking for?").fill("978-0-307-74366-4");
+  const card = page.getByRole("article", { name: "That edition" });
+  await card.getByRole("checkbox", { name: "and I own it" }).check();
+  await card.getByRole("button", { name: "Add this edition" }).click();
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Same, add the Open Library details to it" })
+    .click();
+  await expect(page).toHaveURL(`/items/${carrie}`);
+  await expect(page.getByText("1 in the catalog · you hold 1")).toBeVisible();
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\/search/);
+  await page.goBack();
+  await expect(page).toHaveURL(`/shelves/${shelf}`);
+  await expect(row.getByTestId("shelf-mark")).toHaveText("owned");
+});
+
 test("an ISBN for Carrie: the card, the sheet, the printing on the novel", async ({
   signedIn: { page, email },
 }) => {

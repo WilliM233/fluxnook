@@ -118,6 +118,14 @@ test("It with the box on: its page, 1 in the catalog, you hold 1, Your copy, one
       join item_sources s on s.item = e.item
       where s.source = 'openlibrary' and s.key = '${IT}'`),
   ).toBe("");
+
+  // It again: the card the box left behind (step 9; Rummage N2).
+  await page.goto(`/search?q=${IT_ISBN}`);
+  const again = page.getByRole("article", CARD);
+  await expect(again.getByText("In your collection")).toBeVisible();
+  const box = again.getByRole("checkbox", { name: "and I own it" });
+  await expect(box).toBeChecked();
+  await expect(box).toBeDisabled();
 });
 
 test("the copy refused after the import: the line, the card stays, Add again owns one", async ({
@@ -211,6 +219,51 @@ test("the read answered 500: the card still reads the line and Open", async ({
   await expect(card.getByText("This edition is in your catalog")).toBeVisible();
   await expect(card.getByRole("link", { name: "Open" })).toBeVisible();
   await expect(card.getByText("In your collection")).toHaveCount(0);
+});
+
+test("R6 the read fails at the network, not with a 500: the card still reads the line and Open", async ({
+  signedIn: { page },
+}) => {
+  await importIt(page);
+  await page.route(
+    (url) => url.pathname === "/api/v1/copies",
+    (route) => route.abort("connectionreset"),
+  );
+  await page.goto(`/search?q=${IT_ISBN}`);
+  const card = page.getByRole("article", CARD);
+  await expect(card.getByText("This edition is in your catalog")).toBeVisible();
+  await expect(card.getByRole("link", { name: "Open" })).toBeVisible();
+  await expect(card.getByText("In your collection")).toHaveCount(0);
+});
+
+test("R7 the copy landed and lost its answer: Add again still owns one", async ({
+  signedIn: { page },
+}) => {
+  let lost = false;
+  await page.route(
+    (url) => url.pathname === "/api/v1/copies",
+    async (route) => {
+      if (route.request().method() !== "POST" || lost) return route.fallback();
+      lost = true;
+      await route.fetch();
+      await route.abort("connectionreset");
+    },
+  );
+  await page.goto(`/search?q=${IT_ISBN}`);
+  const card = page.getByRole("article", CARD);
+  await card.getByRole("checkbox", { name: "and I own it" }).check();
+  const add = card.getByRole("button", { name: "Add this edition" });
+  await add.click();
+  await expect(
+    card.getByText("Added, but couldn't add your copy. Try again."),
+  ).toBeVisible();
+  expect(copiesOfIt()).toBe("1");
+
+  await add.click();
+  await expect(page).toHaveURL(/\/items\/[0-9a-f-]{36}$/);
+  await expect(page.getByText(/1 in the catalog/)).toBeVisible();
+  // Pick 15: "so there is one edition and one copy."
+  expect(copiesOfIt()).toBe("1");
 });
 
 test("It by ISBN: a new work, Paperback by default, one edition on its page", async ({

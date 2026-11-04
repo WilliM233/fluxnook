@@ -111,29 +111,53 @@ async function lookUp(isbn: string, signal: AbortSignal): Promise<Lookup> {
       return { kind: "unavailable", message: body.error.message };
     }
     if (!response.ok) return { kind: "error" };
+    // Asked before the card shows, so its first paint is right. A failed read is
+    // no: the card still opens the page.
     const held =
       body.editionCatalog.status === "in" &&
-      (await holdsEdition(body.editionCatalog, signal));
+      (await holdsEdition(body.editionCatalog, signal)) === true;
     return { kind: "found", found: { ...body, held } };
   } catch {
     return { kind: "error" };
   }
 }
 
-/**
- * Whether the caller holds this printing (A4, A9), asked before the card shows
- * so its first paint is right. A failed read is no: the card still opens the page.
- */
+/** Whether the caller holds this printing (A4, A9); null when A4 didn't say. */
 async function holdsEdition(
   { itemId, editionId }: { itemId: string; editionId: string },
-  signal: AbortSignal,
+  signal?: AbortSignal,
 ) {
-  const response = await fetch(`/api/v1/copies?item=${itemId}`, { signal });
-  if (!response.ok) return false;
-  const { held } = (await response.json()) as {
-    held: { editionId: string }[];
-  };
-  return held.some((copy) => copy.editionId === editionId);
+  try {
+    const response = await fetch(`/api/v1/copies?item=${itemId}`, { signal });
+    if (!response.ok) return null;
+    const { held } = (await response.json()) as {
+      held: { editionId: string }[];
+    };
+    return held.some((copy) => copy.editionId === editionId);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The box's copy of a printing the import answered. A printing that was already
+ * in the catalog may be held: a copy that landed and lost its answer, on Add
+ * again, or another tab's. So A4 is asked first, and only a new printing posts
+ * straight off (1.7.2 Rummage S3).
+ */
+async function ownEdition(
+  edition: { itemId: string; editionId: string },
+  isNew: boolean,
+) {
+  if (!isNew) {
+    const held = await holdsEdition(edition);
+    if (held !== false) return held === true;
+  }
+  const response = await fetch(
+    "/api/v1/copies",
+    json("POST", { edition: edition.editionId }),
+  ).catch(() => null);
+  return response?.ok === true;
 }
 
 export function Search({
@@ -305,14 +329,15 @@ export function Search({
     if (response?.ok && body?.itemId) {
       const owned =
         !own ||
-        (
-          await fetch(
-            "/api/v1/copies",
-            json("POST", { edition: body.id }),
-          ).catch(() => null)
-        )?.ok;
+        (await ownEdition(
+          { itemId: body.itemId, editionId: body.id },
+          response.status === 201,
+        ));
       if (owned) {
         router.push(`/items/${body.itemId}`);
+        // A copy moves what a shelf row reads, and Back would bring the cached
+        // one (1.7.2 Rummage S4).
+        if (own) router.refresh();
         return;
       }
       addingEdition.current = false;

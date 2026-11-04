@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 
-const FAILED = "Couldn't change that. Try again.";
+export const TICK_FAILED = "Couldn't change that. Try again.";
 
 const Line = createContext<{
   failed: boolean;
@@ -31,7 +31,7 @@ export function TickLine() {
   if (!failed) return null;
   return (
     <span role="alert" className="basis-full text-sm text-destructive">
-      {FAILED}
+      {TICK_FAILED}
     </span>
   );
 }

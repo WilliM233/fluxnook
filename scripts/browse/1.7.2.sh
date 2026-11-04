@@ -330,7 +330,11 @@ require "a stranger's session" "$APP/nook" "$(sign_in "$STRANGER" "$JAR_B")"
 
 # 2. The shelf's marks, and the TMNT page's warm hit (A12)
 as_a "/shelves/$TMNT" >/dev/null
-measured "the TMNT shelf, warm: seconds and bytes (0.177 s and 1,255,923 bytes at the census; the index Deferral's trigger is 0.5 s, the 1.6 Deferral's 1 s)" "$(curl -s -b "$JAR_A" -o /dev/null -w '%{time_total} %{size_download}' "$APP/shelves/$TMNT")"
+# Five, since `next dev` answers in two modes, about 0.17 s and about 0.42 s, and
+# one sample can read either (1.7.2 Rummage N4).
+for hit in 1 2 3 4 5; do
+  measured "the TMNT shelf, warm, hit $hit: seconds and bytes (0.177 s and 1,255,923 bytes at the census; the index Deferral's trigger is 0.5 s, the 1.6 Deferral's 1 s)" "$(curl -s -b "$JAR_A" -o /dev/null -w '%{time_total} %{size_download}' "$APP/shelves/$TMNT")"
+done
 PAGE=$(as_a "/shelves/$TMNT")
 check "TMNT: the marks" 38 "$(count_of shelf-mark "$PAGE")"
 for n in 1 2 3 4 5; do
