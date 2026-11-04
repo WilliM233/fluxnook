@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { json } from "@/lib/api/request";
 import type {
   CatalogStatus,
   SeriesGroupOption,
@@ -51,6 +52,7 @@ type Matching =
       result: BookResult;
       editionKey: string;
       format: EditionFormat;
+      own: boolean;
     };
 
 const kinds: { value: Kind; label: string }[] = [
@@ -146,6 +148,7 @@ export function Search({
   supabaseUrl: string;
 }) {
   const router = useRouter();
+  const addingEdition = useRef(false);
   const params = useSearchParams();
   const [q, setQ] = useState(params.get("q") ?? "");
   const [type, setType] = useState<Kind>(parseKind(params.get("type")));
@@ -271,11 +274,21 @@ export function Search({
     });
   }
 
+  /**
+   * Where both paths meet, the card's Add and the sheet's Same or Different,
+   * so a box ticked before a sheet still owns the copy (A9). Two posts would be
+   * two copies and nothing refuses that, hence the guard (state lands a render
+   * late). A copy refused after the import stays where it was asked, the box
+   * still on: Add again gets the import's 200 and posts the copy.
+   */
   async function addEdition(
     editionKey: string,
     format: EditionFormat,
+    own: boolean,
     attachTo?: string,
   ) {
+    if (addingEdition.current) return;
+    addingEdition.current = true;
     setBusy(editionKey);
     setFailed(null);
     const response = await fetch("/api/v1/editions/import", {
@@ -290,9 +303,27 @@ export function Search({
     }).catch(() => null);
     const body = await response?.json().catch(() => null);
     if (response?.ok && body?.itemId) {
-      router.push(`/items/${body.itemId}`);
+      const owned =
+        !own ||
+        (
+          await fetch(
+            "/api/v1/copies",
+            json("POST", { edition: body.id }),
+          ).catch(() => null)
+        )?.ok;
+      if (owned) {
+        router.push(`/items/${body.itemId}`);
+        return;
+      }
+      addingEdition.current = false;
+      setBusy(null);
+      setFailed({
+        key: editionKey,
+        message: "Added, but couldn't add your copy. Try again.",
+      });
       return;
     }
+    addingEdition.current = false;
     setBusy(null);
     setFailed({
       key: editionKey,
@@ -330,17 +361,22 @@ export function Search({
   }
 
   // The work looks like one you have: the sheet asks first, as a row's Add does.
-  function onAddEdition(found: IsbnLookup, format: EditionFormat) {
+  function onAddEdition(
+    found: IsbnLookup,
+    format: EditionFormat,
+    own: boolean,
+  ) {
     if (found.work.catalog.status === "match") {
       setMatching({
         source: "isbn",
         result: found.work,
         editionKey: found.edition.key,
         format,
+        own,
       });
       return;
     }
-    addEdition(found.edition.key, format);
+    addEdition(found.edition.key, format, own);
   }
 
   function filmStatus(result: FilmResult) {
@@ -656,7 +692,7 @@ export function Search({
               error={
                 failed?.key === lookup.found.edition.key ? failed.message : null
               }
-              onAdd={(format) => onAddEdition(lookup.found, format)}
+              onAdd={(format, own) => onAddEdition(lookup.found, format, own)}
             />
           )}
         </section>
@@ -723,7 +759,7 @@ export function Search({
   // ISBN, the edition import with the work's answer as `attachTo`.
   function accept(m: Matching, attachTo?: string) {
     if (m.source === "isbn") {
-      return addEdition(m.editionKey, m.format, attachTo);
+      return addEdition(m.editionKey, m.format, m.own, attachTo);
     }
     return add(m.source, m.result.key, attachTo);
   }

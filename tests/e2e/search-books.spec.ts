@@ -17,6 +17,9 @@ function resetCatalog() {
     itemFor("manual", "night-shift-1977"),
   ];
   const ids = held.map((id) => `'${id}'`).join(", ");
+  // A copy restricts its printing (Ch 1.7).
+  db(`delete from copies where edition in (
+    select id from editions where item in (${ids}))`);
   db(`delete from editions where item in (${ids})`);
   db(`delete from item_sources where source = 'openlibrary'
         and key in (${WORKS.map((k) => `'${k}'`).join(", ")})`);
@@ -148,6 +151,23 @@ test("Open Library down: its group says so, TMDB's still answers", async ({
     page.getByText("Open Library didn't answer. Try again in a moment."),
   ).toBeVisible();
   await expect(page.getByText("Nothing by that name at TMDB.")).toBeVisible();
+});
+
+test("Carrie with the box on, through the sheet's Same: her page, you hold 1 (1.7 A9)", async ({
+  signedIn: { page, email },
+}) => {
+  loadFixturesFor(email);
+  await page.goto("/search?q=978-0-307-74366-4");
+  const card = page.getByRole("article", { name: "That edition" });
+  await card.getByRole("checkbox", { name: "and I own it" }).check();
+  await card.getByRole("button", { name: "Add this edition" }).click();
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Same, add the Open Library details to it" })
+    .click();
+  await expect(page).toHaveURL(`/items/${itemFor("manual", "carrie-1974")}`);
+  await expect(page.getByText("1 in the catalog · you hold 1")).toBeVisible();
+  await expect(page.getByTestId("copy")).toContainText("Your copy");
 });
 
 test("an ISBN for Carrie: the card, the sheet, the printing on the novel", async ({

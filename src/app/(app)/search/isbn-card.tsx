@@ -80,12 +80,13 @@ export function IsbnCard({
   coversBaseUrl: string;
   busy: boolean;
   error: string | null;
-  onAdd: (format: EditionFormat) => void;
+  onAdd: (format: EditionFormat, own: boolean) => void;
 }) {
   const { edition, work, editionCatalog } = found;
   const [format, setFormat] = useState<EditionFormat>(
     edition.format ?? "paperback",
   );
+  const [own, setOwn] = useState(false);
   const coverId = edition.coverId ?? work.coverId;
   const cover = coverId
     ? `${coversBaseUrl.replace(/\/$/, "")}/b/id/${coverId}-L.jpg`
@@ -173,6 +174,19 @@ export function IsbnCard({
           )}
         </div>
 
+        {(editionCatalog.status === "new" || found.held) && (
+          <label className="flex min-h-11 w-fit cursor-pointer items-center gap-2 text-sm text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={found.held || own}
+              disabled={found.held}
+              onChange={(event) => setOwn(event.target.checked)}
+              className="size-4.5 flex-none accent-primary"
+            />
+            and I own it
+          </label>
+        )}
+
         <section
           aria-label="The work"
           className="flex flex-col gap-1.5 rounded-xl border bg-background p-3.5"
@@ -225,13 +239,13 @@ export function IsbnCard({
               size="lg"
               className="min-h-11 self-start px-4.5"
               disabled={busy}
-              onClick={() => onAdd(format)}
+              onClick={() => onAdd(format, own)}
             >
               Add this edition
             </Button>
             <p className="text-[13px] text-dim">
               Adds the work to your catalog if it isn't there, and this printing
-              under it. Owning a copy is a later chapter.
+              under it.
             </p>
           </div>
         )}

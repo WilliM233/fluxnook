@@ -60,9 +60,10 @@ test("an edition in the catalog nobody here holds: the line, Open, no In your co
   await expect(card.getByText("This edition is in your catalog")).toBeVisible();
   await expect(card.getByRole("link", { name: "Open" })).toBeVisible();
   await expect(card.getByText("In your collection")).toHaveCount(0);
+  await expect(card.getByRole("checkbox")).toHaveCount(0);
 });
 
-test("an edition the caller holds: the line beside In your collection on load", async ({
+test("an edition the caller holds: the line beside In your collection on load, the box ticked and disabled", async ({
   signedIn: { page },
 }) => {
   const { id } = await importIt(page);
@@ -74,6 +75,114 @@ test("an edition the caller holds: the line beside In your collection on load", 
   const card = page.getByRole("article", CARD);
   await expect(card.getByText("This edition is in your catalog")).toBeVisible();
   await expect(card.getByText("In your collection")).toBeVisible();
+  const box = card.getByRole("checkbox", { name: "and I own it" });
+  await expect(box).toBeChecked();
+  await expect(box).toBeDisabled();
+});
+
+const copiesOfIt = () =>
+  db(`select count(*) from copies c join editions e on e.id = c.edition
+    join item_sources s on s.item = e.item
+    where s.source = 'openlibrary' and s.key = '${IT}'`);
+const editionsOfIt = () =>
+  db(`select count(*) from editions e join item_sources s on s.item = e.item
+    where s.source = 'openlibrary' and s.key = '${IT}'`);
+
+test("the box is off by default, and Add with it off owns nothing", async ({
+  signedIn: { page },
+}) => {
+  await page.goto(`/search?q=${IT_ISBN}`);
+  const card = page.getByRole("article", CARD);
+  await expect(
+    card.getByRole("checkbox", { name: "and I own it" }),
+  ).not.toBeChecked();
+  await card.getByRole("button", { name: "Add this edition" }).click();
+  await expect(page).toHaveURL(/\/items\/[0-9a-f-]{36}$/);
+  await expect(page.getByText("1 in the catalog · none yours")).toBeVisible();
+  expect(copiesOfIt()).toBe("0");
+});
+
+test("It with the box on: its page, 1 in the catalog, you hold 1, Your copy, one copy with no condition", async ({
+  signedIn: { page },
+}) => {
+  await page.goto(`/search?q=${IT_ISBN}`);
+  const card = page.getByRole("article", CARD);
+  await card.getByRole("checkbox", { name: "and I own it" }).check();
+  await card.getByRole("button", { name: "Add this edition" }).click();
+  await expect(page).toHaveURL(/\/items\/[0-9a-f-]{36}$/);
+  await expect(page.getByText("1 in the catalog · you hold 1")).toBeVisible();
+  await expect(page.getByTestId("copy")).toContainText("Your copy");
+  expect(copiesOfIt()).toBe("1");
+  expect(
+    db(`select condition from copies c join editions e on e.id = c.edition
+      join item_sources s on s.item = e.item
+      where s.source = 'openlibrary' and s.key = '${IT}'`),
+  ).toBe("");
+});
+
+test("the copy refused after the import: the line, the card stays, Add again owns one", async ({
+  signedIn: { page },
+}) => {
+  let refused = false;
+  await page.route(
+    (url) => url.pathname === "/api/v1/copies",
+    async (route) => {
+      if (route.request().method() === "POST" && !refused) {
+        refused = true;
+        await route.fulfill({ status: 500, json: { error: {} } });
+        return;
+      }
+      await route.fallback();
+    },
+  );
+  await page.goto(`/search?q=${IT_ISBN}`);
+  const card = page.getByRole("article", CARD);
+  const box = card.getByRole("checkbox", { name: "and I own it" });
+  await box.check();
+  const add = card.getByRole("button", { name: "Add this edition" });
+  await add.click();
+  await expect(
+    card.getByText("Added, but couldn't add your copy. Try again."),
+  ).toBeVisible();
+  await expect(page).toHaveURL(/\/search/);
+  await expect(box).toBeChecked();
+  expect(copiesOfIt()).toBe("0");
+  expect(editionsOfIt()).toBe("1");
+
+  await add.click();
+  await expect(page).toHaveURL(/\/items\/[0-9a-f-]{36}$/);
+  await expect(page.getByText("1 in the catalog · you hold 1")).toBeVisible();
+  expect(copiesOfIt()).toBe("1");
+  expect(editionsOfIt()).toBe("1");
+});
+
+test("Add with the box on, slowed past a second click: one edition, one copy", async ({
+  signedIn: { page },
+}) => {
+  const gate = Promise.withResolvers<void>();
+  const arrived = Promise.withResolvers<void>();
+  let imports = 0;
+  await page.route("**/api/v1/editions/import", async (route) => {
+    imports += 1;
+    arrived.resolve();
+    await gate.promise;
+    await route.continue();
+  });
+  await page.goto(`/search?q=${IT_ISBN}`);
+  const card = page.getByRole("article", CARD);
+  await card.getByRole("checkbox", { name: "and I own it" }).check();
+  const add = card.getByRole("button", { name: "Add this edition" });
+  await add.click();
+  await arrived.promise;
+  await add.dispatchEvent("click");
+  expect(imports).toBe(1);
+
+  gate.resolve();
+  await expect(page).toHaveURL(/\/items\/[0-9a-f-]{36}$/);
+  await expect(page.getByText("1 in the catalog · you hold 1")).toBeVisible();
+  expect(imports).toBe(1);
+  expect(copiesOfIt()).toBe("1");
+  expect(editionsOfIt()).toBe("1");
 });
 
 test("a new edition's lookup makes no copies call", async ({
