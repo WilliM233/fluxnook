@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { db, itemFor, loadFixturesFor } from "./harness/fixtures";
 import { expect, test } from "./harness/signed-in";
 
@@ -36,6 +36,28 @@ const copiesOf = (item: string) => count(`i.id = '${item}'`);
 const editions = (page: Page) => page.getByRole("region", { name: "Editions" });
 
 const sheet = (page: Page) => page.getByRole("dialog");
+
+/**
+ * Clicks until the sheet shows: a click that lands before the page hydrates
+ * (or while `next dev` reloads it) has no handler and opens nothing.
+ */
+async function opens(page: Page, within: Locator, name: string) {
+  const button = within.getByRole("button", { name });
+  await expect(async () => {
+    await button.click();
+    await expect(sheet(page)).toBeVisible({ timeout: 1_000 });
+  }).toPass();
+}
+
+/**
+ * The page has hydrated, proved by a sheet that opens and closes. A click on I
+ * own this can't be retried like the above: it posts, so a retry is a copy.
+ */
+async function hydrated(page: Page) {
+  await opens(page, editions(page), "Own a copy");
+  await sheet(page).getByRole("button", { name: "Cancel" }).click();
+  await expect(sheet(page)).toHaveCount(0);
+}
 
 test.afterAll(() => {
   db(`delete from copies where edition in (
@@ -98,7 +120,7 @@ test.describe("Own a copy", () => {
     const film = probe("film", null);
     await page.goto(`/items/${film.id}`);
     const section = editions(page);
-    await section.getByRole("button", { name: "Own a copy" }).click();
+    await opens(page, editions(page), "Own a copy");
     await expect(
       sheet(page).getByRole("heading", { name: `Own a copy of ${film.title}` }),
     ).toBeVisible();
@@ -129,7 +151,7 @@ test.describe("Own a copy", () => {
     const work = probe();
     const edition = printing(work.id, "paperback", "Anchor Books");
     await page.goto(`/items/${work.id}`);
-    await editions(page).getByRole("button", { name: "Own a copy" }).click();
+    await opens(page, editions(page), "Own a copy");
     const format = sheet(page).getByLabel("Format");
     await expect(format).toHaveValue(`edition:${edition}`);
     await expect(format.locator("option").first()).toHaveText(
@@ -148,7 +170,7 @@ test.describe("Own a copy", () => {
   }) => {
     const work = probe();
     await page.goto(`/items/${work.id}`);
-    await editions(page).getByRole("button", { name: "Own a copy" }).click();
+    await opens(page, editions(page), "Own a copy");
     await sheet(page).getByLabel("Acquired").fill("2999-01-01");
     await sheet(page).getByRole("button", { name: "Add it" }).click();
     await expect(
@@ -165,7 +187,7 @@ test.describe("Own a copy", () => {
   }) => {
     const work = probe();
     await page.goto(`/items/${work.id}`);
-    await editions(page).getByRole("button", { name: "Own a copy" }).click();
+    await opens(page, editions(page), "Own a copy");
     await sheet(page).getByLabel("Format").selectOption({ label: "Hardcover" });
     printing(work.id, "hardcover");
     printing(work.id, "hardcover");
@@ -180,7 +202,7 @@ test.describe("Own a copy", () => {
   test("a typed note closes only on Cancel", async ({ signedIn: { page } }) => {
     const work = probe();
     await page.goto(`/items/${work.id}`);
-    await editions(page).getByRole("button", { name: "Own a copy" }).click();
+    await opens(page, editions(page), "Own a copy");
     await sheet(page).getByLabel("Note").fill("Words worth keeping.");
     await page.keyboard.press("Escape");
     await expect(sheet(page)).toBeVisible();
@@ -200,7 +222,7 @@ test.describe("Own a copy", () => {
       await route.continue();
     });
     await page.goto(`/items/${work.id}`);
-    await editions(page).getByRole("button", { name: "Own a copy" }).click();
+    await opens(page, editions(page), "Own a copy");
     const add = sheet(page).getByRole("button", { name: "Add it" });
     await add.click();
     await add.dispatchEvent("click");
@@ -222,6 +244,7 @@ test.describe("I own this", () => {
     await expect(
       section.getByText("1 in the catalog · none yours"),
     ).toBeVisible();
+    await hydrated(page);
     await section.getByRole("button", { name: "I own this" }).click();
     await expect(section.getByTestId("copy")).toContainText("Your copy");
     await expect(sheet(page)).toHaveCount(0);
@@ -248,11 +271,13 @@ test.describe("I own this", () => {
     });
     await page.goto(`/items/${work.id}`);
     const section = editions(page);
+    await hydrated(page);
     await section.getByRole("button", { name: "I own this" }).click();
 
     const tab = await page.context().newPage();
     try {
       await tab.goto(`/items/${work.id}`);
+      await hydrated(tab);
       await editions(tab).getByRole("button", { name: "I own this" }).click();
       await expect(editions(tab).getByTestId("copy")).toHaveCount(1);
       release();
@@ -279,6 +304,7 @@ test.describe("I own this", () => {
     });
     await page.goto(`/items/${work.id}`);
     const section = editions(page);
+    await hydrated(page);
     const own = section.getByRole("button", { name: "I own this" });
     await own.click();
     await own.dispatchEvent("click");
@@ -297,6 +323,7 @@ test.describe("I own this", () => {
     );
     await page.goto(`/items/${work.id}`);
     const section = editions(page);
+    await hydrated(page);
     const own = section.getByRole("button", { name: "I own this" });
     await own.click();
     await expect(section.getByRole("alert")).toHaveText(
@@ -327,7 +354,7 @@ test.describe("Edit and Remove", () => {
     const { work } = await held(page);
     await page.goto(`/items/${work.id}`);
     const section = editions(page);
-    await section.getByRole("button", { name: "Edit this copy" }).click();
+    await opens(page, section, "Edit this copy");
     await expect(
       sheet(page).getByRole("heading", { name: "Edit this copy" }),
     ).toBeVisible();
@@ -344,7 +371,7 @@ test.describe("Edit and Remove", () => {
     await expect(line).toContainText("Good · since 12 March 2019");
     await expect(line).toContainText("The reading copy.");
 
-    await section.getByRole("button", { name: "Edit this copy" }).click();
+    await opens(page, section, "Edit this copy");
     await sheet(page).getByLabel("Condition").selectOption({ value: "" });
     await sheet(page).getByLabel("Acquired").fill("");
     await sheet(page).getByLabel("Note").fill("");
@@ -365,7 +392,7 @@ test.describe("Edit and Remove", () => {
     const { work } = await held(page, { note: "Sealed.\nNever opened." });
     await page.goto(`/items/${work.id}`);
     const section = editions(page);
-    await section.getByRole("button", { name: "Remove this copy" }).click();
+    await opens(page, section, "Remove this copy");
     await expect(
       sheet(page).getByRole("heading", { name: "Let go of this copy?" }),
     ).toBeVisible();
@@ -378,7 +405,7 @@ test.describe("Edit and Remove", () => {
     await expect(section.getByTestId("copy")).toHaveCount(1);
     expect(copiesOf(work.id)).toBe("1");
 
-    await section.getByRole("button", { name: "Remove this copy" }).click();
+    await opens(page, section, "Remove this copy");
     await sheet(page).getByRole("button", { name: "Remove" }).click();
     await expect(section.getByTestId("copy")).toHaveCount(0);
     await expect(
@@ -397,7 +424,7 @@ test.describe("Edit and Remove", () => {
     const { work, copy } = await held(page);
     await page.goto(`/items/${work.id}`);
     const section = editions(page);
-    await section.getByRole("button", { name: "Remove this copy" }).click();
+    await opens(page, section, "Remove this copy");
     expect((await page.request.delete(`/api/v1/copies/${copy}`)).status()).toBe(
       204,
     );
@@ -412,7 +439,7 @@ test.describe("Edit and Remove", () => {
     const { work, copy } = await held(page);
     await page.goto(`/items/${work.id}`);
     const section = editions(page);
-    await section.getByRole("button", { name: "Edit this copy" }).click();
+    await opens(page, section, "Edit this copy");
     await sheet(page).getByLabel("Note").fill("Words typed.");
     expect((await page.request.delete(`/api/v1/copies/${copy}`)).status()).toBe(
       204,
@@ -478,6 +505,7 @@ test.describe("on the fixtures", () => {
       hasText: "Ultimate Collection 1",
     });
     await expect(row.getByText("Your copy")).toHaveCount(0);
+    await hydrated(page);
     await row.getByRole("button", { name: "I own this" }).click();
     await expect(row.getByText("Your copy")).toBeVisible();
     await expect(page.getByTestId("owned-via")).toHaveText(

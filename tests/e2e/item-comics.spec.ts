@@ -4,7 +4,8 @@ import { expect, test } from "./harness/signed-in";
 
 // Serial: the picker tests write the probe editions' contents in turn.
 test.describe.configure({ mode: "serial" });
-// A Collected in row ends in what the caller holds; these accounts hold none (Ch 1.7).const OWN = "I own this";
+// A Collected in row ends in what the caller holds; these accounts hold none (Ch 1.7).
+const OWN = "I own this";
 
 // A10 on probe comics this file makes itself (Ch 1.4.3): the pill row, the
 // Series fact, Collected in and a collected edition's Contents line. Probe
