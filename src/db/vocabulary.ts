@@ -47,3 +47,5 @@ export const editionFormats = [
   "4k",
   "digital",
 ] as const;
+// A copy's condition, or null; five words and no grade scale (Ch 1.7).
+export const conditions = ["new", "fine", "good", "fair", "poor"] as const;

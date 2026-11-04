@@ -34,6 +34,7 @@ import {
   anchorKinds,
   bookForms,
   comicForms,
+  conditions,
   editionFormats,
   entryStatuses,
   itemTypes,
@@ -48,6 +49,7 @@ export {
   anchorKinds,
   bookForms,
   comicForms,
+  conditions,
   editionFormats,
   entryStatuses,
   itemTypes,
@@ -554,5 +556,11 @@ export const copies = pgTable(
     visibility: visibility(),
     ...timestamps(),
   },
-  (t) => [check("copies_visibility", oneOf(t.visibility, visibilities))],
+  (t) => [
+    check("copies_visibility", oneOf(t.visibility, visibilities)),
+    check(
+      "copies_condition",
+      sql`${t.condition} is null or ${oneOf(t.condition, conditions)}`,
+    ),
+  ],
 );
