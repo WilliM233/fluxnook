@@ -2,8 +2,9 @@ import { sql as q } from "drizzle-orm";
 import postgres from "postgres";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createDb } from "@/db/client";
+import { loadItemPage } from "@/lib/catalog/item-page";
 import { heldBy, loadOwnership, viaBy } from "@/lib/collection/owned";
-import { itemFor, required, signUpWithFixtures } from "./harness";
+import { itemFor, required, signUp, signUpWithFixtures } from "./harness";
 
 // A5 on the loaded fixtures: five hardcovers held, 37 comics through their
 // contents, one backup through its host, 38 in all (Ch 1.7, the census's C3).
@@ -176,6 +177,28 @@ describe("A5 on its own rows", () => {
       `${tag} A trade`,
       `${tag} Z trade`,
     ]);
+  });
+
+  it("loadItemPage carries the caller's copies per printing, oldest first, and no one else's", async () => {
+    const item = await work("book", `${tag} page`, "novel");
+    const paperback = await printing(item, "paperback");
+    const hardcover = await printing(item, "hardcover");
+    const [{ id: first }] = await sql`
+      insert into copies (owner, edition, created_at)
+      values (${userId}, ${paperback}, now() - interval '1 day') returning id`;
+    const second = await copy(paperback);
+    const stranger = await signUp(sql);
+    await sql`insert into copies (owner, edition)
+      values (${stranger.id}, ${hardcover}), (${stranger.id}, ${paperback})`;
+    try {
+      const page = await loadItemPage(db, { id: item, userId });
+      const copiesOf = (edition: string) =>
+        page?.editions.find((e) => e.id === edition)?.copies.map((c) => c.id);
+      expect(copiesOf(paperback)).toEqual([first, second]);
+      expect(copiesOf(hardcover)).toEqual([]);
+    } finally {
+      await sql`delete from auth.users where id = ${stranger.id}`;
+    }
   });
 
   it("a read writes nothing", async () => {

@@ -1,5 +1,11 @@
 import { type SQL, sql } from "drizzle-orm";
 import type { Db } from "@/db/client";
+import {
+  type HeldCopy,
+  heldEditions,
+  loadOwnership,
+  type Ownership,
+} from "@/lib/collection/owned";
 import { type ItemRead, loadItemReads } from "@/lib/journal/item-reads";
 import type { ContentRow } from "./contents-line";
 
@@ -113,9 +119,15 @@ export type ItemPage = {
     comicvine_url: string | null;
     contents: number;
     contentsRows: ContentRow[];
+    /** The caller's copies of this printing, oldest first (Ch 1.7 A6). */
+    copies: HeldCopy[];
   }[];
   /** The caller's reads of the work, in the Journal's order (Ch 1.6 A5). */
   reads: ItemRead[];
+  /** What the caller holds of the work, and how (Ch 1.7 A5). */
+  ownership: Ownership;
+  /** Which of `collectedIn`'s printings the caller holds (Ch 1.7 A6). */
+  heldIn: string[];
 };
 
 /** Everything `/items/<id>` shows, or null for an id the catalog doesn't hold. */
@@ -147,6 +159,7 @@ export async function loadItemPage(
     series,
     collectedIn,
     reads,
+    ownership,
   ] = await Promise.all([
     db.execute<ItemPage["sources"][number]>(sql`
       select source, key, url from item_sources
@@ -173,7 +186,7 @@ export async function loadItemPage(
       where e.item = ${id} and s.owner = ${userId}
       order by s.name, e.position`),
     // The printings the catalog knows (Ch 1.3, A10), oldest first.
-    db.execute<ItemPage["editions"][number]>(sql`
+    db.execute<Omit<ItemPage["editions"][number], "copies">>(sql`
       select e.id, e.format, e.title, e.released_on::text as released_on,
         e.released_precision, e.publisher, e.pages,
         (select key from edition_sources
@@ -207,7 +220,12 @@ export async function loadItemPage(
       ),
     ),
     loadItemReads(db, { itemId: id, userId }),
+    loadOwnership(db, { itemId: id, userId }),
   ]);
+  const heldIn = await heldEditions(db, {
+    editions: collectedIn.map((row) => row.editionId),
+    userId,
+  });
 
   return {
     item,
@@ -217,8 +235,13 @@ export async function loadItemPage(
     relations: [...relations],
     franchises: franchises.map((f) => f.name),
     shelves: [...shelves],
-    editions: [...editions],
+    editions: editions.map((edition) => ({
+      ...edition,
+      copies: ownership.held.filter((copy) => copy.editionId === edition.id),
+    })),
     reads,
+    ownership,
+    heldIn,
   };
 }
 

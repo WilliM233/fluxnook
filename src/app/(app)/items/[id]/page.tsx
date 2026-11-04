@@ -3,21 +3,19 @@ import { notFound } from "next/navigation";
 import { z } from "zod";
 import { Badge } from "@/components/ui/badge";
 import { serverDb } from "@/db/client";
-import { contentsLine } from "@/lib/catalog/contents-line";
 import {
   type ItemPage,
   loadItemPage,
   loadPickerComics,
-  type PickerComic,
   releasedLabel,
 } from "@/lib/catalog/item-page";
-import { formatLabel } from "@/lib/collection/formats";
+import { ownedViaText } from "@/lib/collection/lines";
 import { coverPublicUrl } from "@/lib/covers";
 import { readEnv } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 import { CollectedIn } from "./collected-in";
 import { comicPills, SeriesLine } from "./comic-parts";
-import { ContentsEditor } from "./contents-editor";
+import { EditionsSection } from "./editions-section";
 import { JournalSection } from "./journal-section";
 import { ShelvesSection } from "./shelves-section";
 
@@ -65,100 +63,6 @@ function facts(item: ItemPage["item"]): string[] {
   }
 }
 
-/** An edition's quiet line: publisher · year · pages, or a comic's issue count. */
-function editionLine(edition: ItemPage["editions"][number]): string {
-  return [
-    edition.publisher,
-    year(edition.released_on),
-    edition.pages !== null && plural(edition.pages, "page"),
-    edition.contents > 0 && plural(edition.contents, "issue"),
-  ]
-    .filter(Boolean)
-    .join(" · ");
-}
-
-function Editions({
-  editions,
-  picker,
-}: {
-  editions: ItemPage["editions"];
-  /** A collected comic's printings say what they hold and take the picker (A10, A11). */
-  picker: PickerComic[] | null;
-}) {
-  return (
-    <section
-      aria-labelledby="editions"
-      className="flex flex-col gap-3 border-t pt-6"
-    >
-      <h2 id="editions" className="font-heading text-[22px] font-semibold">
-        Editions
-      </h2>
-      {editions.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          None in the catalog yet.
-        </p>
-      ) : (
-        <ul className="flex flex-col gap-2">
-          {editions.map((e) => (
-            <li
-              key={e.id}
-              className="flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-xl border bg-card px-4 py-3"
-            >
-              <span className="font-heading text-lg font-semibold text-foreground">
-                {formatLabel(e.format)}
-              </span>
-              <span className="sr-only"> · </span>
-              <span className="text-sm text-muted-foreground">
-                {[e.title, editionLine(e)].filter(Boolean).join(" · ")}
-              </span>
-              {e.isbn && (
-                <span className="text-sm text-dim tabular-nums">
-                  ISBN {e.isbn}
-                </span>
-              )}
-              {e.openlibrary_url && (
-                <a
-                  href={e.openlibrary_url}
-                  rel="noreferrer"
-                  className="ml-auto text-sm text-primary hover:text-accent-hover"
-                >
-                  Open Library
-                </a>
-              )}
-              {e.comicvine_url && (
-                <a
-                  href={e.comicvine_url}
-                  rel="noreferrer"
-                  className="ml-auto text-sm text-primary hover:text-accent-hover"
-                >
-                  Comic Vine
-                </a>
-              )}
-              {picker && (
-                <span className="flex basis-full flex-wrap items-center justify-between gap-2">
-                  <span className="text-sm text-muted-foreground">
-                    Contents: {contentsLine(e.contentsRows) || "Nothing yet"}
-                  </span>
-                  <ContentsEditor
-                    editionId={e.id}
-                    format={e.format}
-                    current={e.contentsRows}
-                    comics={picker}
-                  />
-                </span>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
-      <p className="text-sm text-dim">
-        A printing the catalog knows about. Which ones you own comes with the
-        collection chapter.
-      </p>
-    </section>
-  );
-}
-
 function Fact({ term, children }: { term: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-0.5">
@@ -201,6 +105,8 @@ export default async function ItemPageView({
     shelves,
     editions,
     reads,
+    ownership,
+    heldIn,
   } = page;
   const released = releasedLabel(item.released_on, item.released_precision);
   const pills = [
@@ -214,6 +120,9 @@ export default async function ItemPageView({
     : undefined;
   const printed = item.type === "book" || item.type === "comic";
   const coverWord = printed ? "Cover" : "Poster";
+  // A backup says its via in its own section, by its host (A6).
+  const via =
+    item.type === "comic" && item.form !== "backup" ? ownership.via[0] : null;
 
   return (
     <main className="mx-auto grid w-full max-w-5xl gap-11 px-6 py-11 md:grid-cols-[280px_1fr]">
@@ -316,6 +225,12 @@ export default async function ItemPageView({
           </Fact>
         </dl>
 
+        {via && (
+          <p data-testid="owned-via" className="-mt-4 text-sm text-dim">
+            {ownedViaText(via.title, via.format)}
+          </p>
+        )}
+
         <JournalSection
           item={{
             id: item.id,
@@ -339,11 +254,22 @@ export default async function ItemPageView({
               omit: item.id,
             }}
             empty="Not collected in anything the catalog knows."
-            note="An edition whose contents hold this issue. Owning one comes with the collection chapter, and then this line says “owned via”."
+            note="An edition whose contents hold this issue. One you hold covers this issue."
+            held={heldIn}
           />
         )}
 
-        {printed && <Editions editions={editions} picker={picker} />}
+        <EditionsSection
+          item={{
+            id: item.id,
+            title: item.title,
+            type: item.type,
+            form: item.form,
+          }}
+          editions={editions}
+          ownership={ownership}
+          picker={picker}
+        />
 
         <section
           aria-labelledby="connected"

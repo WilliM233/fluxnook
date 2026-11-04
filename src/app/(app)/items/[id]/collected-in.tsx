@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { OwnThis } from "@/app/(app)/collection/own-this";
 import {
   type ContentsLineOptions,
   contentsLine,
@@ -15,11 +16,14 @@ export function CollectedIn({
   line,
   empty,
   note,
+  held,
 }: {
   rows: CollectedInRow[];
   line: ContentsLineOptions;
   empty: string;
   note: string;
+  /** The printings the caller holds; each row ends by it. A page that doesn't know passes none (Ch 1.7 A6). */
+  held?: string[];
 }) {
   return (
     <section
@@ -54,6 +58,15 @@ export function CollectedIn({
                   .filter(Boolean)
                   .join(" · ")}
               </span>
+              {held && (
+                <span className="ml-auto flex flex-wrap items-baseline gap-x-2.5">
+                  {held.includes(row.editionId) ? (
+                    <span className="text-sm text-primary">Your copy</span>
+                  ) : (
+                    <OwnThis editionId={row.editionId} />
+                  )}
+                </span>
+              )}
             </li>
           ))}
         </ul>
