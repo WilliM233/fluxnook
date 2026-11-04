@@ -4,15 +4,7 @@ import {
   contentsLine,
 } from "@/lib/catalog/contents-line";
 import type { CollectedIn as CollectedInRow } from "@/lib/catalog/item-page";
-
-const formatWords: Record<string, string> = { tpb: "Trade paperback" };
-
-/** An edition format as a person says it: Hardcover, Trade paperback. */
-export function formatLabel(format: string): string {
-  return (
-    formatWords[format] ?? format.charAt(0).toUpperCase() + format.slice(1)
-  );
-}
+import { formatLabel } from "@/lib/collection/formats";
 
 /**
  * The editions whose contents hold this page's comic or run (A9, A10): the

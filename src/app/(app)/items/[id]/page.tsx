@@ -11,10 +11,11 @@ import {
   type PickerComic,
   releasedLabel,
 } from "@/lib/catalog/item-page";
+import { formatLabel } from "@/lib/collection/formats";
 import { coverPublicUrl } from "@/lib/covers";
 import { readEnv } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
-import { CollectedIn, formatLabel } from "./collected-in";
+import { CollectedIn } from "./collected-in";
 import { comicPills, SeriesLine } from "./comic-parts";
 import { ContentsEditor } from "./contents-editor";
 import { JournalSection } from "./journal-section";
