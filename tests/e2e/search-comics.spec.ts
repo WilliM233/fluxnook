@@ -269,11 +269,11 @@ test.describe("the series page", () => {
       .getByRole("listitem");
     await expect(collected).toHaveCount(5);
     await expect(collected).toHaveText([
-      "Ultimate Collection 1 · Hardcover · #1 to #7, and Raphael: Me, Myself and I",
-      "Ultimate Collection 2 · Hardcover · #8 to #11, and Michelangelo: The Christmas Aliens, Donatello: Kirby and the Warp Crystal, Leonardo: What Goes Around... ...Comes Around!",
-      "Ultimate Collection 3 · Hardcover · #12, #14 to #15, #17, #19 to #21",
-      "Ultimate Collection 4 · Hardcover · #48 to #55",
-      "Ultimate Collection 5 · Hardcover · #56 to #62",
+      "Ultimate Collection 1 · Hardcover · #1 to #7, and Raphael: Me, Myself and IYour copy",
+      "Ultimate Collection 2 · Hardcover · #8 to #11, and Michelangelo: The Christmas Aliens, Donatello: Kirby and the Warp Crystal, Leonardo: What Goes Around... ...Comes Around!Your copy",
+      "Ultimate Collection 3 · Hardcover · #12, #14 to #15, #17, #19 to #21Your copy",
+      "Ultimate Collection 4 · Hardcover · #48 to #55Your copy",
+      "Ultimate Collection 5 · Hardcover · #56 to #62Your copy",
     ]);
     await expect(
       collected.first().getByRole("link", { name: "Ultimate Collection 1" }),
@@ -281,6 +281,79 @@ test.describe("the series page", () => {
       "href",
       `/items/${itemFor("manual", "tmnt-ultimate-collection-1")}`,
     );
+  });
+
+  test("the ticks on the real run: 62 boxes, you hold 33, 33 of them via a collection; #1 ticked also via, the heading unmoved; #33 ticked 34, unticked 33 with no confirm", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    const response = await page.request.post("/api/v1/series/import", {
+      data: {
+        source: "comicvine",
+        key: "volume/20281",
+        form: "issue",
+        attachTo: { series: MIRAGE_VOL_1 },
+      },
+    });
+    expect(response.status()).toBe(201);
+    const { id } = await response.json();
+    await page.goto(`/series/${id}`);
+
+    const heading = page.getByText(/in the catalog, in cover-date order/);
+    const held = (h: number) =>
+      `62 in the catalog, in cover-date order · you hold ${h}, 33 of them via a collection`;
+    await expect(heading).toHaveText(held(33));
+    const boxes = page.getByTestId("tick");
+    await expect(boxes).toHaveCount(62);
+
+    const tile = (key: string) =>
+      page
+        .getByRole("list", { name: "Issues" })
+        .getByRole("listitem")
+        .filter({
+          has: page.locator(`a[href="/items/${itemFor("manual", key)}"]`),
+        });
+    const first = tile("tmnt-mirage-v1-1");
+    await expect(first.getByTestId("tile-via")).toHaveText(
+      "via Ultimate Collection 1",
+    );
+    const one = first.getByTestId("tick");
+    await expect(one).toBeEnabled();
+    await one.click();
+    await expect(first.getByTestId("tick-label")).toHaveText("Owned · Floppy");
+    await expect(first.getByTestId("tile-via")).toHaveText(
+      "also via Ultimate Collection 1",
+    );
+    await expect(one).toHaveAttribute("aria-busy", "false");
+    await expect(heading).toHaveText(held(33));
+
+    const later = tile("tmnt-mirage-v1-33");
+    await expect(later.getByTestId("tile-via")).toHaveCount(0);
+    const thirtyThree = later.getByTestId("tick");
+    await thirtyThree.click();
+    await expect(later.getByTestId("tick-label")).toHaveText("Owned · Floppy");
+    await expect(heading).toHaveText(held(34));
+    await expect(thirtyThree).toHaveAttribute("aria-busy", "false");
+    await thirtyThree.click();
+    await expect(later.getByTestId("tick-label")).toHaveText("Owned");
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(heading).toHaveText(held(33));
+
+    const rows = page
+      .getByRole("list", { name: "Collected in", exact: true })
+      .getByRole("listitem");
+    await expect(rows).toHaveCount(5);
+    for (const n of [0, 1, 2, 3, 4]) {
+      await expect(rows.nth(n).getByText("Your copy")).toBeVisible();
+    }
+
+    // What the scoped reset takes back: the ticks' printings and copies alike.
+    resetSeries();
+    expect(
+      db(`select count(*) from editions where item in (
+        '${itemFor("manual", "tmnt-mirage-v1-1")}',
+        '${itemFor("manual", "tmnt-mirage-v1-33")}')`),
+    ).toBe("0");
   });
 
   test("a run with no end year prints its start alone", async ({
