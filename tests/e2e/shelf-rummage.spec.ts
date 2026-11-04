@@ -233,16 +233,23 @@ test("R5 a pointer drag at row 300 of the TMNT shelf lands in the next section a
   const target = rows.nth(301);
   await expect(target.getByText("302", { exact: true })).toBeVisible();
   const from = await grip.boundingBox();
-  const to = await target.boundingBox();
-  if (!from || !to) throw new Error("no boxes");
+  if (!from) throw new Error("no grip box");
   const fx = from.x + from.width / 2;
   const fy = from.y + from.height / 2;
   await page.mouse.move(fx, fy);
   await page.mouse.down();
-  // Past the 4 px activation distance, then onto the target's centre.
+  // Past the 4 px activation distance. The drag has started now, and its
+  // auto-scroll moves the page, so the target's box is read after this and
+  // not before: a pixel offset from before dropped one row short under two
+  // workers on `next dev` (1.6.1 D8, 1.6.3 D9 b).
   await page.mouse.move(fx, fy + 8, { steps: 2 });
-  await page.mouse.move(fx, to.y + to.height / 2, { steps: 12 });
   await expect(grip).toHaveAttribute("aria-pressed", "true");
+  const to = await target.boundingBox();
+  if (!to) throw new Error("no target box");
+  await page.mouse.move(fx, to.y + to.height / 2, { steps: 12 });
+  // The target moved aside for the row in hand: the drop is over it, so the
+  // release can't land one short.
+  await expect(target).toHaveCSS("transform", /matrix/);
   await page.mouse.up();
 
   // Dropped on a row from above, it lands after that row, as the moving-aside
@@ -264,15 +271,18 @@ test("R5 a pointer drag at row 300 of the TMNT shelf lands in the next section a
       })
       .getByText("69 works", { exact: true }),
   ).toBeVisible();
+  // The page moves the row before the server answers, so the table is polled:
+  // on a cold route the write lands seconds after the row does, and an unpolled
+  // read saw the row at 301, one short (the flake of 1.6.1 D8, 1.6.3 D9 b).
   await expect
     .poll(() =>
-      db(`select count(*) = 326 and min(position) = 1 and max(position) = 326
-        and count(distinct position) = 326 from shelf_entries where shelf = '${tmnt}'`),
+      db(`select x.name || '@' || e.position from shelf_entries e
+        join shelf_sections x on x.id = e.section join items i on i.id = e.item
+        where e.shelf = '${tmnt}' and i.title = '${title.replaceAll("'", "''")}'`),
     )
-    .toBe("t");
+    .toBe("Volume 4 · Mini Series@302");
   expect(
-    db(`select x.name || '@' || e.position from shelf_entries e
-      join shelf_sections x on x.id = e.section join items i on i.id = e.item
-      where e.shelf = '${tmnt}' and i.title = '${title.replaceAll("'", "''")}'`),
-  ).toBe("Volume 4 · Mini Series@302");
+    db(`select count(*) = 326 and min(position) = 1 and max(position) = 326
+      and count(distinct position) = 326 from shelf_entries where shelf = '${tmnt}'`),
+  ).toBe("t");
 });

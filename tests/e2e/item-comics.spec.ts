@@ -4,6 +4,8 @@ import { expect, test } from "./harness/signed-in";
 
 // Serial: the picker tests write the probe editions' contents in turn.
 test.describe.configure({ mode: "serial" });
+// A Collected in row ends in what the caller holds; these accounts hold none (Ch 1.7).
+const OWN = "I own this";
 
 // A10 on probe comics this file makes itself (Ch 1.4.3): the pill row, the
 // Series fact, Collected in and a collected edition's Contents line. Probe
@@ -121,7 +123,7 @@ test("#1: the pill row with the series link, the Series fact, the sources, Colle
     .getByRole("list", { name: "Collected in", exact: true })
     .getByRole("listitem");
   await expect(collected).toHaveText([
-    `${tag} Collection 1 · Hardcover · 2011 · with #2, and ${tag} Micro: Me`,
+    `${tag} Collection 1 · Hardcover · 2011 · with #2, and ${tag} Micro: Me${OWN}`,
   ]);
   await expect(
     collected.getByRole("link", { name: `${tag} Collection 1` }),
@@ -157,7 +159,7 @@ test("the one-shot: its kind, no Series fact, Collected in by its others", async
       .getByRole("list", { name: "Collected in", exact: true })
       .getByRole("listitem"),
   ).toHaveText([
-    `${tag} Collection 1 · Hardcover · 2011 · with ${RUN} #1 to #2`,
+    `${tag} Collection 1 · Hardcover · 2011 · with ${RUN} #1 to #2${OWN}`,
   ]);
 });
 
@@ -352,5 +354,5 @@ test("the Browse's pick: filter 'tales', tick the 1987 run's #1 and #2, Save", a
       .getByRole("list", { name: "Collected in", exact: true })
       .getByRole("listitem")
       .filter({ hasText: tag }),
-  ).toHaveText([`${tag} Collection 2 · Trade paperback · with #2`]);
+  ).toHaveText([`${tag} Collection 2 · Trade paperback · with #2${OWN}`]);
 });

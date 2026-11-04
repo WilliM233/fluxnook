@@ -456,18 +456,15 @@ describe("entries", () => {
   });
 
   it("500 works in one call are all added in order", async () => {
-    const fixture = (
-      await sql`select distinct item from item_sources
-        where source || ':' || key = any(${sql.array(fixtureItems)})`
-    ).map((r) => r.item as string);
-    expect(fixture).toHaveLength(454);
-    const made = (
+    // Its own rows, not the fixture's: an insert's foreign key check locks each
+    // work, and 454 shared works in one statement deadlocked with another
+    // file's attach on them (1.6.3 D9 a, A15 a).
+    const all = (
       await sql`
         insert into items (type, title, source_note)
-        select 'film', ${tag} || ' ' || n, ${tag} from generate_series(1, 46) n
+        select 'film', ${tag} || ' ' || n, ${tag} from generate_series(1, 500) n
         returning id`
     ).map((r) => r.id as string);
-    const all = [...fixture, ...made];
     const { id } = await createShelf(db, {
       userId: user.id,
       name: "Five hundred",

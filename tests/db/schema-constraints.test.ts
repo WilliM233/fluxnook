@@ -113,6 +113,19 @@ describe("content tables", () => {
     }
   });
 
+  it("a copy's condition is one of five words or null: mint is refused", async () => {
+    await rejects(
+      sql`insert into copies (owner, edition, condition)
+          values (${owner}, ${edition}, 'mint')`,
+      /copies_condition/,
+    );
+    const inserted = await sql`
+      insert into copies (owner, edition, condition)
+      values (${owner}, ${edition}, 'fine'), (${owner}, ${edition}, null)
+      returning id`;
+    expect(inserted).toHaveLength(2);
+  });
+
   it("a journal anchor is a known kind with a value, or neither", async () => {
     await rejects(
       sql`insert into journal_entries (occurrence, body, anchor_kind)

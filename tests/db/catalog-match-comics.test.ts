@@ -84,7 +84,8 @@ afterAll(async () => {
   await stub.close();
   await close();
   await sql.end();
-});
+  // The reset waits its turn behind the loader's lock with the other files.
+}, 60_000);
 
 const status = async (row: ComicVineSeries, userId = user.id) =>
   (await seriesStatuses(db, { userId, rows: [row] }))[0];

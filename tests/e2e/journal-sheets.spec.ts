@@ -22,6 +22,20 @@ async function book(page: Page, title: string) {
 }
 
 /** Clicks a star's left or right half, measured from its box. */
+/**
+ * Opens the log sheet until it shows: a click that lands before the page
+ * hydrates (or while `next dev` reloads it) has no handler and opens nothing.
+ */
+async function openLog(journal: Locator, name: "Log a read" | "Log a watch") {
+  const button = journal.getByRole("button", { name });
+  await expect(async () => {
+    await button.click();
+    await expect(journal.page().getByRole("dialog")).toBeVisible({
+      timeout: 1_000,
+    });
+  }).toPass();
+}
+
 async function half(star: Locator, side: "left" | "right") {
   const box = await star.boundingBox();
   if (!box) throw new Error("the star has no box");
@@ -130,7 +144,7 @@ test("log a read with a first entry and see the card", async ({
   const id = await book(page, title);
   await page.goto(`/items/${id}`);
   const journal = page.getByRole("region", { name: "Journal" });
-  await journal.getByRole("button", { name: "Log a read" }).click();
+  await openLog(journal, "Log a read");
 
   const sheet = page.getByRole("dialog", { name: `Log a read of ${title}` });
   await expect(
@@ -173,7 +187,7 @@ test("Reading sends finishedOn as null, never stripped", async ({
   const id = await book(page, `Still going ${crypto.randomUUID()}`);
   await page.goto(`/items/${id}`);
   const journal = page.getByRole("region", { name: "Journal" });
-  await journal.getByRole("button", { name: "Log a read" }).click();
+  await openLog(journal, "Log a read");
   const sheet = page.getByRole("dialog");
   await sheet.getByRole("button", { name: "Reading" }).click();
   await expect(sheet.getByLabel("Finished")).toBeDisabled();
@@ -207,7 +221,7 @@ test("the 409 line on the sheet", async ({ signedIn: { page } }) => {
   await post(page, "/api/v1/occurrences", { item: id, status: "in_progress" });
   await page.goto(`/items/${id}`);
   const journal = page.getByRole("region", { name: "Journal" });
-  await journal.getByRole("button", { name: "Log a read" }).click();
+  await openLog(journal, "Log a read");
   const sheet = page.getByRole("dialog");
   await sheet.getByRole("button", { name: "Reading" }).click();
   await sheet.getByRole("button", { name: "Log it" }).click();
@@ -229,7 +243,7 @@ test("a film's sheet is a watch with no Where in it", async ({
   const id = await film(page, title, 1976);
   await page.goto(`/items/${id}`);
   const journal = page.getByRole("region", { name: "Journal" });
-  await journal.getByRole("button", { name: "Log a watch" }).click();
+  await openLog(journal, "Log a watch");
   const sheet = page.getByRole("dialog", { name: `Log a watch of ${title}` });
   await expect(
     sheet
@@ -260,7 +274,7 @@ test("a field error stays on the sheet under its field", async ({
   const id = await book(page, `Backwards ${crypto.randomUUID()}`);
   await page.goto(`/items/${id}`);
   const journal = page.getByRole("region", { name: "Journal" });
-  await journal.getByRole("button", { name: "Log a read" }).click();
+  await openLog(journal, "Log a read");
   const sheet = page.getByRole("dialog");
   await sheet.getByLabel("Started").fill("2026-11-02");
   await sheet.getByLabel("Finished").fill("2026-10-28");
@@ -282,10 +296,10 @@ test("Cancel and Escape close the sheet and write nothing", async ({
   const journal = page.getByRole("region", { name: "Journal" });
   const sheet = page.getByRole("dialog");
 
-  await journal.getByRole("button", { name: "Log a read" }).click();
+  await openLog(journal, "Log a read");
   await sheet.getByRole("button", { name: "Cancel" }).click();
   await expect(sheet).toBeHidden();
-  await journal.getByRole("button", { name: "Log a read" }).click();
+  await openLog(journal, "Log a read");
   await expect(sheet).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(sheet).toBeHidden();

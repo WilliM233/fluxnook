@@ -23,13 +23,13 @@ export const halfStep = z
 export const NO_YEAR_ZERO = "There was no year 0.";
 export const notYearZero = (iso: string) => !iso.startsWith("0000");
 
-const isoDate = z.iso
+export const isoDate = z.iso
   .date("A date as YYYY-MM-DD.")
   .refine(notYearZero, NO_YEAR_ZERO);
 
 // A paste from a page or a phone keyboard carries zero-width spaces and
 // BOMs that `trim` keeps; nothing visible is nothing written (Rummage R5).
-const EDGES = /^[\s​-‍⁠﻿]+|[\s​-‍⁠﻿]+$/g;
+export const EDGES = /^[\s​-‍⁠﻿]+|[\s​-‍⁠﻿]+$/g;
 
 /** An entry's text: trimmed at its ends, line breaks inside kept (A4). */
 export const entryBody = z

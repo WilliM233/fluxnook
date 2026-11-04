@@ -41,7 +41,18 @@ export function itemFor(source: string, key: string) {
   return id;
 }
 
-/** The Browse's three Comic Vine imports undone on the fixture rows (Ch 1.4.2). */
+/**
+ * The Browse's three Comic Vine imports undone on the fixture rows (Ch 1.4.2),
+ * behind the loader's lock as `tests/db/harness.ts` takes it: a load in another
+ * worker updates the same items, and the two in opposite orders deadlocked
+ * (1.6.2, A15 a). One `psql -c` runs as one transaction, so the lock holds to
+ * the last statement.
+ */
 export function resetComics() {
-  for (const statement of RESET_COMICVINE) db(statement);
+  db(
+    [
+      `select pg_advisory_xact_lock(hashtext('fixtures:load'))`,
+      ...RESET_COMICVINE,
+    ].join(";\n"),
+  );
 }

@@ -52,7 +52,9 @@ test("a book's printing: format, the line, the ISBN, the links, the caption", as
     `https://openlibrary.org/${BOOK}`,
   );
   await expect(
-    editions.getByText("Which ones you own comes with the collection chapter."),
+    editions.getByText(
+      "A printing the catalog knows about, and the copies of it you hold. Own a copy takes a format the catalog doesn't list yet.",
+    ),
   ).toBeVisible();
   const sources = page.locator("dt", { hasText: "Sources" }).locator("+ dd");
   await expect(
@@ -107,8 +109,14 @@ test("a book with none says so", async ({ signedIn: { page } }) => {
   ).toBeVisible();
 });
 
-test("a film has no Editions", async ({ signedIn: { page } }) => {
+test("a film has Editions, none yet on the load (Ch 1.7 A6)", async ({
+  signedIn: { page },
+}) => {
   await page.goto(`/items/${itemFor("letterboxd", "20ZQ")}`);
   await expect(page.getByRole("heading", { name: "Connected" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Editions" })).toHaveCount(0);
+  await expect(
+    page
+      .getByRole("region", { name: "Editions" })
+      .getByText("None in the catalog yet."),
+  ).toBeVisible();
 });

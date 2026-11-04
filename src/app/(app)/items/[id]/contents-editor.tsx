@@ -15,7 +15,7 @@ import type { ContentRow } from "@/lib/catalog/contents-line";
 import type { PickerComic } from "@/lib/catalog/item-page";
 import { normalizeName } from "@/lib/catalog/normalize";
 import { releasedLabel } from "@/lib/catalog/released";
-import { formatLabel } from "./collected-in";
+import { formatLabel } from "@/lib/collection/formats";
 
 const REST = "One-shots and the rest";
 

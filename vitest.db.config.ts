@@ -12,6 +12,9 @@ export default defineConfig({
   },
   test: {
     include: ["tests/db/**/*.test.ts"],
+    // A hook that loads or resets waits its turn behind the loader's advisory
+    // lock with the other files; on a fresh catalog that queue passes 10 s (A15 a).
+    hookTimeout: 60_000,
     env: {
       DATABASE_URL: env.DATABASE_URL ?? "",
       NEXT_PUBLIC_SUPABASE_URL: env.NEXT_PUBLIC_SUPABASE_URL ?? "",
