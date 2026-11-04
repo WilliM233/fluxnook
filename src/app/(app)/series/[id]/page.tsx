@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { serverDb } from "@/db/client";
 import { releasedLabel } from "@/lib/catalog/released";
 import { loadSeriesPage, type SeriesPage } from "@/lib/catalog/series-page";
+import { seriesHolding, tileVia } from "@/lib/collection/lines";
+import { takesFloppy } from "@/lib/collection/ticks";
 import { coverPublicUrl } from "@/lib/covers";
 import { readEnv } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
@@ -73,6 +75,14 @@ function Tile({ issue }: { issue: SeriesPage["issues"][number] }) {
       >
         {issue.title}
       </Link>
+      {issue.held && !takesFloppy(issue.form) && (
+        <span className="text-sm text-primary">Your copy</span>
+      )}
+      {issue.via && (
+        <span data-testid="tile-via" className="text-[13px] text-dim">
+          {tileVia(issue.via, issue.floppies > 0)}
+        </span>
+      )}
     </li>
   );
 }
@@ -92,7 +102,8 @@ export default async function SeriesPageView({
 
   const page = await loadSeriesPage(serverDb(), { id, userId: user.id });
   if (!page) notFound();
-  const { series, sources, issues, collectedIn } = page;
+  const { series, sources, issues, collectedIn, heldIn } = page;
+  const holding = seriesHolding(issues);
   const header = [
     years(series),
     series.publisher,
@@ -167,6 +178,7 @@ export default async function SeriesPageView({
           </h2>
           <span className="text-[13px] text-dim">
             {issues.length} in the catalog, in cover-date order
+            {holding && ` ${holding}`}
           </span>
           <AddRun
             series={{ name: series.name, volume: series.volume }}
@@ -176,14 +188,21 @@ export default async function SeriesPageView({
         {issues.length === 0 ? (
           <p className="text-sm text-muted-foreground">None in the catalog.</p>
         ) : (
-          <ul
-            aria-label="Issues"
-            className="grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-6"
-          >
-            {issues.map((issue) => (
-              <Tile key={issue.id} issue={issue} />
-            ))}
-          </ul>
+          <>
+            <ul
+              aria-label="Issues"
+              className="grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-6"
+            >
+              {issues.map((issue) => (
+                <Tile key={issue.id} issue={issue} />
+              ))}
+            </ul>
+            <p className="text-sm text-dim">
+              A tick makes a floppy of that issue yours; untick to let it go. An
+              issue a collection you hold already covers says so, and can still
+              be ticked when you hold the floppy too.
+            </p>
+          </>
         )}
       </section>
 
@@ -191,7 +210,8 @@ export default async function SeriesPageView({
         rows={collectedIn}
         line={{ own: { seriesId: series.id } }}
         empty="Nothing collected yet."
-        note="An edition whose contents hold an issue of this run. Which ones you own comes with the collection chapter."
+        note="An edition whose contents hold an issue of this run. One you hold covers its issues above."
+        held={heldIn}
       />
     </main>
   );
