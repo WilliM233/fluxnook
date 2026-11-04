@@ -30,6 +30,25 @@ export function copyLine({
     .join(" · ");
 }
 
+const KEEPS = "The printing stays in the catalog.";
+const QUOTED = 80;
+
+/**
+ * What Remove says, the note's first line quoted when there is one (A6), cut at
+ * 80 characters so a long note doesn't become a long confirm (1.7.1 N3). Counted
+ * by code point, so the cut never splits an emoji.
+ */
+export function removeSentence(note: string): string {
+  const first = note.split(/\r?\n/)[0].trim();
+  if (!first) return KEEPS;
+  const characters = Array.from(first);
+  const quoted =
+    characters.length > QUOTED
+      ? `${characters.slice(0, QUOTED).join("").trimEnd()}…`
+      : first;
+  return `"${quoted}" goes with it. ${KEEPS}`;
+}
+
 /** The Editions heading's dim line; none at no printing, "None in the catalog yet." says it. */
 export function editionsHeading(
   printings: number,

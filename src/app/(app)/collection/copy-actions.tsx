@@ -5,15 +5,8 @@ import { useState } from "react";
 import { ConfirmSheet } from "@/app/(app)/shelves/confirm-sheet";
 import { TEXT_BUTTON } from "@/components/ui/text-button";
 import { goneIsDone, json } from "@/lib/api/request";
+import { removeSentence } from "@/lib/collection/lines";
 import { OwnCopySheet, type OwnItem, type SheetCopy } from "./own-copy-sheet";
-
-const KEEPS = "The printing stays in the catalog.";
-
-/** What Remove says, the note's first line quoted when there is one (A6). */
-function removeSentence(note: string): string {
-  const first = note.split(/\r?\n/)[0].trim();
-  return first ? `"${first}" goes with it. ${KEEPS}` : KEEPS;
-}
 
 /** **Edit** and **Remove** on a copy's line (A6): dim words, a sheet, one confirm. */
 export function CopyActions({

@@ -3,6 +3,7 @@ import {
   copyLine,
   editionsHeading,
   ownedViaText,
+  removeSentence,
   yoursViaText,
 } from "@/lib/collection/lines";
 
@@ -32,6 +33,42 @@ describe("copyLine", () => {
       "since 12 March 2019",
     );
     expect(copyLine({ condition: null, acquiredOn: null })).toBe("");
+  });
+});
+
+describe("removeSentence", () => {
+  const KEEPS = "The printing stays in the catalog.";
+  const said = (quoted: string) => `"${quoted}" goes with it. ${KEEPS}`;
+
+  it("quotes the note's first line, or says only what stays", () => {
+    expect(removeSentence("Sealed.\nNever opened.")).toBe(said("Sealed."));
+    expect(removeSentence("Sealed.\r\nNever opened.")).toBe(said("Sealed."));
+    expect(removeSentence("")).toBe(KEEPS);
+  });
+
+  it("leaves 80 characters whole", () => {
+    expect(removeSentence("x".repeat(80))).toBe(said("x".repeat(80)));
+  });
+
+  it("cuts a longer first line at 80, with an ellipsis", () => {
+    expect(removeSentence("x".repeat(81))).toBe(said(`${"x".repeat(80)}…`));
+    expect(removeSentence("x".repeat(2_000))).toBe(said(`${"x".repeat(80)}…`));
+  });
+
+  it("measures the first line alone", () => {
+    expect(removeSentence(`Short.\n${"x".repeat(100)}`)).toBe(said("Short."));
+  });
+
+  it("leaves no space before the ellipsis", () => {
+    expect(removeSentence(`${"x".repeat(79)} ${"y".repeat(20)}`)).toBe(
+      said(`${"x".repeat(79)}…`),
+    );
+  });
+
+  it("never splits an emoji at the cut", () => {
+    expect(removeSentence(`${"x".repeat(79)}${"📕".repeat(2)}`)).toBe(
+      said(`${"x".repeat(79)}📕…`),
+    );
   });
 });
 
