@@ -145,6 +145,43 @@ test("a skipped work's title is struck through", async ({
   ).toContain("line-through");
 });
 
+test("the shelf row's via: TMNT #1 and the hop's backup read via Ultimate Collection 1, #33 reads nothing", async ({
+  signedIn: { page, email },
+}) => {
+  loadFixturesFor(email);
+  await page.goto(`/shelves/${shelfId(email, "TMNT, the Mirage run")}`);
+  const row = (key: string) =>
+    page.getByTestId("entry").filter({
+      has: page.locator(`a[href="/items/${itemFor("manual", key)}"]`),
+    });
+  await expect(row("tmnt-mirage-v1-1").getByTestId("shelf-mark")).toHaveText(
+    "via Ultimate Collection 1",
+  );
+  await expect(
+    row("tmnt-mirage-backup-you-had-to-be-there").getByTestId("shelf-mark"),
+  ).toHaveText("via Ultimate Collection 1");
+  await expect(row("tmnt-mirage-v1-33").getByTestId("shelf-mark")).toHaveCount(
+    0,
+  );
+  await expect(page.getByTestId("shelf-mark")).toHaveCount(38);
+});
+
+test("a held work on a probe shelf reads owned, and nothing before it was", async ({
+  signedIn: { page },
+}) => {
+  const tag = crypto.randomUUID().slice(0, 8);
+  const work = await film(page, `Held ${tag}`, 2003);
+  const { id } = await post(page, "/api/v1/shelves", { name: `Holds ${tag}` });
+  await post(page, `/api/v1/shelves/${id}/entries`, { items: [work] });
+  await page.goto(`/shelves/${id}`);
+  await expect(page.getByTestId("entry")).toHaveCount(1);
+  await expect(page.getByTestId("shelf-mark")).toHaveCount(0);
+
+  await post(page, "/api/v1/copies", { item: work, format: "dvd" });
+  await page.reload();
+  await expect(page.getByTestId("shelf-mark")).toHaveText("owned");
+});
+
 test("an empty shelf reads 0 works and Nothing on it yet", async ({
   signedIn: { page },
 }) => {

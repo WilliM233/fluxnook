@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import type { Db } from "@/db/client";
 import type { entryStatuses } from "@/db/vocabulary";
 import type { WorkFacts } from "@/lib/catalog/work-line";
+import { firstViaTitle, heldBy } from "@/lib/collection/owned";
 import { meanStars } from "@/lib/journal/stars";
 import type { ItemType } from "@/lib/journal/words";
 import type { Rated } from "./lines";
@@ -32,6 +33,10 @@ export type ShelfRow = {
   stars: number | null;
   reads: number;
   open: OpenRead | null;
+  /** The shelf owner holds a copy of this work (Ch 1.7 A5, A12). */
+  held: boolean;
+  /** The work of the first copy that holds this one through contents or a host (A12). */
+  via: string | null;
 };
 
 type Counts = { works: number; done: number; skipped: number };
@@ -117,7 +122,9 @@ export async function loadShelfPage(
             from occurrences o
             where o.owner = s.owner and o.item = i.id
               and o.status = 'in_progress'
-            limit 1)
+            limit 1),
+          'held', ${heldBy(sql`i.id`, userId)},
+          'via', ${firstViaTitle(sql`i.id`, userId)}
         ) order by e.position), '[]')
         from shelf_entries e
         join items i on i.id = e.item

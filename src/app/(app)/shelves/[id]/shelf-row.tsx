@@ -3,6 +3,7 @@ import type { CSSProperties, ReactNode, Ref } from "react";
 import { StripThumb } from "@/app/(app)/nook/shelf-card";
 import { TypePill } from "@/app/(app)/search/rows";
 import { workLine } from "@/lib/catalog/work-line";
+import { shelfMark } from "@/lib/collection/lines";
 import { starText } from "@/lib/journal/stars";
 import { words } from "@/lib/journal/words";
 import type { ShelfRow as Row } from "@/lib/shelves/shelf-page";
@@ -10,9 +11,9 @@ import type { ShelfRow as Row } from "@/lib/shelves/shelf-page";
 /**
  * One work on a shelf, as designed (A7): its shelf-wide number, the grip,
  * the cover, the title to the work's page, the type and its line (then the
- * work's stars and "read twice", 1.6 A9), and at
- * the right the status control with Remove under it. Markup only: the
- * shelf view fills the grip and the aside.
+ * work's stars and "read twice", 1.6 A9, and "owned" or "via <title>", 1.7
+ * A12), and at the right the status control with Remove under it. Markup
+ * only: the shelf view fills the grip and the aside.
  */
 export function ShelfRow({
   row,
@@ -34,6 +35,7 @@ export function ShelfRow({
   const skipped = row.status === "skipped";
   const line = workLine(row.item);
   const times = words(row.item.type).times(row.reads);
+  const mark = shelfMark(row.held, row.via);
   return (
     <li
       ref={ref}
@@ -66,6 +68,11 @@ export function ShelfRow({
             </span>
           )}
           {times && <span className="text-[13px] text-dim">{times}</span>}
+          {mark && (
+            <span data-testid="shelf-mark" className="text-[13px] text-dim">
+              {mark}
+            </span>
+          )}
         </div>
       </div>
       {aside && (
