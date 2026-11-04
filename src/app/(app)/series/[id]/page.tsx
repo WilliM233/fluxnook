@@ -8,6 +8,7 @@ import { releasedLabel } from "@/lib/catalog/released";
 import { loadSeriesPage, type SeriesPage } from "@/lib/catalog/series-page";
 import { coverPublicUrl } from "@/lib/covers";
 import { readEnv } from "@/lib/env";
+import { createClient } from "@/lib/supabase/server";
 import { AddRun } from "./add-run";
 
 const sourceLabel: Record<string, string> = { comicvine: "Comic Vine" };
@@ -82,9 +83,14 @@ export default async function SeriesPageView({
   const { id } = await params;
   if (!z.uuid().safeParse(id).success) notFound();
 
-  // The (app) layout has already sent anyone signed out to /; a series is
-  // catalog, the same for everyone.
-  const page = await loadSeriesPage(serverDb(), { id });
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  // The (app) layout has already sent anyone signed out to /.
+  if (!user) notFound();
+
+  const page = await loadSeriesPage(serverDb(), { id, userId: user.id });
   if (!page) notFound();
   const { series, sources, issues, collectedIn } = page;
   const header = [

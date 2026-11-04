@@ -13,6 +13,7 @@ import {
 } from "@/lib/catalog/match";
 import { importSeriesFromComicVine } from "@/lib/catalog/series";
 import { loadSeriesPage } from "@/lib/catalog/series-page";
+import { seriesHolding } from "@/lib/collection/lines";
 import { coverStoreFromEnv } from "@/lib/covers";
 import {
   type ComicVine,
@@ -417,7 +418,7 @@ describe("the import on the fixtures", { timeout: 30_000 }, () => {
   });
 
   it("lists UC1 to UC5 under the 1984 run's Collected in, undated, UC3 with its gaps (1.4.3 C19)", async () => {
-    const page = await loadSeriesPage(db, { id: mirage });
+    const page = await loadSeriesPage(db, { id: mirage, userId: user.id });
     const rows = page?.collectedIn ?? [];
     expect(rows.map((r) => [r.title, r.released_on])).toEqual([
       ["Ultimate Collection 1", null],
@@ -428,6 +429,27 @@ describe("the import on the fixtures", { timeout: 30_000 }, () => {
     ]);
     expect(contentsLine(rows[2].contents, { own: { seriesId: mirage } })).toBe(
       "#12, #14 to #15, #17, #19 to #21",
+    );
+  });
+
+  it("on the attached 1984 run: you hold 33, 33 via a collection, #1 via Ultimate Collection 1, #33 neither, the five held (1.7 A8)", async () => {
+    const page = await loadSeriesPage(db, { id: mirage, userId: user.id });
+    const issues = page?.issues ?? [];
+    expect(issues).toHaveLength(62);
+    expect(seriesHolding(issues)).toBe(
+      "· you hold 33, 33 of them via a collection",
+    );
+    const number = (n: number) => issues.find((issue) => issue.number === n);
+    expect(number(1)).toMatchObject({
+      held: false,
+      via: "Ultimate Collection 1",
+      floppies: 0,
+      form: "issue",
+    });
+    expect(number(33)).toMatchObject({ held: false, via: null, floppies: 0 });
+    expect(page?.heldIn).toHaveLength(5);
+    expect([...(page?.heldIn ?? [])].sort()).toEqual(
+      (page?.collectedIn ?? []).map((row) => row.editionId).sort(),
     );
   });
 
