@@ -20,6 +20,8 @@ export type IsbnLookup = {
   editionCatalog:
     | { status: "in"; editionId: string; itemId: string }
     | { status: "new" };
+  /** The caller holds this printing (Ch 1.7 A9); the page asks A4, not the route. */
+  held: boolean;
 };
 
 const formats: { value: EditionFormat; label: string }[] = [
@@ -207,6 +209,9 @@ export function IsbnCard({
             <span className="text-primary">
               This edition is in your catalog
             </span>
+            {found.held && (
+              <span className="text-primary">In your collection</span>
+            )}
             <Link
               href={`/items/${editionCatalog.itemId}`}
               className="inline-flex min-h-11 items-center rounded-[10px] border border-line-strong px-4.5 text-sm font-medium text-foreground hover:bg-muted"

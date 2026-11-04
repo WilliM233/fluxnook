@@ -109,10 +109,29 @@ async function lookUp(isbn: string, signal: AbortSignal): Promise<Lookup> {
       return { kind: "unavailable", message: body.error.message };
     }
     if (!response.ok) return { kind: "error" };
-    return { kind: "found", found: body };
+    const held =
+      body.editionCatalog.status === "in" &&
+      (await holdsEdition(body.editionCatalog, signal));
+    return { kind: "found", found: { ...body, held } };
   } catch {
     return { kind: "error" };
   }
+}
+
+/**
+ * Whether the caller holds this printing (A4, A9), asked before the card shows
+ * so its first paint is right. A failed read is no: the card still opens the page.
+ */
+async function holdsEdition(
+  { itemId, editionId }: { itemId: string; editionId: string },
+  signal: AbortSignal,
+) {
+  const response = await fetch(`/api/v1/copies?item=${itemId}`, { signal });
+  if (!response.ok) return false;
+  const { held } = (await response.json()) as {
+    held: { editionId: string }[];
+  };
+  return held.some((copy) => copy.editionId === editionId);
 }
 
 export function Search({

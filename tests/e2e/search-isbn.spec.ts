@@ -10,8 +10,11 @@ test.describe.configure({ mode: "serial" });
 const IT = "works/OL81613W";
 
 function removeIt() {
-  db(`delete from items where id in (
-        select item from item_sources where source = 'openlibrary' and key = '${IT}')`);
+  const it = `select item from item_sources where source = 'openlibrary' and key = '${IT}'`;
+  // A copy restricts its printing, and a work's editions cascade (Ch 1.7).
+  db(`delete from copies where edition in (
+        select id from editions where item in (${it}))`);
+  db(`delete from items where id in (${it})`);
 }
 
 test.beforeEach(() => removeIt());
@@ -22,10 +25,84 @@ function apiCalls(page: Page) {
   const calls: string[] = [];
   page.on("request", (request) => {
     const url = new URL(request.url());
-    if (url.pathname.startsWith("/api/v1/providers/")) calls.push(url.pathname);
+    if (
+      url.pathname.startsWith("/api/v1/providers/") ||
+      url.pathname === "/api/v1/copies"
+    ) {
+      calls.push(url.pathname);
+    }
   });
   return calls;
 }
+
+const CARD = { name: "That edition" };
+const IT_ISBN = "978-1-5011-4297-0";
+
+/** It in the catalog, through the route, and its printing's id. */
+async function importIt(page: Page) {
+  const looked = await page.request.get(
+    "/api/v1/providers/openlibrary/isbn/9781501142970",
+  );
+  const { edition } = await looked.json();
+  const response = await page.request.post("/api/v1/editions/import", {
+    data: { source: "openlibrary", key: edition.key, format: "paperback" },
+  });
+  expect(response.status()).toBe(201);
+  return (await response.json()) as { id: string; itemId: string };
+}
+
+test("an edition in the catalog nobody here holds: the line, Open, no In your collection, no box", async ({
+  signedIn: { page },
+}) => {
+  await importIt(page);
+  await page.goto(`/search?q=${IT_ISBN}`);
+  const card = page.getByRole("article", CARD);
+  await expect(card.getByText("This edition is in your catalog")).toBeVisible();
+  await expect(card.getByRole("link", { name: "Open" })).toBeVisible();
+  await expect(card.getByText("In your collection")).toHaveCount(0);
+});
+
+test("an edition the caller holds: the line beside In your collection on load", async ({
+  signedIn: { page },
+}) => {
+  const { id } = await importIt(page);
+  const owned = await page.request.post("/api/v1/copies", {
+    data: { edition: id },
+  });
+  expect(owned.status()).toBe(201);
+  await page.goto(`/search?q=${IT_ISBN}`);
+  const card = page.getByRole("article", CARD);
+  await expect(card.getByText("This edition is in your catalog")).toBeVisible();
+  await expect(card.getByText("In your collection")).toBeVisible();
+});
+
+test("a new edition's lookup makes no copies call", async ({
+  signedIn: { page },
+}) => {
+  const calls = apiCalls(page);
+  await page.goto(`/search?q=${IT_ISBN}`);
+  await expect(
+    page.getByRole("article", CARD).getByRole("button", {
+      name: "Add this edition",
+    }),
+  ).toBeVisible();
+  expect(calls.filter((c) => c === "/api/v1/copies")).toEqual([]);
+});
+
+test("the read answered 500: the card still reads the line and Open", async ({
+  signedIn: { page },
+}) => {
+  await importIt(page);
+  await page.route(
+    (url) => url.pathname === "/api/v1/copies",
+    (route) => route.fulfill({ status: 500, json: { error: {} } }),
+  );
+  await page.goto(`/search?q=${IT_ISBN}`);
+  const card = page.getByRole("article", CARD);
+  await expect(card.getByText("This edition is in your catalog")).toBeVisible();
+  await expect(card.getByRole("link", { name: "Open" })).toBeVisible();
+  await expect(card.getByText("In your collection")).toHaveCount(0);
+});
 
 test("It by ISBN: a new work, Paperback by default, one edition on its page", async ({
   signedIn: { page },
