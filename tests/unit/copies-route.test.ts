@@ -243,4 +243,13 @@ describe("GET", () => {
       { itemId: item.toLowerCase(), userId: user.id },
     );
   });
+
+  // Rummage R5 (1.7.1): `?item=a&item=b` is refused, as the shelves' GET
+  // refuses a key given twice (1.5.1 R6), not answered about the last.
+  it("is 400 when item is given twice, and asks nothing", async () => {
+    loadOwnership.mockResolvedValue({ held: [], via: [], host: null });
+    const answer = await get(`?item=${item}&item=${edition}`);
+    expect(answer.status).toBe(400);
+    expect(loadOwnership).not.toHaveBeenCalled();
+  });
 });

@@ -21,6 +21,10 @@ const loadedEditions = `select edition from edition_sources where source = 'manu
 
 /** One statement each, in order; plain SQL for postgres.js and psql alike. */
 export const RESET_COMICVINE = [
+  // A copy restricts its printing, so one person's copy of an issue this deletes
+  // would stop the whole reset (1.7.1 Rummage R3).
+  `delete from copies where edition in (
+    select id from editions where item in (${attached}) and item not in (${loaded}))`,
   `delete from items where id in (${attached})
     and id not in (${loaded})`,
   `update editions set released_on = null, released_precision = null, publisher = null

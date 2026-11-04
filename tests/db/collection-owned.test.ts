@@ -201,6 +201,19 @@ describe("A5 on its own rows", () => {
     }
   });
 
+  // Rummage R6 (1.7.1): the fragments are for five pages' queries, and
+  // `shelf-page.ts` and `nook-page.ts` alias `shelf_entries e`. A caller
+  // passing `e.item` must get an answer about the caller's copies, not the
+  // fragment's own `editions e` answering about itself.
+  it("heldBy over a query that aliases e answers about the row, not itself", async () => {
+    const item = await work("book", `${tag} alias`, "novel");
+    const edition = await printing(item, "paperback");
+    const [{ held }] = await db.execute<{ held: boolean }>(q`
+      select ${heldBy(q`e.item`, userId)} as held
+      from editions e where e.id = ${edition}`);
+    expect(held).toBe(false);
+  });
+
   it("a read writes nothing", async () => {
     const count = async () => {
       const [row] = await sql`

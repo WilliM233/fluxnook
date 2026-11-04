@@ -455,6 +455,92 @@ test.describe("Edit and Remove", () => {
   });
 });
 
+// The Raccoon's Rummage (1.7.1, section 4b). Each seen red before green.
+test.describe("rummage", () => {
+  test("R1 a backup in a held trade's contents: the API says via, so the section says Yours via the trade", async ({
+    signedIn: { page, email },
+  }) => {
+    // The picker lists backups (`loadPickerComics` filters on type alone), so
+    // a person can put one in a trade's contents and then hold the trade.
+    const trade = probe("comic", "collected");
+    const backup = probe("comic", "backup");
+    const edition = printing(trade.id, "tpb");
+    db(`insert into edition_contents (edition, item, position)
+      values ('${edition}', '${backup.id}', 1)`);
+    const owner = db(`select id from auth.users where email = '${email}'`);
+    db(`insert into copies (owner, edition) values ('${owner}', '${edition}')`);
+
+    const asked = await page.request.get(`/api/v1/copies?item=${backup.id}`);
+    expect((await asked.json()).via).toHaveLength(1);
+
+    await page.goto(`/items/${backup.id}`);
+    const section = editions(page);
+    await expect(
+      section.getByText(
+        "A backup story is owned through the comic it's printed in.",
+      ),
+    ).toBeVisible();
+    await expect(
+      section.getByText(`Yours via ${trade.title} (Trade paperback)`),
+    ).toBeVisible();
+  });
+
+  test("R2 two tabs edit one copy: a note saved here keeps the condition saved there", async ({
+    signedIn: { page },
+  }) => {
+    const work = probe();
+    const edition = printing(work.id, "paperback");
+    const made = await page.request.post("/api/v1/copies", {
+      data: { edition },
+    });
+    expect(made.status()).toBe(201);
+    const { id: copy } = await made.json();
+
+    await page.goto(`/items/${work.id}`);
+    const section = editions(page);
+    await opens(page, section, "Edit this copy");
+    // The other tab saves a condition while this sheet is open.
+    expect(
+      (
+        await page.request.patch(`/api/v1/copies/${copy}`, {
+          data: { condition: "fair" },
+        })
+      ).status(),
+    ).toBe(200);
+    await sheet(page).getByLabel("Note").fill("Mine.");
+    await sheet(page).getByRole("button", { name: "Save" }).click();
+    await expect(sheet(page)).toHaveCount(0);
+    const line = section.getByTestId("copy");
+    await expect(line).toContainText("Mine.");
+    await expect(line).toContainText("Fair");
+    expect(db(`select condition from copies where id = '${copy}'`)).toBe(
+      "fair",
+    );
+  });
+
+  test("R4 Cancel after the 409 shows the printings the line named", async ({
+    signedIn: { page },
+  }) => {
+    const work = probe();
+    await page.goto(`/items/${work.id}`);
+    await opens(page, editions(page), "Own a copy");
+    await sheet(page).getByLabel("Format").selectOption({ label: "Hardcover" });
+    printing(work.id, "hardcover");
+    printing(work.id, "hardcover");
+    await sheet(page).getByRole("button", { name: "Add it" }).click();
+    await expect(sheet(page).getByRole("alert")).toHaveText(
+      "This work has 2 hardcover printings in the catalog. Pick one on its page.",
+    );
+    await sheet(page).getByRole("button", { name: "Cancel" }).click();
+    await expect(sheet(page)).toHaveCount(0);
+    // "Pick one on its page": the page has to show them.
+    await expect(editions(page).getByRole("listitem")).toHaveCount(2);
+    await expect(
+      editions(page).getByText("2 in the catalog · none yours"),
+    ).toBeVisible();
+  });
+});
+
 test.describe("on the fixtures", () => {
   const tmnt = () => itemFor("manual", "tmnt-mirage-v1-1");
 

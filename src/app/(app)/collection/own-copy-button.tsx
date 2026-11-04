@@ -17,6 +17,13 @@ export function OwnCopyButton({
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
+  // On Cancel too: a 409 says to pick a printing on the page, so the page
+  // reads again to show the ones it named.
+  function done() {
+    setOpen(false);
+    router.refresh();
+  }
+
   return (
     <>
       <Button size="lg" className="ml-auto" onClick={() => setOpen(true)}>
@@ -26,11 +33,8 @@ export function OwnCopyButton({
         <OwnCopySheet
           item={item}
           printings={printings}
-          onClose={() => setOpen(false)}
-          onSaved={() => {
-            setOpen(false);
-            router.refresh();
-          }}
+          onClose={done}
+          onSaved={done}
         />
       )}
     </>

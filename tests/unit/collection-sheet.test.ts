@@ -132,11 +132,27 @@ describe("the bodies", () => {
     });
   });
 
+  const opened = {
+    condition: "good",
+    acquiredOn: "2019-03-12",
+    note: "Sealed.",
+  };
+
   it("a change sends blanks as null and an empty note as empty", () => {
-    expect(copyChange(fields)).toEqual({
+    expect(copyChange(opened, fields)).toEqual({
       condition: null,
       acquiredOn: null,
       note: "",
     });
+  });
+
+  it("a change leaves out what didn't change", () => {
+    expect(copyChange(opened, { ...opened, condition: "fair" })).toEqual({
+      condition: "fair",
+    });
+    expect(copyChange(fields, { ...fields, note: "Mine." })).toEqual({
+      note: "Mine.",
+    });
+    expect(copyChange(opened, opened)).toEqual({});
   });
 });

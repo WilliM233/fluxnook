@@ -1,6 +1,6 @@
 import postgres from "postgres";
 import { afterAll, describe, expect, it } from "vitest";
-import { required, resetComicVine } from "./harness";
+import { required, resetComicVine, signUp } from "./harness";
 
 // A15 (a): the reset undoes what the three Browse volumes attached and nothing
 // else. Its two updates once ran over every loaded comic and printing, and a
@@ -11,8 +11,12 @@ import { required, resetComicVine } from "./harness";
 const sql = postgres(required("DATABASE_URL"), { max: 1, onnotice: () => {} });
 const tag = `reset-comicvine ${crypto.randomUUID()}`;
 
+let holder: string | null = null;
+
 afterAll(async () => {
+  if (holder) await sql`delete from auth.users where id = ${holder}`;
   await sql`delete from items where title = ${tag}`;
+  await sql`delete from series where name = ${tag}`;
   await sql.end();
 });
 
@@ -40,5 +44,39 @@ describe("the Comic Vine reset's scope", () => {
     expect(after.summary).toBe("probe");
     expect(after.publisher).toBe("probe");
     // The reset waits its turn behind the loader's lock with the other files.
+  }, 60_000);
+
+  // Rummage R3 (1.7.1): the reset deletes the issues a Browse volume imported
+  // that the fixture lacks. An edition restricts while a copy exists, so one
+  // person's copy of such an issue (1.7.2's tick on a live import, the
+  // Browse's "455 + N") stops the whole reset. The copy goes with the issue.
+  it("takes a person's copy of an issue it deletes with it", async () => {
+    // Tales of the TMNT: a Browse volume no db file attaches.
+    const [series] = await sql`
+      insert into series (name) values (${tag}) returning id`;
+    await sql`insert into series_sources (series, source, key)
+      values (${series.id}, 'comicvine', 'volume/18785')`;
+    const [issue] = await sql`
+      insert into items (type, title, form, source_note)
+      values ('comic', ${tag}, 'issue', ${tag}) returning id`;
+    await sql`insert into item_comics (item, series_id)
+      values (${issue.id}, ${series.id})`;
+    await sql`insert into item_sources (item, source, key)
+      values (${issue.id}, 'comicvine', ${`issue/${tag}`})`;
+    const [edition] = await sql`
+      insert into editions (item, format) values (${issue.id}, 'floppy')
+      returning id`;
+    ({ id: holder } = await signUp(sql));
+    await sql`insert into copies (owner, edition)
+      values (${holder}, ${edition.id})`;
+
+    await resetComicVine(sql);
+
+    expect(await sql`select 1 from items where id = ${issue.id}`).toHaveLength(
+      0,
+    );
+    expect(
+      await sql`select 1 from copies where edition = ${edition.id}`,
+    ).toHaveLength(0);
   }, 60_000);
 });

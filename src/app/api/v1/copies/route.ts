@@ -12,6 +12,8 @@ import {
 } from "./respond";
 import { copiesQuerySchema, createCopySchema } from "./schema";
 
+const NOT_A_WORK = "That isn't a work.";
+
 /**
  * What the caller holds of a work (A4): its printings' copies, and the copies
  * whose printing's contents hold it. A stranger's are never there; an id no
@@ -21,14 +23,18 @@ export async function GET(request: Request) {
   const userId = await callerId();
   if (!userId) return signInFirst();
 
-  const parsed = copiesQuerySchema.safeParse(
-    Object.fromEntries(new URL(request.url).searchParams),
-  );
+  const params = new URL(request.url).searchParams;
+  if (params.getAll("item").length > 1) {
+    return apiError(400, "invalid_request", NOT_A_WORK, {
+      item: "Ask it once.",
+    });
+  }
+  const parsed = copiesQuerySchema.safeParse(Object.fromEntries(params));
   if (!parsed.success) {
     return apiError(
       400,
       "invalid_request",
-      "That isn't a work.",
+      NOT_A_WORK,
       fieldErrors(parsed.error),
     );
   }

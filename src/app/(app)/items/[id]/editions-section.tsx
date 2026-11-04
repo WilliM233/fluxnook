@@ -36,9 +36,9 @@ function BackupNote({ ownership }: { ownership: Ownership }) {
   return (
     <>
       <p className="text-sm text-muted-foreground">{BACKUP_ONLY}</p>
-      {via && ownership.host && (
+      {via && (
         <p className="text-sm text-dim">
-          {yoursViaText(ownership.host.title, via.format)}
+          {yoursViaText(ownership.host?.title ?? via.title, via.format)}
         </p>
       )}
     </>

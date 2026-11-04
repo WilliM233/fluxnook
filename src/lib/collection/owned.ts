@@ -7,17 +7,20 @@ import type { Db } from "@/db/client";
  * the caller has a copy of an edition whose contents hold it. A backup is via
  * when its contained-in host is held or via, one hop, since the host's pages
  * hold it. Narrative and physical containment coincide nowhere else.
+ *
+ * The fragments alias their tables `own_*`: a caller's `e.item` must mean the
+ * caller's row, and pages alias `shelf_entries e` (1.7.1 Rummage R6).
  */
 
 /** Contents only, no hop: the rule a host is judged by. */
 const inContents = (item: SQL, userId: string) => sql`exists (
-  select 1 from copies c join edition_contents x on x.edition = c.edition
-  where c.owner = ${userId} and x.item = ${item})`;
+  select 1 from copies own_c join edition_contents own_x on own_x.edition = own_c.edition
+  where own_c.owner = ${userId} and own_x.item = ${item})`;
 
 /** Whether the caller holds a copy of one of the work's editions. */
 export const heldBy = (item: SQL, userId: string) => sql`exists (
-  select 1 from copies c join editions e on e.id = c.edition
-  where c.owner = ${userId} and e.item = ${item})`;
+  select 1 from copies own_c join editions own_e on own_e.id = own_c.edition
+  where own_c.owner = ${userId} and own_e.item = ${item})`;
 
 /** Whether the caller's copies hold the work through contents, or a backup through its host. */
 export const viaBy = (
@@ -25,9 +28,9 @@ export const viaBy = (
   userId: string,
 ) => sql`(${inContents(item, userId)}
   or exists (
-    select 1 from item_relations r join items b on b.id = r.from_item
-    where r.from_item = ${item} and r.kind = 'contained-in' and b.form = 'backup'
-      and (${heldBy(sql`r.to_item`, userId)} or ${inContents(sql`r.to_item`, userId)})))`;
+    select 1 from item_relations own_r join items own_b on own_b.id = own_r.from_item
+    where own_r.from_item = ${item} and own_r.kind = 'contained-in' and own_b.form = 'backup'
+      and (${heldBy(sql`own_r.to_item`, userId)} or ${inContents(sql`own_r.to_item`, userId)})))`;
 
 /** A copy of one of the work's own printings (A4). */
 export type HeldCopy = {

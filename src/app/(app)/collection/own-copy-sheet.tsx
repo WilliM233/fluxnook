@@ -76,11 +76,12 @@ export function OwnCopySheet({
   const [choice, setChoice] = useState(
     () => printed[0]?.value ?? lacking[0]?.value ?? "",
   );
-  const [fields, setFields] = useState<CopyFields>(() => ({
+  const [opened] = useState<CopyFields>(() => ({
     condition: copy?.condition ?? "",
     acquiredOn: copy?.acquiredOn ?? "",
     note: copy?.note ?? "",
   }));
+  const [fields, setFields] = useState(opened);
   const [refused, setRefused] = useState<Refusal>(NONE);
   const [busy, setBusy] = useState(false);
   const errors = refused.fields;
@@ -88,12 +89,18 @@ export function OwnCopySheet({
 
   async function save(event: React.FormEvent) {
     event.preventDefault();
+    const change = copyChange(opened, fields);
+    // A Save that changed nothing is done; the route would say "Nothing to change."
+    if (copy && Object.keys(change).length === 0) {
+      onSaved();
+      return;
+    }
     setBusy(true);
     setRefused(NONE);
     const failed = `Couldn't ${copy ? "save" : "add"} that copy just now. Try again.`;
     try {
       const response = await (copy
-        ? fetch(`/api/v1/copies/${copy.id}`, json("PATCH", copyChange(fields)))
+        ? fetch(`/api/v1/copies/${copy.id}`, json("PATCH", change))
         : fetch(
             "/api/v1/copies",
             json("POST", copyPost(item.id, choice, fields)),

@@ -76,7 +76,17 @@ export function copyPost(item: string, choice: string, fields: CopyFields) {
     : { item, format: value as Format, ...asBody(fields) };
 }
 
-/** `PATCH /api/v1/copies/<id>`'s body: a blank field clears. */
-export function copyChange(fields: CopyFields) {
-  return asBody(fields);
+/**
+ * `PATCH /api/v1/copies/<id>`'s body: what changed from the copy the sheet
+ * opened with, a blank field clearing. A field left alone isn't sent, so a Save
+ * can't undo what another tab saved while the sheet was open (1.7.1 Rummage R2).
+ */
+export function copyChange(opened: CopyFields, fields: CopyFields) {
+  const now = asBody(fields);
+  const was = asBody(opened);
+  return {
+    ...(now.condition !== was.condition && { condition: now.condition }),
+    ...(now.acquiredOn !== was.acquiredOn && { acquiredOn: now.acquiredOn }),
+    ...(now.note !== was.note && { note: now.note }),
+  };
 }
