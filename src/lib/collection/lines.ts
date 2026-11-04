@@ -16,6 +16,45 @@ export function yoursViaText(host: string, format: string): string {
   return `Yours via ${host} (${formatLabel(format)})`;
 }
 
+/** A tile's box (A8): "Owned", "Owned · Floppy", "Owned · 2 floppies". */
+export function tickLabel(floppies: number): string {
+  if (floppies === 0) return "Owned";
+  return floppies === 1 ? "Owned · Floppy" : `Owned · ${floppies} floppies`;
+}
+
+/** Under a tile's box: "also" reads off the tick above it (A8). */
+export function tileVia(title: string, ticked: boolean): string {
+  return `${ticked ? "also via" : "via"} ${title}`;
+}
+
+/**
+ * The series heading's holding (A8): h counts the issues held or via, once
+ * each, and v the via ones; nothing at no holding, no clause at no via.
+ */
+export function seriesHolding(
+  issues: { held: boolean; via: string | null }[],
+): string | null {
+  const via = issues.filter((issue) => issue.via !== null).length;
+  const holding = issues.filter(
+    (issue) => issue.held || issue.via !== null,
+  ).length;
+  if (holding === 0) return null;
+  return via === 0
+    ? `· you hold ${holding}`
+    : `· you hold ${holding}, ${via} of them via a collection`;
+}
+
+/** A shelf row's mark (A12): "owned", "via <title>", both, or nothing. */
+export function shelfMark(held: boolean, via: string | null): string | null {
+  const parts = [held && "owned", via && `via ${via}`].filter(Boolean);
+  return parts.length > 0 ? parts.join(" · ") : null;
+}
+
+/** Why an untick asks (A8): what goes with the floppy. */
+export function untickSentence({ note }: { note: string }): string {
+  return note === "" ? "Its condition goes with it." : "Its note goes with it.";
+}
+
 /** A copy's line after "Your copy": "Good · since 12 March 2019"; "" at neither. */
 export function copyLine({
   condition,

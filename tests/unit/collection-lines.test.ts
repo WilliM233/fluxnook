@@ -4,10 +4,77 @@ import {
   editionsHeading,
   ownedViaText,
   removeSentence,
+  seriesHolding,
+  shelfMark,
+  tickLabel,
+  tileVia,
+  untickSentence,
   yoursViaText,
 } from "@/lib/collection/lines";
 
-// A5's and A6's words, as text.
+// A5's, A6's, A8's and A12's words, as text.
+
+describe("tickLabel", () => {
+  it("says what the box holds", () => {
+    expect(tickLabel(0)).toBe("Owned");
+    expect(tickLabel(1)).toBe("Owned · Floppy");
+    expect(tickLabel(2)).toBe("Owned · 2 floppies");
+  });
+});
+
+describe("tileVia", () => {
+  it("reads also off a tick above it", () => {
+    expect(tileVia("Ultimate Collection 1", false)).toBe(
+      "via Ultimate Collection 1",
+    );
+    expect(tileVia("Ultimate Collection 1", true)).toBe(
+      "also via Ultimate Collection 1",
+    );
+  });
+});
+
+describe("seriesHolding", () => {
+  const via = (title: string) => ({ held: false, via: title });
+  const held = { held: true, via: null };
+  const neither = { held: false, via: null };
+
+  it("counts held or via, and the via ones", () => {
+    expect(seriesHolding([via("a"), via("a"), neither])).toBe(
+      "· you hold 2, 2 of them via a collection",
+    );
+    expect(seriesHolding([via("a"), held])).toBe(
+      "· you hold 2, 1 of them via a collection",
+    );
+  });
+
+  it("counts an issue held and via once", () => {
+    expect(seriesHolding([{ held: true, via: "a" }, neither])).toBe(
+      "· you hold 1, 1 of them via a collection",
+    );
+  });
+
+  it("has no via clause at none, and no line at no holding", () => {
+    expect(seriesHolding([held, held, neither])).toBe("· you hold 2");
+    expect(seriesHolding([neither])).toBeNull();
+    expect(seriesHolding([])).toBeNull();
+  });
+});
+
+describe("shelfMark", () => {
+  it("prints what the work is, or nothing", () => {
+    expect(shelfMark(true, null)).toBe("owned");
+    expect(shelfMark(false, "X")).toBe("via X");
+    expect(shelfMark(true, "X")).toBe("owned · via X");
+    expect(shelfMark(false, null)).toBeNull();
+  });
+});
+
+describe("untickSentence", () => {
+  it("names what goes with the floppy, the note first", () => {
+    expect(untickSentence({ note: "Signed." })).toBe("Its note goes with it.");
+    expect(untickSentence({ note: "" })).toBe("Its condition goes with it.");
+  });
+});
 
 describe("the via lines", () => {
   it("name the work and the format", () => {

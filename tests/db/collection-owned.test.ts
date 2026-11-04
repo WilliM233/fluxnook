@@ -3,7 +3,12 @@ import postgres from "postgres";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createDb } from "@/db/client";
 import { loadItemPage } from "@/lib/catalog/item-page";
-import { heldBy, loadOwnership, viaBy } from "@/lib/collection/owned";
+import {
+  firstViaTitle,
+  heldBy,
+  loadOwnership,
+  viaBy,
+} from "@/lib/collection/owned";
 import { itemFor, required, signUp, signUpWithFixtures } from "./harness";
 
 // A5 on the loaded fixtures: five hardcovers held, 37 comics through their
@@ -120,6 +125,40 @@ describe("A5 on the fixture", () => {
   });
 });
 
+describe("firstViaTitle (1.7.2)", () => {
+  it("agrees with viaBy over the whole catalog: 38 titled and no disagreement", async () => {
+    const [counts] = await db.execute<{ titled: number; apart: number }>(q`
+      select
+        count(*) filter (where ${firstViaTitle(q`i.id`, userId)} is not null)::int as titled,
+        count(*) filter (where (${firstViaTitle(q`i.id`, userId)} is not null)
+          <> ${viaBy(q`i.id`, userId)})::int as apart
+      from items i where i.source_note is distinct from ${tag}`);
+    expect(counts).toEqual({ titled: 38, apart: 0 });
+  });
+
+  it("names what loadOwnership names first on TMNT #1 and the hop's backup", async () => {
+    for (const itemId of [tmnt1, story]) {
+      const { via } = await loadOwnership(db, { itemId, userId });
+      const [{ title }] = await db.execute<{ title: string }>(
+        q`select ${firstViaTitle(q`${itemId}::uuid`, userId)} as title`,
+      );
+      expect(title).toBe(via[0].title);
+      expect(title).toBe("Ultimate Collection 1");
+    }
+  });
+
+  it("over a query that aliases e it answers about the row", async () => {
+    const [row] = await db.execute<{ title: string | null }>(q`
+      select ${firstViaTitle(q`e.item`, userId)} as title
+      from shelf_entries e where e.item = ${tmnt1} limit 1`);
+    expect(row.title).toBe("Ultimate Collection 1");
+    const [uncovered] = await db.execute<{ title: string | null }>(q`
+      select ${firstViaTitle(q`e.item`, userId)} as title
+      from editions e where e.item = ${uc1} limit 1`);
+    expect(uncovered.title).toBeNull();
+  });
+});
+
 describe("A5 on its own rows", () => {
   it("a backup whose host is held names the host's copy", async () => {
     const issue = await work("comic", `${tag} host`, "issue");
@@ -177,6 +216,11 @@ describe("A5 on its own rows", () => {
       `${tag} A trade`,
       `${tag} Z trade`,
     ]);
+    // A row and the work's own page name one copy (1.7.2).
+    const [{ title }] = await db.execute<{ title: string }>(
+      q`select ${firstViaTitle(q`${issue}::uuid`, userId)} as title`,
+    );
+    expect(title).toBe(`${tag} A trade`);
   });
 
   it("loadItemPage carries the caller's copies per printing, oldest first, and no one else's", async () => {
