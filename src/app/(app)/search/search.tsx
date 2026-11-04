@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { json } from "@/lib/api/request";
 import type {
   CatalogStatus,
   SeriesGroupOption,
@@ -51,6 +52,7 @@ type Matching =
       result: BookResult;
       editionKey: string;
       format: EditionFormat;
+      own: boolean;
     };
 
 const kinds: { value: Kind; label: string }[] = [
@@ -109,10 +111,53 @@ async function lookUp(isbn: string, signal: AbortSignal): Promise<Lookup> {
       return { kind: "unavailable", message: body.error.message };
     }
     if (!response.ok) return { kind: "error" };
-    return { kind: "found", found: body };
+    // Asked before the card shows, so its first paint is right. A failed read is
+    // no: the card still opens the page.
+    const held =
+      body.editionCatalog.status === "in" &&
+      (await holdsEdition(body.editionCatalog, signal)) === true;
+    return { kind: "found", found: { ...body, held } };
   } catch {
     return { kind: "error" };
   }
+}
+
+/** Whether the caller holds this printing (A4, A9); null when A4 didn't say. */
+async function holdsEdition(
+  { itemId, editionId }: { itemId: string; editionId: string },
+  signal?: AbortSignal,
+) {
+  try {
+    const response = await fetch(`/api/v1/copies?item=${itemId}`, { signal });
+    if (!response.ok) return null;
+    const { held } = (await response.json()) as {
+      held: { editionId: string }[];
+    };
+    return held.some((copy) => copy.editionId === editionId);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The box's copy of a printing the import answered. A printing that was already
+ * in the catalog may be held: a copy that landed and lost its answer, on Add
+ * again, or another tab's. So A4 is asked first, and only a new printing posts
+ * straight off (1.7.2 Rummage S3).
+ */
+async function ownEdition(
+  edition: { itemId: string; editionId: string },
+  isNew: boolean,
+) {
+  if (!isNew) {
+    const held = await holdsEdition(edition);
+    if (held !== false) return held === true;
+  }
+  const response = await fetch(
+    "/api/v1/copies",
+    json("POST", { edition: edition.editionId }),
+  ).catch(() => null);
+  return response?.ok === true;
 }
 
 export function Search({
@@ -127,6 +172,7 @@ export function Search({
   supabaseUrl: string;
 }) {
   const router = useRouter();
+  const addingEdition = useRef(false);
   const params = useSearchParams();
   const [q, setQ] = useState(params.get("q") ?? "");
   const [type, setType] = useState<Kind>(parseKind(params.get("type")));
@@ -252,11 +298,21 @@ export function Search({
     });
   }
 
+  /**
+   * Where both paths meet, the card's Add and the sheet's Same or Different,
+   * so a box ticked before a sheet still owns the copy (A9). Two posts would be
+   * two copies and nothing refuses that, hence the guard (state lands a render
+   * late). A copy refused after the import stays where it was asked, the box
+   * still on: Add again gets the import's 200 and posts the copy.
+   */
   async function addEdition(
     editionKey: string,
     format: EditionFormat,
+    own: boolean,
     attachTo?: string,
   ) {
+    if (addingEdition.current) return;
+    addingEdition.current = true;
     setBusy(editionKey);
     setFailed(null);
     const response = await fetch("/api/v1/editions/import", {
@@ -271,9 +327,28 @@ export function Search({
     }).catch(() => null);
     const body = await response?.json().catch(() => null);
     if (response?.ok && body?.itemId) {
-      router.push(`/items/${body.itemId}`);
+      const owned =
+        !own ||
+        (await ownEdition(
+          { itemId: body.itemId, editionId: body.id },
+          response.status === 201,
+        ));
+      if (owned) {
+        router.push(`/items/${body.itemId}`);
+        // A copy moves what a shelf row reads, and Back would bring the cached
+        // one (1.7.2 Rummage S4).
+        if (own) router.refresh();
+        return;
+      }
+      addingEdition.current = false;
+      setBusy(null);
+      setFailed({
+        key: editionKey,
+        message: "Added, but couldn't add your copy. Try again.",
+      });
       return;
     }
+    addingEdition.current = false;
     setBusy(null);
     setFailed({
       key: editionKey,
@@ -311,17 +386,22 @@ export function Search({
   }
 
   // The work looks like one you have: the sheet asks first, as a row's Add does.
-  function onAddEdition(found: IsbnLookup, format: EditionFormat) {
+  function onAddEdition(
+    found: IsbnLookup,
+    format: EditionFormat,
+    own: boolean,
+  ) {
     if (found.work.catalog.status === "match") {
       setMatching({
         source: "isbn",
         result: found.work,
         editionKey: found.edition.key,
         format,
+        own,
       });
       return;
     }
-    addEdition(found.edition.key, format);
+    addEdition(found.edition.key, format, own);
   }
 
   function filmStatus(result: FilmResult) {
@@ -637,7 +717,7 @@ export function Search({
               error={
                 failed?.key === lookup.found.edition.key ? failed.message : null
               }
-              onAdd={(format) => onAddEdition(lookup.found, format)}
+              onAdd={(format, own) => onAddEdition(lookup.found, format, own)}
             />
           )}
         </section>
@@ -704,7 +784,7 @@ export function Search({
   // ISBN, the edition import with the work's answer as `attachTo`.
   function accept(m: Matching, attachTo?: string) {
     if (m.source === "isbn") {
-      return addEdition(m.editionKey, m.format, attachTo);
+      return addEdition(m.editionKey, m.format, m.own, attachTo);
     }
     return add(m.source, m.result.key, attachTo);
   }

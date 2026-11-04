@@ -10,7 +10,7 @@ import { loadNook } from "@/lib/shelves/nook-page";
 import { createSection } from "@/lib/shelves/sections";
 import { loadShelfPage } from "@/lib/shelves/shelf-page";
 import { createShelf } from "@/lib/shelves/shelves";
-import { itemFor, required, signUpWithFixtures } from "./harness";
+import { itemFor, required, signUp, signUpWithFixtures } from "./harness";
 
 // The two reads the pages make (A6, A7), on one account holding the fixtures.
 
@@ -171,6 +171,94 @@ describe("loadShelfPage", () => {
       done: 0,
       skipped: 0,
       sections: 1,
+    });
+  });
+
+  describe("the marks (1.7 A12)", () => {
+    const tag = `shelf-pages ${crypto.randomUUID()}`;
+    const stranger: { id?: string } = {};
+
+    /** A comic and its one printing, under this describe's tag. */
+    const comic = async (title: string, form: string, format: string) => {
+      const [item] = await sql`
+        insert into items (type, title, form, source_note)
+        values ('comic', ${`${tag} ${title}`}, ${form}, ${tag}) returning id`;
+      const [edition] = await sql`
+        insert into editions (item, format) values (${item.id}, ${format})
+        returning id`;
+      return { item: item.id as string, edition: edition.id as string };
+    };
+    /** A shelf of the caller's holding these works, read back as a row per work. */
+    const rowsFor = async (items: string[]) => {
+      const { id } = await createShelf(db, {
+        userId: user.id,
+        name: `Marks ${crypto.randomUUID()}`,
+        description: "",
+      });
+      await addEntries(db, { shelfId: id, userId: user.id, items });
+      const page = await loadShelfPage(db, { id, userId: user.id });
+      return page?.unsectioned ?? [];
+    };
+
+    afterAll(async () => {
+      // Its own shelves only: the files' later reads want the fixture's three.
+      await sql`delete from shelves where owner = ${user.id} and name like 'Marks %'`;
+      await sql`delete from copies where edition in (
+        select e.id from editions e join items i on i.id = e.item
+        where i.source_note = ${tag})`;
+      await sql`delete from items where source_note = ${tag}`;
+      if (stranger.id) {
+        await sql`delete from auth.users where id = ${stranger.id}`;
+      }
+    });
+
+    it("the TMNT shelf: 38 rows carry a via title, none held, 9 of them on Ultimate Collection 1", async () => {
+      const page = await loadShelfPage(db, {
+        id: shelf.tmnt,
+        userId: user.id,
+      });
+      const rows = [
+        ...(page?.unsectioned ?? []),
+        ...(page?.sections.flatMap((section) => section.rows) ?? []),
+      ];
+      expect(rows).toHaveLength(326);
+      expect(rows.filter((r) => r.held)).toHaveLength(0);
+      expect(rows.filter((r) => r.via !== null)).toHaveLength(38);
+      expect(
+        rows.filter((r) => r.via === "Ultimate Collection 1"),
+      ).toHaveLength(9);
+    });
+
+    it("a held work is held, and held and via together carry both", async () => {
+      const bare = await comic("bare", "issue", "floppy");
+      const both = await comic("both", "issue", "floppy");
+      const neither = await comic("neither", "issue", "floppy");
+      const trade = await comic("A trade", "collected", "tpb");
+      await sql`insert into edition_contents (edition, item, position)
+        values (${trade.edition}, ${both.item}, 1)`;
+      await sql`insert into copies (owner, edition) values
+        (${user.id}, ${bare.edition}), (${user.id}, ${both.edition}),
+        (${user.id}, ${trade.edition})`;
+
+      const rows = await rowsFor([bare.item, both.item, neither.item]);
+      expect(rows.map((r) => [r.held, r.via])).toEqual([
+        [true, null],
+        [true, `${tag} A trade`],
+        [false, null],
+      ]);
+    });
+
+    it("another person's copies mark nothing on this shelf", async () => {
+      const issue = await comic("theirs", "issue", "floppy");
+      const trade = await comic("Their trade", "collected", "tpb");
+      await sql`insert into edition_contents (edition, item, position)
+        values (${trade.edition}, ${issue.item}, 1)`;
+      ({ id: stranger.id } = await signUp(sql));
+      await sql`insert into copies (owner, edition) values
+        (${stranger.id}, ${issue.edition}), (${stranger.id}, ${trade.edition})`;
+
+      const [row] = await rowsFor([issue.item]);
+      expect([row.held, row.via]).toEqual([false, null]);
     });
   });
 

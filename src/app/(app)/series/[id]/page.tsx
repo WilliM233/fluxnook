@@ -6,9 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { serverDb } from "@/db/client";
 import { releasedLabel } from "@/lib/catalog/released";
 import { loadSeriesPage, type SeriesPage } from "@/lib/catalog/series-page";
+import { seriesHolding, tileVia } from "@/lib/collection/lines";
+import { takesFloppy } from "@/lib/collection/ticks";
 import { coverPublicUrl } from "@/lib/covers";
 import { readEnv } from "@/lib/env";
+import { createClient } from "@/lib/supabase/server";
 import { AddRun } from "./add-run";
+import { IssueTick } from "./issue-tick";
+import { TickLine, TickLineProvider } from "./tick-line";
 
 const sourceLabel: Record<string, string> = { comicvine: "Comic Vine" };
 
@@ -72,6 +77,25 @@ function Tile({ issue }: { issue: SeriesPage["issues"][number] }) {
       >
         {issue.title}
       </Link>
+      {takesFloppy(issue.form) ? (
+        <IssueTick
+          item={issue.id}
+          title={issue.title}
+          floppies={issue.floppies}
+          via={issue.via}
+        />
+      ) : (
+        <>
+          {issue.held && (
+            <span className="text-sm text-primary">Your copy</span>
+          )}
+          {issue.via && (
+            <span data-testid="tile-via" className="text-[13px] text-dim">
+              {tileVia(issue.via, false)}
+            </span>
+          )}
+        </>
+      )}
     </li>
   );
 }
@@ -82,11 +106,17 @@ export default async function SeriesPageView({
   const { id } = await params;
   if (!z.uuid().safeParse(id).success) notFound();
 
-  // The (app) layout has already sent anyone signed out to /; a series is
-  // catalog, the same for everyone.
-  const page = await loadSeriesPage(serverDb(), { id });
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  // The (app) layout has already sent anyone signed out to /.
+  if (!user) notFound();
+
+  const page = await loadSeriesPage(serverDb(), { id, userId: user.id });
   if (!page) notFound();
-  const { series, sources, issues, collectedIn } = page;
+  const { series, sources, issues, collectedIn, heldIn } = page;
+  const holding = seriesHolding(issues);
   const header = [
     years(series),
     series.publisher,
@@ -151,41 +181,55 @@ export default async function SeriesPageView({
         </Fact>
       </dl>
 
-      <section
-        aria-labelledby="issues"
-        className="flex flex-col gap-4 border-t pt-6"
-      >
-        <div className="flex flex-wrap items-baseline gap-3">
-          <h2 id="issues" className="font-heading text-[22px] font-semibold">
-            Issues
-          </h2>
-          <span className="text-[13px] text-dim">
-            {issues.length} in the catalog, in cover-date order
-          </span>
-          <AddRun
-            series={{ name: series.name, volume: series.volume }}
-            issues={issues.map((issue) => issue.id)}
-          />
-        </div>
-        {issues.length === 0 ? (
-          <p className="text-sm text-muted-foreground">None in the catalog.</p>
-        ) : (
-          <ul
-            aria-label="Issues"
-            className="grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-6"
-          >
-            {issues.map((issue) => (
-              <Tile key={issue.id} issue={issue} />
-            ))}
-          </ul>
-        )}
-      </section>
+      <TickLineProvider>
+        <section
+          aria-labelledby="issues"
+          className="flex flex-col gap-4 border-t pt-6"
+        >
+          <div className="flex flex-wrap items-baseline gap-3">
+            <h2 id="issues" className="font-heading text-[22px] font-semibold">
+              Issues
+            </h2>
+            <span className="text-[13px] text-dim">
+              {issues.length} in the catalog, in cover-date order
+              {holding && ` ${holding}`}
+            </span>
+            <AddRun
+              series={{ name: series.name, volume: series.volume }}
+              issues={issues.map((issue) => issue.id)}
+            />
+            <TickLine />
+          </div>
+          {issues.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              None in the catalog.
+            </p>
+          ) : (
+            <>
+              <ul
+                aria-label="Issues"
+                className="grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-6"
+              >
+                {issues.map((issue) => (
+                  <Tile key={issue.id} issue={issue} />
+                ))}
+              </ul>
+              <p className="text-sm text-dim">
+                A tick makes a floppy of that issue yours; untick to let it go.
+                An issue a collection you hold already covers says so, and can
+                still be ticked when you hold the floppy too.
+              </p>
+            </>
+          )}
+        </section>
+      </TickLineProvider>
 
       <CollectedIn
         rows={collectedIn}
         line={{ own: { seriesId: series.id } }}
         empty="Nothing collected yet."
-        note="An edition whose contents hold an issue of this run. Which ones you own comes with the collection chapter."
+        note="An edition whose contents hold an issue of this run. One you hold covers its issues above."
+        held={heldIn}
       />
     </main>
   );

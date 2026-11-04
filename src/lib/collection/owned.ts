@@ -32,6 +32,26 @@ export const viaBy = (
     where own_r.from_item = ${item} and own_r.kind = 'contained-in' and own_b.form = 'backup'
       and (${heldBy(sql`own_r.to_item`, userId)} or ${inContents(sql`own_r.to_item`, userId)})))`;
 
+/**
+ * The title of the work whose copy gives the first via, or null: `viaBy`'s rule
+ * in `loadOwnership`'s order, so a row and the work's own page name one copy.
+ */
+export const firstViaTitle = (item: SQL, userId: string) => sql`(
+  select own_w.title
+  from copies own_c join editions own_e on own_e.id = own_c.edition
+    join items own_w on own_w.id = own_e.item
+  where own_c.owner = ${userId} and (
+    exists (select 1 from edition_contents own_x
+      where own_x.edition = own_e.id and own_x.item = ${item})
+    or exists (
+      select 1 from item_relations own_r join items own_b on own_b.id = own_r.from_item
+      where own_r.from_item = ${item} and own_r.kind = 'contained-in' and own_b.form = 'backup'
+        and (own_e.item = own_r.to_item or exists (
+          select 1 from edition_contents own_h
+          where own_h.edition = own_e.id and own_h.item = own_r.to_item))))
+  order by own_w.title, own_e.id, own_c.created_at, own_c.id
+  limit 1)`;
+
 /** A copy of one of the work's own printings (A4). */
 export type HeldCopy = {
   id: string;

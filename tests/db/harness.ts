@@ -61,3 +61,13 @@ export async function resetComicVine(sql: postgres.Sql) {
     for (const statement of RESET_COMICVINE) await tx.unsafe(statement);
   });
 }
+
+/**
+ * The real Comic Vine keys, one file at a time, until the connection ends: the
+ * reset detaches every Browse volume, so a reset in one file takes the series
+ * out from under another that has just attached it (1.7.2 step 1). For a
+ * `max: 1` client: a session lock belongs to the connection that took it.
+ */
+export async function holdBrowseVolumes(sql: postgres.Sql) {
+  await sql`select pg_advisory_lock(hashtext('comicvine:browse-volumes'))`;
+}

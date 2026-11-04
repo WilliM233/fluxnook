@@ -190,7 +190,7 @@ describe("the picker's list", () => {
 
 describe("the series page's collected-in read", () => {
   it("holds the hardcover once, with its contents, and the empty tpb not at all", async () => {
-    const p = await loadSeriesPage(db, { id: ids.series });
+    const p = await loadSeriesPage(db, { id: ids.series, userId });
     expect(p?.collectedIn.map((r) => [r.editionId, r.contents.length])).toEqual(
       [[ids.hc, 3]],
     );
