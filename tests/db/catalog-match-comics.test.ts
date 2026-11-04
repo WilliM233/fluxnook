@@ -21,6 +21,7 @@ import {
 } from "@/lib/providers/comicvine";
 import { type ComicVineStub, startComicVineStub } from "../stub/comicvine";
 import {
+  holdBrowseVolumes,
   itemFor,
   required,
   resetComicVine,
@@ -34,8 +35,9 @@ import {
 // a collected group. The recordings' rows run under keys of this file's own
 // (volume/9<id>), so a key another file holds can't turn a match into `in`.
 // Then the Browse's three imports run on the fixture rows under the real
-// keys, last, since they turn those groups into series; this is the only
-// file that holds the real keys, and it puts the rows back after.
+// keys, last, since they turn those groups into series; the file that holds
+// the real keys, with `reset-comicvine.test.ts` behind the same lock, and it
+// puts the rows back after.
 
 const sql = postgres(required("DATABASE_URL"), { max: 1, onnotice: () => {} });
 const { db, close } = createDb();
@@ -59,6 +61,7 @@ const pick = (rows: ComicVineSeries[], id: number) => {
 };
 
 beforeAll(async () => {
+  await holdBrowseVolumes(sql);
   stub = await startComicVineStub();
   // A run left over from a crashed file would read as `in` below.
   await resetComicVine(sql);

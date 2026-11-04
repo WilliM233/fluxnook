@@ -25,6 +25,14 @@ export const RESET_COMICVINE = [
   // would stop the whole reset (1.7.1 Rummage R3).
   `delete from copies where edition in (
     select id from editions where item in (${attached}) and item not in (${loaded}))`,
+  // A tick on an attached issue: A3's printing carries no source (a loaded one
+  // carries `manual`, an imported one its source), so "no source" is A3's
+  // alone. It reads the attach, so it runs before `series_id` is nulled (1.7.2).
+  `delete from copies where edition in (
+    select id from editions where item in (${attached})
+      and id not in (select edition from edition_sources))`,
+  `delete from editions where item in (${attached})
+    and id not in (select edition from edition_sources)`,
   `delete from items where id in (${attached})
     and id not in (${loaded})`,
   `update editions set released_on = null, released_precision = null, publisher = null
