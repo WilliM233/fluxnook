@@ -370,7 +370,7 @@ check "no I own this: the five are held" missing "$(has "I own this" "$(text "$P
 check "the old sentence" missing "$(has "comes with the collection chapter" "$PAGE")"
 PAGE=$(as_b "/series/$S")
 check "a stranger: the heading's count" found "$(has "$N in the catalog, in cover-date order" "$(text "$PAGE")")"
-check "a stranger: no holding" missing "$(has "you hold" "$(text "$PAGE")")"
+check "a stranger: no holding" missing "$(has "$DOT you hold" "$(text "$PAGE")")"
 check "a stranger: no via lines" 0 "$(count_of tile-via "$PAGE")"
 check "a stranger: no Your copy" missing "$(has "Your copy" "$(text "$PAGE")")"
 check "a stranger: I own this" found "$(has "I own this" "$(text "$PAGE")")"
