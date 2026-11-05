@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { SignOutButton } from "@/app/(app)/nook/sign-out-button";
 
-/** The signed-in header: wordmark, the three places to go, who you are. */
+/** The signed-in header: wordmark, the four places to go, who you are. */
 export function Header({ email }: { email: string | undefined }) {
   return (
     <header className="flex flex-wrap items-center gap-6 border-b px-4 py-4 sm:px-10">
@@ -29,6 +29,12 @@ export function Header({ email }: { email: string | undefined }) {
           className="text-muted-foreground hover:text-foreground"
         >
           Journal
+        </Link>
+        <Link
+          href="/collection"
+          className="text-muted-foreground hover:text-foreground"
+        >
+          Collection
         </Link>
       </nav>
       <div className="ml-auto flex items-center gap-4 text-[13px] text-muted-foreground">
