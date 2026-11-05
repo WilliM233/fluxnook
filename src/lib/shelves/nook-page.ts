@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import type { Db } from "@/db/client";
+import { heldBy, viaBy } from "@/lib/collection/owned";
 
 /** One slot of a card's strip: the cover, or the type that says which empty box to draw. */
 export type StripCover = { cover_path: string | null; type: string };
@@ -14,6 +15,8 @@ export type NookShelf = {
   done: number;
   skipped: number;
   sections: number;
+  /** The shelf's works held or via (1.7 A10, A5); each counts once. */
+  owned: number;
   covers: StripCover[];
 };
 
@@ -42,6 +45,9 @@ export async function loadNook(db: Db, userId: string): Promise<Nook> {
       (select count(*)::int from shelf_entries e
         where e.shelf = s.id and e.status = 'skipped') as skipped,
       (select count(*)::int from shelf_sections x where x.shelf = s.id) as sections,
+      (select count(*)::int from shelf_entries e
+        where e.shelf = s.id and (${heldBy(sql`e.item`, userId)}
+          or ${viaBy(sql`e.item`, userId)})) as owned,
       (select coalesce(json_agg(json_build_object(
           'cover_path', f.cover_path, 'type', f.type) order by f.position), '[]'::json)
         from (select i.cover_path, i.type, e.position

@@ -33,13 +33,19 @@ test("three cards and the counts", async ({ signedIn: { page, email } }) => {
   }
 
   const [tmnt, watch, books] = [cards.nth(0), cards.nth(1), cards.nth(2)];
-  await expect(tmnt.getByText("326 works · 14 sections")).toBeVisible();
+  await expect(
+    tmnt.getByText("326 works · 14 sections · 38 owned", { exact: true }),
+  ).toBeVisible();
   await expect(tmnt.getByText("no cover")).toHaveCount(5);
   await expect(tmnt.getByText("+321")).toBeVisible();
-  await expect(watch.getByText("61 works · from Letterboxd")).toBeVisible();
+  await expect(
+    watch.getByText("61 works · from Letterboxd", { exact: true }),
+  ).toBeVisible();
   await expect(watch.getByText("no poster")).toHaveCount(5);
   await expect(watch.getByText("+56")).toBeVisible();
-  await expect(books.getByText("11 works · from Letterboxd")).toBeVisible();
+  await expect(
+    books.getByText("11 works · from Letterboxd", { exact: true }),
+  ).toBeVisible();
   await expect(books.getByText("+6")).toBeVisible();
 });
 
