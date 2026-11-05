@@ -8,7 +8,8 @@ export type Rated = { mean: number | null; n: number };
  * A shelf's counts as its card, its page and a section heading print them
  * (A6, A7): the works always, every other part left out at zero (census C4).
  * A section's line has no sections part, so `sections` is left undefined.
- * The page's lines end in the star part (1.6 A9); the nook's cards pass none.
+ * The page's lines end in the star part (1.6 A9); the nook's cards pass none,
+ * and end in what you hold instead (1.7 A10); the shelf page passes no `owned`.
  */
 export function countsLine({
   works,
@@ -16,12 +17,14 @@ export function countsLine({
   skipped,
   sections,
   rated,
+  owned,
 }: {
   works: number;
   done: number;
   skipped: number;
   sections?: number;
   rated?: Rated;
+  owned?: number;
 }): string {
   return [
     plural(works, "work"),
@@ -32,6 +35,7 @@ export function countsLine({
       rated.n > 0 &&
       rated.mean !== null &&
       `${starText(rated.mean)} from ${rated.n} rated`,
+    owned !== undefined && owned > 0 && `${owned} owned`,
   ]
     .filter(Boolean)
     .join(" · ");
