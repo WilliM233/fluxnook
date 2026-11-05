@@ -33,6 +33,16 @@ export const viaBy = (
       and (${heldBy(sql`own_r.to_item`, userId)} or ${inContents(sql`own_r.to_item`, userId)})))`;
 
 /**
+ * What a shelf asks for and the caller's copies don't answer (A11): neither held
+ * nor via, and not a backup, since you buy what prints it. `is distinct from`,
+ * because a film's form is null and `<>` would drop every film. One fragment, so
+ * Collection's "Shopping · n" and Shopping's own count can't disagree.
+ */
+export const toFind = (item: SQL, form: SQL, userId: string) => sql`(
+  not ${heldBy(item, userId)} and not ${viaBy(item, userId)}
+  and ${form} is distinct from 'backup')`;
+
+/**
  * The title of the work whose copy gives the first via, or null: `viaBy`'s rule
  * in `loadOwnership`'s order, so a row and the work's own page name one copy.
  */

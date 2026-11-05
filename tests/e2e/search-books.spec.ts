@@ -137,7 +137,10 @@ test("Night Shift matches across the years and keeps its own", async ({
   );
   const released = page.locator("dt", { hasText: "Released" }).locator("+ dd");
   await expect(released).toHaveText("1977");
-  await expect(page.getByText("Collection", { exact: true })).toBeVisible();
+  // The form, among the pills: the header says Collection too.
+  await expect(
+    page.getByTestId("pills").getByText("Collection", { exact: true }),
+  ).toBeVisible();
   await expect(
     page.getByRole("region", { name: "Connected" }).getByText("Contains"),
   ).toHaveCount(16);

@@ -23,7 +23,7 @@ describe("R1 the cursor refuses a timestamp Postgres can't read", () => {
 
   it("a real instant still parses", () => {
     expect(parseCursor(`2024-02-29T23:59:59.999999Z,${ID}`)).toEqual({
-      writtenAt: "2024-02-29T23:59:59.999999Z",
+      at: "2024-02-29T23:59:59.999999Z",
       id: ID,
     });
   });

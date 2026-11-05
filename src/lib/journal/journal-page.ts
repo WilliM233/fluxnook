@@ -49,7 +49,7 @@ export async function loadJournalPage(
     from journal_entries e join occurrences o on o.id = e.occurrence
     where o.owner = ${userId}`);
   const after = before
-    ? sql`and (e.written_at, e.id) < (${before.writtenAt}::timestamptz, ${before.id}::uuid)`
+    ? sql`and (e.written_at, e.id) < (${before.at}::timestamptz, ${before.id}::uuid)`
     : sql``;
   const found = await db.execute<JournalRow>(sql`
     select
@@ -83,7 +83,7 @@ export async function loadJournalPage(
     rows,
     older:
       found.length > PAGE && last
-        ? { writtenAt: last.entry.writtenAt, id: last.entry.id }
+        ? { at: last.entry.writtenAt, id: last.entry.id }
         : null,
   };
 }

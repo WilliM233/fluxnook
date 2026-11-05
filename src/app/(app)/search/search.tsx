@@ -210,8 +210,16 @@ export function Search({
   // own answer lands, so a slow or failing one never blanks the others.
   useEffect(() => {
     const query = q.trim();
+    // Only when the URL differs. A remount on Back reads the URL it's already on,
+    // and a replace it doesn't need can land after the next Back and put Search
+    // over the page that Back reached (1.7.3 CI, R8).
+    const keepUrl = (url: string) => {
+      if (url !== `${window.location.pathname}${window.location.search}`) {
+        router.replace(url, { scroll: false });
+      }
+    };
     if (looksLikeIsbn(query)) {
-      router.replace(searchUrl(query, "all"), { scroll: false });
+      keepUrl(searchUrl(query, "all"));
       setFilms({ kind: "idle" });
       setBooks({ kind: "idle" });
       setComics({ kind: "idle" });
@@ -228,7 +236,7 @@ export function Search({
       return () => controller.abort();
     }
     setLookup({ kind: "idle" });
-    router.replace(searchUrl(query, type), { scroll: false });
+    keepUrl(searchUrl(query, type));
     const asksFilms = type === "all" || type === "film" || type === "tv";
     const asksBooks = type === "all" || type === "book";
     const asksComics = type === "all" || type === "comic";

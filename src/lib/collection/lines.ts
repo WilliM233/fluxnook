@@ -1,8 +1,9 @@
 import { releasedLabel } from "@/lib/catalog/released";
+import { plural, type WorkFacts, workLine } from "@/lib/catalog/work-line";
 import { conditionLabel, formatLabel } from "./formats";
 
 /**
- * What the collection's rows and headings print, as text (Ch 1.7 A5, A6).
+ * What the collection's rows and headings print, as text (Ch 1.7 A5, A6, A10, A11).
  * Free of the database, so a client can print it and the tests can read it.
  */
 
@@ -97,4 +98,94 @@ export function editionsHeading(
   return `${printings} in the catalog · ${
     copies > 0 ? `you hold ${copies}` : "none yours"
   }`;
+}
+
+/**
+ * Collection's lede (A10): n copies of m works, then k more through what they
+ * collect ("they" at any k: the copies do the collecting); no copies says how
+ * to get one.
+ */
+export function collectionLede({
+  copies,
+  works,
+  via,
+}: {
+  copies: number;
+  works: number;
+  via: number;
+}): string {
+  if (copies === 0)
+    return "Nothing held yet. Own a copy from a work's page, or tick a run on its series page.";
+  const held = `${copies === 1 ? "1 copy" : `${copies} copies`} of ${plural(works, "work")}, newest first.`;
+  if (via === 0) return held;
+  const more = via === 1 ? "1 more work is" : `${via} more works are`;
+  return `${held} ${more} yours through what they collect.`;
+}
+
+/**
+ * A Collection row's line (A10, census): the format, what the printing covers,
+ * then the printing's publisher and year, or the work's own line when the
+ * printing has no publisher.
+ */
+export function copyRowLine({
+  format,
+  contents,
+  publisher,
+  released_on,
+  work,
+}: {
+  format: string;
+  contents: number;
+  publisher: string | null;
+  released_on: string | null;
+  work: WorkFacts;
+}): string {
+  return [
+    formatLabel(format),
+    contents > 0 && `covers ${plural(contents, "issue")}`,
+    ...(publisher ? [publisher, released_on?.slice(0, 4)] : [workLine(work)]),
+  ]
+    .filter(Boolean)
+    .join(" · ");
+}
+
+/** A Collection row's third line (A10): condition, since, note; null at none. */
+export function copyThirdLine(copy: {
+  condition: string | null;
+  acquiredOn: string | null;
+  note: string;
+}): string | null {
+  const line = [copyLine(copy), copy.note].filter(Boolean).join(" · ");
+  return line === "" ? null : line;
+}
+
+/** Collection's button (A10): "Shopping · 314 to find". */
+export function shoppingLabel(toFind: number): string {
+  return `Shopping · ${toFind} to find`;
+}
+
+/** Shopping's lede (A11), and what it says when there is nothing to list. */
+export function shoppingLede({
+  total,
+  shelves,
+}: {
+  total: number;
+  shelves: number;
+}): string {
+  if (shelves === 0) return "No shelves yet, so nothing to find.";
+  if (total === 0) return "Nothing to find.";
+  return `${plural(total, "work")} on your shelves you don't hold a copy of, by shelf. A work on two shelves is listed once, under the first.`;
+}
+
+/** A shelf's heading on Shopping (A11): "242 of 326 to find". */
+export function toFindLine(toFind: number, works: number): string {
+  return `${toFind} of ${works} to find`;
+}
+
+/** Under a shelf's rows (A11); null with no backups. */
+export function backupsLine(backups: number): string | null {
+  if (backups === 0) return null;
+  return backups === 1
+    ? "1 backup left out: you'd buy what it's printed in."
+    : `${backups} backups left out: you'd buy what they're printed in.`;
 }

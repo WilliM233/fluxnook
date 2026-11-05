@@ -849,7 +849,11 @@ test.describe("A12's line", () => {
   }) => {
     loadFixturesFor(email);
     const runs = handRuns();
-    const series = db("select count(*) from series");
+    // This volume's own rows: a global count reads another worker's writes
+    // (red on `ec9ca3b` and on `ea93a17`, 1.7.3 D3).
+    const imported = () =>
+      db("select count(*) from series_sources where key = 'volume/18785'");
+    const series = imported();
     await page.goto(TALES);
     await seriesRow(page, 2004, "Mirage · 71 issues")
       .getByRole("button", { name: "Add" })
@@ -877,7 +881,7 @@ test.describe("A12's line", () => {
     await expect(
       sheet.getByRole("button", { name: "Add", exact: true }),
     ).toBeVisible();
-    expect(db("select count(*) from series")).toBe(series);
+    expect(imported()).toBe(series);
     await expect(page).toHaveURL(/\/search\?/);
 
     await sheet.getByRole("button", { name: "Add", exact: true }).click();

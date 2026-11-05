@@ -13,6 +13,18 @@ test("/nook redirects to / without a session", async ({ page }) => {
   await expect(page).toHaveURL("/");
 });
 
+test("/collection redirects to / without a session", async ({ page }) => {
+  await page.goto("/collection");
+  await expect(page).toHaveURL("/");
+});
+
+test("/collection/shopping redirects to / without a session", async ({
+  page,
+}) => {
+  await page.goto("/collection/shopping");
+  await expect(page).toHaveURL("/");
+});
+
 test("magic-link rejects a bad email with 400", async ({ request }) => {
   const response = await request.post("/api/v1/auth/magic-link", {
     data: { email: "not-an-email" },

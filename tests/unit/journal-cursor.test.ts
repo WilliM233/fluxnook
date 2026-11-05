@@ -13,14 +13,14 @@ describe("the cursor", () => {
   });
 
   it("round-trips through nextCursor and parseCursor", () => {
-    const before = nextCursor({ writtenAt: AT, id: ID });
+    const before = nextCursor({ at: AT, id: ID });
     expect(before).toBe(`${AT},${ID}`);
-    expect(parseCursor(before)).toEqual({ writtenAt: AT, id: ID });
+    expect(parseCursor(before)).toEqual({ at: AT, id: ID });
   });
 
   it("lowercases an uppercase uuid", () => {
     expect(parseCursor(`${AT},${ID.toUpperCase()}`)).toEqual({
-      writtenAt: AT,
+      at: AT,
       id: ID,
     });
   });

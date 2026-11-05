@@ -20,6 +20,15 @@ describe("countsLine", () => {
     );
   });
 
+  it("a nook card's line ends in what you hold, nothing at none (1.7 A10)", () => {
+    const shelf = { works: 326, done: 0, skipped: 0, sections: 14 };
+    expect(countsLine({ ...shelf, owned: 38 })).toBe(
+      "326 works · 14 sections · 38 owned",
+    );
+    expect(countsLine({ ...shelf, owned: 0 })).toBe("326 works · 14 sections");
+    expect(countsLine(shelf)).toBe("326 works · 14 sections");
+  });
+
   it("a section's line has no sections part", () => {
     expect(countsLine({ works: 4, done: 2, skipped: 1 })).toBe(
       "4 works · 2 done · 1 skipped",

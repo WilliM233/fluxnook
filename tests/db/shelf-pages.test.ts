@@ -92,6 +92,83 @@ describe("loadNook", () => {
   });
 });
 
+describe("the nook card's count (1.7 A10)", () => {
+  // `e.item` is the nook's own alias: a fragment that captured it would read
+  // "held" for anyone with a copy of anything, 326 and not 38 (1.7.1 R6).
+  it("38, 0, 0 on the fixture", async () => {
+    const nook = await loadNook(db, user.id);
+    const owned = Object.fromEntries(
+      nook.shelves.map((s) => [s.name, s.owned]),
+    );
+    expect(owned).toEqual({
+      "TMNT, the Mirage run": 38,
+      "Stephen King Watch List": 0,
+      "Stephen King, publication order": 0,
+    });
+  });
+
+  describe("on rows of its own", () => {
+    const tag = `nook-count ${crypto.randomUUID()}`;
+    const work = async (type: string, form: string) => {
+      const [row] = await sql`
+        insert into items (type, title, form, source_note)
+        values (${type}, ${tag}, ${form}, ${tag}) returning id`;
+      return row.id as string;
+    };
+    const printing = async (item: string, format: string) => {
+      const [row] = await sql`
+        insert into editions (item, format) values (${item}, ${format}) returning id`;
+      return row.id as string;
+    };
+
+    afterAll(async () => {
+      await sql`delete from copies where edition in (
+        select e.id from editions e join items i on i.id = e.item
+        where i.source_note = ${tag})`;
+      await sql`delete from shelf_entries where item in (
+        select id from items where source_note = ${tag})`;
+      await sql`delete from items where source_note = ${tag}`;
+    });
+
+    it("a held work on a shelf counts once, held and via together count once, and another person's copies count nothing", async () => {
+      const { id: mine } = await signUp(sql);
+      const { id: theirs } = await signUp(sql);
+      const issue = await work("comic", "issue");
+      const trade = await work("comic", "collected");
+      const other = await work("comic", "issue");
+      const floppy = await printing(issue, "floppy");
+      const second = await printing(issue, "digital");
+      const hardcover = await printing(trade, "hardcover");
+      const theirFloppy = await printing(other, "floppy");
+      await sql`insert into edition_contents (edition, item, position)
+        values (${hardcover}, ${issue}, 1)`;
+      const { id: shelfId } = await createShelf(db, {
+        userId: mine,
+        name: "Mine",
+        description: "",
+      });
+      await sql`insert into shelf_entries (shelf, item, position)
+        values (${shelfId}, ${issue}, 1), (${shelfId}, ${other}, 2)`;
+
+      const owned = async () =>
+        (await loadNook(db, mine)).shelves.map((s) => s.owned);
+      expect(await owned()).toEqual([0]);
+
+      // Two copies of one work: still one work.
+      await sql`insert into copies (owner, edition)
+        values (${mine}, ${floppy}), (${mine}, ${second})`;
+      expect(await owned()).toEqual([1]);
+
+      // Held and via at once: still one work.
+      await sql`insert into copies (owner, edition) values (${mine}, ${hardcover})`;
+      expect(await owned()).toEqual([1]);
+
+      await sql`insert into copies (owner, edition) values (${theirs}, ${theirFloppy})`;
+      expect(await owned()).toEqual([1]);
+    });
+  });
+});
+
 describe("loadShelfPage", () => {
   it("the TMNT shelf: 14 sections in file order, 326 rows numbered through, no unsectioned row", async () => {
     const page = await loadShelfPage(db, { id: shelf.tmnt, userId: user.id });
