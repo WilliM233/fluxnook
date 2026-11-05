@@ -222,7 +222,7 @@ describe("the Journal page's read (A8)", () => {
     const first = await loadJournalPage(db, { userId });
     expect(first.rows).toHaveLength(50);
     const last = first.rows[49].entry;
-    expect(first.older).toEqual({ writtenAt: last.writtenAt, id: last.id });
+    expect(first.older).toEqual({ at: last.writtenAt, id: last.id });
     // Row 50 is one of the tied pair, so the cut falls inside the tie.
     expect(last.writtenAt).toBe(TIE);
     expect(parseCursor(nextCursor(first.older as Cursor))).toEqual(first.older);

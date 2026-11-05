@@ -12,6 +12,10 @@ export default defineConfig({
   },
   test: {
     include: ["tests/db/**/*.test.ts"],
+    // Local Postgres has 100 slots and the stack holds about 46. Each file's
+    // pool opens up to 10 under a page's parallel reads, so a worker per core on
+    // a 32-core box ran out (53300, 1.7.3 step 3).
+    maxWorkers: 8,
     // A hook that loads or resets waits its turn behind the loader's advisory
     // lock with the other files; on a fresh catalog that queue passes 10 s (A15 a).
     hookTimeout: 60_000,
