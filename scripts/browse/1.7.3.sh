@@ -563,7 +563,11 @@ check "Shopping: the Watch List before Stephen King" yes "$(before "Stephen King
 check "Shopping: the word it doesn't use" 0 "$(grep -ci wishlist <<<"$PAGE")"
 check "Shopping: the back link" found "$(has "Back to your collection" "$PLAIN")"
 check "Shopping: no Also on, no work is on two shelves" missing "$(has "Also on" "$PLAIN")"
-measured "Shopping, warm: seconds and bytes (the row's printings Deferral's trigger is 1 s)" "$(curl -s -b "$JAR_A" -o /dev/null -w '%{time_total} %{size_download}' "$APP/collection/shopping")"
+# Five, on `next dev`: about 1.17 s here against about 0.07 s on a production
+# build, so this is the dev server's render of 314 rows (1.7.3 section 5).
+for hit in 1 2 3 4 5; do
+  measured "Shopping, warm, hit $hit, on next dev: seconds and bytes" "$(curl -s -b "$JAR_A" -o /dev/null -w '%{time_total} %{size_download}' "$APP/collection/shopping")"
+done
 
 PAGE=$(as_a /nook)
 check "the header: Journal before Collection" yes "$(before 'href="/journal"' 'href="/collection"' "$PAGE")"
