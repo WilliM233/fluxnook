@@ -43,7 +43,7 @@ export function CollectionRow({
           src={work.cover_path && coverPublicUrl(supabaseUrl, work.cover_path)}
           empty={printed(work.type) ? "no cover" : "no poster"}
         />
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <div className="flex min-w-0 flex-1 flex-col gap-1 [overflow-wrap:anywhere]">
           <Link
             href={`/items/${work.id}`}
             className="font-heading text-lg leading-snug font-semibold hover:text-accent-hover"

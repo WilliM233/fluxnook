@@ -58,7 +58,7 @@ export default async function ShoppingPage() {
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <h2
                 id={`shelf-${shelf.id}`}
-                className="font-heading text-[22px] leading-tight font-semibold"
+                className="min-w-0 font-heading text-[22px] leading-tight font-semibold [overflow-wrap:anywhere]"
               >
                 <Link
                   href={`/shelves/${shelf.id}`}

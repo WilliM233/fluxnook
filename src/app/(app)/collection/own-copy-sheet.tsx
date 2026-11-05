@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { FieldError } from "@/app/(app)/journal/log-read-sheet";
 import { NONE, type Refusal, refusalOf } from "@/app/(app)/journal/refusal";
 import { selectClass } from "@/app/(app)/search/isbn-card";
@@ -57,7 +57,10 @@ const SELECT = `${selectClass} w-full`;
  * Format select listing the catalog's printings, then the formats it lacks,
  * so a pick posts either shape. Given a `copy` it is Edit this copy: Format
  * as text, Save. A refusal stays on the sheet: a 400 under its field, a 409
- * as its own line. Words typed close only on Cancel (1.6.2 Raccoon S3).
+ * as its own line. Words typed close only on Cancel (1.6.2 Raccoon S3). Once a
+ * write is out the sheet stays until the answer: Cancel can't take it back, so it
+ * doesn't pretend to (1.7.2 Rummage B1, 1.7.3 B1). `onClose` says whether a post
+ * was tried, since after one the page may know better than the sheet.
  */
 export function OwnCopySheet({
   item,
@@ -70,7 +73,7 @@ export function OwnCopySheet({
   printings: Printing[];
   copy?: SheetCopy;
   onSaved: () => void;
-  onClose: () => void;
+  onClose: (tried: boolean) => void;
 }) {
   const { printed, lacking } = printingOptions(printings, item.type, item.form);
   const [choice, setChoice] = useState(
@@ -84,6 +87,7 @@ export function OwnCopySheet({
   const [fields, setFields] = useState(opened);
   const [refused, setRefused] = useState<Refusal>(NONE);
   const [busy, setBusy] = useState(false);
+  const tried = useRef(false);
   const errors = refused.fields;
   const typed = fields.note.trim() !== (copy?.note ?? "").trim();
 
@@ -95,6 +99,7 @@ export function OwnCopySheet({
       onSaved();
       return;
     }
+    tried.current = true;
     setBusy(true);
     setRefused(NONE);
     const failed = `Couldn't ${copy ? "save" : "add"} that copy just now. Try again.`;
@@ -118,7 +123,12 @@ export function OwnCopySheet({
   }
 
   return (
-    <Dialog open onOpenChange={(next) => !next && !typed && onClose()}>
+    <Dialog
+      open
+      onOpenChange={(next) =>
+        !next && !typed && !busy && onClose(tried.current)
+      }
+    >
       <DialogContent className="max-h-[calc(100dvh-2rem)] gap-5 overflow-y-auto border border-line-strong p-7 sm:max-w-[640px]">
         <DialogHeader>
           <DialogTitle className="font-heading text-[28px] leading-tight font-semibold">
@@ -244,7 +254,13 @@ export function OwnCopySheet({
           )}
 
           <div className="flex flex-wrap items-center justify-end gap-2.5">
-            <Button type="button" size="lg" variant="outline" onClick={onClose}>
+            <Button
+              type="button"
+              size="lg"
+              variant="outline"
+              disabled={busy}
+              onClick={() => onClose(tried.current)}
+            >
               Cancel
             </Button>
             <Button type="submit" size="lg" disabled={busy}>

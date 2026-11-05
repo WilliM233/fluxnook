@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ConfirmSheet } from "@/app/(app)/shelves/confirm-sheet";
 import { TEXT_BUTTON } from "@/components/ui/text-button";
 import { goneIsDone, json } from "@/lib/api/request";
@@ -19,9 +19,18 @@ export function CopyActions({
   const router = useRouter();
   const [sheet, setSheet] = useState<"edit" | "remove" | null>(null);
 
+  const removing = useRef(false);
+
   function done() {
     setSheet(null);
     router.refresh();
+  }
+
+  // After a post that didn't answer, the page may know better: a Remove can land
+  // and lose its answer, and a second tab may have taken the copy (the sheet's 404).
+  function close(tried: boolean) {
+    if (tried) done();
+    else setSheet(null);
   }
 
   return (
@@ -48,8 +57,7 @@ export function CopyActions({
           printings={[]}
           copy={copy}
           onSaved={done}
-          // A second tab may have removed it (the sheet's 404): the page reads again.
-          onClose={done}
+          onClose={close}
         />
       )}
       {sheet === "remove" && (
@@ -58,11 +66,14 @@ export function CopyActions({
           sentence={removeSentence(copy.note)}
           confirm="Remove"
           failed="Couldn't remove that copy just now. Try again."
-          send={() =>
-            goneIsDone(fetch(`/api/v1/copies/${copy.id}`, json("DELETE")))
-          }
+          send={() => {
+            removing.current = true;
+            return goneIsDone(
+              fetch(`/api/v1/copies/${copy.id}`, json("DELETE")),
+            );
+          }}
           onDone={done}
-          onClose={() => setSheet(null)}
+          onClose={() => close(removing.current)}
         />
       )}
     </span>

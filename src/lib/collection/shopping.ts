@@ -40,6 +40,8 @@ export type ShoppingEntry = {
   /** Neither held nor via, and not a backup (`toFind` in `owned.ts`). */
   toFind: boolean;
   backup: boolean;
+  /** A backup held or via, its host in your hands. False on anything else. */
+  backupHeld: boolean;
 };
 
 /** A row: the work, and the later shelves that ask for it too. */
@@ -55,6 +57,7 @@ export type ShoppingShelf = {
   /** What this shelf asks for, a work listed under an earlier shelf included. */
   toFind: number;
   works: number;
+  /** Backups the line under the rows counts; none when the shelf is all yours. */
   backups: number;
   groups: ShoppingGroup[];
   /** What a shelf with no rows says instead; null when it has rows, or backups only. */
@@ -123,17 +126,19 @@ export function groupShopping(
       listed.push({ row, section: entry.section });
     }
     const backups = own.filter((entry) => entry.backup).length;
+    const unheld = own.filter((e) => e.backup && !e.backupHeld).length;
+    const allYours = own.length > 0 && asked.length === 0 && unheld === 0;
     return {
       id: shelf.id,
       name: shelf.name,
       toFind: asked.length,
       works: own.length,
-      backups,
+      backups: allYours ? 0 : backups,
       groups: grouped(listed),
       note: shelfNote({
         works: own.length,
         toFind: asked.length,
-        backups,
+        allYours,
         listed: listed.length,
         earlier: [...earlier],
       }),
@@ -145,19 +150,19 @@ export function groupShopping(
 function shelfNote({
   works,
   toFind,
-  backups,
+  allYours,
   listed,
   earlier,
 }: {
   works: number;
   toFind: number;
-  backups: number;
+  allYours: boolean;
   listed: number;
   earlier: string[];
 }): string | null {
   if (works === 0) return "Nothing on this shelf yet.";
-  if (toFind === 0)
-    // With backups left out, those aren't all yours: their line says so.
-    return backups === 0 ? "Everything here is yours." : null;
+  if (allYours) return "Everything here is yours.";
+  // A backup still to buy: its line says so.
+  if (toFind === 0) return null;
   return listed === 0 ? `Listed under ${earlier.join(", ")}.` : null;
 }

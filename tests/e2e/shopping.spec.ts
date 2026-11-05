@@ -234,7 +234,7 @@ test("a shelf with nothing to find: its heading and Everything here is yours", a
   await expect(mine.getByText("Everything here is yours.")).toBeVisible();
   await expect(rows(page)).toHaveCount(0);
   await expect(
-    page.getByText("Nothing to find. Every work on your shelves is yours."),
+    page.getByText("Nothing to find.", { exact: true }),
   ).toBeVisible();
 });
 

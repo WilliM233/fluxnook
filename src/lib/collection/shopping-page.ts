@@ -1,7 +1,7 @@
 import { sql } from "drizzle-orm";
 import type { Db } from "@/db/client";
 import { NOOK_ORDER } from "@/lib/shelves/nook-page";
-import { toFind } from "./owned";
+import { heldBy, toFind, viaBy } from "./owned";
 import type { Printing } from "./sheet";
 import {
   groupShopping,
@@ -20,6 +20,7 @@ type Read = {
   printings: Printing[];
   toFind: boolean;
   backup: boolean;
+  backupHeld: boolean;
 };
 
 /**
@@ -47,7 +48,9 @@ export async function loadShopping(db: Db, userId: string): Promise<Shopping> {
         from editions p where p.item = i.id)
       else '[]'::json end as printings,
       coalesce(wanted.yes, false) as "toFind",
-      i.form is not distinct from 'backup' as backup
+      i.form is not distinct from 'backup' as backup,
+      i.form is not distinct from 'backup' and (
+        ${heldBy(sql`i.id`, userId)} or ${viaBy(sql`i.id`, userId)}) as "backupHeld"
     from shelves s
     left join shelf_entries e on e.shelf = s.id
     left join shelf_sections x on x.id = e.section
@@ -76,6 +79,7 @@ export async function loadShopping(db: Db, userId: string): Promise<Shopping> {
       printings: row.printings,
       toFind: row.toFind,
       backup: row.backup,
+      backupHeld: row.backupHeld,
     });
   }
   return groupShopping(

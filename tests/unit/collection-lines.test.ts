@@ -152,9 +152,7 @@ describe("Shopping's words", () => {
     expect(shoppingLede({ total: 1, shelves: 3 })).toBe(
       "1 work on your shelves you don't hold a copy of, by shelf. A work on two shelves is listed once, under the first.",
     );
-    expect(shoppingLede({ total: 0, shelves: 3 })).toBe(
-      "Nothing to find. Every work on your shelves is yours.",
-    );
+    expect(shoppingLede({ total: 0, shelves: 3 })).toBe("Nothing to find.");
     expect(shoppingLede({ total: 0, shelves: 0 })).toBe(
       "No shelves yet, so nothing to find.",
     );

@@ -32,6 +32,7 @@ function entry(
     printings: [],
     toFind: true,
     backup: false,
+    backupHeld: false,
     ...over,
   };
 }
@@ -146,6 +147,26 @@ describe("groupShopping", () => {
       entry("s1", "story", { toFind: false, backup: true }),
     ]);
     expect(shelf(result, "s1")).toMatchObject({ note: null, backups: 1 });
+  });
+
+  it("says Everything here is yours when the only backup is held, and no buying line", async () => {
+    const result = groupShopping(SHELVES, [
+      entry("s1", "host", { toFind: false }),
+      entry("s1", "story", { toFind: false, backup: true, backupHeld: true }),
+    ]);
+    expect(shelf(result, "s1")).toMatchObject({
+      note: "Everything here is yours.",
+      backups: 0,
+      works: 2,
+    });
+  });
+
+  it("keeps the whole count while a backup is still to buy", () => {
+    const result = groupShopping(SHELVES, [
+      entry("s1", "held", { toFind: false, backup: true, backupHeld: true }),
+      entry("s1", "unheld", { toFind: false, backup: true }),
+    ]);
+    expect(shelf(result, "s1")).toMatchObject({ note: null, backups: 2 });
   });
 
   it("says Listed under when every row sits under an earlier shelf", () => {

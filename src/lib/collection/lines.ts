@@ -173,8 +173,7 @@ export function shoppingLede({
   shelves: number;
 }): string {
   if (shelves === 0) return "No shelves yet, so nothing to find.";
-  if (total === 0)
-    return "Nothing to find. Every work on your shelves is yours.";
+  if (total === 0) return "Nothing to find.";
   return `${plural(total, "work")} on your shelves you don't hold a copy of, by shelf. A work on two shelves is listed once, under the first.`;
 }
 
