@@ -23,9 +23,15 @@ export type Nook = {
 };
 
 /**
- * The caller's shelves, newest change first, then newest made, then by name
- * (C1: one load writes every shelf at the same instant), each with its
- * counts and its first five covers in shelf order (A6).
+ * The nook's order, alias `s` for `shelves`: newest change first, then newest
+ * made, then by name (C1: one load writes every shelf at the same instant).
+ * Shopping groups by it too (1.7 A11), so the two can't drift.
+ */
+export const NOOK_ORDER = sql`s.updated_at desc, s.created_at desc, s.name`;
+
+/**
+ * The caller's shelves in the nook's order, each with its counts and its first
+ * five covers in shelf order (A6).
  */
 export async function loadNook(db: Db, userId: string): Promise<Nook> {
   const shelves = await db.execute<NookShelf>(sql`
@@ -43,7 +49,7 @@ export async function loadNook(db: Db, userId: string): Promise<Nook> {
           where e.shelf = s.id order by e.position limit 5) f) as covers
     from shelves s
     where s.owner = ${userId}
-    order by s.updated_at desc, s.created_at desc, s.name`);
+    order by ${NOOK_ORDER}`);
   return {
     shelves,
     totals: {
