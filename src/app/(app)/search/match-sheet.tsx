@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useSheetHold } from "@/components/ui/sheet-hold";
 import type { Candidate } from "@/lib/catalog/match";
 import { sourceLabel, Thumb } from "./rows";
 
@@ -70,6 +71,7 @@ export function MatchSheet({
   onDifferent: () => void;
   onClose: () => void;
 }) {
+  const hold = useSheetHold({ busy, onClose });
   const book = result.provider === "Open Library";
   const one = candidates.length === 1;
   const disagree =
@@ -77,7 +79,7 @@ export function MatchSheet({
     result.year !== null &&
     candidates.find((c) => c.year !== null && c.year !== result.year);
   return (
-    <Dialog open onOpenChange={(open) => !open && onClose()}>
+    <Dialog open {...hold.dialog}>
       <DialogContent className="gap-5 border border-line-strong p-7 sm:max-w-2xl">
         {book ? (
           <DialogHeader>
@@ -230,7 +232,7 @@ export function MatchSheet({
             size="lg"
             variant="ghost"
             className="ml-auto text-muted-foreground"
-            onClick={onClose}
+            {...hold.cancel}
           >
             Cancel
           </Button>

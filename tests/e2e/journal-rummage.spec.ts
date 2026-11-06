@@ -184,6 +184,11 @@ test("R5 an arrow pressed before the last click's answer is kept, not dropped", 
     "true",
     { timeout: 10_000 },
   );
+  // The page's refresh lands first; a reload over it is red in Firefox
+  // (journal-sheets.spec.ts says why, Ch 1.8 A2).
+  await expect(
+    page.getByText("1 read · last finished at ★ 4.5", { exact: true }),
+  ).toBeVisible();
   await page.reload();
   await expect(card.getByRole("group", { name: "★ 4.5" })).toBeVisible();
   expect(db(`select stars from occurrences where id = '${read}'`)).toBe("4.5");

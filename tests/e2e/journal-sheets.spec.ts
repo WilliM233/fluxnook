@@ -107,6 +107,14 @@ test("the left half of a star is its half, and the arrows move a half step", asy
     expect((await saved).status()).toBe(200);
     await expect(card.getByRole("group", { name })).toBeVisible();
   }
+  // The card's stars are client state; only the page's refresh brings the
+  // heading. Reloading before it lands is red in Firefox: it aborts fetches as
+  // a reload starts, before pagehide, and Next answers the aborted refresh with
+  // location.replace of the same URL, over the reload. The page still loads, so
+  // a person meets nothing; page.reload rejects NS_BINDING_ABORTED (Ch 1.8 A2).
+  await expect(
+    page.getByText("1 read · last finished at ★ 5", { exact: true }),
+  ).toBeVisible();
   await page.reload();
   await expect(card.getByRole("group", { name: "★ 5" })).toBeVisible();
 });

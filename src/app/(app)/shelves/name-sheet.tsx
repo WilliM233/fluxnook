@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useSheetHold } from "@/components/ui/sheet-hold";
 
 /**
  * One name (A7): New section and Rename. `send` makes the call; a 2xx is
@@ -34,12 +35,13 @@ export function NameSheet({
   failed: string;
   send: (name: string) => Promise<Response>;
   onSaved: () => void;
-  onClose: () => void;
+  onClose: (tried: boolean) => void;
 }) {
   const [name, setName] = useState(initial);
   const [field, setField] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const hold = useSheetHold({ busy, onClose });
 
   async function save(event: React.FormEvent) {
     event.preventDefault();
@@ -62,7 +64,7 @@ export function NameSheet({
   }
 
   return (
-    <Dialog open onOpenChange={(next) => !next && onClose()}>
+    <Dialog open {...hold.dialog}>
       <DialogContent className="gap-5 border border-line-strong p-7 sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-heading text-[28px] leading-tight font-semibold">
@@ -74,30 +76,32 @@ export function NameSheet({
         </DialogHeader>
 
         <form noValidate onSubmit={save} className="flex flex-col gap-5">
-          <div className="flex flex-col gap-2">
-            <Label
-              htmlFor="section-name"
-              className="text-[13px] font-semibold text-muted-foreground"
-            >
-              Name
-            </Label>
-            <Input
-              id="section-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              aria-invalid={field ? true : undefined}
-              aria-describedby={field ? "section-name-error" : undefined}
-              className="h-11 rounded-[10px] bg-background px-3"
-            />
-            {field && (
-              <p
-                id="section-name-error"
-                className="text-[13px] text-destructive"
+          <fieldset {...hold.fields}>
+            <div className="flex flex-col gap-2">
+              <Label
+                htmlFor="section-name"
+                className="text-[13px] font-semibold text-muted-foreground"
               >
-                {field}
-              </p>
-            )}
-          </div>
+                Name
+              </Label>
+              <Input
+                id="section-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                aria-invalid={field ? true : undefined}
+                aria-describedby={field ? "section-name-error" : undefined}
+                className="h-11 rounded-[10px] bg-background px-3"
+              />
+              {field && (
+                <p
+                  id="section-name-error"
+                  className="text-[13px] text-destructive"
+                >
+                  {field}
+                </p>
+              )}
+            </div>
+          </fieldset>
 
           {error && (
             <p role="alert" className="text-sm text-destructive">
@@ -106,7 +110,7 @@ export function NameSheet({
           )}
 
           <div className="flex flex-wrap items-center justify-end gap-2.5 border-t pt-5">
-            <Button type="button" size="lg" variant="outline" onClick={onClose}>
+            <Button type="button" size="lg" variant="outline" {...hold.cancel}>
               Cancel
             </Button>
             <Button type="submit" size="lg" disabled={busy}>

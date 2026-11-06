@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useSheetHold } from "@/components/ui/sheet-hold";
 import type {
   SeriesGroup,
   SeriesGroupOption,
@@ -68,6 +69,7 @@ export function SeriesSheet({
   onSubmit: (choice: SeriesChoice) => void;
   onClose: () => void;
 }) {
+  const hold = useSheetHold({ busy, onClose });
   const ids = useId();
   const [form, setForm] = useState<"issue" | "collected">(
     COLLECTED_WORDS.test(result.name) ? "collected" : "issue",
@@ -104,8 +106,11 @@ export function SeriesSheet({
   }
 
   return (
-    <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="gap-5 border border-line-strong p-7 sm:max-w-2xl">
+    <Dialog open {...hold.dialog}>
+      <DialogContent
+        aria-busy={busy || undefined}
+        className="gap-5 border border-line-strong p-7 sm:max-w-2xl"
+      >
         <DialogHeader>
           <span className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
             Adding from Comic Vine
@@ -184,78 +189,87 @@ export function SeriesSheet({
           ))}
         </div>
 
-        <fieldset className="flex flex-col gap-2.5">
-          <legend className="mb-2 text-sm font-semibold">
-            What are these?
-          </legend>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-            {(
-              [
-                ["issue", "Single issues"],
-                ["collected", "Collected editions"],
-              ] as const
-            ).map(([value, label]) => (
-              <label
-                key={value}
-                className="inline-flex min-h-11 items-center gap-2 text-sm"
-              >
-                <input
-                  type="radio"
-                  name={`${ids}-form`}
-                  value={value}
-                  checked={form === value}
-                  onChange={() => chooseForm(value)}
-                  className="size-4 accent-primary"
-                />
-                {label}
-              </label>
-            ))}
-            {collected && (
-              <label className="inline-flex items-center gap-2 text-sm">
-                Format
-                <select
-                  value={format}
-                  onChange={(e) => setFormat(e.target.value as SeriesFormat)}
-                  className={selectClass}
+        <fieldset {...hold.fields}>
+          <fieldset className="flex flex-col gap-2.5">
+            <legend className="mb-2 text-sm font-semibold">
+              What are these?
+            </legend>
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+              {(
+                [
+                  ["issue", "Single issues"],
+                  ["collected", "Collected editions"],
+                ] as const
+              ).map(([value, label]) => (
+                <label
+                  key={value}
+                  className="inline-flex min-h-11 items-center gap-2 text-sm"
                 >
-                  {formats.map((f) => (
-                    <option key={f.value} value={f.value}>
-                      {f.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            )}
-          </div>
-        </fieldset>
-
-        {candidates.length === 0 && (
-          <label className="flex flex-col gap-1.5 text-sm text-muted-foreground">
-            Same as a run you added by hand?
-            <select
-              value={chosen ? picked : ""}
-              onChange={(e) => {
-                setPicked(e.target.value);
-                setConfirming(false);
-              }}
-              className={selectClass}
-            >
-              <option value="">No</option>
-              {options.map((g) => (
-                <option
-                  key={`${g.group}:${g.label}`}
-                  value={`${g.group}:${g.label}`}
-                >
-                  {g.label}, {size(g)}
-                </option>
+                  <input
+                    type="radio"
+                    name={`${ids}-form`}
+                    value={value}
+                    checked={form === value}
+                    onChange={() => chooseForm(value)}
+                    className="size-4 accent-primary"
+                  />
+                  {label}
+                </label>
               ))}
-            </select>
-          </label>
-        )}
+              {collected && (
+                <label className="inline-flex items-center gap-2 text-sm">
+                  Format
+                  <select
+                    value={format}
+                    onChange={(e) => setFormat(e.target.value as SeriesFormat)}
+                    className={selectClass}
+                  >
+                    {formats.map((f) => (
+                      <option key={f.value} value={f.value}>
+                        {f.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
+            </div>
+          </fieldset>
+
+          {candidates.length === 0 && (
+            <label className="flex flex-col gap-1.5 text-sm text-muted-foreground">
+              Same as a run you added by hand?
+              <select
+                value={chosen ? picked : ""}
+                onChange={(e) => {
+                  setPicked(e.target.value);
+                  setConfirming(false);
+                }}
+                className={selectClass}
+              >
+                <option value="">No</option>
+                {options.map((g) => (
+                  <option
+                    key={`${g.group}:${g.label}`}
+                    value={`${g.group}:${g.label}`}
+                  >
+                    {g.label}, {size(g)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+        </fieldset>
 
         {error && (
           <p role="alert" className="text-sm text-destructive">
             {error}
+          </p>
+        )}
+
+        {/* An import holds a person for its whole length, so the sheet says so. */}
+        {busy && (
+          <p role="status" className="text-sm text-muted-foreground">
+            Bringing the series in. A run of sixty issues takes a few seconds.
           </p>
         )}
 
@@ -277,6 +291,7 @@ export function SeriesSheet({
                 size="lg"
                 variant="ghost"
                 className="ml-auto text-muted-foreground"
+                disabled={hold.cancel.disabled}
                 onClick={() => setConfirming(false)}
               >
                 Cancel
@@ -314,7 +329,7 @@ export function SeriesSheet({
               size="lg"
               variant="ghost"
               className="ml-auto text-muted-foreground"
-              onClick={onClose}
+              {...hold.cancel}
             >
               Cancel
             </Button>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { TypePill } from "@/app/(app)/search/rows";
 import { ConfirmSheet } from "@/app/(app)/shelves/confirm-sheet";
 import { AccentStar } from "@/components/ui/accent-star";
@@ -44,10 +44,15 @@ type Sheet =
 export function JournalRows({ days }: { days: DayGroup[] }) {
   const router = useRouter();
   const [sheet, setSheet] = useState<Sheet | null>(null);
+  // Edit entry sends what it opened with, so it waits for the read a write
+  // asked for: a stale one puts the old words back (1.8.1 B4).
+  const [refreshing, refresh] = useTransition();
   const saved = () => {
     setSheet(null);
-    router.refresh();
+    refresh(() => router.refresh());
   };
+  // After a write that was tried, the page may know better than the sheet.
+  const close = (tried: boolean) => (tried ? saved() : setSheet(null));
 
   return (
     <>
@@ -100,6 +105,7 @@ export function JournalRows({ days }: { days: DayGroup[] }) {
                     <span className="ml-auto flex gap-3">
                       <TextButton
                         aria-label="Edit entry"
+                        disabled={refreshing}
                         onClick={() => setSheet({ kind: "edit", row })}
                       >
                         Edit
@@ -125,7 +131,7 @@ export function JournalRows({ days }: { days: DayGroup[] }) {
           readId={sheet.row.readId}
           entry={sheet.row.entry}
           onSaved={saved}
-          onClose={() => setSheet(null)}
+          onClose={close}
         />
       )}
       {sheet?.kind === "delete" && (
@@ -143,7 +149,7 @@ export function JournalRows({ days }: { days: DayGroup[] }) {
             )
           }
           onDone={saved}
-          onClose={() => setSheet(null)}
+          onClose={close}
         />
       )}
     </>

@@ -1,5 +1,6 @@
 import type { Page } from "@playwright/test";
 import { db, itemFor, loadFixturesFor, resetComics } from "./harness/fixtures";
+import { expectHeld, heldWrite } from "./harness/held";
 import { shelfId } from "./harness/shelves";
 import { expect, test } from "./harness/signed-in";
 
@@ -825,6 +826,36 @@ test.describe("the series door", () => {
     const rest = tiles.split(",").filter((id) => !three.includes(id));
     expect(shelfItems(shelf)).toBe([...three, ...rest].join(","));
   });
+});
+
+test("the hold: Add on the series sheet", async ({
+  signedIn: { page, email },
+}) => {
+  loadFixturesFor(email);
+  // This volume's own rows: resetSeries leaves the catalog as the loader does.
+  const imported = () =>
+    Number(
+      db("select count(*) from series_sources where key = 'volume/18785'"),
+    );
+  const before = imported();
+  const write = await heldWrite(page, "POST", "**/api/v1/series/import");
+  await page.goto("/search?q=tales%20of%20the%20tmnt&type=comic");
+  await seriesRow(page, 2004, "Mirage · 71 issues")
+    .getByRole("button", { name: "Add" })
+    .click();
+  const sheet = page.getByRole("dialog");
+  await sheet.getByRole("button", { name: "Add", exact: true }).click();
+  // The asking row's Cancel returns to the sheet, and holds like any other.
+  await sheet.getByRole("button", { name: "Add anyway" }).click();
+  await write.arrival;
+
+  await expectHeld(page, sheet);
+  expect(write.seen()).toBe(1);
+
+  write.release();
+  await expect(page).toHaveURL(/\/series\/[0-9a-f-]{36}$/, LANDS);
+  expect(write.seen()).toBe(1);
+  expect(imported()).toBe(before + 1);
 });
 
 // A12 (Ch 1.5.3): Add with the select on No asks once before a run goes in

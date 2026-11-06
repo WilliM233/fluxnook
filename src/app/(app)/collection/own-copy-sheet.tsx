@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { FieldError } from "@/app/(app)/journal/log-read-sheet";
 import { NONE, type Refusal, refusalOf } from "@/app/(app)/journal/refusal";
 import { selectClass } from "@/app/(app)/search/isbn-card";
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useSheetHold } from "@/components/ui/sheet-hold";
 import { Textarea } from "@/components/ui/textarea";
 import { conditions } from "@/db/vocabulary";
 import { json } from "@/lib/api/request";
@@ -57,10 +58,8 @@ const SELECT = `${selectClass} w-full`;
  * Format select listing the catalog's printings, then the formats it lacks,
  * so a pick posts either shape. Given a `copy` it is Edit this copy: Format
  * as text, Save. A refusal stays on the sheet: a 400 under its field, a 409
- * as its own line. Words typed close only on Cancel (1.6.2 Raccoon S3). Once a
- * write is out the sheet stays until the answer: Cancel can't take it back, so it
- * doesn't pretend to (1.7.2 Rummage B1, 1.7.3 B1). `onClose` says whether a post
- * was tried, since after one the page may know better than the sheet.
+ * as its own line. It holds through `useSheetHold`, on the write and on a typed
+ * note, and `onClose` says whether a post was tried.
  */
 export function OwnCopySheet({
   item,
@@ -87,9 +86,9 @@ export function OwnCopySheet({
   const [fields, setFields] = useState(opened);
   const [refused, setRefused] = useState<Refusal>(NONE);
   const [busy, setBusy] = useState(false);
-  const tried = useRef(false);
   const errors = refused.fields;
   const typed = fields.note.trim() !== (copy?.note ?? "").trim();
+  const hold = useSheetHold({ busy, typed, onClose });
 
   async function save(event: React.FormEvent) {
     event.preventDefault();
@@ -99,7 +98,6 @@ export function OwnCopySheet({
       onSaved();
       return;
     }
-    tried.current = true;
     setBusy(true);
     setRefused(NONE);
     const failed = `Couldn't ${copy ? "save" : "add"} that copy just now. Try again.`;
@@ -123,12 +121,7 @@ export function OwnCopySheet({
   }
 
   return (
-    <Dialog
-      open
-      onOpenChange={(next) =>
-        !next && !typed && !busy && onClose(tried.current)
-      }
-    >
+    <Dialog open {...hold.dialog}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] gap-5 overflow-y-auto border border-line-strong p-7 sm:max-w-[640px]">
         <DialogHeader>
           <DialogTitle className="font-heading text-[28px] leading-tight font-semibold">
@@ -142,110 +135,112 @@ export function OwnCopySheet({
         </DialogHeader>
 
         <form noValidate onSubmit={save} className="flex flex-col gap-5">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="flex flex-col gap-2">
-              {copy ? (
-                <>
-                  <p className="text-sm leading-none font-medium">Format</p>
-                  <p className="flex h-11 items-center text-base">
-                    {formatLabel(copy.format)}
-                  </p>
-                </>
-              ) : (
-                <>
-                  <Label htmlFor="copy-format">Format</Label>
-                  <select
-                    id="copy-format"
-                    value={choice}
-                    onChange={(e) => setChoice(e.target.value)}
-                    aria-invalid={errors.format ? true : undefined}
-                    aria-describedby={
-                      errors.format ? "copy-format-error" : undefined
-                    }
-                    className={SELECT}
-                  >
-                    {printed.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                    {printed.length > 0 && lacking.length > 0 && (
-                      <option disabled>──────────</option>
-                    )}
-                    {lacking.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                  <FieldError id="copy-format" error={errors.format} />
-                </>
-              )}
+          <fieldset {...hold.fields}>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="flex flex-col gap-2">
+                {copy ? (
+                  <>
+                    <p className="text-sm leading-none font-medium">Format</p>
+                    <p className="flex h-11 items-center text-base">
+                      {formatLabel(copy.format)}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <Label htmlFor="copy-format">Format</Label>
+                    <select
+                      id="copy-format"
+                      value={choice}
+                      onChange={(e) => setChoice(e.target.value)}
+                      aria-invalid={errors.format ? true : undefined}
+                      aria-describedby={
+                        errors.format ? "copy-format-error" : undefined
+                      }
+                      className={SELECT}
+                    >
+                      {printed.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                      {printed.length > 0 && lacking.length > 0 && (
+                        <option disabled>──────────</option>
+                      )}
+                      {lacking.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    <FieldError id="copy-format" error={errors.format} />
+                  </>
+                )}
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="copy-condition">Condition</Label>
+                <select
+                  id="copy-condition"
+                  value={fields.condition}
+                  onChange={(e) =>
+                    setFields({ ...fields, condition: e.target.value })
+                  }
+                  aria-invalid={errors.condition ? true : undefined}
+                  aria-describedby={
+                    errors.condition ? "copy-condition-error" : undefined
+                  }
+                  className={SELECT}
+                >
+                  <option value="" />
+                  {conditions.map((word) => (
+                    <option key={word} value={word}>
+                      {conditionLabel(word)}
+                    </option>
+                  ))}
+                </select>
+                <FieldError id="copy-condition" error={errors.condition} />
+              </div>
             </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="copy-condition">Condition</Label>
-              <select
-                id="copy-condition"
-                value={fields.condition}
+
+            <div className="flex flex-col gap-2 sm:w-[calc(50%-0.5rem)]">
+              <Label htmlFor="copy-acquired">Acquired</Label>
+              <Input
+                id="copy-acquired"
+                type="date"
+                max={localToday()}
+                value={fields.acquiredOn}
                 onChange={(e) =>
-                  setFields({ ...fields, condition: e.target.value })
+                  setFields({ ...fields, acquiredOn: e.target.value })
                 }
-                aria-invalid={errors.condition ? true : undefined}
+                aria-invalid={errors.acquiredOn ? true : undefined}
                 aria-describedby={
-                  errors.condition ? "copy-condition-error" : undefined
+                  errors.acquiredOn ? "copy-acquired-error" : undefined
                 }
-                className={SELECT}
-              >
-                <option value="" />
-                {conditions.map((word) => (
-                  <option key={word} value={word}>
-                    {conditionLabel(word)}
-                  </option>
-                ))}
-              </select>
-              <FieldError id="copy-condition" error={errors.condition} />
+                className={FIELD}
+              />
+              <FieldError id="copy-acquired" error={errors.acquiredOn} />
             </div>
-          </div>
 
-          <div className="flex flex-col gap-2 sm:w-[calc(50%-0.5rem)]">
-            <Label htmlFor="copy-acquired">Acquired</Label>
-            <Input
-              id="copy-acquired"
-              type="date"
-              max={localToday()}
-              value={fields.acquiredOn}
-              onChange={(e) =>
-                setFields({ ...fields, acquiredOn: e.target.value })
-              }
-              aria-invalid={errors.acquiredOn ? true : undefined}
-              aria-describedby={
-                errors.acquiredOn ? "copy-acquired-error" : undefined
-              }
-              className={FIELD}
-            />
-            <FieldError id="copy-acquired" error={errors.acquiredOn} />
-          </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="copy-note">Note</Label>
+              <Textarea
+                id="copy-note"
+                rows={3}
+                maxLength={2_000}
+                placeholder="Where it came from, what's odd about it, anything the shelf should remember."
+                value={fields.note}
+                onChange={(e) => setFields({ ...fields, note: e.target.value })}
+                aria-invalid={errors.note ? true : undefined}
+                aria-describedby={errors.note ? "copy-note-error" : undefined}
+                className="min-h-22 rounded-[10px] bg-background px-3 py-2.5 text-base"
+              />
+              <FieldError id="copy-note" error={errors.note} />
+            </div>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="copy-note">Note</Label>
-            <Textarea
-              id="copy-note"
-              rows={3}
-              maxLength={2_000}
-              placeholder="Where it came from, what's odd about it, anything the shelf should remember."
-              value={fields.note}
-              onChange={(e) => setFields({ ...fields, note: e.target.value })}
-              aria-invalid={errors.note ? true : undefined}
-              aria-describedby={errors.note ? "copy-note-error" : undefined}
-              className="min-h-22 rounded-[10px] bg-background px-3 py-2.5 text-base"
-            />
-            <FieldError id="copy-note" error={errors.note} />
-          </div>
-
-          <p className="text-[13px] text-dim">
-            A copy is yours alone. It stays private until Volume 2, when you can
-            share a shelf by link.
-          </p>
+            <p className="text-[13px] text-dim">
+              A copy is yours alone. It stays private until Volume 2, when you
+              can share a shelf by link.
+            </p>
+          </fieldset>
 
           {refused.line && (
             <p role="alert" className="text-sm text-destructive">
@@ -254,13 +249,7 @@ export function OwnCopySheet({
           )}
 
           <div className="flex flex-wrap items-center justify-end gap-2.5">
-            <Button
-              type="button"
-              size="lg"
-              variant="outline"
-              disabled={busy}
-              onClick={() => onClose(tried.current)}
-            >
+            <Button type="button" size="lg" variant="outline" {...hold.cancel}>
               Cancel
             </Button>
             <Button type="submit" size="lg" disabled={busy}>

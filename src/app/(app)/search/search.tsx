@@ -174,6 +174,7 @@ export function Search({
   const router = useRouter();
   const addingEdition = useRef(false);
   const params = useSearchParams();
+  const kept = useRef<string | null>(null);
   const [q, setQ] = useState(params.get("q") ?? "");
   const [type, setType] = useState<Kind>(parseKind(params.get("type")));
   const [films, setFilms] = useState<State<FilmResult>>({ kind: "idle" });
@@ -210,13 +211,15 @@ export function Search({
   // own answer lands, so a slow or failing one never blanks the others.
   useEffect(() => {
     const query = q.trim();
-    // Only when the URL differs. A remount on Back reads the URL it's already on,
-    // and a replace it doesn't need can land after the next Back and put Search
-    // over the page that Back reached (1.7.3 CI, R8).
+    // The URL follows a change in what's asked, never a mount: a mount read q and
+    // type from the URL, and by the time this runs on a Back the next Back may have
+    // moved the location, so a replace then puts Search over the page that Back
+    // reached (1.7.3 CI, R8; 1.8.1). Never measured against the location for that
+    // reason. A dev mount runs this twice, so it's the last URL that's remembered.
     const keepUrl = (url: string) => {
-      if (url !== `${window.location.pathname}${window.location.search}`) {
-        router.replace(url, { scroll: false });
-      }
+      const changed = kept.current !== null && kept.current !== url;
+      kept.current = url;
+      if (changed) router.replace(url, { scroll: false });
     };
     if (looksLikeIsbn(query)) {
       keepUrl(searchUrl(query, "all"));

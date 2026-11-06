@@ -69,7 +69,10 @@ export function ShelvesSection({
             setOpen(false);
             router.refresh();
           }}
-          onClose={() => setOpen(false)}
+          onClose={(tried) => {
+            setOpen(false);
+            if (tried) router.refresh();
+          }}
         />
       )}
     </section>

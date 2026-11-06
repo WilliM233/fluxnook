@@ -6,7 +6,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { LogReadSheet } from "@/app/(app)/journal/log-read-sheet";
 import { AccentStar } from "@/components/ui/accent-star";
 import { Badge } from "@/components/ui/badge";
@@ -118,6 +118,9 @@ export function ShelfView({
   // Rows just marked Done that offer to log the read (1.6 A10): view state
   // only, so a reload shows Remove again.
   const [offers, setOffers] = useState<ReadonlySet<string>>(new Set());
+  // Edit shelf sends what it opened with, so it waits for the read a write asked
+  // for: a stale one puts the old words back (1.8.1 B4).
+  const [refreshing, refresh] = useTransition();
   if (seed !== page) {
     const fresh = flatten(page);
     setSeed(page);
@@ -214,8 +217,11 @@ export function ShelfView({
   /** A sheet's write is done: close it and read the shelf again. */
   const saved = () => {
     setSheet(null);
-    router.refresh();
+    refresh(() => router.refresh());
   };
+
+  /** After a write that was tried, the page may know better than the sheet. */
+  const close = (tried: boolean) => (tried ? saved() : setSheet(null));
 
   /** The offer under a row just marked Done, in Remove's place (1.6 A10). */
   const offerOf = (row: ViewRow) => {
@@ -309,6 +315,7 @@ export function ShelfView({
           <Button
             size="lg"
             variant="outline"
+            disabled={refreshing}
             onClick={() => setSheet({ kind: "edit-shelf" })}
           >
             Edit shelf
@@ -346,7 +353,12 @@ export function ShelfView({
             offer(sheet.row.id, false);
             saved();
           }}
-          onClose={() => setSheet(null)}
+          onClose={(tried, lost) => {
+            // No answer may mean it landed, and the read below shows it: the
+            // offer that stayed would log a second (1.8.1 B2, 1.6.3 N9).
+            if (lost) offer(sheet.row.id, false);
+            close(tried);
+          }}
         />
       )}
       {sheet?.kind === "add-works" && (
@@ -356,7 +368,7 @@ export function ShelfView({
           held={new Map(rows.map((row) => [row.item.id, row.position]))}
           works={works}
           onAdded={saved}
-          onClose={() => setSheet(null)}
+          onClose={close}
         />
       )}
       {sheet?.kind === "edit-shelf" && (
@@ -370,7 +382,7 @@ export function ShelfView({
             fetch(`/api/v1/shelves/${shelf.id}`, json("PATCH", words))
           }
           onSaved={saved}
-          onClose={() => setSheet(null)}
+          onClose={close}
         />
       )}
       {sheet?.kind === "new-section" && (
@@ -387,7 +399,7 @@ export function ShelfView({
             )
           }
           onSaved={saved}
-          onClose={() => setSheet(null)}
+          onClose={close}
         />
       )}
       {sheet?.kind === "rename" && (
@@ -404,7 +416,7 @@ export function ShelfView({
             )
           }
           onSaved={saved}
-          onClose={() => setSheet(null)}
+          onClose={close}
         />
       )}
       {sheet?.kind === "delete-section" && (
@@ -420,7 +432,7 @@ export function ShelfView({
             )
           }
           onDone={saved}
-          onClose={() => setSheet(null)}
+          onClose={close}
         />
       )}
       {sheet?.kind === "delete-shelf" && (
@@ -431,7 +443,10 @@ export function ShelfView({
           failed="Couldn't delete the shelf just now. Try again."
           send={() => fetch(`/api/v1/shelves/${shelf.id}`, json("DELETE"))}
           onDone={() => router.push("/nook")}
-          onClose={() => setSheet(null)}
+          // No answer may mean it's gone, and the good answer's door is the nook.
+          onClose={(tried, lost) =>
+            lost ? router.push("/nook") : close(tried)
+          }
         />
       )}
 

@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useSheetHold } from "@/components/ui/sheet-hold";
 import { countsLine } from "@/lib/shelves/lines";
 import type { ShelfListed } from "@/lib/shelves/list";
 
@@ -98,7 +99,7 @@ export function AddToShelf({
   held: ReadonlyMap<string, number>;
   submit: string;
   onAdded: (added: Added) => void;
-  onClose: () => void;
+  onClose: (tried: boolean) => void;
 }) {
   const ids = useId();
   const [shelves, setShelves] = useState<ShelfListed[] | null>(null);
@@ -108,6 +109,7 @@ export function AddToShelf({
   const [nameError, setNameError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const hold = useSheetHold({ busy, onClose });
   // A shelf "Or a new shelf" made whose add didn't take: a retry fills it
   // rather than making a second of the same name.
   const [made, setMade] = useState<{ id: string; name: string } | null>(null);
@@ -196,7 +198,7 @@ export function AddToShelf({
   }
 
   return (
-    <Dialog open onOpenChange={(next) => !next && onClose()}>
+    <Dialog open {...hold.dialog}>
       <DialogContent className="gap-5 border border-line-strong p-7 sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="font-heading text-[28px] leading-tight font-semibold">
@@ -207,7 +209,10 @@ export function AddToShelf({
           </DialogDescription>
         </DialogHeader>
 
-        <fieldset className="flex flex-col gap-2.5">
+        <fieldset
+          disabled={hold.fields.disabled}
+          className="flex flex-col gap-2.5"
+        >
           <legend className="mb-2.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
             Which shelf
           </legend>
@@ -345,7 +350,7 @@ export function AddToShelf({
         )}
 
         <div className="flex flex-wrap items-center justify-end gap-2.5 border-t pt-5">
-          <Button size="lg" variant="outline" onClick={onClose}>
+          <Button size="lg" variant="outline" {...hold.cancel}>
             Cancel
           </Button>
           <Button size="lg" disabled={!ready} onClick={add}>

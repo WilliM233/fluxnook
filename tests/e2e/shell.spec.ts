@@ -1,4 +1,5 @@
 import { expect, test as plain } from "@playwright/test";
+import { waitForMagicLink } from "./harness/mailpit";
 import { test } from "./harness/signed-in";
 
 // A1: the signed-in shell in Deep Field, and the sign-in page outside it.
@@ -59,6 +60,35 @@ test("a signed-in page has the header, the TMDB footer and the look", async ({
       .evaluate((h1) => getComputedStyle(h1).fontFamily),
   ).toContain("Fraunces");
 });
+
+// A UUID's hyphens are no help: Firefox won't break one before a digit, so a
+// signed-in fixture's address wrapped or didn't by its random digits, and
+// Nightly's R8 and R9 went red on the header, not their rows (Ch 1.8 A2).
+plain(
+  "an address with nowhere to break doesn't push a phone sideways",
+  async ({ page }) => {
+    const email = `e2e${crypto.randomUUID().replaceAll("-", "")}@example.com`;
+    const asked = await page.request.post("/api/v1/auth/magic-link", {
+      data: { email },
+    });
+    expect(asked.status()).toBe(204);
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto(await waitForMagicLink(page.request, email));
+    await expect(page).toHaveURL("/nook");
+    await expect(page.getByRole("banner").getByText(email)).toBeVisible();
+
+    expect(
+      await page.evaluate(
+        () =>
+          document.documentElement.scrollWidth -
+          document.documentElement.clientWidth,
+      ),
+    ).toBe(0);
+    await expect(
+      page.getByRole("banner").getByRole("button", { name: "Sign out" }),
+    ).toBeInViewport({ ratio: 1 });
+  },
+);
 
 plain("the sign-in page sits outside the shell", async ({ page }) => {
   await page.goto("/");

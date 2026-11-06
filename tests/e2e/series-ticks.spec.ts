@@ -310,9 +310,13 @@ test("a tick on an issue a collection covers reads also via and the heading does
   const via = tile(page, run.title(1)).getByTestId("tile-via");
   await expect(via).toHaveText(`via ${run.tradeTitle}`);
 
-  await (await box(page, run.title(1))).click();
+  const one = await box(page, run.title(1));
+  await one.click();
   await expect(label(page, run.title(1))).toHaveText("Owned · Floppy");
   await expect(via).toHaveText(`also via ${run.tradeTitle}`);
+  // The box's own refresh lands first; a reload over it is red in Firefox
+  // (journal-sheets.spec.ts says why, Ch 1.8 A2).
+  await settled(one);
   await page.reload();
   await expect(via).toHaveText(`also via ${run.tradeTitle}`);
   await expect(heading(page)).toHaveText(holding);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { ConfirmSheet } from "@/app/(app)/shelves/confirm-sheet";
 import { TEXT_BUTTON } from "@/components/ui/text-button";
 import { goneIsDone, json } from "@/lib/api/request";
@@ -18,8 +18,6 @@ export function CopyActions({
 }) {
   const router = useRouter();
   const [sheet, setSheet] = useState<"edit" | "remove" | null>(null);
-
-  const removing = useRef(false);
 
   function done() {
     setSheet(null);
@@ -66,14 +64,11 @@ export function CopyActions({
           sentence={removeSentence(copy.note)}
           confirm="Remove"
           failed="Couldn't remove that copy just now. Try again."
-          send={() => {
-            removing.current = true;
-            return goneIsDone(
-              fetch(`/api/v1/copies/${copy.id}`, json("DELETE")),
-            );
-          }}
+          send={() =>
+            goneIsDone(fetch(`/api/v1/copies/${copy.id}`, json("DELETE")))
+          }
           onDone={done}
-          onClose={() => close(removing.current)}
+          onClose={close}
         />
       )}
     </span>
