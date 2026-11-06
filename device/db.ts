@@ -12,6 +12,12 @@ import * as schema from "@/db/schema";
 export const DEVICE_DATA_NAME = "idb://fluxnook";
 
 /**
+ * The device's one person, fixed so every `owner` column is known without
+ * reading anything back.
+ */
+export const DEVICE_USER_ID = "00000000-0000-4000-8000-000000000001";
+
+/**
  * Three statements in the migrations name Supabase's schemas (A2), so the
  * device makes empty stand-ins for them before the first one runs. Outside the
  * ledger, and safe to repeat, since a kill before the migrator's commit runs
@@ -54,12 +60,27 @@ export async function migrateDevice(
   return db;
 }
 
+/**
+ * The migrations, then the device's one person. `on conflict do nothing` runs on
+ * every open: a kill between the migrator and this insert heals on the next one,
+ * and a second open fires no trigger. The signup trigger makes the `profiles`
+ * row, as it does hosted, so nothing here writes it.
+ */
+export async function prepareDevice(client: PGlite): Promise<DeviceDb> {
+  const db = await migrateDevice(client);
+  await client.query(
+    "insert into auth.users (id) values ($1) on conflict do nothing",
+    [DEVICE_USER_ID],
+  );
+  return db;
+}
+
 /** Opens the store and brings it up to date. */
 export async function openDevice(
   dataName: string = DEVICE_DATA_NAME,
 ): Promise<Device> {
   const client = new PGlite(dataName);
-  const db = await migrateDevice(client);
+  const db = await prepareDevice(client);
   return { client, db };
 }
 
