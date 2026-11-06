@@ -112,11 +112,7 @@ test("the hold: Log a read", async ({ signedIn: { page } }) => {
 
 test("the hold: Edit this read", async ({ signedIn: { page } }) => {
   const { id, read } = await bookWithRead(page);
-  const write = await heldWrite(
-    page,
-    "PATCH",
-    `**/api/v1/occurrences/${read}`,
-  );
+  const write = await heldWrite(page, "PATCH", `**/api/v1/occurrences/${read}`);
   await page.goto(`/items/${id}`);
   await opens(page, page.getByRole("button", { name: "Edit this read" }));
   const sheet = sheetOf(page);
@@ -253,11 +249,7 @@ test("the hold: New section", async ({ signedIn: { page } }) => {
 
 test("the hold: Edit shelf", async ({ signedIn: { page } }) => {
   const shelf = await makeShelf(page, {});
-  const write = await heldWrite(
-    page,
-    "PATCH",
-    `**/api/v1/shelves/${shelf.id}`,
-  );
+  const write = await heldWrite(page, "PATCH", `**/api/v1/shelves/${shelf.id}`);
   await page.goto(`/shelves/${shelf.id}`);
   await opens(page, page.getByRole("button", { name: "Edit shelf" }));
   const sheet = sheetOf(page);
@@ -344,6 +336,78 @@ test("the hold: Add to shelf", async ({ signedIn: { page } }) => {
   await expect(chips(page)).toHaveCount(1);
   expect(write.seen()).toBe(1);
   expect(entriesOn(shelf.id)).toBe("1");
+});
+
+// The picker's rows by SQL, as `rummage-contents-picker.spec.ts` makes them.
+const tag = `sheet-hold ${crypto.randomUUID().slice(0, 8)}`;
+
+function collectedWithIssue() {
+  const made = (title: string, form: string) =>
+    db(`insert into items (type, title, form, source_note)
+      values ('comic', '${title}', '${form}', '${tag}') returning id`).split(
+      "\n",
+    )[0];
+  const unique = crypto.randomUUID().slice(0, 8);
+  const issue = made(`${tag} ${unique} #1`, "issue");
+  db(`insert into item_comics (item, series, number)
+    values ('${issue}', '${tag} ${unique} Run', 1)`);
+  const work = made(`${tag} ${unique} Collection`, "collected");
+  const edition = db(`insert into editions (item, format)
+    values ('${work}', 'tpb') returning id`).split("\n")[0];
+  return { issue, work, edition, title: `${tag} ${unique} #1` };
+}
+
+test.afterAll(() => {
+  db(`delete from items where source_note = '${tag}'`);
+});
+
+const contentsOf = (edition: string) =>
+  db(`select count(*) from edition_contents where edition = '${edition}'`);
+
+async function saveOneTick(page: Page, title: string) {
+  const sheet = sheetOf(page);
+  await sheet.getByLabel("A series or a title").fill(title);
+  await sheet.getByRole("checkbox").check();
+  await sheet.getByRole("button", { name: "Save contents" }).click();
+}
+
+test("the hold: Edit contents", async ({ signedIn: { page } }) => {
+  const { work, edition, title } = collectedWithIssue();
+  const write = await heldWrite(
+    page,
+    "PUT",
+    `**/api/v1/editions/${edition}/contents`,
+  );
+  await page.goto(`/items/${work}`);
+  await opens(page, page.getByRole("button", { name: "Edit contents" }));
+  await saveOneTick(page, title);
+  await write.arrival;
+
+  await expectHeld(page, sheetOf(page));
+  expect(write.seen()).toBe(1);
+
+  write.release();
+  await expect(sheetOf(page)).toHaveCount(0);
+  await expect(page.getByText("Contents: Nothing yet")).toHaveCount(0);
+  expect(write.seen()).toBe(1);
+  expect(contentsOf(edition)).toBe("1");
+});
+
+test("lost: Edit contents", async ({ signedIn: { page } }) => {
+  const { work, edition, title } = collectedWithIssue();
+  await lostAnswer(page, "PUT", `**/api/v1/editions/${edition}/contents`);
+  await page.goto(`/items/${work}`);
+  await opens(page, page.getByRole("button", { name: "Edit contents" }));
+  await saveOneTick(page, title);
+  const sheet = sheetOf(page);
+  await expect(sheet.getByRole("alert")).toHaveText(
+    "Couldn't save just now. Try again.",
+  );
+  expect(contentsOf(edition)).toBe("1");
+
+  await sheet.getByRole("button", { name: "Cancel" }).click();
+  await expect(sheet).toHaveCount(0);
+  await expect(page.getByText("Contents: Nothing yet")).toHaveCount(0);
 });
 
 test("lost: New section", async ({ signedIn: { page } }) => {

@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import type { Page } from "@playwright/test";
 import { db, itemFor, loadFixturesFor } from "./harness/fixtures";
+import { expectHeld, heldWrite } from "./harness/held";
 import { expect, test } from "./harness/signed-in";
 
 // A7 on the stub (globalSetup serves the carrie recordings) and the loaded
@@ -92,6 +93,32 @@ test("Same on Carrie (2013) attaches TMDB to the Letterboxd row", async ({
   const attached = row(page, "Carrie", 2013);
   await expect(attached.getByText("In your catalog")).toBeVisible();
   await expect(attached.getByRole("link", { name: "Open" })).toBeVisible();
+});
+
+test("the hold: Same on the match sheet", async ({
+  signedIn: { page, email },
+}) => {
+  loadFixturesFor(email);
+  const write = await heldWrite(page, "POST", "**/api/v1/items/import");
+  await page.goto("/search?q=carrie");
+  await row(page, "Carrie", 2013).getByRole("button", { name: "Add" }).click();
+  const sheet = page.getByRole("dialog");
+  await sheet
+    .getByRole("button", { name: "Same, add the TMDB details to it" })
+    .click();
+  await write.arrival;
+
+  await expectHeld(page, sheet);
+  expect(write.seen()).toBe(1);
+
+  write.release();
+  await expect(page).toHaveURL(`/items/${itemFor("letterboxd", "4kC2")}`);
+  expect(write.seen()).toBe(1);
+  expect(
+    db(
+      `select count(*) from item_sources where source = 'tmdb' and key = '${CARRIE_2013}'`,
+    ),
+  ).toBe("1");
 });
 
 test("Add on The Carrie Diaries makes a show, first in the recent list", async ({

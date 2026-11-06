@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useSheetHold } from "@/components/ui/sheet-hold";
 import type {
   SeriesGroup,
   SeriesGroupOption,
@@ -68,6 +69,7 @@ export function SeriesSheet({
   onSubmit: (choice: SeriesChoice) => void;
   onClose: () => void;
 }) {
+  const hold = useSheetHold({ busy, onClose });
   const ids = useId();
   const [form, setForm] = useState<"issue" | "collected">(
     COLLECTED_WORDS.test(result.name) ? "collected" : "issue",
@@ -104,7 +106,7 @@ export function SeriesSheet({
   }
 
   return (
-    <Dialog open onOpenChange={(open) => !open && onClose()}>
+    <Dialog open {...hold.dialog}>
       <DialogContent className="gap-5 border border-line-strong p-7 sm:max-w-2xl">
         <DialogHeader>
           <span className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
@@ -277,6 +279,7 @@ export function SeriesSheet({
                 size="lg"
                 variant="ghost"
                 className="ml-auto text-muted-foreground"
+                disabled={hold.cancel.disabled}
                 onClick={() => setConfirming(false)}
               >
                 Cancel
@@ -314,7 +317,7 @@ export function SeriesSheet({
               size="lg"
               variant="ghost"
               className="ml-auto text-muted-foreground"
-              onClick={onClose}
+              {...hold.cancel}
             >
               Cancel
             </Button>

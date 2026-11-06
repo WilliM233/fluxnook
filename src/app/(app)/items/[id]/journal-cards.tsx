@@ -279,11 +279,7 @@ export function JournalCards({
         </ul>
       )}
       {sheet?.kind === "log" && (
-        <LogReadSheet
-          item={item}
-          onSaved={saved}
-          onClose={close}
-        />
+        <LogReadSheet item={item} onSaved={saved} onClose={close} />
       )}
       {sheet?.kind === "edit-read" && (
         <LogReadSheet
