@@ -1,7 +1,7 @@
 import type { Page } from "@playwright/test";
 import { db } from "./harness/fixtures";
 import { expectHeld, heldWrite, lostAnswer, opens } from "./harness/held";
-import { post } from "./harness/shelves";
+import { film, makeShelf, post } from "./harness/shelves";
 import { expect, test } from "./harness/signed-in";
 
 // Ch 1.8 A1: every sheet that posts holds while its write is out, from one hook
@@ -220,6 +220,201 @@ test("typed: an entry", async ({ signedIn: { page } }) => {
   await sheet.getByRole("button", { name: "Cancel" }).click();
   await expect(sheet).toHaveCount(0);
   expect(entriesOf(read)).toBe("0");
+});
+
+const entriesOn = (shelf: string) =>
+  db(`select count(*) from shelf_entries where shelf = '${shelf}'`);
+
+test("the hold: New section", async ({ signedIn: { page } }) => {
+  const shelf = await makeShelf(page, {});
+  const write = await heldWrite(
+    page,
+    "POST",
+    `**/api/v1/shelves/${shelf.id}/sections`,
+  );
+  await page.goto(`/shelves/${shelf.id}`);
+  await opens(page, page.getByRole("button", { name: "New section" }));
+  const sheet = sheetOf(page);
+  await sheet.getByLabel("Name").fill("Scratch");
+  await sheet.getByRole("button", { name: "Make section" }).click();
+  await write.arrival;
+
+  await expectHeld(page, sheet);
+  expect(write.seen()).toBe(1);
+
+  write.release();
+  await expect(sheet).toHaveCount(0);
+  await expect(page.getByRole("region", { name: "Scratch" })).toBeVisible();
+  expect(write.seen()).toBe(1);
+  expect(
+    db(`select count(*) from shelf_sections where shelf = '${shelf.id}'`),
+  ).toBe("1");
+});
+
+test("the hold: Edit shelf", async ({ signedIn: { page } }) => {
+  const shelf = await makeShelf(page, {});
+  const write = await heldWrite(
+    page,
+    "PATCH",
+    `**/api/v1/shelves/${shelf.id}`,
+  );
+  await page.goto(`/shelves/${shelf.id}`);
+  await opens(page, page.getByRole("button", { name: "Edit shelf" }));
+  const sheet = sheetOf(page);
+  await sheet.getByLabel("Name").fill(`Renamed ${shelf.tag}`);
+  await sheet.getByRole("button", { name: "Save" }).click();
+  await write.arrival;
+
+  await expectHeld(page, sheet);
+  expect(write.seen()).toBe(1);
+
+  write.release();
+  await expect(sheet).toHaveCount(0);
+  await expect(
+    page.getByRole("heading", { level: 1, name: `Renamed ${shelf.tag}` }),
+  ).toBeVisible();
+  expect(write.seen()).toBe(1);
+});
+
+/** A shelf and a film not on it; Add works found and ticked. */
+async function pickedOnAddWorks(page: Page) {
+  const shelf = await makeShelf(page, {});
+  const title = `Pick ${shelf.tag}`;
+  await film(page, title, 1984);
+  return { shelf, title };
+}
+
+async function tickWork(page: Page, title: string) {
+  const sheet = sheetOf(page);
+  await sheet.getByLabel("Find").fill(title);
+  await sheet.getByTestId("pick").getByRole("checkbox").check();
+  await sheet.getByRole("button", { name: "Add 1 work" }).click();
+}
+
+test("the hold: Add works", async ({ signedIn: { page } }) => {
+  const { shelf, title } = await pickedOnAddWorks(page);
+  const write = await heldWrite(
+    page,
+    "POST",
+    `**/api/v1/shelves/${shelf.id}/entries`,
+  );
+  await page.goto(`/shelves/${shelf.id}`);
+  await opens(page, page.getByRole("button", { name: "Add works" }));
+  await tickWork(page, title);
+  await write.arrival;
+
+  await expectHeld(page, sheetOf(page));
+  expect(write.seen()).toBe(1);
+
+  write.release();
+  await expect(sheetOf(page)).toHaveCount(0);
+  await expect(page.getByRole("link", { name: title })).toBeVisible();
+  expect(write.seen()).toBe(1);
+  expect(entriesOn(shelf.id)).toBe("1");
+});
+
+/** The item page's Add to shelf, the shelf picked, sent. */
+async function addToShelf(page: Page, name: string) {
+  const sheet = sheetOf(page);
+  await sheet.getByRole("radio", { name }).check();
+  await sheet.getByRole("button", { name: "Add to shelf" }).click();
+}
+
+const chips = (page: Page) =>
+  page.getByRole("region", { name: "On your shelves" }).getByRole("link");
+
+test("the hold: Add to shelf", async ({ signedIn: { page } }) => {
+  const id = await book(page);
+  const shelf = await makeShelf(page, {});
+  const write = await heldWrite(
+    page,
+    "POST",
+    `**/api/v1/shelves/${shelf.id}/entries`,
+  );
+  await page.goto(`/items/${id}`);
+  await opens(page, page.getByRole("button", { name: "Add to shelf" }));
+  await addToShelf(page, shelf.name);
+  await write.arrival;
+
+  await expectHeld(page, sheetOf(page));
+  expect(write.seen()).toBe(1);
+
+  write.release();
+  await expect(sheetOf(page)).toHaveCount(0);
+  await expect(chips(page)).toHaveCount(1);
+  expect(write.seen()).toBe(1);
+  expect(entriesOn(shelf.id)).toBe("1");
+});
+
+test("lost: New section", async ({ signedIn: { page } }) => {
+  const shelf = await makeShelf(page, {});
+  await lostAnswer(page, "POST", `**/api/v1/shelves/${shelf.id}/sections`);
+  await page.goto(`/shelves/${shelf.id}`);
+  await opens(page, page.getByRole("button", { name: "New section" }));
+  const sheet = sheetOf(page);
+  await sheet.getByLabel("Name").fill("Scratch");
+  await sheet.getByRole("button", { name: "Make section" }).click();
+  await expect(sheet.getByRole("alert")).toHaveText(
+    "Couldn't make the section just now. Try again.",
+  );
+
+  await sheet.getByRole("button", { name: "Cancel" }).click();
+  await expect(sheet).toHaveCount(0);
+  await expect(page.getByRole("region", { name: "Scratch" })).toBeVisible();
+});
+
+test("lost: Edit shelf", async ({ signedIn: { page } }) => {
+  const shelf = await makeShelf(page, {});
+  await lostAnswer(page, "PATCH", `**/api/v1/shelves/${shelf.id}`);
+  await page.goto(`/shelves/${shelf.id}`);
+  await opens(page, page.getByRole("button", { name: "Edit shelf" }));
+  const sheet = sheetOf(page);
+  await sheet.getByLabel("Name").fill(`Renamed ${shelf.tag}`);
+  await sheet.getByRole("button", { name: "Save" }).click();
+  await expect(sheet.getByRole("alert")).toHaveText(
+    "Couldn't save the shelf just now. Try again.",
+  );
+
+  await sheet.getByRole("button", { name: "Cancel" }).click();
+  await expect(sheet).toHaveCount(0);
+  await expect(
+    page.getByRole("heading", { level: 1, name: `Renamed ${shelf.tag}` }),
+  ).toBeVisible();
+});
+
+test("lost: Add works", async ({ signedIn: { page } }) => {
+  const { shelf, title } = await pickedOnAddWorks(page);
+  await lostAnswer(page, "POST", `**/api/v1/shelves/${shelf.id}/entries`);
+  await page.goto(`/shelves/${shelf.id}`);
+  await opens(page, page.getByRole("button", { name: "Add works" }));
+  await tickWork(page, title);
+  const sheet = sheetOf(page);
+  await expect(sheet.getByRole("alert")).toHaveText(
+    "Couldn't add those just now. Try again.",
+  );
+  expect(entriesOn(shelf.id)).toBe("1");
+
+  await sheet.getByRole("button", { name: "Cancel" }).click();
+  await expect(sheet).toHaveCount(0);
+  await expect(page.getByRole("link", { name: title })).toBeVisible();
+});
+
+test("lost: Add to shelf", async ({ signedIn: { page } }) => {
+  const id = await book(page);
+  const shelf = await makeShelf(page, {});
+  await lostAnswer(page, "POST", `**/api/v1/shelves/${shelf.id}/entries`);
+  await page.goto(`/items/${id}`);
+  await opens(page, page.getByRole("button", { name: "Add to shelf" }));
+  await addToShelf(page, shelf.name);
+  const sheet = sheetOf(page);
+  await expect(sheet.getByRole("alert")).toHaveText(
+    "Couldn't add that just now. Try again.",
+  );
+  expect(entriesOn(shelf.id)).toBe("1");
+
+  await sheet.getByRole("button", { name: "Cancel" }).click();
+  await expect(sheet).toHaveCount(0);
+  await expect(chips(page)).toHaveCount(1);
 });
 
 test("lost: Log a read", async ({ signedIn: { page } }) => {

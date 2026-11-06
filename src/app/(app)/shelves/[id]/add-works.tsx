@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useSheetHold } from "@/components/ui/sheet-hold";
 import { normalizeName } from "@/lib/catalog/normalize";
 import {
   matchesFind,
@@ -46,13 +47,14 @@ export function AddWorks({
   held: ReadonlyMap<string, number>;
   works: PickerWork[];
   onAdded: () => void;
-  onClose: () => void;
+  onClose: (tried: boolean) => void;
 }) {
   const [query, setQuery] = useState("");
   const [into, setInto] = useState("");
   const [ticked, setTicked] = useState<ReadonlySet<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const hold = useSheetHold({ busy, onClose });
 
   const folded = normalizeName(query);
   const matched = works.filter((work) => matchesFind(work, folded));
@@ -91,7 +93,7 @@ export function AddWorks({
   }
 
   return (
-    <Dialog open onOpenChange={(next) => !next && onClose()}>
+    <Dialog open {...hold.dialog}>
       <DialogContent className="gap-5 border border-line-strong p-7 sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="font-heading text-[28px] leading-tight font-semibold">
@@ -216,7 +218,7 @@ export function AddWorks({
             size="lg"
             variant="outline"
             className="ml-auto"
-            onClick={onClose}
+            {...hold.cancel}
           >
             Cancel
           </Button>

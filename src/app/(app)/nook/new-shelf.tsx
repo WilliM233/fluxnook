@@ -33,7 +33,10 @@ export function NewShelf() {
             const { id } = body as { id: string };
             router.push(`/shelves/${id}`);
           }}
-          onClose={() => setOpen(false)}
+          onClose={(tried) => {
+            setOpen(false);
+            if (tried) router.refresh();
+          }}
         />
       )}
     </>

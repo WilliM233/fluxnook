@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useSheetHold } from "@/components/ui/sheet-hold";
 import { Textarea } from "@/components/ui/textarea";
 
 export type ShelfWords = { name: string; description: string };
@@ -37,13 +38,14 @@ export function ShelfSheet({
   failed: string;
   send: (words: ShelfWords) => Promise<Response>;
   onSaved: (body: unknown) => void;
-  onClose: () => void;
+  onClose: (tried: boolean) => void;
 }) {
   const [name, setName] = useState(initial.name);
   const [description, setDescription] = useState(initial.description);
   const [fields, setFields] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const hold = useSheetHold({ busy, onClose });
 
   async function save(event: React.FormEvent) {
     event.preventDefault();
@@ -65,7 +67,7 @@ export function ShelfSheet({
   }
 
   return (
-    <Dialog open onOpenChange={(next) => !next && onClose()}>
+    <Dialog open {...hold.dialog}>
       <DialogContent className="gap-5 border border-line-strong p-7 sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-heading text-[28px] leading-tight font-semibold">
@@ -132,7 +134,7 @@ export function ShelfSheet({
           )}
 
           <div className="flex flex-wrap items-center justify-end gap-2.5 border-t pt-5">
-            <Button type="button" size="lg" variant="outline" onClick={onClose}>
+            <Button type="button" size="lg" variant="outline" {...hold.cancel}>
               Cancel
             </Button>
             <Button type="submit" size="lg" disabled={busy}>

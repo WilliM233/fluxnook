@@ -217,6 +217,9 @@ export function ShelfView({
     router.refresh();
   };
 
+  /** After a write that was tried, the page may know better than the sheet. */
+  const close = (tried: boolean) => (tried ? saved() : setSheet(null));
+
   /** The offer under a row just marked Done, in Remove's place (1.6 A10). */
   const offerOf = (row: ViewRow) => {
     const w = words(row.item.type);
@@ -346,7 +349,7 @@ export function ShelfView({
             offer(sheet.row.id, false);
             saved();
           }}
-          onClose={() => setSheet(null)}
+          onClose={close}
         />
       )}
       {sheet?.kind === "add-works" && (
@@ -356,7 +359,7 @@ export function ShelfView({
           held={new Map(rows.map((row) => [row.item.id, row.position]))}
           works={works}
           onAdded={saved}
-          onClose={() => setSheet(null)}
+          onClose={close}
         />
       )}
       {sheet?.kind === "edit-shelf" && (
@@ -370,7 +373,7 @@ export function ShelfView({
             fetch(`/api/v1/shelves/${shelf.id}`, json("PATCH", words))
           }
           onSaved={saved}
-          onClose={() => setSheet(null)}
+          onClose={close}
         />
       )}
       {sheet?.kind === "new-section" && (
@@ -387,7 +390,7 @@ export function ShelfView({
             )
           }
           onSaved={saved}
-          onClose={() => setSheet(null)}
+          onClose={close}
         />
       )}
       {sheet?.kind === "rename" && (
@@ -404,7 +407,7 @@ export function ShelfView({
             )
           }
           onSaved={saved}
-          onClose={() => setSheet(null)}
+          onClose={close}
         />
       )}
       {sheet?.kind === "delete-section" && (
@@ -420,7 +423,7 @@ export function ShelfView({
             )
           }
           onDone={saved}
-          onClose={() => setSheet(null)}
+          onClose={close}
         />
       )}
       {sheet?.kind === "delete-shelf" && (
@@ -431,7 +434,7 @@ export function ShelfView({
           failed="Couldn't delete the shelf just now. Try again."
           send={() => fetch(`/api/v1/shelves/${shelf.id}`, json("DELETE"))}
           onDone={() => router.push("/nook")}
-          onClose={() => setSheet(null)}
+          onClose={close}
         />
       )}
 
