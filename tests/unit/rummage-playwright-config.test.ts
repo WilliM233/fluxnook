@@ -22,19 +22,23 @@ describe("playwright.config.ts", { timeout: 20_000 }, () => {
     const config = await loadConfig(true);
     expect(config.forbidOnly).toBe(true);
     expect(config.retries).toBe(0);
-    expect(config.webServer).toMatchObject({
-      command: "npm run start",
-      reuseExistingServer: false,
-    });
+    expect(config.webServer).toContainEqual(
+      expect.objectContaining({
+        command: "npm run start",
+        reuseExistingServer: false,
+      }),
+    );
   });
 
   it("locally: no retries, npm run dev, reused if already running", async () => {
     const config = await loadConfig(false);
     expect(config.forbidOnly).toBe(false);
     expect(config.retries).toBe(0);
-    expect(config.webServer).toMatchObject({
-      command: "npm run dev",
-      reuseExistingServer: true,
-    });
+    expect(config.webServer).toContainEqual(
+      expect.objectContaining({
+        command: "npm run dev",
+        reuseExistingServer: true,
+      }),
+    );
   });
 });
