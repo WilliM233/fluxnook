@@ -115,51 +115,55 @@ export function EntrySheet({
         </DialogHeader>
 
         <form noValidate onSubmit={save} className="flex flex-col gap-5">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="entry-body" className={HEADING}>
-              Entry
-            </Label>
-            <Textarea
-              id="entry-body"
-              rows={5}
-              value={form.body}
-              onChange={(e) => setForm({ ...form, body: e.target.value })}
-              aria-invalid={errors.body ? true : undefined}
-              aria-describedby={errors.body ? "entry-body-error" : undefined}
-              className="min-h-32 rounded-[10px] bg-background px-3 py-2.5 text-base"
-            />
-            <FieldError id="entry-body" error={errors.body} />
-            <AnchorFields
-              id="entry-where"
-              type={item.type}
-              form={item.form}
-              pin={form}
-              onPin={(pin) => setForm({ ...form, ...pin })}
-              errors={{
-                anchorKind: errors.anchorKind,
-                anchorValue: errors.anchorValue,
-              }}
-            />
-          </div>
+          <fieldset {...hold.fields}>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="entry-body" className={HEADING}>
+                Entry
+              </Label>
+              <Textarea
+                id="entry-body"
+                rows={5}
+                value={form.body}
+                onChange={(e) => setForm({ ...form, body: e.target.value })}
+                aria-invalid={errors.body ? true : undefined}
+                aria-describedby={errors.body ? "entry-body-error" : undefined}
+                className="min-h-32 rounded-[10px] bg-background px-3 py-2.5 text-base"
+              />
+              <FieldError id="entry-body" error={errors.body} />
+              <AnchorFields
+                id="entry-where"
+                type={item.type}
+                form={item.form}
+                pin={form}
+                onPin={(pin) => setForm({ ...form, ...pin })}
+                errors={{
+                  anchorKind: errors.anchorKind,
+                  anchorValue: errors.anchorValue,
+                }}
+              />
+            </div>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="entry-written" className={HEADING}>
-              Written
-            </Label>
-            <Input
-              id="entry-written"
-              type="datetime-local"
-              step={60}
-              value={form.writtenAt}
-              onChange={(e) => setForm({ ...form, writtenAt: e.target.value })}
-              aria-invalid={errors.writtenAt ? true : undefined}
-              aria-describedby={
-                errors.writtenAt ? "entry-written-error" : undefined
-              }
-              className="h-11 w-64 rounded-[10px] bg-background px-3"
-            />
-            <FieldError id="entry-written" error={errors.writtenAt} />
-          </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="entry-written" className={HEADING}>
+                Written
+              </Label>
+              <Input
+                id="entry-written"
+                type="datetime-local"
+                step={60}
+                value={form.writtenAt}
+                onChange={(e) =>
+                  setForm({ ...form, writtenAt: e.target.value })
+                }
+                aria-invalid={errors.writtenAt ? true : undefined}
+                aria-describedby={
+                  errors.writtenAt ? "entry-written-error" : undefined
+                }
+                className="h-11 w-64 rounded-[10px] bg-background px-3"
+              />
+              <FieldError id="entry-written" error={errors.writtenAt} />
+            </div>
+          </fieldset>
 
           {refused.line && (
             <p role="alert" className="text-sm text-destructive">

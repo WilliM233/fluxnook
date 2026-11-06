@@ -38,7 +38,7 @@ export function Header({ email }: { email: string | undefined }) {
         </Link>
       </nav>
       <div className="ml-auto flex min-w-0 items-center gap-4 text-[13px] text-muted-foreground">
-        <span className="min-w-0 [overflow-wrap:anywhere]">{email}</span>
+        <span className="min-w-0 wrap-anywhere">{email}</span>
         <SignOutButton />
       </div>
     </header>

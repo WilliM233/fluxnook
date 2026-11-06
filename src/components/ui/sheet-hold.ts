@@ -13,8 +13,10 @@ import { useEffect, useRef } from "react";
  *
  * `onClose` says whether a write was tried, since no answer isn't no write: a
  * post can land and lose its answer, and then the page may know better than the
- * sheet (1.7.3 S1). A sheet mounts `<Dialog open {...hold.dialog}>` and
- * `<Button {...hold.cancel}>`.
+ * sheet (1.7.3 S1). What goes into a field while a write is out isn't in the
+ * write, and the good answer would close the sheet over it, so the fields hold
+ * too (1.8.1 B3). A sheet mounts `<Dialog open {...hold.dialog}>`,
+ * `<Button {...hold.cancel}>` and `<fieldset {...hold.fields}>`.
  */
 export function useSheetHold({
   busy,
@@ -39,5 +41,7 @@ export function useSheetHold({
       },
     },
     cancel: { disabled: held, onClick: () => onClose(tried.current) },
+    // A wrapper only: no group for a screen reader, no box on the page.
+    fields: { disabled: held, role: "none", className: "contents" },
   };
 }

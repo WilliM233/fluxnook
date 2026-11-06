@@ -25,6 +25,9 @@ STARS_SPEC=tests/e2e/journal-sheets.spec.ts
 TICKS_SPEC=tests/e2e/series-ticks.spec.ts
 
 mkdir -p browse-results
+# A rerun never overwrites a kept report (House Rules step 7): L's walk keeps the
+# Binder's run that section 5 cites.
+[ -s "$REPORT" ] && cp "$REPORT" "browse-results/1.8.1-before-$RUN.txt"
 : >"$REPORT"
 checks=0
 failed=0

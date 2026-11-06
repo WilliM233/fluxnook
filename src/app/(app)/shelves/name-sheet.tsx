@@ -76,30 +76,32 @@ export function NameSheet({
         </DialogHeader>
 
         <form noValidate onSubmit={save} className="flex flex-col gap-5">
-          <div className="flex flex-col gap-2">
-            <Label
-              htmlFor="section-name"
-              className="text-[13px] font-semibold text-muted-foreground"
-            >
-              Name
-            </Label>
-            <Input
-              id="section-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              aria-invalid={field ? true : undefined}
-              aria-describedby={field ? "section-name-error" : undefined}
-              className="h-11 rounded-[10px] bg-background px-3"
-            />
-            {field && (
-              <p
-                id="section-name-error"
-                className="text-[13px] text-destructive"
+          <fieldset {...hold.fields}>
+            <div className="flex flex-col gap-2">
+              <Label
+                htmlFor="section-name"
+                className="text-[13px] font-semibold text-muted-foreground"
               >
-                {field}
-              </p>
-            )}
-          </div>
+                Name
+              </Label>
+              <Input
+                id="section-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                aria-invalid={field ? true : undefined}
+                aria-describedby={field ? "section-name-error" : undefined}
+                className="h-11 rounded-[10px] bg-background px-3"
+              />
+              {field && (
+                <p
+                  id="section-name-error"
+                  className="text-[13px] text-destructive"
+                >
+                  {field}
+                </p>
+              )}
+            </div>
+          </fieldset>
 
           {error && (
             <p role="alert" className="text-sm text-destructive">

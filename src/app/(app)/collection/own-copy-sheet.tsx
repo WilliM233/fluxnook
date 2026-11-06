@@ -135,110 +135,112 @@ export function OwnCopySheet({
         </DialogHeader>
 
         <form noValidate onSubmit={save} className="flex flex-col gap-5">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="flex flex-col gap-2">
-              {copy ? (
-                <>
-                  <p className="text-sm leading-none font-medium">Format</p>
-                  <p className="flex h-11 items-center text-base">
-                    {formatLabel(copy.format)}
-                  </p>
-                </>
-              ) : (
-                <>
-                  <Label htmlFor="copy-format">Format</Label>
-                  <select
-                    id="copy-format"
-                    value={choice}
-                    onChange={(e) => setChoice(e.target.value)}
-                    aria-invalid={errors.format ? true : undefined}
-                    aria-describedby={
-                      errors.format ? "copy-format-error" : undefined
-                    }
-                    className={SELECT}
-                  >
-                    {printed.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                    {printed.length > 0 && lacking.length > 0 && (
-                      <option disabled>──────────</option>
-                    )}
-                    {lacking.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                  <FieldError id="copy-format" error={errors.format} />
-                </>
-              )}
+          <fieldset {...hold.fields}>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="flex flex-col gap-2">
+                {copy ? (
+                  <>
+                    <p className="text-sm leading-none font-medium">Format</p>
+                    <p className="flex h-11 items-center text-base">
+                      {formatLabel(copy.format)}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <Label htmlFor="copy-format">Format</Label>
+                    <select
+                      id="copy-format"
+                      value={choice}
+                      onChange={(e) => setChoice(e.target.value)}
+                      aria-invalid={errors.format ? true : undefined}
+                      aria-describedby={
+                        errors.format ? "copy-format-error" : undefined
+                      }
+                      className={SELECT}
+                    >
+                      {printed.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                      {printed.length > 0 && lacking.length > 0 && (
+                        <option disabled>──────────</option>
+                      )}
+                      {lacking.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    <FieldError id="copy-format" error={errors.format} />
+                  </>
+                )}
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="copy-condition">Condition</Label>
+                <select
+                  id="copy-condition"
+                  value={fields.condition}
+                  onChange={(e) =>
+                    setFields({ ...fields, condition: e.target.value })
+                  }
+                  aria-invalid={errors.condition ? true : undefined}
+                  aria-describedby={
+                    errors.condition ? "copy-condition-error" : undefined
+                  }
+                  className={SELECT}
+                >
+                  <option value="" />
+                  {conditions.map((word) => (
+                    <option key={word} value={word}>
+                      {conditionLabel(word)}
+                    </option>
+                  ))}
+                </select>
+                <FieldError id="copy-condition" error={errors.condition} />
+              </div>
             </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="copy-condition">Condition</Label>
-              <select
-                id="copy-condition"
-                value={fields.condition}
+
+            <div className="flex flex-col gap-2 sm:w-[calc(50%-0.5rem)]">
+              <Label htmlFor="copy-acquired">Acquired</Label>
+              <Input
+                id="copy-acquired"
+                type="date"
+                max={localToday()}
+                value={fields.acquiredOn}
                 onChange={(e) =>
-                  setFields({ ...fields, condition: e.target.value })
+                  setFields({ ...fields, acquiredOn: e.target.value })
                 }
-                aria-invalid={errors.condition ? true : undefined}
+                aria-invalid={errors.acquiredOn ? true : undefined}
                 aria-describedby={
-                  errors.condition ? "copy-condition-error" : undefined
+                  errors.acquiredOn ? "copy-acquired-error" : undefined
                 }
-                className={SELECT}
-              >
-                <option value="" />
-                {conditions.map((word) => (
-                  <option key={word} value={word}>
-                    {conditionLabel(word)}
-                  </option>
-                ))}
-              </select>
-              <FieldError id="copy-condition" error={errors.condition} />
+                className={FIELD}
+              />
+              <FieldError id="copy-acquired" error={errors.acquiredOn} />
             </div>
-          </div>
 
-          <div className="flex flex-col gap-2 sm:w-[calc(50%-0.5rem)]">
-            <Label htmlFor="copy-acquired">Acquired</Label>
-            <Input
-              id="copy-acquired"
-              type="date"
-              max={localToday()}
-              value={fields.acquiredOn}
-              onChange={(e) =>
-                setFields({ ...fields, acquiredOn: e.target.value })
-              }
-              aria-invalid={errors.acquiredOn ? true : undefined}
-              aria-describedby={
-                errors.acquiredOn ? "copy-acquired-error" : undefined
-              }
-              className={FIELD}
-            />
-            <FieldError id="copy-acquired" error={errors.acquiredOn} />
-          </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="copy-note">Note</Label>
+              <Textarea
+                id="copy-note"
+                rows={3}
+                maxLength={2_000}
+                placeholder="Where it came from, what's odd about it, anything the shelf should remember."
+                value={fields.note}
+                onChange={(e) => setFields({ ...fields, note: e.target.value })}
+                aria-invalid={errors.note ? true : undefined}
+                aria-describedby={errors.note ? "copy-note-error" : undefined}
+                className="min-h-22 rounded-[10px] bg-background px-3 py-2.5 text-base"
+              />
+              <FieldError id="copy-note" error={errors.note} />
+            </div>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="copy-note">Note</Label>
-            <Textarea
-              id="copy-note"
-              rows={3}
-              maxLength={2_000}
-              placeholder="Where it came from, what's odd about it, anything the shelf should remember."
-              value={fields.note}
-              onChange={(e) => setFields({ ...fields, note: e.target.value })}
-              aria-invalid={errors.note ? true : undefined}
-              aria-describedby={errors.note ? "copy-note-error" : undefined}
-              className="min-h-22 rounded-[10px] bg-background px-3 py-2.5 text-base"
-            />
-            <FieldError id="copy-note" error={errors.note} />
-          </div>
-
-          <p className="text-[13px] text-dim">
-            A copy is yours alone. It stays private until Volume 2, when you can
-            share a shelf by link.
-          </p>
+            <p className="text-[13px] text-dim">
+              A copy is yours alone. It stays private until Volume 2, when you
+              can share a shelf by link.
+            </p>
+          </fieldset>
 
           {refused.line && (
             <p role="alert" className="text-sm text-destructive">

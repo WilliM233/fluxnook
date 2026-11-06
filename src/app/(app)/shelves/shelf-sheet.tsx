@@ -79,53 +79,58 @@ export function ShelfSheet({
         </DialogHeader>
 
         <form noValidate onSubmit={save} className="flex flex-col gap-5">
-          <div className="flex flex-col gap-2">
-            <Label
-              htmlFor="shelf-name"
-              className="text-[13px] font-semibold text-muted-foreground"
-            >
-              Name
-            </Label>
-            <Input
-              id="shelf-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              aria-invalid={fields.name ? true : undefined}
-              aria-describedby={fields.name ? "shelf-name-error" : undefined}
-              className="h-11 rounded-[10px] bg-background px-3"
-            />
-            {fields.name && (
-              <p id="shelf-name-error" className="text-[13px] text-destructive">
-                {fields.name}
-              </p>
-            )}
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label
-              htmlFor="shelf-description"
-              className="text-[13px] font-semibold text-muted-foreground"
-            >
-              Description
-            </Label>
-            <Textarea
-              id="shelf-description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              aria-invalid={fields.description ? true : undefined}
-              aria-describedby={
-                fields.description ? "shelf-description-error" : undefined
-              }
-              className="min-h-24 rounded-[10px] bg-background px-3"
-            />
-            {fields.description && (
-              <p
-                id="shelf-description-error"
-                className="text-[13px] text-destructive"
+          <fieldset {...hold.fields}>
+            <div className="flex flex-col gap-2">
+              <Label
+                htmlFor="shelf-name"
+                className="text-[13px] font-semibold text-muted-foreground"
               >
-                {fields.description}
-              </p>
-            )}
-          </div>
+                Name
+              </Label>
+              <Input
+                id="shelf-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                aria-invalid={fields.name ? true : undefined}
+                aria-describedby={fields.name ? "shelf-name-error" : undefined}
+                className="h-11 rounded-[10px] bg-background px-3"
+              />
+              {fields.name && (
+                <p
+                  id="shelf-name-error"
+                  className="text-[13px] text-destructive"
+                >
+                  {fields.name}
+                </p>
+              )}
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label
+                htmlFor="shelf-description"
+                className="text-[13px] font-semibold text-muted-foreground"
+              >
+                Description
+              </Label>
+              <Textarea
+                id="shelf-description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                aria-invalid={fields.description ? true : undefined}
+                aria-describedby={
+                  fields.description ? "shelf-description-error" : undefined
+                }
+                className="min-h-24 rounded-[10px] bg-background px-3"
+              />
+              {fields.description && (
+                <p
+                  id="shelf-description-error"
+                  className="text-[13px] text-destructive"
+                >
+                  {fields.description}
+                </p>
+              )}
+            </div>
+          </fieldset>
 
           {error && (
             <p role="alert" className="text-sm text-destructive">

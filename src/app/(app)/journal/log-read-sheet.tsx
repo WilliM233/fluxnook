@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -92,7 +92,7 @@ export function LogReadSheet({
   item: SheetItem;
   read?: SheetRead;
   onSaved: () => void;
-  onClose: (tried: boolean) => void;
+  onClose: (tried: boolean, lost: boolean) => void;
 }) {
   const w = words(item.type);
   const [form, setForm] = useState<ReadForm>(() =>
@@ -119,7 +119,13 @@ export function LogReadSheet({
   const [busy, setBusy] = useState(false);
   const reading = form.status === "in_progress";
   const errors = refused.fields;
-  const hold = useSheetHold({ busy, typed: body.trim() !== "", onClose });
+  // No answer at all, unlike a refusal: the door may have to act on it (1.8.1 B2).
+  const lost = useRef(false);
+  const hold = useSheetHold({
+    busy,
+    typed: body.trim() !== "",
+    onClose: (tried) => onClose(tried, lost.current),
+  });
 
   function pick(status: Status) {
     setForm((current) => ({
@@ -136,6 +142,7 @@ export function LogReadSheet({
   async function save(event: React.FormEvent) {
     event.preventDefault();
     setBusy(true);
+    lost.current = false;
     setRefused(NONE);
     const failed = `Couldn't ${read ? "save" : "log"} that ${verb(item.type)} just now. Try again.`;
     try {
@@ -155,6 +162,7 @@ export function LogReadSheet({
       }
       setRefused(await refusalOf(response, DRAWN, failed));
     } catch {
+      lost.current = true;
       setRefused({ fields: {}, line: failed });
     }
     setBusy(false);
@@ -175,102 +183,105 @@ export function LogReadSheet({
         </DialogHeader>
 
         <form noValidate onSubmit={save} className="flex flex-col gap-5">
-          <div className="flex flex-col gap-2">
-            <p className={HEADING}>Where it stands</p>
-            <WhereItStands
-              type={item.type}
-              status={form.status}
-              onPick={pick}
-            />
-            <FieldError id="read-status" error={errors.status} />
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
+          <fieldset {...hold.fields}>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="read-started" className={HEADING}>
-                Started
-              </Label>
-              <Input
-                id="read-started"
-                type="date"
-                value={form.startedOn}
-                onChange={(e) =>
-                  setForm({ ...form, startedOn: e.target.value })
-                }
-                aria-invalid={errors.startedOn ? true : undefined}
-                aria-describedby={
-                  errors.startedOn ? "read-started-error" : undefined
-                }
-                className={FIELD}
-              />
-              <FieldError id="read-started" error={errors.startedOn} />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="read-finished" className={HEADING}>
-                Finished
-              </Label>
-              <Input
-                id="read-finished"
-                type="date"
-                value={reading ? "" : form.finishedOn}
-                disabled={reading}
-                onChange={(e) =>
-                  setForm({ ...form, finishedOn: e.target.value })
-                }
-                aria-invalid={errors.finishedOn ? true : undefined}
-                aria-describedby={
-                  errors.finishedOn ? "read-finished-error" : undefined
-                }
-                className={FIELD}
-              />
-              <FieldError id="read-finished" error={errors.finishedOn} />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <p className={HEADING}>Stars</p>
-            <StarControl
-              label="Stars"
-              clear
-              value={form.stars}
-              onChange={(stars) => setForm({ ...form, stars })}
-            />
-            <p className="text-[13px] text-dim">
-              The left half of a star is the half. Arrow keys move a half step.
-            </p>
-            <FieldError id="read-stars" error={errors.stars} />
-          </div>
-
-          {!read && (
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="read-entry" className={HEADING}>
-                A first entry, if you like
-              </Label>
-              <Textarea
-                id="read-entry"
-                rows={4}
-                value={body}
-                onChange={(e) => setBody(e.target.value)}
-                aria-invalid={errors["entry.body"] ? true : undefined}
-                aria-describedby={
-                  errors["entry.body"] ? "read-entry-error" : undefined
-                }
-                className="min-h-28 rounded-[10px] bg-background px-3 py-2.5 text-base"
-              />
-              <FieldError id="read-entry" error={errors["entry.body"]} />
-              <AnchorFields
-                id="read-entry-where"
+              <p className={HEADING}>Where it stands</p>
+              <WhereItStands
                 type={item.type}
-                form={item.form}
-                pin={pin}
-                onPin={setPin}
-                errors={{
-                  anchorKind: errors["entry.anchorKind"],
-                  anchorValue: errors["entry.anchorValue"],
-                }}
+                status={form.status}
+                onPick={pick}
               />
+              <FieldError id="read-status" error={errors.status} />
             </div>
-          )}
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="read-started" className={HEADING}>
+                  Started
+                </Label>
+                <Input
+                  id="read-started"
+                  type="date"
+                  value={form.startedOn}
+                  onChange={(e) =>
+                    setForm({ ...form, startedOn: e.target.value })
+                  }
+                  aria-invalid={errors.startedOn ? true : undefined}
+                  aria-describedby={
+                    errors.startedOn ? "read-started-error" : undefined
+                  }
+                  className={FIELD}
+                />
+                <FieldError id="read-started" error={errors.startedOn} />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="read-finished" className={HEADING}>
+                  Finished
+                </Label>
+                <Input
+                  id="read-finished"
+                  type="date"
+                  value={reading ? "" : form.finishedOn}
+                  disabled={reading}
+                  onChange={(e) =>
+                    setForm({ ...form, finishedOn: e.target.value })
+                  }
+                  aria-invalid={errors.finishedOn ? true : undefined}
+                  aria-describedby={
+                    errors.finishedOn ? "read-finished-error" : undefined
+                  }
+                  className={FIELD}
+                />
+                <FieldError id="read-finished" error={errors.finishedOn} />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <p className={HEADING}>Stars</p>
+              <StarControl
+                label="Stars"
+                clear
+                value={form.stars}
+                onChange={(stars) => setForm({ ...form, stars })}
+              />
+              <p className="text-[13px] text-dim">
+                The left half of a star is the half. Arrow keys move a half
+                step.
+              </p>
+              <FieldError id="read-stars" error={errors.stars} />
+            </div>
+
+            {!read && (
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="read-entry" className={HEADING}>
+                  A first entry, if you like
+                </Label>
+                <Textarea
+                  id="read-entry"
+                  rows={4}
+                  value={body}
+                  onChange={(e) => setBody(e.target.value)}
+                  aria-invalid={errors["entry.body"] ? true : undefined}
+                  aria-describedby={
+                    errors["entry.body"] ? "read-entry-error" : undefined
+                  }
+                  className="min-h-28 rounded-[10px] bg-background px-3 py-2.5 text-base"
+                />
+                <FieldError id="read-entry" error={errors["entry.body"]} />
+                <AnchorFields
+                  id="read-entry-where"
+                  type={item.type}
+                  form={item.form}
+                  pin={pin}
+                  onPin={setPin}
+                  errors={{
+                    anchorKind: errors["entry.anchorKind"],
+                    anchorValue: errors["entry.anchorValue"],
+                  }}
+                />
+              </div>
+            )}
+          </fieldset>
 
           {refused.line && (
             <p role="alert" className="text-sm text-destructive">

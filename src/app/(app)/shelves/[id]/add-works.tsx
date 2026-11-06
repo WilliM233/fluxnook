@@ -101,108 +101,115 @@ export function AddWorks({
           </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
             Pick from your catalog. Not there yet?{" "}
-            <Link
-              href="/search"
-              className="text-primary hover:text-accent-hover"
-            >
-              Search the providers
-            </Link>{" "}
+            {/* A link is a door out too: no leaving over a post (1.8.1 B1). */}
+            {busy ? (
+              "Search the providers"
+            ) : (
+              <Link
+                href="/search"
+                className="text-primary hover:text-accent-hover"
+              >
+                Search the providers
+              </Link>
+            )}{" "}
             and come back.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-2">
-          <Label
-            htmlFor="find-works"
-            className="text-xs font-semibold tracking-wider text-muted-foreground uppercase"
-          >
-            Find
-          </Label>
-          <Input
-            id="find-works"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="h-11 rounded-[10px] bg-background px-3"
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label
-            htmlFor="into-section"
-            className="text-xs font-semibold tracking-wider text-muted-foreground uppercase"
-          >
-            Into
-          </Label>
-          <select
-            id="into-section"
-            value={into}
-            onChange={(e) => setInto(e.target.value)}
-            className={selectClass}
-          >
-            {/* With sections, the unsectioned works sit above the first one,
+        <fieldset {...hold.fields}>
+          <div className="flex flex-col gap-2">
+            <Label
+              htmlFor="find-works"
+              className="text-xs font-semibold tracking-wider text-muted-foreground uppercase"
+            >
+              Find
+            </Label>
+            <Input
+              id="find-works"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="h-11 rounded-[10px] bg-background px-3"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label
+              htmlFor="into-section"
+              className="text-xs font-semibold tracking-wider text-muted-foreground uppercase"
+            >
+              Into
+            </Label>
+            <select
+              id="into-section"
+              value={into}
+              onChange={(e) => setInto(e.target.value)}
+              className={selectClass}
+            >
+              {/* With sections, the unsectioned works sit above the first one,
                 so "end" would point the wrong way. */}
-            <option value="">
-              {sections.length > 0 ? "No section" : "At the end"}
-            </option>
-            {sections.map((section) => (
-              <option key={section.id} value={section.id}>
-                {section.name}
+              <option value="">
+                {sections.length > 0 ? "No section" : "At the end"}
               </option>
-            ))}
-          </select>
-        </div>
+              {sections.map((section) => (
+                <option key={section.id} value={section.id}>
+                  {section.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <p className="text-[13px] text-dim">
-          Showing {shown.length} of {works.length}. The ones already on this
-          shelf are ticked and stay put.
-        </p>
+          <p className="text-[13px] text-dim">
+            Showing {shown.length} of {works.length}. The ones already on this
+            shelf are ticked and stay put.
+          </p>
 
-        <div className="flex max-h-[50vh] flex-col gap-2 overflow-y-auto pr-1">
-          {shown.map((work) => {
-            const at = held.get(work.id);
-            const on = at !== undefined || ticked.has(work.id);
-            const line = pickerLine(work);
-            return (
-              <label
-                key={work.id}
-                data-testid="pick"
-                className={`flex min-h-11 flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border px-3.5 py-2.5 ${
-                  at !== undefined ? "opacity-60" : on ? "border-primary" : ""
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={on}
-                  disabled={at !== undefined}
-                  onChange={() => toggle(work.id)}
-                  className="size-4 accent-primary"
-                />
-                <span
-                  data-testid="pick-title"
-                  className="font-heading text-[22px] leading-tight font-semibold text-foreground"
+          <div className="flex max-h-[50vh] flex-col gap-2 overflow-y-auto pr-1">
+            {shown.map((work) => {
+              const at = held.get(work.id);
+              const on = at !== undefined || ticked.has(work.id);
+              const line = pickerLine(work);
+              return (
+                <label
+                  key={work.id}
+                  data-testid="pick"
+                  className={`flex min-h-11 flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border px-3.5 py-2.5 ${
+                    at !== undefined ? "opacity-60" : on ? "border-primary" : ""
+                  }`}
                 >
-                  {work.title}
-                </span>
-                <TypePill type={work.type} />
-                {line && (
+                  <input
+                    type="checkbox"
+                    checked={on}
+                    disabled={at !== undefined}
+                    onChange={() => toggle(work.id)}
+                    className="size-4 accent-primary"
+                  />
                   <span
-                    data-testid="pick-line"
-                    className="text-[15px] text-muted-foreground"
+                    data-testid="pick-title"
+                    className="font-heading text-[22px] leading-tight font-semibold text-foreground"
                   >
-                    {line}
+                    {work.title}
                   </span>
-                )}
-                {at !== undefined && (
-                  <span className="text-[13px] text-dim">
-                    on this shelf, #{at}
-                  </span>
-                )}
-              </label>
-            );
-          })}
-          {matched.length > shown.length && (
-            <p className="text-[13px] text-dim">Narrow it to see the rest.</p>
-          )}
-        </div>
+                  <TypePill type={work.type} />
+                  {line && (
+                    <span
+                      data-testid="pick-line"
+                      className="text-[15px] text-muted-foreground"
+                    >
+                      {line}
+                    </span>
+                  )}
+                  {at !== undefined && (
+                    <span className="text-[13px] text-dim">
+                      on this shelf, #{at}
+                    </span>
+                  )}
+                </label>
+              );
+            })}
+            {matched.length > shown.length && (
+              <p className="text-[13px] text-dim">Narrow it to see the rest.</p>
+            )}
+          </div>
+        </fieldset>
 
         {error && (
           <p role="alert" className="text-sm text-destructive">

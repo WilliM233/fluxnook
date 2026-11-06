@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -15,7 +15,8 @@ import { useSheetHold } from "@/components/ui/sheet-hold";
  * A delete that asks once (A7): one sentence, Cancel, and a primary named
  * for what it does. `send` makes the call; a 2xx is `onDone`, anything else
  * stays in the sheet with the route's words. It holds while the delete is out
- * (`useSheetHold`), and `onClose` says whether one was tried.
+ * (`useSheetHold`), and `onClose` says whether one was tried, and whether it
+ * got no answer at all, which a refusal isn't.
  */
 export function ConfirmSheet({
   title,
@@ -32,14 +33,19 @@ export function ConfirmSheet({
   failed: string;
   send: () => Promise<Response>;
   onDone: () => void;
-  onClose: (tried: boolean) => void;
+  onClose: (tried: boolean, lost: boolean) => void;
 }) {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const hold = useSheetHold({ busy, onClose });
+  const lost = useRef(false);
+  const hold = useSheetHold({
+    busy,
+    onClose: (tried) => onClose(tried, lost.current),
+  });
 
   async function go() {
     setBusy(true);
+    lost.current = false;
     setError(null);
     try {
       const response = await send();
@@ -50,6 +56,7 @@ export function ConfirmSheet({
       const body = await response.json().catch(() => null);
       setError(body?.error?.message ?? failed);
     } catch {
+      lost.current = true;
       setError(failed);
     }
     setBusy(false);

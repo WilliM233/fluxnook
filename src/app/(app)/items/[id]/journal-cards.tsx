@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRef, useState, useTransition } from "react";
 import { EntrySheet } from "@/app/(app)/journal/entry-sheet";
 import {
   LogReadSheet,
@@ -72,6 +72,9 @@ export function JournalCards({
   const [alerts, setAlerts] = useState<Record<string, string>>({});
   // The cards saving now, and the stars each will send next.
   const saving = useRef(new Set<string>());
+  // Edit this read and Edit entry send what they opened with, so they wait for
+  // the read a sheet's write asked for: a stale one puts the old back (1.8.1 B4).
+  const [refreshing, refresh] = useTransition();
   const queued = useRef(new Map<string, number | null>());
 
   /** The stars a card shows: a click saving, else the newer version. */
@@ -142,7 +145,7 @@ export function JournalCards({
   /** A sheet saved: the page's read is the one to show now. */
   function saved() {
     setSheet(null);
-    router.refresh();
+    refresh(() => router.refresh());
   }
 
   /** After a write that was tried, the page may know better than the sheet. */
@@ -198,6 +201,7 @@ export function JournalCards({
                   <button
                     type="button"
                     aria-label={w.editRead}
+                    disabled={refreshing}
                     className={TEXT_BUTTON}
                     onClick={() =>
                       setSheet({ kind: "edit-read", card: { ...card, stars } })
@@ -240,6 +244,7 @@ export function JournalCards({
                         <button
                           type="button"
                           aria-label="Edit entry"
+                          disabled={refreshing}
                           className={TEXT_BUTTON}
                           onClick={() =>
                             setSheet({ kind: "edit-entry", card, entry })

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -48,15 +48,24 @@ export function ContentsEditor({
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  // The sheet opens from the page's read and a Save replaces the whole list, so
+  // it waits for the read a write asked for: a stale one drops what landed
+  // (1.8.1 B4).
+  const [refreshing, refresh] = useTransition();
 
   function close(tried: boolean) {
     setOpen(false);
-    if (tried) router.refresh();
+    if (tried) refresh(() => router.refresh());
   }
 
   return (
     <>
-      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={refreshing}
+        onClick={() => setOpen(true)}
+      >
         Edit contents
       </Button>
       {open && (
@@ -167,55 +176,57 @@ function ContentsSheet({
           </DialogDescription>
         </DialogHeader>
 
-        <Input
-          aria-label="A series or a title"
-          placeholder="A series or a title"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <p className="text-[13px] text-dim">
-          Showing {shown.length} of {comics.length}
-        </p>
+        <fieldset {...hold.fields}>
+          <Input
+            aria-label="A series or a title"
+            placeholder="A series or a title"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <p className="text-[13px] text-dim">
+            Showing {shown.length} of {comics.length}
+          </p>
 
-        <div className="flex max-h-[50vh] flex-col gap-4 overflow-y-auto pr-1">
-          {groupsOf(shown).map(([label, rows]) => (
-            <fieldset key={label} className="flex flex-col gap-1.5">
-              <legend className="mb-1.5 text-xs font-semibold tracking-wider text-dim uppercase">
-                {label}
-              </legend>
-              {rows.map((comic) => {
-                const on = ticked.has(comic.id);
-                return (
-                  <label
-                    key={comic.id}
-                    className={`flex min-h-11 items-baseline gap-3 rounded-xl border px-3.5 py-2.5 ${on ? "border-primary" : ""}`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={on}
-                      onChange={() => toggle(comic.id)}
-                      className="size-4 self-center accent-primary"
-                    />
-                    {comic.number !== null && (
-                      <span className="text-sm text-dim tabular-nums">
-                        #{comic.number}
-                      </span>
-                    )}
-                    <span className="font-heading text-lg font-semibold text-foreground">
-                      {comic.title}
-                    </span>
-                    <span className="text-[13px] text-dim">
-                      {releasedLabel(
-                        comic.released_on,
-                        comic.released_precision,
+          <div className="flex max-h-[50vh] flex-col gap-4 overflow-y-auto pr-1">
+            {groupsOf(shown).map(([label, rows]) => (
+              <fieldset key={label} className="flex flex-col gap-1.5">
+                <legend className="mb-1.5 text-xs font-semibold tracking-wider text-dim uppercase">
+                  {label}
+                </legend>
+                {rows.map((comic) => {
+                  const on = ticked.has(comic.id);
+                  return (
+                    <label
+                      key={comic.id}
+                      className={`flex min-h-11 items-baseline gap-3 rounded-xl border px-3.5 py-2.5 ${on ? "border-primary" : ""}`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={on}
+                        onChange={() => toggle(comic.id)}
+                        className="size-4 self-center accent-primary"
+                      />
+                      {comic.number !== null && (
+                        <span className="text-sm text-dim tabular-nums">
+                          #{comic.number}
+                        </span>
                       )}
-                    </span>
-                  </label>
-                );
-              })}
-            </fieldset>
-          ))}
-        </div>
+                      <span className="font-heading text-lg font-semibold text-foreground">
+                        {comic.title}
+                      </span>
+                      <span className="text-[13px] text-dim">
+                        {releasedLabel(
+                          comic.released_on,
+                          comic.released_precision,
+                        )}
+                      </span>
+                    </label>
+                  );
+                })}
+              </fieldset>
+            ))}
+          </div>
+        </fieldset>
 
         {error && (
           <p role="alert" className="text-sm text-destructive">

@@ -209,7 +209,10 @@ export function AddToShelf({
           </DialogDescription>
         </DialogHeader>
 
-        <fieldset className="flex flex-col gap-2.5">
+        <fieldset
+          disabled={hold.fields.disabled}
+          className="flex flex-col gap-2.5"
+        >
           <legend className="mb-2.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
             Which shelf
           </legend>

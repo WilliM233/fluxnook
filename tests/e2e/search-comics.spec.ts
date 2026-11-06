@@ -828,9 +828,6 @@ test.describe("the series door", () => {
   });
 });
 
-// A12 (Ch 1.5.3): Add with the select on No asks once before a run goes in
-// beside the ones entered by hand. The line counts the runs in the select,
-// read here from the rule seriesGroups keeps, since other specs attach runs.
 test("the hold: Add on the series sheet", async ({
   signedIn: { page, email },
 }) => {
@@ -861,6 +858,9 @@ test("the hold: Add on the series sheet", async ({
   expect(imported()).toBe(before + 1);
 });
 
+// A12 (Ch 1.5.3): Add with the select on No asks once before a run goes in
+// beside the ones entered by hand. The line counts the runs in the select,
+// read here from the rule seriesGroups keeps, since other specs attach runs.
 test.describe("A12's line", () => {
   const TALES = "/search?q=tales%20of%20the%20tmnt&type=comic";
   const handRuns = () =>
