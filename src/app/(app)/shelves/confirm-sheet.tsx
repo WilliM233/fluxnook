@@ -9,13 +9,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useSheetHold } from "@/components/ui/sheet-hold";
 
 /**
  * A delete that asks once (A7): one sentence, Cancel, and a primary named
  * for what it does. `send` makes the call; a 2xx is `onDone`, anything else
- * stays in the sheet with the route's words. Once it's sent the sheet stays
- * until the answer: Cancel can't take back a delete in flight, so it doesn't
- * pretend to (1.7.2 Rummage B1).
+ * stays in the sheet with the route's words. It holds while the delete is out
+ * (`useSheetHold`), and `onClose` says whether one was tried.
  */
 export function ConfirmSheet({
   title,
@@ -32,10 +32,11 @@ export function ConfirmSheet({
   failed: string;
   send: () => Promise<Response>;
   onDone: () => void;
-  onClose: () => void;
+  onClose: (tried: boolean) => void;
 }) {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const hold = useSheetHold({ busy, onClose });
 
   async function go() {
     setBusy(true);
@@ -55,7 +56,7 @@ export function ConfirmSheet({
   }
 
   return (
-    <Dialog open onOpenChange={(next) => !next && !busy && onClose()}>
+    <Dialog open {...hold.dialog}>
       <DialogContent className="gap-5 border border-line-strong p-7 sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-heading text-[28px] leading-tight font-semibold">
@@ -73,13 +74,7 @@ export function ConfirmSheet({
         )}
 
         <div className="flex flex-wrap items-center justify-end gap-2.5 border-t pt-5">
-          <Button
-            type="button"
-            size="lg"
-            variant="outline"
-            disabled={busy}
-            onClick={onClose}
-          >
+          <Button type="button" size="lg" variant="outline" {...hold.cancel}>
             Cancel
           </Button>
           <Button
