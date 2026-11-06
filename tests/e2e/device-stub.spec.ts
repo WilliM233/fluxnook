@@ -90,9 +90,16 @@ test("two quick Enters on one name make one shelf", async ({ page }) => {
   await expect(field(page)).toBeEnabled();
   await expect(field(page)).toHaveValue("");
 
+  // The first add's row satisfies a read straight away, and a reload then kills
+  // a second add before it commits, so neither can witness one. PGlite runs
+  // queries in order: once a later add shows, any doubled King has landed.
+  await field(page).fill("Bach");
+  await page.getByRole("button", { name: "Add" }).click();
+  await expect(listed(page)).toHaveText(["Bach", "King"]);
+
   await page.reload();
   await expect(page.getByText(COUNTS)).toBeVisible(OPEN);
-  await expect(listed(page)).toHaveText(["King"]);
+  await expect(listed(page)).toHaveText(["Bach", "King"]);
 });
 
 test("a blank name says so and lists nothing", async ({ page }) => {
