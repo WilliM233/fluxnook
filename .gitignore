@@ -21,6 +21,7 @@
 
 # production
 /build
+/device/dist/
 
 # misc
 .DS_Store
