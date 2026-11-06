@@ -48,6 +48,8 @@ export function JournalRows({ days }: { days: DayGroup[] }) {
     setSheet(null);
     router.refresh();
   };
+  // After a write that was tried, the page may know better than the sheet.
+  const close = (tried: boolean) => (tried ? saved() : setSheet(null));
 
   return (
     <>
@@ -125,7 +127,7 @@ export function JournalRows({ days }: { days: DayGroup[] }) {
           readId={sheet.row.readId}
           entry={sheet.row.entry}
           onSaved={saved}
-          onClose={() => setSheet(null)}
+          onClose={close}
         />
       )}
       {sheet?.kind === "delete" && (
@@ -143,7 +145,7 @@ export function JournalRows({ days }: { days: DayGroup[] }) {
             )
           }
           onDone={saved}
-          onClose={() => setSheet(null)}
+          onClose={close}
         />
       )}
     </>

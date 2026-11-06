@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useSheetHold } from "@/components/ui/sheet-hold";
 import { StarControl } from "@/components/ui/star-control";
 import { Textarea } from "@/components/ui/textarea";
 import type { occurrenceStatuses } from "@/db/vocabulary";
@@ -91,7 +92,7 @@ export function LogReadSheet({
   item: SheetItem;
   read?: SheetRead;
   onSaved: () => void;
-  onClose: () => void;
+  onClose: (tried: boolean) => void;
 }) {
   const w = words(item.type);
   const [form, setForm] = useState<ReadForm>(() =>
@@ -118,8 +119,7 @@ export function LogReadSheet({
   const [busy, setBusy] = useState(false);
   const reading = form.status === "in_progress";
   const errors = refused.fields;
-  // Words typed close only on Cancel (1.6.2 Raccoon S3).
-  const typed = body.trim() !== "";
+  const hold = useSheetHold({ busy, typed: body.trim() !== "", onClose });
 
   function pick(status: Status) {
     setForm((current) => ({
@@ -161,7 +161,7 @@ export function LogReadSheet({
   }
 
   return (
-    <Dialog open onOpenChange={(next) => !next && !typed && onClose()}>
+    <Dialog open {...hold.dialog}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] gap-5 overflow-y-auto border border-line-strong p-7 sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="font-heading text-[28px] leading-tight font-semibold">
@@ -279,7 +279,7 @@ export function LogReadSheet({
           )}
 
           <div className="flex flex-wrap items-center justify-end gap-2.5 border-t pt-5">
-            <Button type="button" size="lg" variant="outline" onClick={onClose}>
+            <Button type="button" size="lg" variant="outline" {...hold.cancel}>
               Cancel
             </Button>
             <Button type="submit" size="lg" disabled={busy}>

@@ -145,6 +145,12 @@ export function JournalCards({
     router.refresh();
   }
 
+  /** After a write that was tried, the page may know better than the sheet. */
+  function close(tried: boolean) {
+    if (tried) saved();
+    else setSheet(null);
+  }
+
   return (
     <>
       <div className="flex flex-wrap items-center gap-3">
@@ -276,7 +282,7 @@ export function JournalCards({
         <LogReadSheet
           item={item}
           onSaved={saved}
-          onClose={() => setSheet(null)}
+          onClose={close}
         />
       )}
       {sheet?.kind === "edit-read" && (
@@ -284,7 +290,7 @@ export function JournalCards({
           item={item}
           read={sheet.card}
           onSaved={saved}
-          onClose={() => setSheet(null)}
+          onClose={close}
         />
       )}
       {(sheet?.kind === "add-entry" || sheet?.kind === "edit-entry") && (
@@ -293,7 +299,7 @@ export function JournalCards({
           readId={sheet.card.id}
           entry={sheet.kind === "edit-entry" ? sheet.entry : undefined}
           onSaved={saved}
-          onClose={() => setSheet(null)}
+          onClose={close}
         />
       )}
       {sheet?.kind === "delete-entry" && (
@@ -311,7 +317,7 @@ export function JournalCards({
             )
           }
           onDone={saved}
-          onClose={() => setSheet(null)}
+          onClose={close}
         />
       )}
       {sheet?.kind === "delete-read" && (
@@ -327,7 +333,7 @@ export function JournalCards({
             )
           }
           onDone={saved}
-          onClose={() => setSheet(null)}
+          onClose={close}
         />
       )}
     </>
