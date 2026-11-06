@@ -23,16 +23,28 @@ async function readOpened(): Promise<Opened> {
   return { device, counts, shelves };
 }
 
+/** The shapes a failed load of PGlite's files takes; nothing else here fetches. */
+function isLoadFailure(reason: unknown) {
+  return (
+    reason instanceof TypeError ||
+    reason instanceof WebAssembly.CompileError ||
+    reason instanceof WebAssembly.LinkError ||
+    reason instanceof WebAssembly.RuntimeError
+  );
+}
+
 /**
  * One open per page load: PGlite takes one connection per instance. A failed
  * wasm fetch rejects inside PGlite where no promise of ours hears it, and its
- * `exec` then waits forever, so a rejection nobody handled while the open is out
- * is the open failing.
+ * `exec` then waits forever, so a load failure nobody handled while the open is
+ * out is the open failing. Any other rejection isn't the database's.
  */
 async function open(): Promise<Opened> {
   let hear = (_event: PromiseRejectionEvent) => {};
   const unheard = new Promise<never>((_resolve, reject) => {
-    hear = (event) => reject(event.reason);
+    hear = (event) => {
+      if (isLoadFailure(event.reason)) reject(event.reason);
+    };
     window.addEventListener("unhandledrejection", hear);
   });
   try {
@@ -43,8 +55,11 @@ async function open(): Promise<Opened> {
 }
 const opening = open();
 
+/** Drizzle's own message is the SQL and its params; the reason is its `cause`. */
 function wordsOf(error: unknown) {
-  return error instanceof Error ? error.message : String(error);
+  let root = error;
+  while (root instanceof Error && root.cause) root = root.cause;
+  return root instanceof Error ? root.message : String(root);
 }
 
 /**
@@ -73,7 +88,7 @@ export function StubPage() {
     );
   }, []);
 
-  // A disabled field drops focus, so it comes back when the hold lifts.
+  // A click on Add leaves focus on a button the hold disables.
   useEffect(() => {
     if (opened && !adding) field.current?.focus();
   }, [opened, adding]);
@@ -84,11 +99,15 @@ export function StubPage() {
     addOut.current = true;
     setAdding(true);
     setProblem(null);
+    // Cleared now and left live, so what's typed while the add is out is the next
+    // name. A disabled field dropped those letters and kept the rest.
+    const submitted = name;
+    setName("");
     try {
-      const shelf = await addShelf(opened.device.db, name);
+      const shelf = await addShelf(opened.device.db, submitted);
       setShelves((current) => [shelf, ...current]);
-      setName("");
     } catch (error) {
+      setName((current) => (current === "" ? submitted : current));
       setProblem(
         error instanceof ShelfNameRefused
           ? error.message
@@ -102,16 +121,17 @@ export function StubPage() {
 
   if (openFailed) {
     return (
-      <main className="mx-auto max-w-xl p-4">
+      <main className="mx-auto flex max-w-xl flex-col gap-4 p-4 wrap-anywhere">
         <p role="alert" className="text-destructive">
           Fluxnook couldn't open its database: {openFailed}
         </p>
+        <p className="text-sm text-muted-foreground">{version}</p>
       </main>
     );
   }
 
   return (
-    <main className="mx-auto flex max-w-xl flex-col gap-4 p-4">
+    <main className="mx-auto flex max-w-xl flex-col gap-4 p-4 wrap-anywhere">
       <div className="text-sm text-muted-foreground">
         {opened && (
           <p>
@@ -131,7 +151,7 @@ export function StubPage() {
             ref={field}
             value={name}
             onChange={(event) => setName(event.target.value)}
-            disabled={!opened || adding}
+            disabled={!opened}
             className="min-w-0 flex-1 rounded-lg border border-input bg-card px-2.5 py-1.5 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50"
           />
           <button
