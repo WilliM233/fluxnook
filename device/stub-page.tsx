@@ -14,14 +14,32 @@ type Opened = {
   shelves: DeviceShelf[];
 };
 
-/** One open per page load: PGlite takes one connection per instance. */
-async function open(): Promise<Opened> {
+async function readOpened(): Promise<Opened> {
   const device = await openDevice();
   const [counts, shelves] = await Promise.all([
     readCounts(device.client),
     listShelves(device.db),
   ]);
   return { device, counts, shelves };
+}
+
+/**
+ * One open per page load: PGlite takes one connection per instance. A failed
+ * wasm fetch rejects inside PGlite where no promise of ours hears it, and its
+ * `exec` then waits forever, so a rejection nobody handled while the open is out
+ * is the open failing.
+ */
+async function open(): Promise<Opened> {
+  let hear = (_event: PromiseRejectionEvent) => {};
+  const unheard = new Promise<never>((_resolve, reject) => {
+    hear = (event) => reject(event.reason);
+    window.addEventListener("unhandledrejection", hear);
+  });
+  try {
+    return await Promise.race([readOpened(), unheard]);
+  } finally {
+    window.removeEventListener("unhandledrejection", hear);
+  }
 }
 const opening = open();
 
