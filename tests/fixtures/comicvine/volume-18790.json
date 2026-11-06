@@ -1,0 +1,35 @@
+{
+  "error": "OK",
+  "limit": 1,
+  "offset": 0,
+  "number_of_page_results": 1,
+  "number_of_total_results": 1,
+  "status_code": 1,
+  "results": {
+    "count_of_issues": 7,
+    "deck": "Volume 1.",
+    "description": "<p>Spin off from the original <a href=\"/mirage/4010-517/\" data-ref-id=\"4010-517\">Mirage</a> black and white <a href=\"/teenage-mutant-ninja-turtles/4050-20281/\" data-ref-id=\"4050-20281\">Teenage Mutant Ninja Turtles</a> comic, this book written by <a href=\"/kevin-eastman/4040-45054/\" data-ref-id=\"4040-45054\">Kevin Eastman</a> and <a href=\"/peter-laird/4040-45010/\" data-ref-id=\"4040-45010\">Peter Laird</a> and drawn by <a href=\"/jim-lawson/4040-26518/\" data-ref-id=\"4040-26518\">Jim Lawson</a> and inkied by <a href=\"/ryan-brown/4040-45053/\" data-ref-id=\"4040-45053\">Ryan Brown</a>. Each issue began with a front piece of a turtles character reciting a monologue pertaining to the following story to the reader and ending with the words \"let me tell you a story\".</p><p>Despite the fact that the series was short lived it introduced many characters and themes which would be important not only in the turtles comics but in the franchise as a whole. Among the character debuts found in the book are <a href=\"/leatherhead/4005-48851/\" data-ref-id=\"4005-48851\">Leatherhead</a>, The <a href=\"/the-rat-king/4005-50113/\" data-ref-id=\"4005-50113\">Rat King</a>, Complete Carnage and Radical.</p><h4>Collected Editions</h4><ul><li><a href=\"https://www.comicvine.com/tales-of-the-teenage-mutant-ninja-turtles-1-volume/4000-371217/\" data-ref-id=\"4000-371217\">Tales of the Teenage Mutant Ninja Turtles vol. 1</a> (#1-4)</li><li><a href=\"/tales-of-the-teenage-mutant-ninja-turtles-omnibus/4050-110479/\" data-ref-id=\"4050-110479\">Tales of the Teenage Mutant Ninja Turtles Omnibus</a></li><li><a href=\"https://www.comicvine.com/tales-of-the-teenage-mutant-ninja-turtles-2-volume/4000-396458/\" data-ref-id=\"4000-396458\">Tales of the Teenage Mutant Ninja Turtles vol. 2</a> (#5-7)</li></ul>",
+    "id": 18790,
+    "image": {
+      "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/5/52503/2836764-t1_cover.jpg",
+      "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/5/52503/2836764-t1_cover.jpg",
+      "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/5/52503/2836764-t1_cover.jpg",
+      "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/5/52503/2836764-t1_cover.jpg",
+      "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/5/52503/2836764-t1_cover.jpg",
+      "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/5/52503/2836764-t1_cover.jpg",
+      "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/5/52503/2836764-t1_cover.jpg",
+      "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/5/52503/2836764-t1_cover.jpg",
+      "original_url": "https://comicvine.gamespot.com/a/uploads/original/5/52503/2836764-t1_cover.jpg",
+      "image_tags": "All Images"
+    },
+    "name": "Tales of the Teenage Mutant Ninja Turtles",
+    "publisher": {
+      "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-517/",
+      "id": 517,
+      "name": "Mirage"
+    },
+    "site_detail_url": "https://comicvine.gamespot.com/tales-of-the-teenage-mutant-ninja-turtles/4050-18790/",
+    "start_year": "1987"
+  },
+  "version": "1.0"
+}

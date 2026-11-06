@@ -1,0 +1,991 @@
+import type { Page } from "@playwright/test";
+import { db, itemFor, loadFixturesFor, resetComics } from "./harness/fixtures";
+import { expectHeld, heldWrite } from "./harness/held";
+import { shelfId } from "./harness/shelves";
+import { expect, test } from "./harness/signed-in";
+
+// A7's comics group on the three stubs and the loaded fixtures (Ch 1.4.1),
+// and from 1.4.2 the import and the series page. Serial: the `in` test
+// claims the 1984 volume's key with a series row of its own, the imports
+// attach onto the fixture rows every other test reads, and each test starts
+// from the loader's rows.
+test.describe.configure({ mode: "serial" });
+
+const TAG = "search-comics e2e";
+
+function resetSeries() {
+  resetComics();
+  db(`delete from series where name = '${TAG}'`);
+  db(`delete from items where title like '${TAG}%'`);
+}
+
+test.beforeEach(() => resetSeries());
+test.afterAll(() => resetSeries());
+
+const TURTLES = "/search?q=teenage%20mutant%20ninja%20turtles";
+
+// Comic Vine has twenty volumes by this name; the year and publisher pick one.
+function seriesRow(page: Page, year: number, line: string) {
+  return page
+    .getByRole("list", { name: "Comic series", exact: true })
+    .getByRole("listitem")
+    .filter({ has: page.getByText(String(year), { exact: true }) })
+    .filter({ has: page.getByText(line, { exact: true }) });
+}
+
+test("Comics asks Comic Vine only, and rides the URL", async ({
+  signedIn: { page },
+}) => {
+  await page.goto(TURTLES);
+  await page.getByRole("button", { name: "Comics" }).click();
+  await expect(page).toHaveURL(
+    "/search?q=teenage+mutant+ninja+turtles&type=comic",
+  );
+  await expect(page.getByRole("button", { name: "Comics" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(
+    page.getByRole("list", { name: "Comic series", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole("list", { name: "Results" })).toHaveCount(0);
+  await expect(page.getByRole("list", { name: "Books" })).toHaveCount(0);
+  await expect(
+    page.getByRole("heading", { name: "Comic series · from Comic Vine" }),
+  ).toBeVisible();
+});
+
+test("the 1984 row: its year, the Series pill, its line, the looks-like line and Add", async ({
+  signedIn: { page, email },
+}) => {
+  loadFixturesFor(email);
+  await page.goto(`${TURTLES}&type=comic`);
+  const row = seriesRow(page, 1984, "Mirage · 62 issues");
+  await expect(row).toHaveCount(1);
+  await expect(row.getByText("Series", { exact: true })).toBeVisible();
+  await expect(
+    row.getByText(
+      "Looks like one you have: Teenage Mutant Ninja Turtles (Mirage) Vol. 1, 62 issues added by hand",
+    ),
+  ).toBeVisible();
+  await expect(row.getByRole("button", { name: "Add" })).toBeVisible();
+  // The cover from the stub, at Comic Vine's path on the stub's origin.
+  await expect(row.locator("img")).toHaveAttribute(
+    "src",
+    /^http:\/\/127\.0\.0\.1:4012\/a\/uploads\//,
+  );
+  await expect(
+    page.getByText(
+      "Add brings the series and every issue Comic Vine lists for it into the catalog.",
+      { exact: false },
+    ),
+  ).toBeVisible();
+});
+
+test("the 1996 Image row looks like the Image Vol. 3; the IDW 2011 and TM-Semic rows say nothing", async ({
+  signedIn: { page, email },
+}) => {
+  loadFixturesFor(email);
+  await page.goto(`${TURTLES}&type=comic`);
+  await expect(
+    seriesRow(page, 1996, "Image · 23 issues").getByText(
+      "Looks like one you have: Teenage Mutant Ninja Turtles (Image) Vol. 3, 23 issues added by hand",
+    ),
+  ).toBeVisible();
+  for (const row of [
+    seriesRow(page, 2011, "IDW Publishing · 150 issues"),
+    seriesRow(page, 1993, "TM-Semic · 3 issues"),
+  ]) {
+    await expect(row).toHaveCount(1);
+    await expect(row.getByText(/Looks like|In your catalog/)).toHaveCount(0);
+  }
+});
+
+test("All shows three groups in order, the comics label linking to Comic Vine", async ({
+  signedIn: { page },
+}) => {
+  await page.goto(TURTLES);
+  const headings = page.getByRole("heading", { level: 2 });
+  await expect(
+    page.getByRole("heading", { name: "Comic series · from Comic Vine" }),
+  ).toBeVisible();
+  await expect(headings).toHaveText([
+    "Films and TV · from TMDB",
+    "Books · from Open Library",
+    "Comic series · from Comic Vine",
+  ]);
+  await expect(
+    page
+      .getByRole("heading", { name: "Comic series · from Comic Vine" })
+      .getByRole("link", { name: "Comic Vine" }),
+  ).toHaveAttribute("href", "https://comicvine.gamespot.com");
+});
+
+test("the TMNT Ultimate Collection says 5 collected editions added by hand", async ({
+  signedIn: { page, email },
+}) => {
+  loadFixturesFor(email);
+  await page.goto(
+    "/search?q=teenage%20mutant%20ninja%20turtles%20ultimate%20collection&type=comic",
+  );
+  await expect(
+    seriesRow(page, 2011, "IDW Publishing · 7 issues").getByText(
+      "Looks like one you have: 5 collected editions added by hand",
+    ),
+  ).toBeVisible();
+});
+
+test("a volume whose key is a series' source says In your catalog, with Open to its page", async ({
+  signedIn: { page },
+}) => {
+  const id = db(
+    `insert into series (name) values ('${TAG}') returning id`,
+  ).split("\n")[0];
+  db(
+    `insert into series_sources (series, source, key) values ('${id}', 'comicvine', 'volume/20281')`,
+  );
+  await page.goto(`${TURTLES}&type=comic`);
+  const row = seriesRow(page, 1984, "Mirage · 62 issues");
+  await expect(row.getByText("In your catalog")).toBeVisible();
+  await expect(row.getByRole("link", { name: "Open" })).toHaveAttribute(
+    "href",
+    `/series/${id}`,
+  );
+});
+
+// Rummage R4 (1.4.1): a run entered by hand can be one issue long, and the
+// fixture has nine such groups. The line is written for many.
+test("a one-issue group says 1 issue, not 1 issues", async ({
+  signedIn: { page },
+}) => {
+  const id = db(
+    `insert into items (type, title, form, released_on, released_precision) values ('comic', '${TAG} The Works 1', 'issue', '2013-06-01', 'month') returning id`,
+  ).split("\n")[0];
+  db(
+    `insert into item_comics (item, series, number) values ('${id}', 'Teenage Mutant Ninja Turtles: The Works', 1)`,
+  );
+  await page.goto(`${TURTLES}&type=comic`);
+  const row = seriesRow(page, 2013, "IDW Publishing · 5 issues");
+  await expect(
+    row.getByText(
+      "Looks like one you have: Teenage Mutant Ninja Turtles: The Works, 1 issue added by hand",
+    ),
+  ).toBeVisible();
+});
+
+test("Comic Vine down: its group says so, the other two still answer", async ({
+  signedIn: { page },
+}) => {
+  await page.goto("/search?q=__comicvine_down__");
+  await expect(
+    page.getByText("Comic Vine didn't answer. Try again in a moment."),
+  ).toBeVisible();
+  await expect(page.getByText("Nothing by that name at TMDB.")).toBeVisible();
+  await expect(
+    page.getByText("Nothing by that name at Open Library."),
+  ).toBeVisible();
+});
+
+test("Comic Vine busy: the group says so", async ({ signedIn: { page } }) => {
+  await page.goto("/search?q=__comicvine_busy__&type=comic");
+  await expect(
+    page.getByText("Comic Vine is busy. Try again in a few minutes."),
+  ).toBeVisible();
+});
+
+test("the hint names three providers and the way to add one by hand", async ({
+  signedIn: { page },
+}) => {
+  await page.goto("/search");
+  await expect(
+    page.getByText("Results from TMDB, Open Library and Comic Vine."),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Add one by hand" }),
+  ).toHaveAttribute("href", "/items/new");
+});
+
+const MIRAGE_VOL_1 = "Teenage Mutant Ninja Turtles (Mirage) Vol. 1";
+
+test.describe("the series page", () => {
+  test("the 1984 run attached by the route: the header, the lede, the facts, 62 tiles in order", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    const response = await page.request.post("/api/v1/series/import", {
+      data: {
+        source: "comicvine",
+        key: "volume/20281",
+        form: "issue",
+        attachTo: { series: MIRAGE_VOL_1 },
+      },
+    });
+    expect(response.status()).toBe(201);
+    const { id, attached } = await response.json();
+    expect(attached).toBe(62);
+
+    await page.goto(`/series/${id}`);
+    await expect(
+      page.getByRole("heading", {
+        level: 1,
+        name: "Teenage Mutant Ninja Turtles",
+      }),
+    ).toBeVisible();
+    await expect(page.getByText("1984 to 1993", { exact: true })).toBeVisible();
+    await expect(page.getByText("62 issues", { exact: true })).toBeVisible();
+    await expect(page.getByText("Vol. 1. Volume 1.")).toBeVisible();
+    await expect(
+      page.getByRole("definition").filter({ hasText: /^Mirage$/ }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("main").getByRole("link", { name: "Comic Vine" }),
+    ).toHaveAttribute(
+      "href",
+      "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles/4050-20281/",
+    );
+    await expect(
+      page.getByText("62 in the catalog, in cover-date order"),
+    ).toBeVisible();
+    const tiles = page
+      .getByRole("list", { name: "Issues", exact: true })
+      .getByRole("listitem");
+    await expect(tiles).toHaveCount(62);
+    const first = tiles.first();
+    await expect(first.getByText("#1 · May 1984")).toBeVisible();
+    await expect(
+      first.getByRole("link", { name: "The Turtles' Origin is Told" }),
+    ).toHaveAttribute(
+      "href",
+      `/items/${itemFor("manual", "tmnt-mirage-v1-1")}`,
+    );
+    await expect(first.locator("img")).toHaveAttribute(
+      "src",
+      /\/storage\/v1\/object\/public\/covers\/comicvine\/issue-121041\.jpg$/,
+    );
+
+    // Collected in, from the fixture's contents; the hardcovers are undated
+    // until the Ultimate Collection import (1.4.3 C19).
+    const collected = page
+      .getByRole("list", { name: "Collected in", exact: true })
+      .getByRole("listitem");
+    await expect(collected).toHaveCount(5);
+    await expect(collected).toHaveText([
+      "Ultimate Collection 1 · Hardcover · #1 to #7, and Raphael: Me, Myself and IYour copy",
+      "Ultimate Collection 2 · Hardcover · #8 to #11, and Michelangelo: The Christmas Aliens, Donatello: Kirby and the Warp Crystal, Leonardo: What Goes Around... ...Comes Around!Your copy",
+      "Ultimate Collection 3 · Hardcover · #12, #14 to #15, #17, #19 to #21Your copy",
+      "Ultimate Collection 4 · Hardcover · #48 to #55Your copy",
+      "Ultimate Collection 5 · Hardcover · #56 to #62Your copy",
+    ]);
+    await expect(
+      collected.first().getByRole("link", { name: "Ultimate Collection 1" }),
+    ).toHaveAttribute(
+      "href",
+      `/items/${itemFor("manual", "tmnt-ultimate-collection-1")}`,
+    );
+  });
+
+  test("the ticks on the real run: 62 boxes, you hold 33, 33 of them via a collection; #1 ticked also via, the heading unmoved; #33 ticked 34, unticked 33 with no confirm", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    const response = await page.request.post("/api/v1/series/import", {
+      data: {
+        source: "comicvine",
+        key: "volume/20281",
+        form: "issue",
+        attachTo: { series: MIRAGE_VOL_1 },
+      },
+    });
+    expect(response.status()).toBe(201);
+    const { id } = await response.json();
+    await page.goto(`/series/${id}`);
+
+    const heading = page.getByText(/in the catalog, in cover-date order/);
+    const held = (h: number) =>
+      `62 in the catalog, in cover-date order · you hold ${h}, 33 of them via a collection`;
+    await expect(heading).toHaveText(held(33));
+    const boxes = page.getByTestId("tick");
+    await expect(boxes).toHaveCount(62);
+
+    const tile = (key: string) =>
+      page
+        .getByRole("list", { name: "Issues" })
+        .getByRole("listitem")
+        .filter({
+          has: page.locator(`a[href="/items/${itemFor("manual", key)}"]`),
+        });
+    const first = tile("tmnt-mirage-v1-1");
+    await expect(first.getByTestId("tile-via")).toHaveText(
+      "via Ultimate Collection 1",
+    );
+    const one = first.getByTestId("tick");
+    await expect(one).toBeEnabled();
+    await one.click();
+    await expect(first.getByTestId("tick-label")).toHaveText("Owned · Floppy");
+    await expect(first.getByTestId("tile-via")).toHaveText(
+      "also via Ultimate Collection 1",
+    );
+    await expect(one).toHaveAttribute("aria-busy", "false");
+    await expect(heading).toHaveText(held(33));
+
+    const later = tile("tmnt-mirage-v1-33");
+    await expect(later.getByTestId("tile-via")).toHaveCount(0);
+    const thirtyThree = later.getByTestId("tick");
+    await thirtyThree.click();
+    await expect(later.getByTestId("tick-label")).toHaveText("Owned · Floppy");
+    await expect(heading).toHaveText(held(34));
+    await expect(thirtyThree).toHaveAttribute("aria-busy", "false");
+    await thirtyThree.click();
+    await expect(later.getByTestId("tick-label")).toHaveText("Owned");
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(heading).toHaveText(held(33));
+
+    const rows = page
+      .getByRole("list", { name: "Collected in", exact: true })
+      .getByRole("listitem");
+    await expect(rows).toHaveCount(5);
+    for (const n of [0, 1, 2, 3, 4]) {
+      await expect(rows.nth(n).getByText("Your copy")).toBeVisible();
+    }
+
+    // What the scoped reset takes back: the ticks' printings and copies alike.
+    resetSeries();
+    expect(
+      db(`select count(*) from editions where item in (
+        '${itemFor("manual", "tmnt-mirage-v1-1")}',
+        '${itemFor("manual", "tmnt-mirage-v1-33")}')`),
+    ).toBe("0");
+  });
+
+  test("a run with no end year prints its start alone", async ({
+    signedIn: { page },
+  }) => {
+    const id = db(
+      `insert into series (name, year_began, publisher) values ('${TAG}', 2011, 'IDW Publishing') returning id`,
+    ).split("\n")[0];
+    await page.goto(`/series/${id}`);
+    await expect(page.getByText("2011", { exact: true })).toBeVisible();
+    await expect(
+      page.getByText("IDW Publishing", { exact: true }).first(),
+    ).toBeVisible();
+    await expect(page.getByText("0 issues", { exact: true })).toBeVisible();
+    await expect(page.getByText("None in the catalog.")).toBeVisible();
+    await expect(page.getByText("Nothing collected yet.")).toBeVisible();
+  });
+
+  test("a bad uuid and an unknown one are the in-shell not-found", async ({
+    signedIn: { page },
+  }) => {
+    for (const path of [
+      "/series/not-a-uuid",
+      `/series/${crypto.randomUUID()}`,
+    ]) {
+      await page.goto(path);
+      await expect(
+        page.getByRole("heading", { name: "Nothing on this shelf" }),
+      ).toBeVisible();
+    }
+  });
+});
+
+// An import runs 62 covers through the stub before it answers.
+const LANDS = { timeout: 30_000 };
+
+test.describe("the import sheet", () => {
+  test("Same on 1984 attaches the run: the two sides, Single issues, the series page, then In your catalog", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    await page.goto(`${TURTLES}&type=comic`);
+    await seriesRow(page, 1984, "Mirage · 62 issues")
+      .getByRole("button", { name: "Add" })
+      .click();
+    const sheet = page.getByRole("dialog");
+    await expect(
+      sheet.getByRole("heading", {
+        name: "Is this one already in your catalog?",
+      }),
+    ).toBeVisible();
+    await expect(
+      sheet.getByRole("region", { name: "From Comic Vine" }),
+    ).toContainText("1984 · Mirage · 62 issues");
+    const held = sheet.getByRole("region", { name: "In your catalog" });
+    await expect(held).toContainText(MIRAGE_VOL_1);
+    await expect(held).toContainText(
+      "62 issues added by hand · first issue 1984 · on TMNT, the Mirage run",
+    );
+    await expect(
+      sheet.getByRole("radio", { name: "Single issues" }),
+    ).toBeChecked();
+    await sheet
+      .getByRole("button", { name: "Same, add Comic Vine's details to it" })
+      .click();
+    await expect(page).toHaveURL(/\/series\/[0-9a-f-]{36}$/, LANDS);
+    const series = page.url().split("/series/")[1];
+    const tiles = page
+      .getByRole("list", { name: "Issues", exact: true })
+      .getByRole("listitem");
+    await expect(tiles).toHaveCount(62);
+    await expect(
+      tiles.nth(2).getByRole("link", { name: "The Great Chase" }),
+    ).toBeVisible();
+
+    await page.goto(`${TURTLES}&type=comic`);
+    const row = seriesRow(page, 1984, "Mirage · 62 issues");
+    await expect(row.getByText("In your catalog")).toBeVisible();
+    await expect(row.getByRole("link", { name: "Open" })).toHaveAttribute(
+      "href",
+      `/series/${series}`,
+    );
+  });
+
+  test("Different on 1984 makes a second run, titled by Comic Vine, and leaves the fixture's alone", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    await page.goto(`${TURTLES}&type=comic`);
+    await seriesRow(page, 1984, "Mirage · 62 issues")
+      .getByRole("button", { name: "Add" })
+      .click();
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: "Different, add as a new run" })
+      .click();
+    await expect(page).toHaveURL(/\/series\/[0-9a-f-]{36}$/, LANDS);
+    const tiles = page
+      .getByRole("list", { name: "Issues", exact: true })
+      .getByRole("listitem");
+    await expect(tiles).toHaveCount(62);
+    await expect(
+      tiles
+        .first()
+        .getByRole("link", { name: "Teenage Mutant Ninja Turtles #1" }),
+    ).toBeVisible();
+    await expect(
+      tiles.nth(1).getByRole("link", { name: "TMNT vs. the Mousers" }),
+    ).toBeVisible();
+    const fixtureOne = itemFor("manual", "tmnt-mirage-v1-1");
+    expect(
+      db(
+        `select i.title || '|' || coalesce(c.series_id::text, 'none') from items i join item_comics c on c.item = i.id where i.id = '${fixtureOne}'`,
+      ),
+    ).toBe("The Turtles' Origin is Told|none");
+  });
+
+  test("Tales of the TMNT is new; the select picks the Tales Vol. 2 group, and Add lands on 71 tiles", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    await page.goto("/search?q=tales%20of%20the%20tmnt&type=comic");
+    const row = seriesRow(page, 2004, "Mirage · 71 issues");
+    await expect(row.getByText(/Looks like|In your catalog/)).toHaveCount(0);
+    await row.getByRole("button", { name: "Add" }).click();
+    const sheet = page.getByRole("dialog");
+    await expect(
+      sheet.getByRole("heading", { name: "Add this series" }),
+    ).toBeVisible();
+    await expect(
+      sheet.getByRole("region", { name: "In your catalog" }),
+    ).toHaveCount(0);
+    await sheet
+      .getByRole("combobox", { name: "Same as a run you added by hand?" })
+      .selectOption({
+        label: "Tales of the Teenage Mutant Ninja Turtles Vol. 2, 70 issues",
+      });
+    await sheet.getByRole("button", { name: "Add", exact: true }).click();
+    await expect(page).toHaveURL(/\/series\/[0-9a-f-]{36}$/, LANDS);
+    await expect(page.getByText("2004 to 2011", { exact: true })).toBeVisible();
+    await expect(page.getByText("71 issues", { exact: true })).toBeVisible();
+    const tiles = page
+      .getByRole("list", { name: "Issues", exact: true })
+      .getByRole("listitem");
+    await expect(tiles).toHaveCount(71);
+    const last = tiles.last();
+    await expect(last.getByText("#71 · June 2011")).toBeVisible();
+    await expect(
+      last.getByRole("link", { name: "The Paradox of Chudnovsky" }),
+    ).toBeVisible();
+  });
+
+  test("the Ultimate Collection: Collected and Hardcover preselected, the five on the catalog side, Same lands on 7 tiles", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    await page.goto(
+      "/search?q=teenage%20mutant%20ninja%20turtles%20ultimate%20collection&type=comic",
+    );
+    await seriesRow(page, 2011, "IDW Publishing · 7 issues")
+      .getByRole("button", { name: "Add" })
+      .click();
+    const sheet = page.getByRole("dialog");
+    await expect(
+      sheet.getByRole("radio", { name: "Collected editions" }),
+    ).toBeChecked();
+    await expect(sheet.getByRole("combobox", { name: "Format" })).toHaveValue(
+      "hardcover",
+    );
+    const held = sheet.getByRole("region", { name: "In your catalog" });
+    await expect(held).toContainText("Ultimate Collection");
+    await expect(held).toContainText("5 collected editions added by hand");
+    await sheet
+      .getByRole("button", { name: "Same, add Comic Vine's details to it" })
+      .click();
+    await expect(page).toHaveURL(/\/series\/[0-9a-f-]{36}$/, LANDS);
+    await expect(page.getByText("2011 to 2023", { exact: true })).toBeVisible();
+    await expect(
+      page.getByText("IDW Publishing", { exact: true }).first(),
+    ).toBeVisible();
+    const tiles = page
+      .getByRole("list", { name: "Issues", exact: true })
+      .getByRole("listitem");
+    await expect(tiles).toHaveCount(7);
+    await expect(
+      tiles.getByRole("link", { name: "Ultimate Collection 6" }),
+    ).toBeVisible();
+    await expect(
+      tiles.getByRole("link", { name: "Ultimate Collection 1" }),
+    ).toBeVisible();
+  });
+
+  test("a run attached elsewhere while the sheet is open: Same shows the 409, nothing written", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    await page.goto(`${TURTLES}&type=comic`);
+    await seriesRow(page, 1984, "Mirage · 62 issues")
+      .getByRole("button", { name: "Add" })
+      .click();
+    const sheet = page.getByRole("dialog");
+    await expect(
+      sheet.getByRole("region", { name: "In your catalog" }),
+    ).toBeVisible();
+    // Another tab attaches the fixture's #1 to some other volume meanwhile.
+    const fixtureOne = itemFor("manual", "tmnt-mirage-v1-1");
+    db(
+      `insert into item_sources (item, source, key) values ('${fixtureOne}', 'comicvine', 'issue/999999999')`,
+    );
+    // What the attach would write, read on the fixture's run alone: another
+    // worker's shelf makes works meanwhile, so a count of every item can't
+    // hold (1.6.3 D12).
+    const onTheRun = () =>
+      db(`select count(distinct c.item) || ',' || count(s.item)
+        from item_comics c
+        left join item_sources s on s.item = c.item and s.source = 'comicvine'
+        where c.series = (select series from item_comics where item = '${fixtureOne}')`);
+    const before = onTheRun();
+    await sheet
+      .getByRole("button", { name: "Same, add Comic Vine's details to it" })
+      .click();
+    await expect(sheet.getByRole("alert")).toHaveText(
+      "That run is already attached to another Comic Vine volume.",
+      LANDS,
+    );
+    expect(onTheRun()).toBe(before);
+    expect(
+      db("select count(*) from series_sources where key = 'volume/20281'"),
+    ).toBe("0");
+    db("delete from item_sources where key = 'issue/999999999'");
+  });
+
+  test("choosing Single issues takes the collected stems out of the select", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    await page.goto("/search?q=tales%20of%20the%20tmnt&type=comic");
+    await seriesRow(page, 2004, "Mirage · 71 issues")
+      .getByRole("button", { name: "Add" })
+      .click();
+    const sheet = page.getByRole("dialog");
+    const select = sheet.getByRole("combobox", {
+      name: "Same as a run you added by hand?",
+    });
+    const stem = select.getByRole("option", {
+      name: "Ultimate Collection, 5 collected editions",
+    });
+    await expect(stem).toHaveCount(0);
+    await sheet.getByRole("radio", { name: "Collected editions" }).check();
+    await expect(stem).toHaveCount(1);
+    await select.selectOption({
+      label: "Ultimate Collection, 5 collected editions",
+    });
+    await sheet.getByRole("radio", { name: "Single issues" }).check();
+    await expect(stem).toHaveCount(0);
+    await expect(select).toHaveValue("");
+  });
+
+  // Raccoon R3 (1.4.2): a 503 that isn't the route's own (a gateway, a
+  // proxy) has no JSON body; the sheet still says something and stays usable.
+  test("R3: a 503 with no JSON body shows the plain line, and the sheet stays open", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    await page.route("**/api/v1/series/import", (route) =>
+      route.fulfill({
+        status: 503,
+        contentType: "text/plain",
+        body: "upstream unavailable",
+      }),
+    );
+    await page.goto(`${TURTLES}&type=comic`);
+    await seriesRow(page, 1984, "Mirage · 62 issues")
+      .getByRole("button", { name: "Add" })
+      .click();
+    const sheet = page.getByRole("dialog");
+    await sheet
+      .getByRole("button", { name: "Different, add as a new run" })
+      .click();
+    await expect(sheet.getByRole("alert")).toHaveText(
+      "Couldn't add it just now. Try again.",
+      LANDS,
+    );
+    await expect(
+      sheet.getByRole("button", { name: "Different, add as a new run" }),
+    ).toBeEnabled();
+  });
+  // Raccoon R5 (1.4.2): one wrong radio on a match must not hang a hardcover
+  // off every issue of a hand-entered run; the server refuses, the sheet says.
+  test("R5: Collected editions onto the 1984 run of single issues shows the 409 and writes nothing", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    await page.goto(`${TURTLES}&type=comic`);
+    await seriesRow(page, 1984, "Mirage · 62 issues")
+      .getByRole("button", { name: "Add" })
+      .click();
+    const sheet = page.getByRole("dialog");
+    await sheet.getByRole("radio", { name: "Collected editions" }).check();
+    await expect(sheet.getByRole("combobox", { name: "Format" })).toHaveValue(
+      "hardcover",
+    );
+    await sheet
+      .getByRole("button", { name: "Same, add Comic Vine's details to it" })
+      .click();
+    await expect(sheet.getByRole("alert")).toHaveText(
+      "That run holds single issues; add these as single issues.",
+      LANDS,
+    );
+    await expect(page).toHaveURL(/\/search\?/);
+    const fixtureOne = itemFor("manual", "tmnt-mirage-v1-1");
+    expect(
+      db(
+        `select count(*) from item_sources where item = '${fixtureOne}' and source = 'comicvine'`,
+      ),
+    ).toBe("0");
+    expect(
+      db(
+        `select count(*) from edition_sources where edition in (select edition from edition_sources where source = 'manual')`,
+      ),
+    ).toBe("5");
+    expect(
+      db(`select count(*) from editions where item = '${fixtureOne}'`),
+    ).toBe("0");
+  });
+});
+
+// The series page's door (A11's series part, Ch 1.5.3): the whole run onto
+// a shelf in the page's order, through the item page's sheet.
+test.describe("the series door", () => {
+  // The run's items as the series page shows its tiles, read off the page
+  // (Rummage S4: the page's order, not a copy of its query).
+  const tileOrder = async (page: Page) =>
+    (
+      await page
+        .getByRole("list", { name: "Issues", exact: true })
+        .getByRole("listitem")
+        .getByRole("link")
+        .evaluateAll((links) =>
+          links.map((a) => a.getAttribute("href")?.replace("/items/", "")),
+        )
+    ).join(",");
+  const shelfItems = (shelf: string) =>
+    db(`select string_agg(item::text, ',' order by position)
+      from shelf_entries where shelf = '${shelf}'`);
+
+  test("Add the run from the series page on the Comic Vine stub", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    await page.goto(`${TURTLES}&type=comic`);
+    await seriesRow(page, 1984, "Mirage · 62 issues")
+      .getByRole("button", { name: "Add" })
+      .click();
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: "Same, add Comic Vine's details to it" })
+      .click();
+    await expect(page).toHaveURL(/\/series\/[0-9a-f-]{36}$/, LANDS);
+    const series = page.url().split("/series/")[1];
+    await expect(
+      page
+        .getByRole("list", { name: "Issues", exact: true })
+        .getByRole("listitem"),
+    ).toHaveCount(62);
+    const tiles = await tileOrder(page);
+
+    await page.getByRole("button", { name: "Add the run to a shelf" }).click();
+    const sheet = page.getByRole("dialog", {
+      name: "Add 62 issues to a shelf",
+    });
+    await expect(sheet).toContainText(
+      "Teenage Mutant Ninja Turtles, Vol. 1, in cover-date order, after whatever is already there.",
+    );
+    const tmnt = sheet
+      .getByTestId("shelf-choice")
+      .filter({ hasText: "TMNT, the Mirage run" });
+    await expect(tmnt).toContainText(
+      "326 works · 14 sections · 62 of these already on it",
+    );
+    await expect(
+      sheet.getByRole("radio", { name: /^TMNT, the Mirage run/ }),
+    ).toBeEnabled();
+    await sheet.getByRole("radio", { name: "Or a new shelf" }).check();
+    await sheet.getByLabel("Name").fill("Mirage, reading order");
+    await sheet.getByRole("button", { name: "Add 62 issues" }).click();
+
+    await expect(sheet).toBeHidden();
+    const status = page.getByRole("status");
+    await expect(status).toContainText("62 added");
+    const mirage = shelfId(email, "Mirage, reading order");
+    await expect(
+      status.getByRole("link", { name: "Mirage, reading order" }),
+    ).toHaveAttribute("href", `/shelves/${mirage}`);
+    expect(shelfItems(mirage)).toBe(tiles);
+
+    await status.getByRole("link", { name: "Mirage, reading order" }).click();
+    const rows = page.getByTestId("entry");
+    await expect(rows).toHaveCount(62);
+    await expect(
+      rows.first().getByRole("link", { name: "The Turtles' Origin is Told" }),
+    ).toBeVisible();
+    // The number is the row's first span (shelf-row.tsx).
+    await expect(rows.first().locator("span").first()).toHaveText("1");
+    await expect(rows.last().locator("span").first()).toHaveText("62");
+
+    await page.goto(`/series/${series}`);
+    await page.getByRole("button", { name: "Add the run to a shelf" }).click();
+    const again = page.getByRole("dialog", {
+      name: "Add 62 issues to a shelf",
+    });
+    await expect(
+      again
+        .getByTestId("shelf-choice")
+        .filter({ hasText: "Mirage, reading order" }),
+    ).toContainText("62 works · 62 of these already on it");
+    await again.getByRole("radio", { name: /^Mirage, reading order/ }).check();
+    await again.getByRole("button", { name: "Add 62 issues" }).click();
+    await expect(page.getByRole("status")).toContainText(
+      "0 added, 62 already there",
+    );
+    expect(
+      db(`select count(*) from shelf_entries where shelf = '${mirage}'`),
+    ).toBe("62");
+  });
+
+  test("a run partly on a shelf adds the rest after what is there", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    const response = await page.request.post("/api/v1/series/import", {
+      data: {
+        source: "comicvine",
+        key: "volume/20281",
+        form: "issue",
+        attachTo: { series: MIRAGE_VOL_1 },
+      },
+    });
+    expect(response.status()).toBe(201);
+    const { id: series } = await response.json();
+    const three = [3, 1, 2].map((n) =>
+      itemFor("manual", `tmnt-mirage-v1-${n}`),
+    );
+    const { id: shelf } = await (
+      await page.request.post("/api/v1/shelves", { data: { name: "Partly" } })
+    ).json();
+    expect(
+      (
+        await page.request.post(`/api/v1/shelves/${shelf}/entries`, {
+          data: { items: three },
+        })
+      ).status(),
+    ).toBe(201);
+
+    await page.goto(`/series/${series}`);
+    const tiles = await tileOrder(page);
+    await page.getByRole("button", { name: "Add the run to a shelf" }).click();
+    const sheet = page.getByRole("dialog", {
+      name: "Add 62 issues to a shelf",
+    });
+    await expect(
+      sheet.getByTestId("shelf-choice").filter({ hasText: "Partly" }),
+    ).toContainText("3 works · 3 of these already on it");
+    await sheet.getByRole("radio", { name: /^Partly/ }).check();
+    await sheet.getByRole("button", { name: "Add 62 issues" }).click();
+    await expect(page.getByRole("status")).toContainText(
+      "59 added, 3 already there",
+    );
+    const rest = tiles.split(",").filter((id) => !three.includes(id));
+    expect(shelfItems(shelf)).toBe([...three, ...rest].join(","));
+  });
+});
+
+test("the hold: Add on the series sheet", async ({
+  signedIn: { page, email },
+}) => {
+  loadFixturesFor(email);
+  // This volume's own rows: resetSeries leaves the catalog as the loader does.
+  const imported = () =>
+    Number(
+      db("select count(*) from series_sources where key = 'volume/18785'"),
+    );
+  const before = imported();
+  const write = await heldWrite(page, "POST", "**/api/v1/series/import");
+  await page.goto("/search?q=tales%20of%20the%20tmnt&type=comic");
+  await seriesRow(page, 2004, "Mirage · 71 issues")
+    .getByRole("button", { name: "Add" })
+    .click();
+  const sheet = page.getByRole("dialog");
+  await sheet.getByRole("button", { name: "Add", exact: true }).click();
+  // The asking row's Cancel returns to the sheet, and holds like any other.
+  await sheet.getByRole("button", { name: "Add anyway" }).click();
+  await write.arrival;
+
+  await expectHeld(page, sheet);
+  expect(write.seen()).toBe(1);
+
+  write.release();
+  await expect(page).toHaveURL(/\/series\/[0-9a-f-]{36}$/, LANDS);
+  expect(write.seen()).toBe(1);
+  expect(imported()).toBe(before + 1);
+});
+
+// A12 (Ch 1.5.3): Add with the select on No asks once before a run goes in
+// beside the ones entered by hand. The line counts the runs in the select,
+// read here from the rule seriesGroups keeps, since other specs attach runs.
+test.describe("A12's line", () => {
+  const TALES = "/search?q=tales%20of%20the%20tmnt&type=comic";
+  const handRuns = () =>
+    Number(
+      db(`select count(*) from (select c.series from items i
+        join item_comics c on c.item = i.id
+        where i.type = 'comic' and c.series is not null group by c.series
+        having not bool_or(exists (select 1 from item_sources s
+          where s.item = i.id and s.source = 'comicvine'))) g`),
+    );
+  const LINE = (runs: number) =>
+    `Adds 71 comics as a new run beside the ${runs} runs you entered by hand. If it is one of them, pick it above. Add anyway?`;
+  const TALES_VOL_2 = "Tales of the Teenage Mutant Ninja Turtles Vol. 2";
+
+  test("Add with the select on No asks once, Cancel imports nothing, Add anyway imports", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    const runs = handRuns();
+    // This volume's own rows: a global count reads another worker's writes
+    // (red on `ec9ca3b` and on `ea93a17`, 1.7.3 D3).
+    const imported = () =>
+      db("select count(*) from series_sources where key = 'volume/18785'");
+    const series = imported();
+    await page.goto(TALES);
+    await seriesRow(page, 2004, "Mirage · 71 issues")
+      .getByRole("button", { name: "Add" })
+      .click();
+    const sheet = page.getByRole("dialog");
+    await expect(
+      sheet.getByRole("heading", { name: "Add this series" }),
+    ).toBeVisible();
+    await expect(
+      sheet.getByRole("combobox", { name: "Same as a run you added by hand?" }),
+    ).toHaveValue("");
+
+    await sheet.getByRole("button", { name: "Add", exact: true }).click();
+    await expect(sheet.getByText(LINE(runs))).toBeVisible();
+    await expect(
+      sheet.getByRole("button", { name: "Add anyway" }),
+    ).toBeVisible();
+    await expect(
+      sheet.getByRole("button", { name: "Add", exact: true }),
+    ).toHaveCount(0);
+
+    await sheet.getByRole("button", { name: "Cancel" }).click();
+    await expect(sheet).toBeVisible();
+    await expect(sheet.getByText(LINE(runs))).toHaveCount(0);
+    await expect(
+      sheet.getByRole("button", { name: "Add", exact: true }),
+    ).toBeVisible();
+    expect(imported()).toBe(series);
+    await expect(page).toHaveURL(/\/search\?/);
+
+    await sheet.getByRole("button", { name: "Add", exact: true }).click();
+    await expect(sheet.getByText(LINE(runs))).toBeVisible();
+    await sheet.getByRole("button", { name: "Add anyway" }).click();
+    await expect(page).toHaveURL(/\/series\/[0-9a-f-]{36}$/, LANDS);
+    await expect(
+      page
+        .getByRole("list", { name: "Issues", exact: true })
+        .getByRole("listitem"),
+    ).toHaveCount(71);
+    // A new run beside the fixture's: the hand-entered Vol. 2 is untouched.
+    expect(
+      db(`select count(*) from items i join item_comics c on c.item = i.id
+        where c.series = '${TALES_VOL_2}' and exists (select 1 from item_sources s
+          where s.item = i.id and s.source = 'comicvine')`),
+    ).toBe("0");
+  });
+
+  test("picking a run in the select takes the line away", async ({
+    signedIn: { page, email },
+  }) => {
+    loadFixturesFor(email);
+    await page.goto(TALES);
+    await seriesRow(page, 2004, "Mirage · 71 issues")
+      .getByRole("button", { name: "Add" })
+      .click();
+    const sheet = page.getByRole("dialog");
+    await sheet.getByRole("button", { name: "Add", exact: true }).click();
+    await expect(
+      sheet.getByRole("button", { name: "Add anyway" }),
+    ).toBeVisible();
+    await sheet
+      .getByRole("combobox", { name: "Same as a run you added by hand?" })
+      .selectOption({ label: `${TALES_VOL_2}, 70 issues` });
+    await expect(sheet.getByRole("button", { name: "Add anyway" })).toHaveCount(
+      0,
+    );
+    await expect(
+      sheet.getByRole("button", { name: "Add", exact: true }),
+    ).toBeVisible();
+  });
+
+  test("with no hand-entered run, Add posts without asking", async ({
+    signedIn: { page },
+  }) => {
+    // The catalog is shared and holds the fixture's runs, so the search's
+    // answer is the one place "none" can be made.
+    await page.route("**/api/v1/providers/comicvine/search*", async (route) => {
+      const response = await route.fetch();
+      const body = await response.json();
+      await route.fulfill({ response, json: { ...body, groups: [] } });
+    });
+    await page.goto(TALES);
+    await seriesRow(page, 2004, "Mirage · 71 issues")
+      .getByRole("button", { name: "Add" })
+      .click();
+    const sheet = page.getByRole("dialog");
+    // The select is there with No alone.
+    await expect(
+      sheet
+        .getByRole("combobox", { name: "Same as a run you added by hand?" })
+        .getByRole("option"),
+    ).toHaveCount(1);
+    await sheet.getByRole("button", { name: "Add", exact: true }).click();
+    await expect(sheet.getByRole("button", { name: "Add anyway" })).toHaveCount(
+      0,
+    );
+    await expect(page).toHaveURL(/\/series\/[0-9a-f-]{36}$/, LANDS);
+    await expect(
+      page
+        .getByRole("list", { name: "Issues", exact: true })
+        .getByRole("listitem"),
+    ).toHaveCount(71);
+  });
+});

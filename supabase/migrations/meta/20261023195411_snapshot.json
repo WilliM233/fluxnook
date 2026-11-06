@@ -1,0 +1,1510 @@
+{
+  "id": "68d048ed-773b-4b53-8eae-c44e0368640f",
+  "prevId": "b99653b0-0249-43cb-bc7f-5453a81a64e4",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.copies": {
+      "name": "copies",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "owner": {
+          "name": "owner",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "edition": {
+          "name": "edition",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "condition": {
+          "name": "condition",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "acquired_on": {
+          "name": "acquired_on",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "note": {
+          "name": "note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "visibility": {
+          "name": "visibility",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'private'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "copies_owner_profiles_id_fk": {
+          "name": "copies_owner_profiles_id_fk",
+          "tableFrom": "copies",
+          "columnsFrom": [
+            "owner"
+          ],
+          "tableTo": "profiles",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "copies_edition_editions_id_fk": {
+          "name": "copies_edition_editions_id_fk",
+          "tableFrom": "copies",
+          "columnsFrom": [
+            "edition"
+          ],
+          "tableTo": "editions",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "restrict"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "copies_visibility": {
+          "name": "copies_visibility",
+          "value": "\"copies\".\"visibility\" in ('private', 'unlisted', 'public')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.edition_contents": {
+      "name": "edition_contents",
+      "schema": "",
+      "columns": {
+        "edition": {
+          "name": "edition",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "item": {
+          "name": "item",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "edition_contents_edition_editions_id_fk": {
+          "name": "edition_contents_edition_editions_id_fk",
+          "tableFrom": "edition_contents",
+          "columnsFrom": [
+            "edition"
+          ],
+          "tableTo": "editions",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "edition_contents_item_items_id_fk": {
+          "name": "edition_contents_item_items_id_fk",
+          "tableFrom": "edition_contents",
+          "columnsFrom": [
+            "item"
+          ],
+          "tableTo": "items",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "edition_contents_edition_item_pk": {
+          "name": "edition_contents_edition_item_pk",
+          "columns": [
+            "edition",
+            "item"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.edition_sources": {
+      "name": "edition_sources",
+      "schema": "",
+      "columns": {
+        "edition": {
+          "name": "edition",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "edition_sources_edition_editions_id_fk": {
+          "name": "edition_sources_edition_editions_id_fk",
+          "tableFrom": "edition_sources",
+          "columnsFrom": [
+            "edition"
+          ],
+          "tableTo": "editions",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "edition_sources_source_key_pk": {
+          "name": "edition_sources_source_key_pk",
+          "columns": [
+            "source",
+            "key"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.editions": {
+      "name": "editions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "item": {
+          "name": "item",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "format": {
+          "name": "format",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "released_on": {
+          "name": "released_on",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "released_precision": {
+          "name": "released_precision",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "editions_item_items_id_fk": {
+          "name": "editions_item_items_id_fk",
+          "tableFrom": "editions",
+          "columnsFrom": [
+            "item"
+          ],
+          "tableTo": "items",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "editions_format": {
+          "name": "editions_format",
+          "value": "\"editions\".\"format\" in ('floppy', 'tpb', 'hardcover', 'omnibus', 'paperback', 'ebook', 'audiobook', 'dvd', 'blu-ray', '4k', 'digital')"
+        },
+        "editions_released": {
+          "name": "editions_released",
+          "value": "(\"editions\".\"released_on\" is null) = (\"editions\".\"released_precision\" is null)"
+        },
+        "editions_released_precision": {
+          "name": "editions_released_precision",
+          "value": "\"editions\".\"released_precision\" is null or \"editions\".\"released_precision\" in ('day', 'month', 'year')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.franchise_sources": {
+      "name": "franchise_sources",
+      "schema": "",
+      "columns": {
+        "franchise": {
+          "name": "franchise",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "franchise_sources_franchise_franchises_id_fk": {
+          "name": "franchise_sources_franchise_franchises_id_fk",
+          "tableFrom": "franchise_sources",
+          "columnsFrom": [
+            "franchise"
+          ],
+          "tableTo": "franchises",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "franchise_sources_source_key_pk": {
+          "name": "franchise_sources_source_key_pk",
+          "columns": [
+            "source",
+            "key"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.franchises": {
+      "name": "franchises",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.item_books": {
+      "name": "item_books",
+      "schema": "",
+      "columns": {
+        "item": {
+          "name": "item",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "author": {
+          "name": "author",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "item_books_item_items_id_fk": {
+          "name": "item_books_item_items_id_fk",
+          "tableFrom": "item_books",
+          "columnsFrom": [
+            "item"
+          ],
+          "tableTo": "items",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.item_comics": {
+      "name": "item_comics",
+      "schema": "",
+      "columns": {
+        "item": {
+          "name": "item",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "series": {
+          "name": "series",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "series_kind": {
+          "name": "series_kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "number": {
+          "name": "number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "item_comics_item_items_id_fk": {
+          "name": "item_comics_item_items_id_fk",
+          "tableFrom": "item_comics",
+          "columnsFrom": [
+            "item"
+          ],
+          "tableTo": "items",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "item_comics_series_kind": {
+          "name": "item_comics_series_kind",
+          "value": "\"item_comics\".\"series_kind\" is null or \"item_comics\".\"series_kind\" in ('ongoing', 'micro-series', 'mini-series', 'crossover', 'tie-in', 'minor')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.item_franchises": {
+      "name": "item_franchises",
+      "schema": "",
+      "columns": {
+        "item": {
+          "name": "item",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "franchise": {
+          "name": "franchise",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "item_franchises_item_items_id_fk": {
+          "name": "item_franchises_item_items_id_fk",
+          "tableFrom": "item_franchises",
+          "columnsFrom": [
+            "item"
+          ],
+          "tableTo": "items",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "item_franchises_franchise_franchises_id_fk": {
+          "name": "item_franchises_franchise_franchises_id_fk",
+          "tableFrom": "item_franchises",
+          "columnsFrom": [
+            "franchise"
+          ],
+          "tableTo": "franchises",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "item_franchises_item_franchise_pk": {
+          "name": "item_franchises_item_franchise_pk",
+          "columns": [
+            "item",
+            "franchise"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.item_relations": {
+      "name": "item_relations",
+      "schema": "",
+      "columns": {
+        "from_item": {
+          "name": "from_item",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "to_item": {
+          "name": "to_item",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "item_relations_from_item_items_id_fk": {
+          "name": "item_relations_from_item_items_id_fk",
+          "tableFrom": "item_relations",
+          "columnsFrom": [
+            "from_item"
+          ],
+          "tableTo": "items",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "item_relations_to_item_items_id_fk": {
+          "name": "item_relations_to_item_items_id_fk",
+          "tableFrom": "item_relations",
+          "columnsFrom": [
+            "to_item"
+          ],
+          "tableTo": "items",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "item_relations_from_item_to_item_kind_pk": {
+          "name": "item_relations_from_item_to_item_kind_pk",
+          "columns": [
+            "from_item",
+            "to_item",
+            "kind"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "item_relations_kind": {
+          "name": "item_relations_kind",
+          "value": "\"item_relations\".\"kind\" in ('adaptation-of', 'contained-in')"
+        },
+        "item_relations_not_self": {
+          "name": "item_relations_not_self",
+          "value": "\"item_relations\".\"from_item\" <> \"item_relations\".\"to_item\""
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.item_sources": {
+      "name": "item_sources",
+      "schema": "",
+      "columns": {
+        "item": {
+          "name": "item",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "item_sources_item_items_id_fk": {
+          "name": "item_sources_item_items_id_fk",
+          "tableFrom": "item_sources",
+          "columnsFrom": [
+            "item"
+          ],
+          "tableTo": "items",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "item_sources_source_key_pk": {
+          "name": "item_sources_source_key_pk",
+          "columns": [
+            "source",
+            "key"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.items": {
+      "name": "items",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "form": {
+          "name": "form",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "released_on": {
+          "name": "released_on",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "released_precision": {
+          "name": "released_precision",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_note": {
+          "name": "source_note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "items_created_by_profiles_id_fk": {
+          "name": "items_created_by_profiles_id_fk",
+          "tableFrom": "items",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "tableTo": "profiles",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "set null"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "items_type": {
+          "name": "items_type",
+          "value": "\"items\".\"type\" in ('film', 'book', 'comic')"
+        },
+        "items_form_per_type": {
+          "name": "items_form_per_type",
+          "value": "(\"items\".\"type\" = 'film' and \"items\".\"form\" is null) or (\"items\".\"type\" = 'book' and \"items\".\"form\" in ('novel', 'novella', 'collection', 'story', 'series')) or (\"items\".\"type\" = 'comic' and \"items\".\"form\" in ('issue', 'one-shot', 'backup', 'collected', 'anthology'))"
+        },
+        "items_released": {
+          "name": "items_released",
+          "value": "(\"items\".\"released_on\" is null) = (\"items\".\"released_precision\" is null)"
+        },
+        "items_released_precision": {
+          "name": "items_released_precision",
+          "value": "\"items\".\"released_precision\" is null or \"items\".\"released_precision\" in ('day', 'month', 'year')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.journal_entries": {
+      "name": "journal_entries",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "occurrence": {
+          "name": "occurrence",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "written_at": {
+          "name": "written_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "body": {
+          "name": "body",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "anchor_kind": {
+          "name": "anchor_kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "anchor_value": {
+          "name": "anchor_value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "visibility": {
+          "name": "visibility",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'private'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "journal_entries_occurrence_occurrences_id_fk": {
+          "name": "journal_entries_occurrence_occurrences_id_fk",
+          "tableFrom": "journal_entries",
+          "columnsFrom": [
+            "occurrence"
+          ],
+          "tableTo": "occurrences",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "journal_entries_anchor_kind": {
+          "name": "journal_entries_anchor_kind",
+          "value": "\"journal_entries\".\"anchor_kind\" is null or \"journal_entries\".\"anchor_kind\" in ('page', 'chapter', 'episode', 'issue')"
+        },
+        "journal_entries_anchor": {
+          "name": "journal_entries_anchor",
+          "value": "(\"journal_entries\".\"anchor_kind\" is null) = (\"journal_entries\".\"anchor_value\" is null)"
+        },
+        "journal_entries_visibility": {
+          "name": "journal_entries_visibility",
+          "value": "\"journal_entries\".\"visibility\" in ('private', 'unlisted', 'public')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.occurrences": {
+      "name": "occurrences",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "owner": {
+          "name": "owner",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "item": {
+          "name": "item",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "started_on": {
+          "name": "started_on",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "finished_on": {
+          "name": "finished_on",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stars": {
+          "name": "stars",
+          "type": "numeric(2, 1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "visibility": {
+          "name": "visibility",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'private'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "occurrences_owner_profiles_id_fk": {
+          "name": "occurrences_owner_profiles_id_fk",
+          "tableFrom": "occurrences",
+          "columnsFrom": [
+            "owner"
+          ],
+          "tableTo": "profiles",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "occurrences_item_items_id_fk": {
+          "name": "occurrences_item_items_id_fk",
+          "tableFrom": "occurrences",
+          "columnsFrom": [
+            "item"
+          ],
+          "tableTo": "items",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "restrict"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "occurrences_status": {
+          "name": "occurrences_status",
+          "value": "\"occurrences\".\"status\" in ('in_progress', 'done', 'abandoned')"
+        },
+        "occurrences_stars": {
+          "name": "occurrences_stars",
+          "value": "\"occurrences\".\"stars\" is null or (\"occurrences\".\"stars\" >= 0.5 and \"occurrences\".\"stars\" <= 5.0 and \"occurrences\".\"stars\" * 2 = trunc(\"occurrences\".\"stars\" * 2))"
+        },
+        "occurrences_visibility": {
+          "name": "occurrences_visibility",
+          "value": "\"occurrences\".\"visibility\" in ('private', 'unlisted', 'public')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.profiles": {
+      "name": "profiles",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "profiles_id_users_id_fk": {
+          "name": "profiles_id_users_id_fk",
+          "tableFrom": "profiles",
+          "columnsFrom": [
+            "id"
+          ],
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.shelf_entries": {
+      "name": "shelf_entries",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "shelf": {
+          "name": "shelf",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "section": {
+          "name": "section",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "item": {
+          "name": "item",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'unmarked'"
+        },
+        "visibility": {
+          "name": "visibility",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'private'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "shelf_entries_shelf_shelves_id_fk": {
+          "name": "shelf_entries_shelf_shelves_id_fk",
+          "tableFrom": "shelf_entries",
+          "columnsFrom": [
+            "shelf"
+          ],
+          "tableTo": "shelves",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "shelf_entries_item_items_id_fk": {
+          "name": "shelf_entries_item_items_id_fk",
+          "tableFrom": "shelf_entries",
+          "columnsFrom": [
+            "item"
+          ],
+          "tableTo": "items",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "restrict"
+        },
+        "shelf_entries_section_shelf_fk": {
+          "name": "shelf_entries_section_shelf_fk",
+          "tableFrom": "shelf_entries",
+          "columnsFrom": [
+            "section",
+            "shelf"
+          ],
+          "tableTo": "shelf_sections",
+          "columnsTo": [
+            "id",
+            "shelf"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "shelf_entries_shelf_item": {
+          "name": "shelf_entries_shelf_item",
+          "columns": [
+            "shelf",
+            "item"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "shelf_entries_status": {
+          "name": "shelf_entries_status",
+          "value": "\"shelf_entries\".\"status\" in ('unmarked', 'done', 'skipped')"
+        },
+        "shelf_entries_visibility": {
+          "name": "shelf_entries_visibility",
+          "value": "\"shelf_entries\".\"visibility\" in ('private', 'unlisted', 'public')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.shelf_sections": {
+      "name": "shelf_sections",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "shelf": {
+          "name": "shelf",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "shelf_sections_shelf_shelves_id_fk": {
+          "name": "shelf_sections_shelf_shelves_id_fk",
+          "tableFrom": "shelf_sections",
+          "columnsFrom": [
+            "shelf"
+          ],
+          "tableTo": "shelves",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "shelf_sections_shelf_name": {
+          "name": "shelf_sections_shelf_name",
+          "columns": [
+            "shelf",
+            "name"
+          ],
+          "nullsNotDistinct": false
+        },
+        "shelf_sections_id_shelf": {
+          "name": "shelf_sections_id_shelf",
+          "columns": [
+            "id",
+            "shelf"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.shelves": {
+      "name": "shelves",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "owner": {
+          "name": "owner",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "source_url": {
+          "name": "source_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "visibility": {
+          "name": "visibility",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'private'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "shelves_owner_profiles_id_fk": {
+          "name": "shelves_owner_profiles_id_fk",
+          "tableFrom": "shelves",
+          "columnsFrom": [
+            "owner"
+          ],
+          "tableTo": "profiles",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "shelves_visibility": {
+          "name": "shelves_visibility",
+          "value": "\"shelves\".\"visibility\" in ('private', 'unlisted', 'public')"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "views": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

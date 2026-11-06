@@ -23,4 +23,4 @@ Section 5's Browse block: Git Bash commands with the expected output under each.
 
 ## Afterword
 
-Filed on the issue before close. Its edits (House Rules, skills, briefs) are the branch's last commit.
+The three lines, as filed on the issue before close. Its edits (House Rules, skills, briefs) are the branch's last commit.

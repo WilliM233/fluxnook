@@ -13,7 +13,9 @@
       "!.next",
       "!dist",
       "!build",
-      "!supabase/migrations/meta"
+      "!supabase/migrations/meta",
+      "!public/tmdb",
+      "!docs/designs"
     ]
   },
   "formatter": {

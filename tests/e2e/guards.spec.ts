@@ -13,6 +13,18 @@ test("/nook redirects to / without a session", async ({ page }) => {
   await expect(page).toHaveURL("/");
 });
 
+test("/collection redirects to / without a session", async ({ page }) => {
+  await page.goto("/collection");
+  await expect(page).toHaveURL("/");
+});
+
+test("/collection/shopping redirects to / without a session", async ({
+  page,
+}) => {
+  await page.goto("/collection/shopping");
+  await expect(page).toHaveURL("/");
+});
+
 test("magic-link rejects a bad email with 400", async ({ request }) => {
   const response = await request.post("/api/v1/auth/magic-link", {
     data: { email: "not-an-email" },
@@ -29,4 +41,69 @@ test("callback without a code goes to /?error=link", async ({ request }) => {
   });
   expect(response.status()).toBe(303);
   expect(response.headers().location).toBe("http://localhost:3000/?error=link");
+});
+
+test("tmdb search is 401 without a session", async ({ request }) => {
+  const response = await request.get("/api/v1/providers/tmdb/search?q=carrie");
+  expect(response.status()).toBe(401);
+  expect(await response.json()).toMatchObject({
+    error: { code: "unauthorized" },
+  });
+});
+
+test("open library search is 401 without a session", async ({ request }) => {
+  const response = await request.get(
+    "/api/v1/providers/openlibrary/search?q=carrie",
+  );
+  expect(response.status()).toBe(401);
+  expect(await response.json()).toMatchObject({
+    error: { code: "unauthorized" },
+  });
+});
+
+test("the ISBN lookup is 401 without a session", async ({ request }) => {
+  const response = await request.get(
+    "/api/v1/providers/openlibrary/isbn/9780307743664",
+  );
+  expect(response.status()).toBe(401);
+});
+
+test("edition import is 401 without a session", async ({ request }) => {
+  const response = await request.post("/api/v1/editions/import", {
+    data: {
+      source: "openlibrary",
+      key: "books/OL32864645M",
+      format: "paperback",
+    },
+  });
+  expect(response.status()).toBe(401);
+});
+
+test("import is 401 without a session", async ({ request }) => {
+  const response = await request.post("/api/v1/items/import", {
+    data: { source: "tmdb", key: "movie/133805" },
+  });
+  expect(response.status()).toBe(401);
+});
+
+test("manual items are 401 without a session", async ({ request }) => {
+  const response = await request.post("/api/v1/items", {
+    data: { type: "film", title: "Carrie" },
+  });
+  expect(response.status()).toBe(401);
+});
+
+test("an item page redirects to / without a session", async ({ page }) => {
+  await page.goto(`/items/${crypto.randomUUID()}`);
+  await expect(page).toHaveURL("/");
+});
+
+test("/search redirects to / without a session", async ({ page }) => {
+  await page.goto("/search?q=carrie");
+  await expect(page).toHaveURL("/");
+});
+
+test("/items/new redirects to / without a session", async ({ page }) => {
+  await page.goto("/items/new");
+  await expect(page).toHaveURL("/");
 });

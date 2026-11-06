@@ -90,7 +90,8 @@ const entry = z.strictObject({
 
 // A shelf is flat (`entries`) or sectioned (`sections`), never both; the
 // superRefine below says which is wrong, where a union would say only
-// "Invalid input". Positions restart in each section.
+// "Invalid input". Positions restart in each section; the loader numbers
+// across the shelf, since the table's rule is the model's (Ch 1.5).
 const section = z.strictObject({
   name: z.string().min(1),
   entries: z.array(entry),

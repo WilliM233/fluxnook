@@ -1,0 +1,531 @@
+{
+  "error": "OK",
+  "limit": 20,
+  "offset": 0,
+  "number_of_page_results": 20,
+  "number_of_total_results": 2614,
+  "status_code": 1,
+  "results": [
+    {
+      "count_of_issues": 7,
+      "deck": null,
+      "id": 50804,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/6113341-01.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/6113341-01.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/6113341-01.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/6113341-01.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/6113341-01.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/6113341-01.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/6113341-01.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/6113341-01.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/6113341-01.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Teenage Mutant Ninja Turtles: The Ultimate Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles-the-ultimate-collecti/4050-50804/",
+      "start_year": "2011",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 150,
+      "deck": null,
+      "id": 42285,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/1991311-01a.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/1991311-01a.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/1991311-01a.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/1991311-01a.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/1991311-01a.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/1991311-01a.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/1991311-01a.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/1991311-01a.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/1991311-01a.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Teenage Mutant Ninja Turtles",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles/4050-42285/",
+      "start_year": "2011",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 23,
+      "deck": " ",
+      "id": 159035,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/11161/111615891/9423369-cover.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/11161/111615891/9423369-cover.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/11161/111615891/9423369-cover.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/11161/111615891/9423369-cover.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/11161/111615891/9423369-cover.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/11161/111615891/9423369-cover.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/11161/111615891/9423369-cover.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/11161/111615891/9423369-cover.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/11161/111615891/9423369-cover.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Teenage Mutant Ninja Turtles",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles/4050-159035/",
+      "start_year": "2024",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 7,
+      "deck": " ",
+      "id": 35309,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/7/72227/1372598-dreamwave_1.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/7/72227/1372598-dreamwave_1.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/7/72227/1372598-dreamwave_1.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/7/72227/1372598-dreamwave_1.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/7/72227/1372598-dreamwave_1.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/7/72227/1372598-dreamwave_1.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/7/72227/1372598-dreamwave_1.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/7/72227/1372598-dreamwave_1.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/7/72227/1372598-dreamwave_1.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Teenage Mutant Ninja Turtles",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1112/",
+        "id": 1112,
+        "name": "Dreamwave Productions"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles/4050-35309/",
+      "start_year": "2003",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 3,
+      "deck": null,
+      "id": 105261,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/6101691-01.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/6101691-01.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/6101691-01.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/6101691-01.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/6101691-01.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/6101691-01.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/6101691-01.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/6101691-01.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/6101691-01.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Teenage Mutant Ninja Turtles",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-2000/",
+        "id": 2000,
+        "name": "Soleil"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles/4050-105261/",
+      "start_year": "2017",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 2,
+      "deck": null,
+      "id": 167769,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/11177/111776243/9895814-tmnt_return.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/11177/111776243/9895814-tmnt_return.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/11177/111776243/9895814-tmnt_return.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/11177/111776243/9895814-tmnt_return.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/11177/111776243/9895814-tmnt_return.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/11177/111776243/9895814-tmnt_return.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/11177/111776243/9895814-tmnt_return.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/11177/111776243/9895814-tmnt_return.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/11177/111776243/9895814-tmnt_return.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Teenage Mutant Ninja Turtles",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles/4050-167769/",
+      "start_year": "2025",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 62,
+      "deck": "Volume 1.",
+      "id": 20281,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/0/9245/273043-20281-121041-1-teenage-mutant-ninja.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/0/9245/273043-20281-121041-1-teenage-mutant-ninja.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/0/9245/273043-20281-121041-1-teenage-mutant-ninja.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/0/9245/273043-20281-121041-1-teenage-mutant-ninja.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/0/9245/273043-20281-121041-1-teenage-mutant-ninja.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/0/9245/273043-20281-121041-1-teenage-mutant-ninja.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/0/9245/273043-20281-121041-1-teenage-mutant-ninja.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/0/9245/273043-20281-121041-1-teenage-mutant-ninja.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/0/9245/273043-20281-121041-1-teenage-mutant-ninja.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Teenage Mutant Ninja Turtles",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-517/",
+        "id": 517,
+        "name": "Mirage"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles/4050-20281/",
+      "start_year": "1984",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 3,
+      "deck": null,
+      "id": 166258,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/11/110017/9828710-wwww.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/11/110017/9828710-wwww.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/11/110017/9828710-wwww.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/11/110017/9828710-wwww.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/11/110017/9828710-wwww.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/11/110017/9828710-wwww.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/11/110017/9828710-wwww.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/11/110017/9828710-wwww.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/11/110017/9828710-wwww.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Teenage Mutant Ninja Turtles",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-4215/",
+        "id": 4215,
+        "name": "TM-Semic"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles/4050-166258/",
+      "start_year": "1993",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 2,
+      "deck": null,
+      "id": 135549,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/2/25703/7927735-teenagemutantninjaturtles%2324%281996%29-page1.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/2/25703/7927735-teenagemutantninjaturtles%2324%281996%29-page1.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/2/25703/7927735-teenagemutantninjaturtles%2324%281996%29-page1.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/2/25703/7927735-teenagemutantninjaturtles%2324%281996%29-page1.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/2/25703/7927735-teenagemutantninjaturtles%2324%281996%29-page1.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/2/25703/7927735-teenagemutantninjaturtles%2324%281996%29-page1.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/2/25703/7927735-teenagemutantninjaturtles%2324%281996%29-page1.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/2/25703/7927735-teenagemutantninjaturtles%2324%281996%29-page1.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/2/25703/7927735-teenagemutantninjaturtles%2324%281996%29-page1.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Teenage Mutant Ninja Turtles",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-2026/",
+        "id": 2026,
+        "name": "self published"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles/4050-135549/",
+      "start_year": "2011",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 26391,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/0/574/799620-tmnt_01.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/0/574/799620-tmnt_01.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/0/574/799620-tmnt_01.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/0/574/799620-tmnt_01.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/0/574/799620-tmnt_01.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/0/574/799620-tmnt_01.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/0/574/799620-tmnt_01.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/0/574/799620-tmnt_01.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/0/574/799620-tmnt_01.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Teenage Mutant Ninja Turtles",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-517/",
+        "id": 517,
+        "name": "Mirage"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles/4050-26391/",
+      "start_year": "2009",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 23,
+      "deck": "The original, but non-canon, Teenage Mutant Ninja Turtles Vol. 3",
+      "id": 11889,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/0/4/71033-11889-104031-1-teenage-mutant-ninja.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/0/4/71033-11889-104031-1-teenage-mutant-ninja.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/0/4/71033-11889-104031-1-teenage-mutant-ninja.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/0/4/71033-11889-104031-1-teenage-mutant-ninja.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/0/4/71033-11889-104031-1-teenage-mutant-ninja.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/0/4/71033-11889-104031-1-teenage-mutant-ninja.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/0/4/71033-11889-104031-1-teenage-mutant-ninja.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/0/4/71033-11889-104031-1-teenage-mutant-ninja.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/0/4/71033-11889-104031-1-teenage-mutant-ninja.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Teenage Mutant Ninja Turtles",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-513/",
+        "id": 513,
+        "name": "Image"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles/4050-11889/",
+      "start_year": "1996",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 13,
+      "deck": "Volume 2",
+      "id": 20295,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/0/9245/274281-20295-121151-1-teenage-mutant-ninja.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/0/9245/274281-20295-121151-1-teenage-mutant-ninja.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/0/9245/274281-20295-121151-1-teenage-mutant-ninja.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/0/9245/274281-20295-121151-1-teenage-mutant-ninja.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/0/9245/274281-20295-121151-1-teenage-mutant-ninja.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/0/9245/274281-20295-121151-1-teenage-mutant-ninja.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/0/9245/274281-20295-121151-1-teenage-mutant-ninja.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/0/9245/274281-20295-121151-1-teenage-mutant-ninja.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/0/9245/274281-20295-121151-1-teenage-mutant-ninja.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Teenage Mutant Ninja Turtles",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-517/",
+        "id": 517,
+        "name": "Mirage"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles/4050-20295/",
+      "start_year": "1993",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 44236,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/10/100239/2106034-teenage_mutant_ninja_turtles_i_the_movie___page_1.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/10/100239/2106034-teenage_mutant_ninja_turtles_i_the_movie___page_1.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/10/100239/2106034-teenage_mutant_ninja_turtles_i_the_movie___page_1.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/10/100239/2106034-teenage_mutant_ninja_turtles_i_the_movie___page_1.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/10/100239/2106034-teenage_mutant_ninja_turtles_i_the_movie___page_1.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/10/100239/2106034-teenage_mutant_ninja_turtles_i_the_movie___page_1.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/10/100239/2106034-teenage_mutant_ninja_turtles_i_the_movie___page_1.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/10/100239/2106034-teenage_mutant_ninja_turtles_i_the_movie___page_1.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/10/100239/2106034-teenage_mutant_ninja_turtles_i_the_movie___page_1.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Teenage Mutant Ninja Turtles",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-517/",
+        "id": 517,
+        "name": "Mirage"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles/4050-44236/",
+      "start_year": "1990",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 72209,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/11112/111121983/3683705-2117052841-ResourceLoaderPortletServlet",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/11112/111121983/3683705-2117052841-ResourceLoaderPortletServlet",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/11112/111121983/3683705-2117052841-ResourceLoaderPortletServlet",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/11112/111121983/3683705-2117052841-ResourceLoaderPortletServlet",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/11112/111121983/3683705-2117052841-ResourceLoaderPortletServlet",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/11112/111121983/3683705-2117052841-ResourceLoaderPortletServlet",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/11112/111121983/3683705-2117052841-ResourceLoaderPortletServlet",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/11112/111121983/3683705-2117052841-ResourceLoaderPortletServlet",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/11112/111121983/3683705-2117052841-ResourceLoaderPortletServlet",
+        "image_tags": "All Images"
+      },
+      "name": "Teenage Mutant Ninja Turtles",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-2812/",
+        "id": 2812,
+        "name": "Marvel UK/Panini UK"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles/4050-72209/",
+      "start_year": "2013",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 75583,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/3946073-01.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/3946073-01.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/3946073-01.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/3946073-01.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/3946073-01.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/3946073-01.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/3946073-01.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/3946073-01.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/3946073-01.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Teenage Mutant Ninja Turtles: The Ultimate Visual History",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-2807/",
+        "id": 2807,
+        "name": "Insight Editions"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles-the-ultimate-visual-h/4050-75583/",
+      "start_year": "2014",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 97392,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/5612711-01.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/5612711-01.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/5612711-01.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/5612711-01.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/5612711-01.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/5612711-01.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/5612711-01.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/5612711-01.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/5612711-01.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Teenage Mutant Ninja Turtles: The Ultimate Poster Book",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles-the-ultimate-poster-b/4050-97392/",
+      "start_year": "2016",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 18,
+      "deck": null,
+      "id": 82213,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/6191694-01.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/6191694-01.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/6191694-01.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/6191694-01.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/6191694-01.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/6191694-01.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/6191694-01.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/6191694-01.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/6191694-01.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Teenage Mutant Ninja Turtles: The IDW Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles-the-idw-collection/4050-82213/",
+      "start_year": "2015",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 69876,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/3494355-01.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/3494355-01.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/3494355-01.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/3494355-01.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/3494355-01.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/3494355-01.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/3494355-01.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/3494355-01.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/3494355-01.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Teenage Mutant Ninja Turtles: 25th Anniversary Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles-25th-anniversary-coll/4050-69876/",
+      "start_year": "2013",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 4,
+      "deck": null,
+      "id": 157473,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/11115/111157166/9317607-9579784211-71Ny0.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/11115/111157166/9317607-9579784211-71Ny0.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/11115/111157166/9317607-9579784211-71Ny0.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/11115/111157166/9317607-9579784211-71Ny0.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/11115/111157166/9317607-9579784211-71Ny0.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/11115/111157166/9317607-9579784211-71Ny0.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/11115/111157166/9317607-9579784211-71Ny0.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/11115/111157166/9317607-9579784211-71Ny0.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/11115/111157166/9317607-9579784211-71Ny0.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Best of Teenage Mutant Ninja Turtles Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/best-of-teenage-mutant-ninja-turtles-collection/4050-157473/",
+      "start_year": "2022",
+      "resource_type": "volume"
+    },
+    {
+      "count_of_issues": 1,
+      "deck": null,
+      "id": 75879,
+      "image": {
+        "icon_url": "https://comicvine.gamespot.com/a/uploads/square_avatar/6/67663/3984672-01.jpg",
+        "medium_url": "https://comicvine.gamespot.com/a/uploads/scale_medium/6/67663/3984672-01.jpg",
+        "screen_url": "https://comicvine.gamespot.com/a/uploads/screen_medium/6/67663/3984672-01.jpg",
+        "screen_large_url": "https://comicvine.gamespot.com/a/uploads/screen_kubrick/6/67663/3984672-01.jpg",
+        "small_url": "https://comicvine.gamespot.com/a/uploads/scale_small/6/67663/3984672-01.jpg",
+        "super_url": "https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/3984672-01.jpg",
+        "thumb_url": "https://comicvine.gamespot.com/a/uploads/scale_avatar/6/67663/3984672-01.jpg",
+        "tiny_url": "https://comicvine.gamespot.com/a/uploads/square_mini/6/67663/3984672-01.jpg",
+        "original_url": "https://comicvine.gamespot.com/a/uploads/original/6/67663/3984672-01.jpg",
+        "image_tags": "All Images"
+      },
+      "name": "Teenage Mutant Ninja Turtles Heroes Collection",
+      "publisher": {
+        "api_detail_url": "https://comicvine.gamespot.com/api/publisher/4010-1190/",
+        "id": 1190,
+        "name": "IDW Publishing"
+      },
+      "site_detail_url": "https://comicvine.gamespot.com/teenage-mutant-ninja-turtles-heroes-collection/4050-75879/",
+      "start_year": "2014",
+      "resource_type": "volume"
+    }
+  ],
+  "version": "1.0"
+}

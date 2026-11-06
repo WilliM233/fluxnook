@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 // Rummage R6. supabase-js signOut() keeps the session when the auth server
 // errors (anything but 401/403/404). The route still says 204, so the button's
-// "Couldn't sign you out" branch (src/app/nook/sign-out-button.tsx) never runs
+// "Couldn't sign you out" branch (src/app/(app)/nook/sign-out-button.tsx) never runs
 // and the person walks away from a shared computer still signed in.
 const signOut = vi.fn();
 vi.mock("@/lib/supabase/server", () => ({

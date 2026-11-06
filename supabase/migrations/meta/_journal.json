@@ -15,6 +15,90 @@
       "when": 1792182031063,
       "tag": "20261016202031_profiles_on_signup",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792784879713,
+      "tag": "20261023194759_catalog",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792785113848,
+      "tag": "20261023195153_content",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792785251398,
+      "tag": "20261023195411_updated_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792787475825,
+      "tag": "20261023203115_items_form_required",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792865051213,
+      "tag": "20261024180411_film_tv",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792865067402,
+      "tag": "20261024180427_film_tv_updated_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792865070628,
+      "tag": "20261024180430_covers_bucket",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793234618409,
+      "tag": "20261029004338_editions_publisher_pages",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793298562749,
+      "tag": "20261029182922_series",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1793298569373,
+      "tag": "20261029182929_series_updated_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1793670835910,
+      "tag": "20261103015355_occurrences_one_open",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1793816010820,
+      "tag": "20261104181330_copies_condition",
+      "breakpoints": true
     }
   ]
 }

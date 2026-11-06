@@ -38,6 +38,11 @@ function repoCopy(schema: string = SCHEMA): string {
   cpSync(join(ROOT, "drizzle.config.ts"), join(scratch, "drizzle.config.ts"));
   cpSync(MIGRATIONS, join(scratch, "supabase/migrations"), { recursive: true });
   writeFileSync(join(scratch, "src/db/schema.ts"), schema);
+  // schema.ts takes its enumerations from here (Ch 1.2).
+  cpSync(
+    join(ROOT, "src/db/vocabulary.ts"),
+    join(scratch, "src/db/vocabulary.ts"),
+  );
   // The script runs node_modules/drizzle-kit/bin.cjs relative to its cwd.
   symlinkSync(
     join(ROOT, "node_modules"),

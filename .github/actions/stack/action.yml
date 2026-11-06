@@ -8,6 +8,15 @@ runs:
     - run: cp .env.example .env.local
       shell: bash
     # Kept: gotrue (sign-in), kong (the app's API URL), postgrest (pg_graphql
-    # for the exposure test), mailpit (magic links) and the database.
-    - run: npx supabase start -x studio,postgres-meta,imgproxy,edge-runtime,logflare,vector,realtime,storage-api,supavisor
+    # for the exposure test), storage-api (the covers bucket), mailpit (magic
+    # links) and the database. imgproxy only serves transforms, so it stays out.
+    - run: npx supabase start -x studio,postgres-meta,imgproxy,edge-runtime,logflare,vector,realtime,supavisor
+      shell: bash
+    # The secret key is never committed (Ch 1.2 D1): push protection refuses
+    # even the CLI's local default, so it comes from the running stack.
+    - run: |
+        key=$(npx supabase status -o env | sed -n 's/^SECRET_KEY="\{0,1\}\([^"]*\)"\{0,1\}$/\1/p')
+        test -n "$key"
+        sed -i "s|^SUPABASE_SECRET_KEY=.*|SUPABASE_SECRET_KEY=$key|" .env.local
+        grep -q '^SUPABASE_SECRET_KEY=sb_secret_' .env.local
       shell: bash

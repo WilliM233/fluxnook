@@ -1,0 +1,125 @@
+{
+  "adult": false,
+  "backdrop_path": "/1WUnBNBX4uaoRjmCszxoyWl6Ybk.jpg",
+  "created_by": [
+    {
+      "id": 58854,
+      "credit_id": "52597047760ee34661a2b4e5",
+      "name": "Candace Bushnell",
+      "original_name": "Candace Bushnell",
+      "gender": 1,
+      "profile_path": null
+    }
+  ],
+  "episode_run_time": [42],
+  "first_air_date": "2013-01-14",
+  "genres": [
+    {
+      "id": 18,
+      "name": "Drama"
+    },
+    {
+      "id": 35,
+      "name": "Comedy"
+    }
+  ],
+  "homepage": "http://cwtv.com/shows/the-carrie-diaries/",
+  "id": 46157,
+  "in_production": false,
+  "languages": ["en"],
+  "last_air_date": "2014-01-31",
+  "last_episode_to_air": {
+    "id": 970719,
+    "name": "Run to You",
+    "overview": "Things grow increasingly tense between Carrie and Tom. When Larissa drops an unexpected bomb on Carrie, Sebastian decides he, too, needs to come clean about something. Maggie turns to Walt when she thinks Pete is cheating on her, but gets the surprise of her life. Mouse and West find themselves in a sticky situation. Elsewhere, Samantha considers leaving the city, and Larissa's wedding to Harlan is out of this world.",
+    "vote_average": 7.5,
+    "vote_count": 2,
+    "air_date": "2014-01-31",
+    "episode_number": 13,
+    "episode_type": "finale",
+    "production_code": "",
+    "runtime": 42,
+    "season_number": 2,
+    "show_id": 46157,
+    "still_path": "/qIA2QC4vKW1V0xAZtrudFERZeWp.jpg"
+  },
+  "name": "The Carrie Diaries",
+  "next_episode_to_air": null,
+  "networks": [
+    {
+      "id": 71,
+      "logo_path": "/hEpcdJ4O6eitG9ADSnDXNUrlovS.png",
+      "name": "The CW",
+      "origin_country": "US"
+    }
+  ],
+  "number_of_episodes": 26,
+  "number_of_seasons": 2,
+  "origin_country": ["US"],
+  "original_language": "en",
+  "original_name": "The Carrie Diaries",
+  "overview": "Before she was a fashion icon, before her column in the New York Star, before Mr. Big, Carrie Bradshaw was an innocent 16-year-old girl living in suburban Connecticut.",
+  "popularity": 8.3652,
+  "poster_path": "/zsGa6WCmR7ASCWqszVGGz9Wzzrm.jpg",
+  "production_companies": [
+    {
+      "id": 51718,
+      "logo_path": "/fS7xGI3Pm48AsvrjBMceyBoKr2c.png",
+      "name": "Fake Empire Productions",
+      "origin_country": "US"
+    },
+    {
+      "id": 1957,
+      "logo_path": "/pJJw98MtNFC9cHn3o15G7vaUnnX.png",
+      "name": "Warner Bros. Television",
+      "origin_country": "US"
+    },
+    {
+      "id": 179501,
+      "logo_path": "/6z064GOzoWCE7zDAnPREJAuJdpA.png",
+      "name": "A.B. Baby Productions",
+      "origin_country": "US"
+    }
+  ],
+  "production_countries": [
+    {
+      "iso_3166_1": "US",
+      "name": "United States of America"
+    }
+  ],
+  "seasons": [
+    {
+      "air_date": "2013-01-14",
+      "episode_count": 13,
+      "id": 54531,
+      "name": "Season 1",
+      "overview": "It's 1984, and life isn't easy for 16-year-old Carrie Bradshaw. Since their mother passed away, Carrie's younger sister Dorritt is more rebellious than ever, and their father Tom is overwhelmed with the responsibility of suddenly having to care for two teenage girls on his own. Carrie's friends - sweet, geeky Mouse, sarcastic and self-assured Maggie and sensitive Walt - make life bearable, but a suburban life in Connecticut isn't doing much to take her mind off her troubles. And even though the arrival of a sexy new transfer student named Sebastian brings some excitement to Carrie's world, she is struggling to move on from her grief. So when Tom offers Carrie the chance to intern at a law firm in Manhattan, she leaps at the chance. Carrie's eyes are opened wide at the glamour and grit of New York City - and when she meets Larissa, the style editor for Interview magazine, she's inspired by the club culture and unique individuals that make up Larissa's world. Carrie's friends and family may have a big place in her heart, but she's fallen in love for the first time with the most important man in her life - Manhattan.",
+      "poster_path": "/zsGa6WCmR7ASCWqszVGGz9Wzzrm.jpg",
+      "season_number": 1,
+      "vote_average": 7.8
+    },
+    {
+      "air_date": "2013-10-25",
+      "episode_count": 13,
+      "id": 54533,
+      "name": "Season 2",
+      "overview": "It's the summer of 1985, and, for the first time, 17-year-old Carrie Bradshaw can call Manhattan home. After her boyfriend Sebastian and best friend Maggie betrayed her, Carrie is happy to accept the offer to spend the summer living in the downtown loft apartment of her Interview magazine boss Larissa. But as summer turns to fall and Carrie heads into her senior year, she and her friends and family discover that letting go of old loves and embracing new dreams comes with some tough new realities but also incredible new opportunities.",
+      "poster_path": "/2i4wG20gr3brHyDNkHyFsEUhMyX.jpg",
+      "season_number": 2,
+      "vote_average": 8.5
+    }
+  ],
+  "softcore": false,
+  "spoken_languages": [
+    {
+      "english_name": "English",
+      "iso_639_1": "en",
+      "name": "English"
+    }
+  ],
+  "status": "Canceled",
+  "tagline": "You never forget your first love.",
+  "type": "Scripted",
+  "vote_average": 7.187,
+  "vote_count": 238
+}

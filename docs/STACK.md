@@ -7,7 +7,17 @@ Every version in `package.json` is exact (`.npmrc` has `save-exact=true`). This 
 | Tool | Version | Why |
 |---|---|---|
 | Node | 22.15.0 (`.nvmrc`) | The runtime the versions below were pinned against; meets Next 16 (>=20.9). CI reads `.nvmrc` |
-| Docker Desktop | any current | The Supabase CLI runs the local stack in containers |
+| Docker Desktop | any current | The Supabase CLI runs the local stack in containers. CI starts only the services the gates use (`.github/actions/stack`): the database, gotrue, kong, postgrest, mailpit and, from Ch 1.2, storage-api for the `covers` bucket |
+
+Fonts are not packages: Fraunces (titles) and Inter (text) come through `next/font/google` and are fetched at build, replacing Geist (Ch 1.2). The TMDB logo in `public/tmdb` is TMDB's own file, source noted beside it.
+
+Providers (no package for any; each client is a closure over `fetch` in `src/lib/providers/`):
+
+| Provider | Key | Limit | Notes |
+|---|---|---|---|
+| TMDB | v4 read token, `TMDB_API_KEY` | not handled before Volume 2 | Films and TV |
+| Open Library (Ch 1.3) | none | 1 request a second anonymous, 3 identified by `User-Agent` | Books. `User-Agent` is `Fluxnook/<package.json version> (<OPENLIBRARY_CONTACT, else the repo URL>)`. Redirects followed only under `OPENLIBRARY_BASE_URL`. Pacing is not handled; a 429 is the call's 503. Tests read recordings in `tests/fixtures/openlibrary` through a stub |
+| Comic Vine (Ch 1.4) | `COMICVINE_API_KEY`, from a Comic Vine account's API page | 200 requests per resource per hour; a faster burst is answered with a velocity error | Comics. Non-commercial use only, and every page showing its data links back (the footer and the group heading do). `User-Agent` is `Fluxnook/<package.json version> (<COMICVINE_CONTACT, else the repo URL>)`. The key rides the query string, so no thrown error, response or log line holds a URL. HTTP 420 or 429, or an envelope whose error says velocity or rate limit, is `ProviderBusy`. Redirects are not followed. Every call has a 20 s timeout. Tests read recordings in `tests/fixtures/comicvine` through a stub (`npm run comicvine:stub -- [--port 4012] [--dir <recordings>]`; `--dir` serves a copy of the recordings). The stub answers 500 naming the file when an issues recording is missing, and 404s any cover whose file name starts with `missing-`. CI holds no key |
 
 Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js files in Chapter 0.2.
 
@@ -21,10 +31,13 @@ Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js fil
 | class-variance-authority | 0.7.1 | shadcn component variants |
 | cn | 0.5.0 | shadcn's class merger; replaces clsx and tailwind-merge |
 | lucide-react | 1.58.0 | shadcn's default icon set |
+| @dnd-kit/core | 6.3.1 | The shelf page's grip (Ch 1.5.2): pointer, touch and keyboard sensors in one, its own live region, where HTML5 drag has no touch and the PWA is Volume 2. The first UI dependency since shadcn's; replaces nothing. `@dnd-kit/utilities`, `@dnd-kit/accessibility` and `tslib` come with it and nothing imports them by name |
+| @dnd-kit/sortable | 10.0.0 | The sortable preset on `@dnd-kit/core`: the list's moving-aside transforms and its keyboard walk, one place per arrow (`sortableKeyboardCoordinates`) |
 | zod | 4.6.7 | Validation at the `/api/v1` edge, requests and responses |
-| @supabase/supabase-js | 2.118.0 | Supabase Auth: magic links, sessions, `getUser()` |
+| @supabase/supabase-js | 2.118.0 | Supabase Auth: magic links, sessions, `getUser()`. Its bundled Storage client writes covers to the `covers` bucket from `src/lib/covers.ts`, server-side with the secret key |
 | @supabase/ssr | 0.12.7 | Supabase's cookie-session helper for the App Router: the server client and the session-refresh proxy |
 | drizzle-orm | 0.45.4 | Table definitions in `src/db/schema.ts`; `drizzle-orm/supabase` for `auth.users`. 1.0 is still a release candidate |
+| postgres | 3.4.9 | The driver under `drizzle-orm/postgres-js` in `src/db/client.ts`, the server's only database client; `tests/db` also use it directly. Over `pg`: no `@types` package, and it is the driver `drizzle-orm/postgres-js` takes |
 
 ## devDependencies
 
@@ -40,8 +53,8 @@ Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js fil
 | vite | 8.3.4 | Vitest 5's required peer; listed so it is pinned |
 | @playwright/test | 1.64.1 | Browser and request tests (`npm run test:e2e`); Chromium by default, all three browsers with `PLAYWRIGHT_ALL_BROWSERS=1` |
 | supabase | 2.121.0 | The Supabase CLI, pinned per repo and run through `npx`; nothing to install globally |
-| postgres | 3.4.9 | Test-only Postgres driver for `tests/db` (`npm run test:db`); not the app's runtime client. Over `pg`: no `@types` package, and it is the driver `drizzle-orm/postgres-js` takes |
 | drizzle-kit | 0.31.11 | Generates SQL migrations into `supabase/migrations`; never applies them |
+| tsx | 4.23.15 | Runs the TypeScript fixture loader (`npm run fixtures:load`) on Node 22.15, which strips types only behind an experimental flag and without tsconfig paths. Already in the tree under drizzle-kit; replaces nothing, since `scripts/` had no TypeScript before |
 | shadcn | 4.22.0 | The component CLI, and `shadcn/tailwind.css`, which `globals.css` imports at build time; nothing of it ships |
 | tw-animate-css | 1.4.0 | Animations; a build-time CSS import in `globals.css` for shadcn |
 

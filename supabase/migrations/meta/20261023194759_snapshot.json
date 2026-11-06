@@ -1,0 +1,890 @@
+{
+  "id": "bd6f75b8-7e3c-4227-abac-1f2794ed8ade",
+  "prevId": "3cf490b7-00d4-4f40-92e7-ffe5cfabb7c2",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.edition_contents": {
+      "name": "edition_contents",
+      "schema": "",
+      "columns": {
+        "edition": {
+          "name": "edition",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "item": {
+          "name": "item",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "edition_contents_edition_editions_id_fk": {
+          "name": "edition_contents_edition_editions_id_fk",
+          "tableFrom": "edition_contents",
+          "tableTo": "editions",
+          "columnsFrom": [
+            "edition"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "edition_contents_item_items_id_fk": {
+          "name": "edition_contents_item_items_id_fk",
+          "tableFrom": "edition_contents",
+          "tableTo": "items",
+          "columnsFrom": [
+            "item"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "edition_contents_edition_item_pk": {
+          "name": "edition_contents_edition_item_pk",
+          "columns": [
+            "edition",
+            "item"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.edition_sources": {
+      "name": "edition_sources",
+      "schema": "",
+      "columns": {
+        "edition": {
+          "name": "edition",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "edition_sources_edition_editions_id_fk": {
+          "name": "edition_sources_edition_editions_id_fk",
+          "tableFrom": "edition_sources",
+          "tableTo": "editions",
+          "columnsFrom": [
+            "edition"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "edition_sources_source_key_pk": {
+          "name": "edition_sources_source_key_pk",
+          "columns": [
+            "source",
+            "key"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.editions": {
+      "name": "editions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "item": {
+          "name": "item",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "format": {
+          "name": "format",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "released_on": {
+          "name": "released_on",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "released_precision": {
+          "name": "released_precision",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "editions_item_items_id_fk": {
+          "name": "editions_item_items_id_fk",
+          "tableFrom": "editions",
+          "tableTo": "items",
+          "columnsFrom": [
+            "item"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "editions_format": {
+          "name": "editions_format",
+          "value": "\"editions\".\"format\" in ('floppy', 'tpb', 'hardcover', 'omnibus', 'paperback', 'ebook', 'audiobook', 'dvd', 'blu-ray', '4k', 'digital')"
+        },
+        "editions_released": {
+          "name": "editions_released",
+          "value": "(\"editions\".\"released_on\" is null) = (\"editions\".\"released_precision\" is null)"
+        },
+        "editions_released_precision": {
+          "name": "editions_released_precision",
+          "value": "\"editions\".\"released_precision\" is null or \"editions\".\"released_precision\" in ('day', 'month', 'year')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.franchise_sources": {
+      "name": "franchise_sources",
+      "schema": "",
+      "columns": {
+        "franchise": {
+          "name": "franchise",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "franchise_sources_franchise_franchises_id_fk": {
+          "name": "franchise_sources_franchise_franchises_id_fk",
+          "tableFrom": "franchise_sources",
+          "tableTo": "franchises",
+          "columnsFrom": [
+            "franchise"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "franchise_sources_source_key_pk": {
+          "name": "franchise_sources_source_key_pk",
+          "columns": [
+            "source",
+            "key"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.franchises": {
+      "name": "franchises",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.item_books": {
+      "name": "item_books",
+      "schema": "",
+      "columns": {
+        "item": {
+          "name": "item",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "author": {
+          "name": "author",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "item_books_item_items_id_fk": {
+          "name": "item_books_item_items_id_fk",
+          "tableFrom": "item_books",
+          "tableTo": "items",
+          "columnsFrom": [
+            "item"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.item_comics": {
+      "name": "item_comics",
+      "schema": "",
+      "columns": {
+        "item": {
+          "name": "item",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "series": {
+          "name": "series",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "series_kind": {
+          "name": "series_kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "number": {
+          "name": "number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "item_comics_item_items_id_fk": {
+          "name": "item_comics_item_items_id_fk",
+          "tableFrom": "item_comics",
+          "tableTo": "items",
+          "columnsFrom": [
+            "item"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "item_comics_series_kind": {
+          "name": "item_comics_series_kind",
+          "value": "\"item_comics\".\"series_kind\" is null or \"item_comics\".\"series_kind\" in ('ongoing', 'micro-series', 'mini-series', 'crossover', 'tie-in', 'minor')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.item_franchises": {
+      "name": "item_franchises",
+      "schema": "",
+      "columns": {
+        "item": {
+          "name": "item",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "franchise": {
+          "name": "franchise",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "item_franchises_item_items_id_fk": {
+          "name": "item_franchises_item_items_id_fk",
+          "tableFrom": "item_franchises",
+          "tableTo": "items",
+          "columnsFrom": [
+            "item"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "item_franchises_franchise_franchises_id_fk": {
+          "name": "item_franchises_franchise_franchises_id_fk",
+          "tableFrom": "item_franchises",
+          "tableTo": "franchises",
+          "columnsFrom": [
+            "franchise"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "item_franchises_item_franchise_pk": {
+          "name": "item_franchises_item_franchise_pk",
+          "columns": [
+            "item",
+            "franchise"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.item_relations": {
+      "name": "item_relations",
+      "schema": "",
+      "columns": {
+        "from_item": {
+          "name": "from_item",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "to_item": {
+          "name": "to_item",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "item_relations_from_item_items_id_fk": {
+          "name": "item_relations_from_item_items_id_fk",
+          "tableFrom": "item_relations",
+          "tableTo": "items",
+          "columnsFrom": [
+            "from_item"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "item_relations_to_item_items_id_fk": {
+          "name": "item_relations_to_item_items_id_fk",
+          "tableFrom": "item_relations",
+          "tableTo": "items",
+          "columnsFrom": [
+            "to_item"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "item_relations_from_item_to_item_kind_pk": {
+          "name": "item_relations_from_item_to_item_kind_pk",
+          "columns": [
+            "from_item",
+            "to_item",
+            "kind"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "item_relations_kind": {
+          "name": "item_relations_kind",
+          "value": "\"item_relations\".\"kind\" in ('adaptation-of', 'contained-in')"
+        },
+        "item_relations_not_self": {
+          "name": "item_relations_not_self",
+          "value": "\"item_relations\".\"from_item\" <> \"item_relations\".\"to_item\""
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.item_sources": {
+      "name": "item_sources",
+      "schema": "",
+      "columns": {
+        "item": {
+          "name": "item",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "item_sources_item_items_id_fk": {
+          "name": "item_sources_item_items_id_fk",
+          "tableFrom": "item_sources",
+          "tableTo": "items",
+          "columnsFrom": [
+            "item"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "item_sources_source_key_pk": {
+          "name": "item_sources_source_key_pk",
+          "columns": [
+            "source",
+            "key"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.items": {
+      "name": "items",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "form": {
+          "name": "form",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "released_on": {
+          "name": "released_on",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "released_precision": {
+          "name": "released_precision",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_note": {
+          "name": "source_note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "items_created_by_profiles_id_fk": {
+          "name": "items_created_by_profiles_id_fk",
+          "tableFrom": "items",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "items_type": {
+          "name": "items_type",
+          "value": "\"items\".\"type\" in ('film', 'book', 'comic')"
+        },
+        "items_form_per_type": {
+          "name": "items_form_per_type",
+          "value": "(\"items\".\"type\" = 'film' and \"items\".\"form\" is null) or (\"items\".\"type\" = 'book' and \"items\".\"form\" in ('novel', 'novella', 'collection', 'story', 'series')) or (\"items\".\"type\" = 'comic' and \"items\".\"form\" in ('issue', 'one-shot', 'backup', 'collected', 'anthology'))"
+        },
+        "items_released": {
+          "name": "items_released",
+          "value": "(\"items\".\"released_on\" is null) = (\"items\".\"released_precision\" is null)"
+        },
+        "items_released_precision": {
+          "name": "items_released_precision",
+          "value": "\"items\".\"released_precision\" is null or \"items\".\"released_precision\" in ('day', 'month', 'year')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.profiles": {
+      "name": "profiles",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "profiles_id_users_id_fk": {
+          "name": "profiles_id_users_id_fk",
+          "tableFrom": "profiles",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
