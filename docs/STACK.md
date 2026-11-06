@@ -38,6 +38,7 @@ Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js fil
 | @supabase/ssr | 0.12.7 | Supabase's cookie-session helper for the App Router: the server client and the session-refresh proxy |
 | drizzle-orm | 0.45.4 | Table definitions in `src/db/schema.ts`; `drizzle-orm/supabase` for `auth.users`. 1.0 is still a release candidate |
 | postgres | 3.4.9 | The driver under `drizzle-orm/postgres-js` in `src/db/client.ts`, the server's only database client; `tests/db` also use it directly. Over `pg`: no `@types` package, and it is the driver `drizzle-orm/postgres-js` takes |
+| @electric-sql/pglite | 0.5.15 | The device's Postgres (Ch 2.1.1): PostgreSQL 18.6 in WASM (`select version()`), so the same migrations and tables run with no server. Replaces nothing; the hosted build keeps `postgres` |
 
 ## devDependencies
 
