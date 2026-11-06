@@ -35,18 +35,28 @@ export default defineConfig({
         ]
       : []),
   ],
-  webServer: {
-    command: ci ? "npm run start" : "npm run dev",
-    url: "http://localhost:3000",
-    reuseExistingServer: !ci,
-    env: {
-      TMDB_API_KEY: "stub",
-      TMDB_BASE_URL: `${TMDB_STUB_ORIGIN}/3`,
-      TMDB_IMAGE_BASE_URL: `${TMDB_STUB_ORIGIN}/t/p`,
-      OPENLIBRARY_BASE_URL: OPENLIBRARY_STUB_ORIGIN,
-      OPENLIBRARY_COVERS_BASE_URL: OPENLIBRARY_STUB_ORIGIN,
-      COMICVINE_API_KEY: "stub",
-      COMICVINE_BASE_URL: `${COMICVINE_STUB_ORIGIN}/api`,
+  webServer: [
+    {
+      command: ci ? "npm run start" : "npm run dev",
+      url: "http://localhost:3000",
+      reuseExistingServer: !ci,
+      env: {
+        TMDB_API_KEY: "stub",
+        TMDB_BASE_URL: `${TMDB_STUB_ORIGIN}/3`,
+        TMDB_IMAGE_BASE_URL: `${TMDB_STUB_ORIGIN}/t/p`,
+        OPENLIBRARY_BASE_URL: OPENLIBRARY_STUB_ORIGIN,
+        OPENLIBRARY_COVERS_BASE_URL: OPENLIBRARY_STUB_ORIGIN,
+        COMICVINE_API_KEY: "stub",
+        COMICVINE_BASE_URL: `${COMICVINE_STUB_ORIGIN}/api`,
+      },
     },
-  },
+    // The device stub, a static build served on its own port. Built here so
+    // CI's workflow needs no new step (A6: the existing jobs stay untouched).
+    {
+      command: "npm run device:build && npm run device:preview",
+      url: "http://localhost:4173",
+      reuseExistingServer: !ci,
+      timeout: 120_000,
+    },
+  ],
 });

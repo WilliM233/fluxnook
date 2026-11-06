@@ -1,0 +1,9 @@
+@import "../src/app/globals.css";
+
+/* layout.tsx sets these through next/font, which doesn't run under Vite, and a
+   link to Google is a network call from an app with no server anywhere. So the
+   device takes the stacks in docs/designs/deep-field/tokens.json (a Deferral). */
+:root {
+  --font-heading: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
