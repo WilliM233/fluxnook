@@ -77,7 +77,8 @@ Pinned to a commit SHA, not a tag: a tag can be moved after the fact, a commit c
 
 | Action or runner | Version | SHA | Why |
 |---|---|---|---|
-| `ubuntu-24.04` | runner | | Named, not `ubuntu-latest`, so the image moves only when this row does. Has Docker for the Supabase stack |
+| `ubuntu-24.04` | runner | | Named, not `ubuntu-latest`, so the image moves only when this row does. Has Docker for the Supabase stack; from Ch 2.1.2 also the apk (`build.yml`) and the probe (`probe.yml`), with Java 17, the Android SDK and NDK 27.3 on the image |
+| `windows-2025` | runner | | The Windows installer (`build.yml`, Ch 2.1.2): Tauri's NSIS bundle needs a Windows host. Named, not `windows-latest`, for the same reason as the row above. Has Visual Studio 2022's MSVC and WebView2 |
 | actions/checkout | v7.0.1 | `3d3c42e5aac5ba805825da76410c181273ba90b1` | Checks out the repo in every job |
 | actions/setup-node | v7.1.0 | `949feb2413d6458794dcd2491c4babbbce0c15c1` | Node from `.nvmrc`, with npm's cache, in `.github/actions/install` |
 | actions/cache | v6.1.0 | `55cc8345863c7cc4c66a329aec7e433d2d1c52a9` | Playwright's browsers between runs, keyed on the browser and `package-lock.json` |
