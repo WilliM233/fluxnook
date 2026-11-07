@@ -398,8 +398,11 @@ by_hand step_open_b_win
 # W9: Windows refuses A back over B, P9's twin (the Nookkeeper, 2026-11-07).
 # `allowDowngrades: false` makes a silent install of an older build stop.
 check "W9 no $EXE running" 0 "$(win_running)"
-"$A_SETUP" //S
-measured "W9 A's silent installer over B, exit" "$?"
+# Measured before the walk: it stops at once with "Downgrades are disabled for
+# this installer, can't proceed with the silent installer", exit 2, and launches
+# nothing. A timeout so a launched app can't hold the walk.
+timeout 120 "$A_SETUP" //S
+check "W9 A's silent installer over B refused, exit" 2 "$?"
 sleep 5
 check "W9 still one Fluxnook installed" 1 "$(win_entries)"
 check "W9 its version, still B" "$B_VERSION" "$(win_version)"
