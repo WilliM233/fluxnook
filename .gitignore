@@ -22,6 +22,7 @@
 # production
 /build
 /device/dist/
+/device/dist-probe/
 
 # the shell (Ch 2.1.2): Rust's build, and the signing key, which never enters the repo
 /src-tauri/target/

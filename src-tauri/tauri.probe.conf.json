@@ -1,0 +1,9 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "Fluxnook probe",
+  "identifier": "app.fluxnook.probe",
+  "build": {
+    "frontendDist": "../device/dist-probe",
+    "beforeBuildCommand": "npm run device:probe:build"
+  }
+}
