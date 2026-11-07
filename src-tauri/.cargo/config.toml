@@ -1,8 +1,0 @@
-# 16 KB pages (Ch 2.1.2, the Raccoon's S1). Android 15 and later run on devices
-# with 16 KB memory pages, and the Play Store requires apps to load there; a
-# native library linked at 4 KB alignment can't be loaded on one ("program
-# alignment (4096) cannot be smaller than system page size (16384)"). The phone
-# this chapter walks on is 4 KB, the next one may not be, and its apk is the one
-# the phone carries from build to build.
-[target.aarch64-linux-android]
-rustflags = ["-C", "link-arg=-Wl,-z,max-page-size=16384"]

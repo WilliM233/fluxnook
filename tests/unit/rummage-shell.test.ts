@@ -71,17 +71,26 @@ describe("the builds", () => {
   // 16 KB-page device (Android 15+; the API 37 Play image, getconf PAGE_SIZE
   // 16384) shows "This app isn't 16 KB compatible. ELF alignment check failed"
   // and ran it in compatibility mode, where it stopped. L's phone reads 4096
-  // today. The linker flag is Tauri's own 16 KB note; its green is read on the
-  // next CI apk's .so (p_align 16384) and on that emulator, no dialog.
-  it("R5: the Android target links 16 KB page-aligned", () => {
-    const path = join(ROOT, "src-tauri/.cargo/config.toml");
-    expect(existsSync(path), "src-tauri/.cargo/config.toml").toBe(true);
-    const cargo = readFileSync(path, "utf8");
-    const android = cargo
-      .split(/^\[/m)
-      .find((block) => block.startsWith("target.aarch64-linux-android]"));
-    expect(android, "[target.aarch64-linux-android]").toBeDefined();
-    expect(android).toMatch(/max-page-size=16384/);
+  // today.
+  //
+  // The Raccoon's first shape, the flag in src-tauri/.cargo/config.toml, was
+  // green here and still built a 4096 library (build.yml run 42400048440 at
+  // 1249eba): Tauri sets CARGO_TARGET_AARCH64_LINUX_ANDROID_RUSTFLAGS itself, and
+  // a file can't add to that. A build script's link arg is added whatever the
+  // environment holds, and the build checks the library it made, so the next
+  // file that looks right over a wrong library fails CI, not a phone.
+  it("R5: the Android library links 16 KB page-aligned, and the build checks it", () => {
+    expect(existsSync(join(ROOT, "src-tauri/.cargo/config.toml"))).toBe(false);
+    const buildScript = read("src-tauri/build.rs");
+    expect(buildScript).toMatch(/CARGO_CFG_TARGET_OS[\s\S]*"android"/);
+    expect(buildScript).toMatch(
+      /cargo:rustc-link-arg=-Wl,-z,max-page-size=16384/,
+    );
+    const check = runOf(
+      build,
+      "Named for its version and label, and its key printed",
+    );
+    expect(check).toMatch(/node scripts\/elf-load-align\.mjs \S+ 16384/);
   });
 
   // `echo "VERSION_CODE=$(node ...)" >> "$GITHUB_ENV"` is an echo that
