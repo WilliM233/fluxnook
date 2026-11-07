@@ -8,6 +8,16 @@ Every version in `package.json` is exact (`.npmrc` has `save-exact=true`). This 
 |---|---|---|
 | Node | 22.15.0 (`.nvmrc`) | The runtime the versions below were pinned against; meets Next 16 (>=20.9). CI reads `.nvmrc` |
 | Docker Desktop | any current | The Supabase CLI runs the local stack in containers. CI starts only the services the gates use (`.github/actions/stack`): the database, gotrue, kong, postgrest, mailpit and, from Ch 1.2, storage-api for the `covers` bucket |
+| Rust, through rustup | stable-x86_64-pc-windows-msvc, 1.99.1 on the dev box; 1.90 or later | Builds the shell under `src-tauri` (Ch 2.1.2). The MSVC toolchain only: the Windows build is local, the apk is CI's (L, Ch 2.1 Q3 b), so no NDK and no Android target on the dev box. Tauri 2.12's crates need 1.90 (`rust-version`). MSVC, the Windows SDK and WebView2 come with Windows and Visual Studio |
+
+## Rust crates
+
+`src-tauri/Cargo.toml` pins each crate exactly (`=`), and `src-tauri/Cargo.lock` holds the rest of the tree.
+
+| Crate | Version | Why |
+|---|---|---|
+| tauri | 2.12.5 | The shell (Ch 2.1.2, A1: Tauri 2 over Capacitor, for a first-party Windows build from the same project): the system WebView around `device/dist`, on Windows and Android. No features, no plugins; the page calls nothing in Rust |
+| tauri-build | 2.7.4 | Tauri's build script (`src-tauri/build.rs`): the config and the icons compiled into the binary |
 
 Fonts are not packages: Fraunces (titles) and Inter (text) come through `next/font/google` and are fetched at build, replacing Geist (Ch 1.2). The TMDB logo in `public/tmdb` is TMDB's own file, source noted beside it.
 
@@ -59,6 +69,7 @@ Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js fil
 | tsx | 4.23.15 | Runs the TypeScript fixture loader (`npm run fixtures:load`) on Node 22.15, which strips types only behind an experimental flag and without tsconfig paths. Already in the tree under drizzle-kit; replaces nothing, since `scripts/` had no TypeScript before |
 | shadcn | 4.22.0 | The component CLI, and `shadcn/tailwind.css`, which `globals.css` imports at build time; nothing of it ships |
 | tw-animate-css | 1.4.0 | Animations; a build-time CSS import in `globals.css` for shadcn |
+| @tauri-apps/cli | 2.12.4 | The shell's CLI (Ch 2.1.2): `tauri build` for the Windows installer (NSIS), `tauri android init` and `tauri android build` for the apk on CI. Replaces nothing. `@tauri-apps/api` isn't installed: the stub calls nothing in the shell |
 
 ## GitHub Actions
 

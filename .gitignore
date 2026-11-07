@@ -23,6 +23,12 @@
 /build
 /device/dist/
 
+# the shell (Ch 2.1.2): Rust's build, and the signing key, which never enters the repo
+/src-tauri/target/
+/src-tauri/gen/android/keystore.properties
+*.jks
+*.keystore
+
 # misc
 .DS_Store
 *.pem
