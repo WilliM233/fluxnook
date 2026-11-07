@@ -55,7 +55,11 @@ jobs:
         run: |
           echo "SCHEME_CONFIG={\"app\":{\"windows\":[{\"label\":\"main\",\"title\":\"Fluxnook\",\"width\":800,\"height\":600,\"resizable\":true,\"fullscreen\":false,\"useHttpsScheme\":${{ matrix.https }}}]}}" >> "$GITHUB_ENV"
       - name: The probe's Android project, on the probe's identifier
-        run: npx tauri android init --ci --skip-targets-install --config src-tauri/tauri.probe.conf.json --config "$SCHEME_CONFIG"
+        # The committed project is the app's; Tauri refuses a build whose identifier
+        # isn't the project's, so the probe makes its own on the runner.
+        run: |
+          rm -rf src-tauri/gen/android
+          npx tauri android init --ci --skip-targets-install --config src-tauri/tauri.probe.conf.json --config "$SCHEME_CONFIG"
       - name: The debug apk, the phone's ABI only
         run: npx tauri android build --ci --debug --apk --target aarch64 --config src-tauri/tauri.probe.conf.json --config "$SCHEME_CONFIG"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
