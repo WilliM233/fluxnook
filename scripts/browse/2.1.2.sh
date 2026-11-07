@@ -394,6 +394,15 @@ check "W7 its version" "$B_VERSION" "$(win_version)"
 check "W7 no $EXE running before W8" 0 "$(win_running)"
 by_hand step_open_b_win
 
+# W9: Windows refuses A back over B, P9's twin (the Nookkeeper, 2026-11-07).
+# `allowDowngrades: false` makes a silent install of an older build stop.
+check "W9 no $EXE running" 0 "$(win_running)"
+"$A_SETUP" //S
+measured "W9 A's silent installer over B, exit" "$?"
+sleep 5
+check "W9 still one Fluxnook installed" 1 "$(win_entries)"
+check "W9 its version, still B" "$B_VERSION" "$(win_version)"
+
 # 7. Nothing left behind but L's nook
 check "tree clean" 0 "$(git status --short | wc -l | tr -d ' ')"
 check "one Fluxnook on the phone" 1 "$(phone_count)"
