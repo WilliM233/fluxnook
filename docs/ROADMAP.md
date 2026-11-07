@@ -5,7 +5,7 @@ Standing doc for the product-owner seat; the repo copy mirrors the project copy.
 
 ## What Fluxnook is
 
-A hosted media nook: collect films, TV, books, comics, games (more later) in one place, organize them into shelves, log each read or watch with a quick star rating and a journal entry, and track the physical library alongside. Letterboxd plus Goodreads plus the collector's spreadsheet, with a journal in place of the critic's review. Sharing comes after the single-player product is something you would miss.
+A media nook: collect films, TV, books, comics, games (more later) in one place, organize them into shelves, log each read or watch with a quick star rating and a journal entry, and track the physical library alongside. Letterboxd plus Goodreads plus the collector's spreadsheet, with a journal in place of the critic's review. It lives on your phone and PC first (Volume 2), with nothing to host; the hosted nook with the social layer comes after (Volume 3), and everything carries over. Sharing comes after the single-player product is something you would miss.
 
 ## Principles
 
@@ -16,6 +16,7 @@ A hosted media nook: collect films, TV, books, comics, games (more later) in one
 - Collection is first-class. Owning a copy is a different fact from having read the item.
 - Providers do the typing. Manual entry exists as the fallback, never the main path.
 - The app helps curate, the user controls the list. Suggestions are offered, never forced.
+- Your nook is on your device. The hosted nook is a copy you choose to make, and the same tables both places, so moving is an export and an import, never a translation.
 
 ## Stack (lock exact versions in Volume 0)
 
@@ -26,8 +27,8 @@ A hosted media nook: collect films, TV, books, comics, games (more later) in one
 - Supabase Auth (email + magic link; OAuth is 1.0+). Custom auth ruled out
 - Supabase Storage for cover cache and photos of owned copies
 - Tailwind + shadcn/ui, Vitest + Playwright, Biome
-- Android: PWA then Trusted Web Activity for the Play Store. Capacitor only if a native plugin earns it
-- Hosting: Vercel + Supabase cloud, free tiers until it matters. Background jobs deferred; provider sync is on demand
+- Device build (Volume 2): the same app in a shell, Tauri 2 or Capacitor, picked at the Ch 2.1 census (replaces "PWA then TWA", 2026-11-05); PGlite (Postgres in WASM) on the device with the same migrations, one local profile, no sign-in; a sideloaded signed apk and a Windows build out of CI on every PR and tag. The Play Store is Volume 3
+- Hosting: none in Volume 2. Vercel + Supabase cloud for Volume 3's hosted build, free tiers until it matters; Supabase Auth and Storage are that build's. Background jobs deferred; provider sync is on demand
 
 ## Vocabulary and seats
 
@@ -68,34 +69,42 @@ A usable app for one person. Exit: the King path lives in the app as a cross-med
 - Ch 8: Close-out: every sheet's hold in one shared place (eleven sheets, the three 1.6 journal sheets among them), Nightly's two Firefox reds named from their reports (both the tests' reload racing the refresh; the star was right) and two app bugs found behind them (a long address pushing a phone sideways; two quick Backs bringing Search back), a green Nightly on the branch. Done, v0.1.0-ch.8.1 (#95; Signature #96 PR #97); plan at docs/plans/1.8-close-out.md, no design
 - Manual item entry is a fallback form that ships with Ch 2, not its own chapter
 
-### Volume 2: Beta
-A few invited people, hosted. Exit: three people besides L keep a real shelf in it and nothing has lost data.
-- Deploy to Vercel + Supabase cloud, invite-only signup, backups verified. Provider keys (TMDB, Comic Vine) are L's personal dev accounts until here; the deploy chapter re-issues them under organization credentials (L, 2026-10-29)
-- Visibility goes live: public profile, shelf shareable by link
-- Responsive layout that is good on a phone; PWA installable
-- Export (full account as JSON and CSV) and CSV import of a sheet
-- Provider search refinement from real use; provider rate-limit and cache behavior hardened
-- Games provider (IGDB) if a beta user needs it, else 1.0
+### Volume 2: The app
+A sideloaded app, L its only user, nothing hosted (replaces "Beta: a few invited people, hosted", 2026-11-05). Exit: L has lived in it on the phone for a stretch, shelves, journal and collection, with no server running anywhere; data has survived every chapter's install-over; an export round-trips.
+- Ch 1: Shell and builds. The shell picked (Tauri 2 or Capacitor), PGlite holding the schema from the repo's migrations on first launch, one stub page; a signed apk and a Windows build out of CI on every PR and tag; build B installing over build A on the phone with its data kept. From here every chapter's Browse ends on the phone. Next; plan at docs/plans/2.1-shell-and-builds.md, no design
+- Ch 2: The seam. The services under src/lib called in-process from client pages, a transport so the same pages run hosted later, api/v1 dormant but green; sign-in off on device; the whole app in the shell. The first Browse of the real app on the phone
+- Ch 3: Phone layout. Deep Field on a phone, every screen; the first phone Browse's Deferrals taken (the header, paging, the 12px halves, the Started hint). Opens with a design talk
+- Ch 4: Providers on device. A Providers settings screen, every key user-entered with a Test button (the per-user credentials Deferral taken); covers to device files; an About screen with TMDB's notice
+- Ch 5: Export and import. The whole nook as JSON, round-trip tested; the format Volume 3's hosted nook reads
+- Ch 6: Cleanup and close. Shopping's filters and what the phone stretch found; the Windows build's install; the Volume close
 
-### Volume 3: 1.0
-Open signup, in the Play Store. Exit: a stranger signs up, brings their history, builds a shelf, shares it.
-- Open registration
-- Goodreads and Letterboxd export import
+### Volume 3: Hosted and social
+The same app hosted, with the social layer, for other people. Exit: a stranger signs up, brings their nook from the app, builds a shelf, shares it. Opens with two reads before anything is cut: a TMDB commercial licence quote (their sales team, via themoviedb.org/api-for-business; the free key is non-commercial) and a comics source that isn't Comic Vine (non-commercial only, no licence offered; Metron and the Grand Comics Database are the open-data candidates), because whatever covers hosting makes the hosted nook commercial.
+- Deploy to Vercel + Supabase cloud; provider keys under organization credentials, not L's personal dev accounts (L, 2026-10-29)
+- Accounts and transfer: sign up, import the app's export, the global catalog matching local rows through item_sources
+- Visibility goes live: public profile, shelf shareable by link
 - Follow, comments on shelves, a feed of people you follow
-- IGDB for games if not already landed
-- TWA published to the Play Store
+- Goodreads and Letterboxd export import
+- IGDB for games
+- The app in the Play Store; the hosted nook as the app's optional sync, if the stretch says people want both
+- Provider search refinement from real use; rate-limit and cache behaviour hardened
 - Provider-derived edition contents wherever the data exists
+- What covers hosting (a paid app, purchases, ads), shaped around the two reads above; deployment strategy talked through after L's Volume 2 stretch
 
 ### 1.0+ (named so they stay out of 1.0)
 - Cross-media suggestions from the franchise entity
 - Barcode scan while shopping (browser BarcodeDetector first)
 - Shelf cloning across nooks
 - Year-in-review stats, notifications, OAuth sign-in, background provider refresh
-- Capacitor if a native plugin earns it; iPhone when there is one to test on
+- iPhone when there is one to test on
 - Deeper section nesting on shelves if one level proves short
 
 ## Calls made (with reason)
 
+- 2026-11-05 Volume 2 is the sideloaded app, local-first, nothing hosted; the hosted nook with the social layer is Volume 3. Reverses "fully hosted, nothing to self-install" (2026-10-16). Reason, L: the cloud side brings infrastructure to own and a cost before there is anyone to pay it, while a sideloaded app is free to deploy, gets something publishable sooner, and brings feedback on the core feature set from people using it; an app interface was always the goal and it has to be cleanly usable on a phone. The same tables both places (PGlite on device, Postgres hosted, the same migrations) so the move later is an export and an import. L is the only user until the stretch says otherwise; deployment strategy is talked through after L has had an early build in hand (Volume 2 design talk)
+- 2026-11-05 Every provider key is user-entered on the device, on a Providers settings screen with a Test button; no key ships in a build. Comic Vine's limit is 200 requests per resource per hour per key, so one shared key is one budget for everyone who installs; TMDB's limits are per IP, but its key is a non-commercial one either way, and L accepts Comic Vine will need replacing altogether, so a user's own key is the right starting place. Bring-your-own is the design, not a fallback (Volume 2 design talk)
+- 2026-11-05 The catalog is non-commercial under the keys we hold: TMDB's free key is for projects whose primary purpose isn't revenue, and a commercial licence is negotiated with their sales team, price unpublished; Comic Vine's terms are non-commercial only with no licence offered. So a hosted nook that earns anything (a paid app, purchases, ads) opens with a TMDB quote and a different comics source, Volume 3's first two reads (Volume 2 design talk)
+- 2026-11-05 Builds come first in Volume 2 and every chapter after Ch 2 is Browsed on the phone by installing its build over the last, the data carried; the phone is never reset. Reason, L: that is the test of the data, and it gets the app in hand sooner. One signing keystore, made once and backed up, since Android refuses an install-over from a different key (Volume 2 design talk)
 - 2026-11-05 A Volume closes only on a green Nightly, all three browsers, and the close PR's description names the run. Per-PR CI runs Chromium alone, so its green never covered Firefox or WebKit; Ch 1.7 ended with Nightly red on `dev` and nobody looking (Ch 1.8 design talk). A chapter with no screen and no door (a hotfix, a close-out) runs Run 1 and its one Signature in one session, the Cartographer writing section 2, the cut and section 3 in one spawn (Ch 1.8)
 - 2026-11-04 One post owns a copy: `{ edition }` when the printing is known, else `{ item, format }` and the server finds the work's one edition of that format or makes one in the same transaction; two of that format is a 409 that says to pick one on the page. A film on disc has no edition until someone holds it, and "add an edition first" is a step nobody should take (Ch 1.7 design talk)
 - 2026-11-04 Formats narrowed per type and form at the API: book paperback, hardcover, ebook, audiobook; comic issue, one-shot and anthology floppy, digital; collected tpb, hardcover, omnibus, digital; backup none; film and TV dvd, blu-ray, 4k, digital. Condition is five words (new, fine, good, fair, poor) or blank, text with a check as every enumeration is; a grade scale is a Deferral (Ch 1.7)
@@ -234,7 +243,7 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## Deferrals
 
-- Shopping filters: by shelf, by type, by date added, so the list narrows to the kind of shop you're standing in (L, at the 1.7 exit Browse). Trigger: the cleanup pass before the app is pushed to people (Volume 2's deploy chapter, or a polish chapter before it)
+- Shopping filters: by shelf, by type, by date added, so the list narrows to the kind of shop you're standing in (L, at the 1.7 exit Browse). Trigger: Volume 2 Ch 6, the cleanup before the close
 - An untick or a Remove leaves a printing A3 made with nothing pointing at it, so an issue ticked by a slip reads "1 in the catalog · none yours" for good and `editions` grows (1.7.2; 1.7.3 Q1, L answered a) it carries). Trigger: the item-edit Deferral, where a person merges or removes a printing, or L finding the rows noise; then the item page hides a bare printing (1.7.3 Q1 c), three lines)
 - The dev box stalls under the whole e2e suite on `next dev` and `next start` alike, bugchecked `0x4E` once, and the stack's HTTP went unanswered for three minutes after a reset (1.7.2, 1.7.3). CI's production build is the whole suite's witness meanwhile; local runs are per file. Trigger: fired; L's call, the machine's memory tested first
 - The header never says which page you're on; the 1.7 drawings light Collection (1.7.3 N7). Trigger: the first phone Browse, where the header wraps
@@ -242,8 +251,8 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 - Nightly on `dev` is red in Firefox: `journal-sheets` "the left half of a star" at `557e585` and `ec9ca3b`, and `series-ticks.spec.ts` 301 at `ec9ca3b`; the per-PR CI runs no Firefox, so its green doesn't cover them (1.7 Afterword, the Binder). Trigger: before the Volume close; each named from Nightly's report before any fix. Taken in Ch 1.8 (A2) (closed: A2 landed in 1.8.1)
 - Books-to-films adaptation data: no provider links them. Manual adaptation-of links in alpha; Wikidata "based on" explored at 1.0+
 - Comics backup stories and anthology appearances: manual contained-in links; no provider is clean here
-- Metron beside Comic Vine for structured edition contents (`reprints`), once per-user provider accounts are a thing Fluxnook can ask for, or a coverage gap shows. Trigger: a Volume 2 settings page, or a series Comic Vine lacks
-- Per-user provider credentials: every provider key is one server-side account today, which Comic Vine allows and Metron doesn't. Trigger: the first provider whose terms need it
+- Metron beside Comic Vine for structured edition contents (`reprints`), once per-user provider accounts are a thing Fluxnook can ask for, or a coverage gap shows. Trigger: Volume 2 Ch 4 makes per-user keys the norm, so the no-second-account rule (2026-10-29) no longer bars it; Volume 3's comics-source read, or a series Comic Vine lacks
+- Per-user provider credentials: every provider key is one server-side account today, which Comic Vine allows and Metron doesn't. Trigger: the first provider whose terms need it. Taken in Volume 2 Ch 4 (every key user-entered on device, 2026-11-05)
 - Mark owned from the series page: a tick per issue that makes a copy, so a run you hold five of seven of (L's Ultimate Collections) records the five in one pass and the shopping view shows the two. The model already holds it (the catalog has all seven, copies say which are yours); the hand is missing. Trigger: Volume 1 Ch 7, Collection. Taken in Ch 1.7 (A8) (closed: A8 landed in 1.7.2)
 - A cover past the 5 MB cap is dropped, not fetched smaller (Ultimate Collection Vol. 6's original on Comic Vine; the tile shows the dashed box). Trigger: a second such cover, or the collection chapter where the cover you own matters. Carried at the Ch 1.7 design talk with the edition cover below: Volume 2's photos of owned copies (L)
 - An edition has no cover of its own and the item's cover never follows the edition you own (1.3 Browse, carried through 1.4 to 1.6). Trigger: Volume 2's photos of owned copies, where the cover you hold is what shows (L, Ch 1.7 design talk)
@@ -252,6 +261,8 @@ Open signup, in the Play Store. Exit: a stranger signs up, brings their history,
 
 ## History
 
+- 2026-11-06 Volume 2 design talk (held 2026-11-05 during the Ch 1.8 run): Volume 2 becomes the sideloaded app, local-first, nothing hosted, L its only user; Volume 3 the hosted nook with the social layer; four calls added (local-first, keys user-entered, the catalog non-commercial, builds first and the phone Browse); the Stack's Android and Hosting lines, the What and a Principle rewritten; two Deferrals re-triggered (Shopping's filters, Metron) and one taken (per-user credentials). Ch 2.1 spec written, docs/plans/2.1-shell-and-builds.md, no design; the House Rules step 7 addendum (the phone Browse) rides the same commit
+- 2026-11-06 Volume 1 closed: `dev` to `main` at a2774d0, `v0.1.0`, GitHub Release from the PR body, on a green Nightly dispatched on `dev`'s head and named in the close PR. Eight chapters, `v0.1.0-ch.1` to `ch.8.1`. The nook holds a catalog from three providers, shelves, a journal and a collection, for one person on a dev box
 - 2026-11-06 Ch 1.8 closed, v0.1.0-ch.8.1 (#95; PR #97), the last chapter of Volume 1; the Volume close is next, on its own Nightly dispatched on `dev`'s head after the merge; run 42155455367 (chromium, firefox, webkit green at 02ccfa6) is the branch's witness. From the Afterword: four House Rules changes (a screenless chapter's one session, a Volume closes on a green Nightly, the reload-after-write wait and the hold's wider test, the Browse report never truncated)
 - 2026-11-05 Ch 1.8 design talk: one lean (a short close-out chapter before the Volume close, over closing with the two Deferrals open), taken; one call (a Volume closes on a green Nightly; a screenless chapter folds Run 1 into its Signature's session); no screens. Ch 1.8 spec written, docs/plans/1.8-close-out.md. The Volume 1 close follows its merge
 - 2026-11-05 Ch 1.7 closed, v0.1.0-ch.7.1 to ch.7.3 (#88; PRs #92, #93, #94), the last chapter of Volume 1; the Volume close is next. The nook tracks the collection: a copy of a printing in a format with its condition, date and note, owned from a work's page, a series tick or the ISBN card; what a held collection covers reads "owned via"; a Collection page and a derived Shopping view. From the Afterword: six Deferrals (Shopping's filters, the orphan printing, the dev box, the lit header link, the 1.6 sheets' hold, Nightly's Firefox reds) and three House Rules changes (the merge block, the whole-suite witness, the posting control's third test and the one hold)

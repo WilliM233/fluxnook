@@ -1,6 +1,6 @@
 {
   "name": "fluxnook",
-  "version": "0.1.0-ch.8.1",
+  "version": "0.2.0-ch.1.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -22,12 +22,15 @@
     "comicvine:stub": "node --import tsx scripts/comicvine-stub.ts",
     "comicvine:record": "node --env-file=.env.local --import tsx scripts/comicvine-record.ts",
     "openlibrary:record": "node --env-file-if-exists=.env.local --import tsx scripts/openlibrary-record.ts",
+    "device:build": "vite build --config device/vite.config.ts",
+    "device:preview": "vite preview --config device/vite.config.ts --port 4173 --strictPort",
     "check": "npm run lint && npm run typecheck && npm test && npm run db:check && npm run test:db && npm run test:e2e"
   },
   "dependencies": {
     "@base-ui/react": "1.9.0",
     "@dnd-kit/core": "6.3.1",
     "@dnd-kit/sortable": "10.0.0",
+    "@electric-sql/pglite": "0.5.15",
     "@supabase/ssr": "0.12.7",
     "@supabase/supabase-js": "2.118.0",
     "class-variance-authority": "0.7.1",
@@ -44,6 +47,7 @@
     "@biomejs/biome": "2.5.15",
     "@playwright/test": "1.64.1",
     "@tailwindcss/turbopack": "4.3.3",
+    "@tailwindcss/vite": "4.3.3",
     "@types/node": "22.20.5",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
