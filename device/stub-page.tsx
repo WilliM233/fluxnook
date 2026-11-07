@@ -125,7 +125,10 @@ export function StubPage() {
         <p role="alert" className="text-destructive">
           Fluxnook couldn't open its database: {openFailed}
         </p>
-        <p className="text-sm text-muted-foreground">{version}</p>
+        <div className="text-sm text-muted-foreground">
+          <p>{version}</p>
+          <p>build {__FLUXNOOK_BUILD__}</p>
+        </div>
       </main>
     );
   }
@@ -140,6 +143,7 @@ export function StubPage() {
           </p>
         )}
         <p>{version}</p>
+        <p>build {__FLUXNOOK_BUILD__}</p>
       </div>
       <form onSubmit={submit} className="flex flex-col gap-1">
         <label htmlFor="shelf-name" className="text-sm">

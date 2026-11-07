@@ -20,6 +20,11 @@ const contentSecurityPolicy: string = shellConfig.app.security.csp;
 export default defineConfig({
   root: fileURLToPath(new URL(".", import.meta.url)),
   plugins: [deviceMigrations(), tailwindcss()],
+  // Which build this is, printed under the version (A5): CI sets the commit's
+  // first seven characters, so a label is a commit anyone can `git show`.
+  define: {
+    __FLUXNOOK_BUILD__: JSON.stringify(process.env.FLUXNOOK_BUILD || "local"),
+  },
   resolve: {
     alias: { "@": fileURLToPath(new URL("../src", import.meta.url)) },
   },

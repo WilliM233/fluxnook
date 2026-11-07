@@ -31,6 +31,8 @@ const { version } = JSON.parse(readFileSync("package.json", "utf8")) as {
 };
 
 const COUNTS = `${migrationCount} migrations · ${tableCount} tables`;
+// The label `playwright.config.ts` builds the stub with (A5's build label).
+const BUILD = `build ${process.env.FLUXNOOK_BUILD || "e2e"}`;
 
 // A first open starts Postgres and applies every migration. The test's own
 // timeout has to outlast the wait, or it cuts the wait short.
@@ -109,6 +111,28 @@ test("a blank name says so and lists nothing", async ({ page }) => {
 
   await expect(page.getByRole("alert")).toHaveText("Give the shelf a name.");
   await expect(listed(page)).toHaveCount(0);
+});
+
+// After `adb install -r` the page has to say which build it is, and a page that
+// couldn't open is where that matters most (2.1.1's S7).
+test("the working page and a failed open each print the build's label", async ({
+  context,
+  page,
+}) => {
+  await open(page);
+  await expect(page.getByText(BUILD, { exact: true })).toBeVisible();
+  // Closed first, so its lock on the store is gone before the next page opens.
+  await page.close();
+
+  const failed = await context.newPage();
+  await failed.route("**/*.wasm", (route) => route.abort());
+  await failed.goto("/");
+  await expect(failed.getByRole("alert")).toContainText(
+    "Fluxnook couldn't open its database",
+    OPEN,
+  );
+  await expect(failed.getByText(version, { exact: true })).toBeVisible();
+  await expect(failed.getByText(BUILD, { exact: true })).toBeVisible();
 });
 
 test("a failed open prints in words, with no field to type in", async ({
