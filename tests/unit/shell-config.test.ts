@@ -30,6 +30,19 @@ describe("the shell's config", () => {
     expect(directive("script-src")).not.toContain("'unsafe-inline'");
   });
 
+  // The identifier names the app's data on the phone and on Windows, and the
+  // scheme is the origin the store is keyed by: either one moved is a phone
+  // that opens empty with no error (A5). The scheme was decided on the probe's
+  // table (plan section 5) and is written out, so a Tauri whose default moved
+  // can't move the origin under a phone's rows.
+  it("the identifier and the scheme never move", () => {
+    expect(shell.identifier).toBe("app.fluxnook");
+    const main = shell.app.windows.find(
+      (window: { label?: string }) => window.label === "main",
+    );
+    expect(main).toHaveProperty("useHttpsScheme", false);
+  });
+
   it("the shell ships the stub and the version the page prints", () => {
     expect(shell.version).toBe("../package.json");
     expect(shell.build.frontendDist).toBe("../device/dist");
