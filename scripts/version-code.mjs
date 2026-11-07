@@ -33,6 +33,13 @@ export function versionCode(version) {
       `A version code needs M.m.p or M.m.p-ch.<n>.<s>, and ${version} is neither.`,
     );
   }
+  // Semver allows no leading zero, and read as a number `ch.01.1` would share
+  // `ch.1.1`'s code, so Android would take neither over the other.
+  if (match.slice(1).some((part) => part !== undefined && /^0\d/.test(part))) {
+    throw new Error(
+      `A version code needs each part without a leading zero, and ${version} has one.`,
+    );
+  }
   const [major, minor, patch, chapter, signature] = match
     .slice(1)
     .map((part) => (part === undefined ? undefined : Number(part)));
@@ -49,14 +56,23 @@ export function versionCode(version) {
       `A version code holds a major up to 20, and ${version} has ${major}.`,
     );
   }
-  const release = major * 100_000_000 + minor * 1_000_000 + patch * 10_000;
-  if (chapter === undefined) return release;
-  if (chapter < 1 || signature < 1) {
+  if (chapter !== undefined && (chapter < 1 || signature < 1)) {
     throw new Error(
       `A chapter and a signature count from 1, and ${version} has a 0.`,
     );
   }
-  return release - 10_000 + chapter * 100 + signature;
+  const release = major * 100_000_000 + minor * 1_000_000 + patch * 10_000;
+  const code =
+    chapter === undefined
+      ? release
+      : release - 10_000 + chapter * 100 + signature;
+  // Android takes no code under 1; 0.0.0 (Volume 0's own version) would be 0.
+  if (code < 1) {
+    throw new Error(
+      `A version code is at least 1, and ${version} would be ${code}, so it can't be built as an apk.`,
+    );
+  }
+  return code;
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

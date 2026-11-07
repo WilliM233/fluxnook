@@ -44,9 +44,14 @@ jobs:
           workspaces: src-tauri
           key: android
       - name: The label, the version code and the runner's NDK
+        # Each value in a statement of its own: an `echo "X=$(...)"` succeeds
+        # whatever the command inside it did, so a version outside the rule
+        # would fail later, at Tauri's --config, and not in the rule's words.
         run: |
-          echo "FLUXNOOK_BUILD=$(git rev-parse --short=7 HEAD)" >> "$GITHUB_ENV"
-          echo "VERSION_CODE=$(node scripts/version-code.mjs)" >> "$GITHUB_ENV"
+          FLUXNOOK_BUILD=$(git rev-parse --short=7 HEAD)
+          VERSION_CODE=$(node scripts/version-code.mjs)
+          echo "FLUXNOOK_BUILD=$FLUXNOOK_BUILD" >> "$GITHUB_ENV"
+          echo "VERSION_CODE=$VERSION_CODE" >> "$GITHUB_ENV"
           echo "NDK_HOME=$ANDROID_NDK_HOME" >> "$GITHUB_ENV"
       - name: The release key, from the two secrets
         env:
@@ -98,7 +103,9 @@ jobs:
           workspaces: src-tauri
           key: windows
       - name: The label
-        run: echo "FLUXNOOK_BUILD=$(git rev-parse --short=7 HEAD)" >> "$GITHUB_ENV"
+        run: |
+          FLUXNOOK_BUILD=$(git rev-parse --short=7 HEAD)
+          echo "FLUXNOOK_BUILD=$FLUXNOOK_BUILD" >> "$GITHUB_ENV"
       - name: The Windows installer (NSIS)
         run: npm run tauri -- build --ci
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

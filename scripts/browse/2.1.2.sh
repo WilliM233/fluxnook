@@ -238,6 +238,7 @@ step_install_b_win() {
   echo "  $(cygpath -w "$B_DIR")\\fluxnook-windows\\<the -setup.exe there>"
   echo "Click through it with the defaults."
   echo "If it asks about removing the old version's data, keep the data."
+  echo "If it offers to run Fluxnook at the end, leave that unticked."
 }
 
 step_open_b_win() {
@@ -389,6 +390,8 @@ measured "W7 the installer" "$(cygpath -w "$B_SETUP")"
 by_hand step_install_b_win
 check "W7 one Fluxnook installed" 1 "$(win_entries)"
 check "W7 its version" "$B_VERSION" "$(win_version)"
+# An installer left to run Fluxnook at its finish makes W8's open a second window.
+check "W7 no $EXE running before W8" 0 "$(win_running)"
 by_hand step_open_b_win
 
 # 7. Nothing left behind but L's nook
