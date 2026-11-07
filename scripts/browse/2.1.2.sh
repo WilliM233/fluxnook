@@ -115,7 +115,8 @@ phone_version() { adb shell dumpsys package "$IDENTIFIER" | grep -m1 versionName
 phone_running() { adb shell pidof "$IDENTIFIER" >/dev/null 2>&1 && echo running || echo none; }
 apksigner() { JAVA_HOME="$JBR" "$APKSIGNER" "$@" | tr -d '\r'; }
 apk_key() { apksigner verify --print-certs "$1" | grep -m1 'SHA-256 digest' | sed 's/.*: //'; }
-apk_badge() { "$AAPT" dump badging "$1" | tr -d '\r' | grep -m1 '^package:' | sed -n "s/.*$2='\([^']*\)'.*/\1/p"; }
+# The space before the field: `platformBuildVersionName='17'` also ends in name=.
+apk_badge() { "$AAPT" dump badging "$1" | tr -d '\r' | grep -m1 '^package:' | sed -n "s/.* $2='\([^']*\)'.*/\1/p"; }
 win_version() { reg query "$UNINSTALL_KEY" //v DisplayVersion 2>/dev/null | tr -d '\r' | awk '/DisplayVersion/ {print $3}'; }
 win_entries() { reg query "$UNINSTALL_KEY" >/dev/null 2>&1 && echo 1 || echo 0; }
 win_running() { tasklist //FI "IMAGENAME eq $EXE" | tr -d '\r' | grep -ci "^$EXE"; }
