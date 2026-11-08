@@ -113,6 +113,23 @@ adb() { "$ADB" "$@" | tr -d '\r'; }
 phone_count() { adb shell pm list packages | grep -c fluxnook; }
 phone_version() { adb shell dumpsys package "$IDENTIFIER" | grep -m1 versionName | sed 's/.*versionName=//'; }
 phone_running() { adb shell pidof "$IDENTIFIER" >/dev/null 2>&1 && echo running || echo none; }
+# A force-stop or a swipe takes a breath to tear the process down (L's walk:
+# running in that breath, none at once after), so ask for up to 3 s before
+# calling it left, and on a fail name what is still there.
+check_phone_gone() { # name
+  local state tries=0
+  state=$(phone_running)
+  while [ "$state" = running ] && [ "$tries" -lt 6 ]; do
+    sleep 0.5
+    tries=$((tries + 1))
+    state=$(phone_running)
+  done
+  check "$1" none "$state"
+  if [ "$state" = running ]; then
+    say "  still on the phone (adb shell ps -A | grep $IDENTIFIER):"
+    adb shell ps -A | grep "$IDENTIFIER" | sed 's/^/    /' | tee -a "$REPORT"
+  fi
+}
 apksigner() { JAVA_HOME="$JBR" "$APKSIGNER" "$@" | tr -d '\r'; }
 apk_key() { apksigner verify --print-certs "$1" | grep -m1 'SHA-256 digest' | sed 's/.*: //'; }
 # The space before the field: `platformBuildVersionName='17'` also ends in name=.
@@ -353,7 +370,7 @@ started=$(date +%s%3N)
 adb shell am start -W -n "$ACTIVITY" >/dev/null
 adb shell am force-stop "$IDENTIFIER"
 measured "P2 start to kill" "$(($(date +%s%3N) - started)) ms (the probe's first open on the phone: 1571 to 1805 ms)"
-check "P2 no process left" none "$(phone_running)"
+check_phone_gone "P2 no process left"
 
 by_hand step_install_a
 by_hand step_king_phone
@@ -362,7 +379,7 @@ if [ "$(phone_running)" = running ]; then
   measured "P5 a process after the swipe" "running, stopped now so the next open reads the store"
   adb shell am force-stop "$IDENTIFIER"
 fi
-check "P5 no process left" none "$(phone_running)"
+check_phone_gone "P5 no process left"
 by_hand step_reopen_phone
 
 # P7: build B over build A
