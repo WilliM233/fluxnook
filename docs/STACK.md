@@ -8,6 +8,16 @@ Every version in `package.json` is exact (`.npmrc` has `save-exact=true`). This 
 |---|---|---|
 | Node | 22.15.0 (`.nvmrc`) | The runtime the versions below were pinned against; meets Next 16 (>=20.9). CI reads `.nvmrc` |
 | Docker Desktop | any current | The Supabase CLI runs the local stack in containers. CI starts only the services the gates use (`.github/actions/stack`): the database, gotrue, kong, postgrest, mailpit and, from Ch 1.2, storage-api for the `covers` bucket |
+| Rust, through rustup | stable-x86_64-pc-windows-msvc, 1.99.1 on the dev box; 1.90 or later | Builds the shell under `src-tauri` (Ch 2.1.2). The MSVC toolchain only: the Windows build is local, the apk is CI's (L, Ch 2.1 Q3 b), so no NDK and no Android target on the dev box. Tauri 2.12's crates need 1.90 (`rust-version`). MSVC, the Windows SDK and WebView2 come with Windows and Visual Studio |
+
+## Rust crates
+
+`src-tauri/Cargo.toml` pins each crate exactly (`=`), and `src-tauri/Cargo.lock` holds the rest of the tree.
+
+| Crate | Version | Why |
+|---|---|---|
+| tauri | 2.12.5 | The shell (Ch 2.1.2, A1: Tauri 2 over Capacitor, for a first-party Windows build from the same project): the system WebView around `device/dist`, on Windows and Android. No features, no plugins; the page calls nothing in Rust |
+| tauri-build | 2.7.4 | Tauri's build script (`src-tauri/build.rs`): the config and the icons compiled into the binary |
 
 Fonts are not packages: Fraunces (titles) and Inter (text) come through `next/font/google` and are fetched at build, replacing Geist (Ch 1.2). The TMDB logo in `public/tmdb` is TMDB's own file, source noted beside it.
 
@@ -59,6 +69,7 @@ Scaffold only, not installed: `create-next-app@16.4.2` generated the Next.js fil
 | tsx | 4.23.15 | Runs the TypeScript fixture loader (`npm run fixtures:load`) on Node 22.15, which strips types only behind an experimental flag and without tsconfig paths. Already in the tree under drizzle-kit; replaces nothing, since `scripts/` had no TypeScript before |
 | shadcn | 4.22.0 | The component CLI, and `shadcn/tailwind.css`, which `globals.css` imports at build time; nothing of it ships |
 | tw-animate-css | 1.4.0 | Animations; a build-time CSS import in `globals.css` for shadcn |
+| @tauri-apps/cli | 2.12.4 | The shell's CLI (Ch 2.1.2): `tauri build` for the Windows installer (NSIS), `tauri android init` and `tauri android build` for the apk on CI. Replaces nothing. `@tauri-apps/api` isn't installed: the stub calls nothing in the shell |
 
 ## GitHub Actions
 
@@ -66,8 +77,11 @@ Pinned to a commit SHA, not a tag: a tag can be moved after the fact, a commit c
 
 | Action or runner | Version | SHA | Why |
 |---|---|---|---|
-| `ubuntu-24.04` | runner | | Named, not `ubuntu-latest`, so the image moves only when this row does. Has Docker for the Supabase stack |
+| `ubuntu-24.04` | runner | | Named, not `ubuntu-latest`, so the image moves only when this row does. Has Docker for the Supabase stack; from Ch 2.1.2 also the apk (`build.yml`) and the probe (`probe.yml`), with Java 17, the Android SDK and NDK 27.3 on the image |
+| `windows-2025` | runner | | The Windows installer (`build.yml`, Ch 2.1.2): Tauri's NSIS bundle needs a Windows host. Named, not `windows-latest`, for the same reason as the row above. Has Visual Studio 2022's MSVC and WebView2 |
 | actions/checkout | v7.0.1 | `3d3c42e5aac5ba805825da76410c181273ba90b1` | Checks out the repo in every job |
 | actions/setup-node | v7.1.0 | `949feb2413d6458794dcd2491c4babbbce0c15c1` | Node from `.nvmrc`, with npm's cache, in `.github/actions/install` |
 | actions/cache | v6.1.0 | `55cc8345863c7cc4c66a329aec7e433d2d1c52a9` | Playwright's browsers between runs, keyed on the browser and `package-lock.json` |
-| actions/upload-artifact | v7.0.2 | `cf430e030ddbb5b0abf93d22962f4752f3646cd9` | The Playwright HTML report when an e2e job fails |
+| actions/upload-artifact | v7.0.2 | `cf430e030ddbb5b0abf93d22962f4752f3646cd9` | The Playwright HTML report when an e2e job fails; from Ch 2.1.2 the probe's apks, the generated Android project and the builds |
+| dtolnay/rust-toolchain | `master`, 2026-10-16 (no release past v1) | `683b588c487a69d01f6c6ddf40f036ff682cc2c8` | Rust for the shell's jobs (Ch 2.1.2), with `toolchain: 1.99.1`, the runners' own, pinned so a new stable never moves a build unasked, and the Android target where the job builds an apk. Third-party; pinned by sha like every action here |
+| Swatinem/rust-cache | v2.9.3 | `d1527c8f67ef9af357290475d4af4b0fab8f12e0` | Rust's target directory between runs (`src-tauri`), so a warm apk or Windows build stays well inside its 30 minutes. Third-party |

@@ -1,0 +1,44 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "Fluxnook",
+  "version": "../package.json",
+  "identifier": "app.fluxnook",
+  "build": {
+    "frontendDist": "../device/dist",
+    "beforeBuildCommand": "npm run device:build"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Fluxnook",
+        "width": 800,
+        "height": 600,
+        "resizable": true,
+        "fullscreen": false,
+        "useHttpsScheme": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost; object-src 'none'; base-uri 'none'; form-action 'none'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "allowDowngrades": false
+    },
+    "android": {
+      "minSdkVersion": 24,
+      "debugApplicationIdSuffix": ".debug"
+    }
+  }
+}

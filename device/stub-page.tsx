@@ -121,17 +121,20 @@ export function StubPage() {
 
   if (openFailed) {
     return (
-      <main className="mx-auto flex max-w-xl flex-col gap-4 p-4 wrap-anywhere">
+      <main className="mx-auto flex max-w-xl flex-col gap-4 p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] wrap-anywhere">
         <p role="alert" className="text-destructive">
           Fluxnook couldn't open its database: {openFailed}
         </p>
-        <p className="text-sm text-muted-foreground">{version}</p>
+        <div className="text-sm text-muted-foreground">
+          <p>{version}</p>
+          <p>build {__FLUXNOOK_BUILD__}</p>
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="mx-auto flex max-w-xl flex-col gap-4 p-4 wrap-anywhere">
+    <main className="mx-auto flex max-w-xl flex-col gap-4 p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] wrap-anywhere">
       <div className="text-sm text-muted-foreground">
         {opened && (
           <p>
@@ -140,6 +143,7 @@ export function StubPage() {
           </p>
         )}
         <p>{version}</p>
+        <p>build {__FLUXNOOK_BUILD__}</p>
       </div>
       <form onSubmit={submit} className="flex flex-col gap-1">
         <label htmlFor="shelf-name" className="text-sm">

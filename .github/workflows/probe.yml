@@ -1,0 +1,91 @@
+# The probe on Android (Ch 2.1.2, step 6). The scheme a phone's store lives under
+# can't change after the first install, so it is chosen on what the phone's own
+# WebView measures: two debug apks of the probe, one per scheme, on an identifier
+# of their own (app.fluxnook.probe) and Gradle's throwaway debug key, never the
+# app's. The dev box has no NDK (L, Ch 2.1 Q3 b), so the app's own Android project
+# is generated here too and committed from the artifact.
+#
+# Runs only when the probe's files change; kept so the measure can be taken again
+# when a WebView or Tauri moves.
+name: Probe
+
+on:
+  pull_request:
+    branches: [dev, main]
+    paths:
+      - device/probe/**
+      - device/vite.probe.config.ts
+      - src-tauri/tauri.probe.conf.json
+      - .github/workflows/probe.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: probe-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    name: probe (${{ matrix.scheme }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - scheme: http
+            https: "false"
+          - scheme: https
+            https: "true"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/install
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # master, 2026-10-16
+        with:
+          toolchain: 1.99.1
+          targets: aarch64-linux-android
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          workspaces: src-tauri
+          key: probe-${{ matrix.scheme }}
+      - name: The runner's NDK for Tauri
+        run: echo "NDK_HOME=$ANDROID_NDK_HOME" >> "$GITHUB_ENV"
+      - name: The scheme, the window spelled whole (a merged array is replaced)
+        run: |
+          echo "SCHEME_CONFIG={\"app\":{\"windows\":[{\"label\":\"main\",\"title\":\"Fluxnook\",\"width\":800,\"height\":600,\"resizable\":true,\"fullscreen\":false,\"useHttpsScheme\":${{ matrix.https }}}]}}" >> "$GITHUB_ENV"
+      - name: The probe's Android project, on the probe's identifier
+        # The committed project is the app's; Tauri refuses a build whose identifier
+        # isn't the project's, so the probe makes its own on the runner.
+        run: |
+          rm -rf src-tauri/gen/android
+          npx tauri android init --ci --skip-targets-install --config src-tauri/tauri.probe.conf.json --config "$SCHEME_CONFIG"
+      - name: The debug apk, the phone's ABI only
+        run: npx tauri android build --ci --debug --apk --target aarch64 --config src-tauri/tauri.probe.conf.json --config "$SCHEME_CONFIG"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: probe-${{ matrix.scheme }}
+          path: src-tauri/gen/android/app/build/outputs/apk/**/*.apk
+          if-no-files-found: error
+
+  android-project:
+    name: android-project
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/install
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # master, 2026-10-16
+        with:
+          toolchain: 1.99.1
+          targets: aarch64-linux-android
+      - name: The runner's NDK for Tauri
+        run: echo "NDK_HOME=$ANDROID_NDK_HOME" >> "$GITHUB_ENV"
+      - name: The app's Android project, on the app's identifier
+        run: npx tauri android init --ci --skip-targets-install
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: android-project
+          path: src-tauri/gen/android
+          include-hidden-files: true
+          if-no-files-found: error

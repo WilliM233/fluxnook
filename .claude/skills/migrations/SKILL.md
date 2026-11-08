@@ -1,6 +1,6 @@
 ---
 name: migrations
-description: How Fluxnook writes and applies database migrations with Drizzle and the Supabase CLI. Load before adding or changing a table, a trigger, or anything under supabase/migrations.
+description: How Fluxnook writes and applies database migrations with Drizzle and the Supabase CLI, and on the device through PGlite. Load before adding or changing a table, a trigger, or anything under supabase/migrations.
 ---
 
 # Migrations
@@ -44,6 +44,17 @@ Every table that holds user content gets a `visibility` column, private by defau
 As of Ch 1.1, five tables carry `visibility` (`text not null default 'private'`, checked to `private`/`unlisted`/`public`): `shelves`, `shelf_entries`, `occurrences`, `journal_entries`, `copies`. Three carry `owner` → `profiles` on delete cascade: `shelves`, `occurrences`, `copies`. The rest reach their owner through a parent: `shelf_sections` and `shelf_entries` through their shelf, `journal_entries` through its occurrence. `shelf_sections` has no `visibility`; the shelf's is the section's. The catalog tables (`items` and its children, `editions` and theirs, `franchises` and theirs) carry neither: they're shared by every user. A new content table gets both the column and its `<table>_visibility` check, plus `owner` or a parent that has one, and `tests/unit/schema.test.ts` names it.
 
 Every table but `profiles` has `updated_at`, kept by `public.set_updated_at()` through a `<table>_updated_at` trigger (`20261023195411_updated_at.sql`). A new table adds its trigger in a `--custom` migration; the constraint test fails on a table without one. A `--custom` file may also write outside `public`, as `20261024180430_covers_bucket.sql` does to `storage.buckets` (Ch 1.2); `db:check` never sees it, so its Down is the only proof it reverses.
+
+## On the device
+
+From Ch 2.1 the same files also apply on L's phone and PC, through PGlite in the app (`device/db.ts`). Postgres there is 18.x (PGlite 0.5.15) and hosted is 17 (`supabase/config.toml`). CI applies every migration on both: `test:db` on the stack's 17, and `tests/unit/device-migrate.test.ts` under `npm test` on PGlite. Nothing is edited for the device, and there is no skip list.
+
+- **How it gets there.** Drizzle's reader is `node:fs`, so `device/migrations-plugin.ts` runs `readMigrationFiles` at build and bundles the list. `migrateDevice` hands that list to Drizzle's migrator in one transaction. So a first launch is all or nothing, and a later build catches up on whatever is newer than the last applied.
+- **One statement per chunk.** PGlite's `query` takes one statement per call, and the migrator sends one call per `--> statement-breakpoint` chunk. The Supabase CLI takes a whole file. So a `--custom` file with two statements and no breakpoint between them applies hosted and fails on the device. Put a breakpoint after every statement. The device test goes red on a miss.
+- **`when` only goes up.** The migrator passes over any migration stamped older than the last one applied, so a migration out of order in `meta/_journal.json` never reaches a phone. The device test checks the order.
+- **The stand-ins.** The device has no Supabase. Before the first migration it makes two empty stand-ins (`STAND_INS` in `device/db.ts`): `auth.users (id uuid primary key)` and `storage.buckets (id text primary key, name text, public boolean)`. That's enough for `profiles`'s foreign key, the signup trigger and the covers bucket row. A statement that reads or writes any other column of either table needs its stand-in widened in the same Signature. The device test reads both stand-ins' columns.
+- **Over the phone's rows.** The phone is never reset (House Rules step 7). So a migration has to apply over L's real rows, not only over empty tables, and one that can't is a blocking finding. The catch-up test runs over empty tables only (2.1.1's Deferral, whose trigger is the first migration after Ch 2.1). Write that migration's test over rows.
+- **A PGlite bump across a Postgres major.** The stored data refuses it: a 17 store fails to open under 18 (README, "Install on a phone"). Such a bump is a dump and a restore, never a plain version change.
 
 ## Triggers on `auth.users`
 

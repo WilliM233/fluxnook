@@ -1,0 +1,141 @@
+# The builds (Ch 2.1.2, A6): the signed apk and the Windows installer on every
+# pull request and every v* tag, uploaded as artifacts on every run, and attached
+# to the tag's GitHub Release when it has one. A Release is made after its tag is
+# pushed, so the tag's own run finds none and the `release` run attaches.
+#
+# Each build prints its label (the commit's first seven characters) under the
+# version, read from the PR's head, not the merge GitHub tests, so a label is a
+# commit anyone can `git show`. Separate from ci.yml, whose six jobs stay as they
+# were (A6).
+name: Build
+
+on:
+  pull_request:
+    branches: [dev, main]
+  push:
+    tags: ["v*"]
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+# Never cancelled: a cancelled run is a lost build A.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  android:
+    name: android
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: ./.github/actions/install
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # master, 2026-10-16
+        with:
+          toolchain: 1.99.1
+          targets: aarch64-linux-android
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          workspaces: src-tauri
+          key: android
+      - name: The label, the version code and the runner's NDK
+        # Each value in a statement of its own: an `echo "X=$(...)"` succeeds
+        # whatever the command inside it did, so a version outside the rule
+        # would fail later, at Tauri's --config, and not in the rule's words.
+        run: |
+          FLUXNOOK_BUILD=$(git rev-parse --short=7 HEAD)
+          VERSION_CODE=$(node scripts/version-code.mjs)
+          echo "FLUXNOOK_BUILD=$FLUXNOOK_BUILD" >> "$GITHUB_ENV"
+          echo "VERSION_CODE=$VERSION_CODE" >> "$GITHUB_ENV"
+          echo "NDK_HOME=$ANDROID_NDK_HOME" >> "$GITHUB_ENV"
+      - name: The release key, from the two secrets
+        env:
+          ANDROID_KEY_BASE64: ${{ secrets.ANDROID_KEY_BASE64 }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$ANDROID_KEY_BASE64" ] || [ -z "$ANDROID_KEY_PASSWORD" ]; then
+            echo "::error::The signing secrets aren't here (a fork's or a bot's pull request has none), so no apk can be signed with Fluxnook's key."
+            exit 1
+          fi
+          printf '%s' "$ANDROID_KEY_BASE64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          {
+            echo "password=$ANDROID_KEY_PASSWORD"
+            echo "keyAlias=upload"
+            echo "storeFile=$RUNNER_TEMP/upload.jks"
+          } > src-tauri/gen/android/keystore.properties
+      - name: The signed apk, the phone's ABI only
+        run: npm run tauri -- android build --ci --apk --target aarch64 --config "{\"bundle\":{\"android\":{\"versionCode\":$VERSION_CODE}}}"
+      - name: Named for its version and label, and its key printed
+        run: |
+          version=$(node -p "require('./package.json').version")
+          mkdir -p "$RUNNER_TEMP/out"
+          cp src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release.apk "$RUNNER_TEMP/out/Fluxnook_${version}_${FLUXNOOK_BUILD}.apk"
+          "$ANDROID_HOME/build-tools/37.0.0/apksigner" verify --print-certs "$RUNNER_TEMP/out/Fluxnook_${version}_${FLUXNOOK_BUILD}.apk" | grep SHA-256
+          # A 16 KB-page phone can't load a library aligned under 16384, and the
+          # apk would install anyway, so the build reads its own library.
+          unzip -o -q "$RUNNER_TEMP/out/Fluxnook_${version}_${FLUXNOOK_BUILD}.apk" lib/arm64-v8a/libfluxnook_lib.so -d "$RUNNER_TEMP/lib"
+          node scripts/elf-load-align.mjs "$RUNNER_TEMP/lib/lib/arm64-v8a/libfluxnook_lib.so" 16384
+          rm -f "$RUNNER_TEMP/upload.jks" src-tauri/gen/android/keystore.properties
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: fluxnook-android
+          path: ${{ runner.temp }}/out/*.apk
+          if-no-files-found: error
+
+  windows:
+    name: windows
+    runs-on: windows-2025
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: ./.github/actions/install
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # master, 2026-10-16
+        with:
+          toolchain: 1.99.1
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          workspaces: src-tauri
+          key: windows
+      - name: The label
+        run: |
+          FLUXNOOK_BUILD=$(git rev-parse --short=7 HEAD)
+          echo "FLUXNOOK_BUILD=$FLUXNOOK_BUILD" >> "$GITHUB_ENV"
+      - name: The Windows installer (NSIS)
+        run: npm run tauri -- build --ci
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: fluxnook-windows
+          path: src-tauri/target/release/bundle/nsis/*-setup.exe
+          if-no-files-found: error
+
+  release:
+    name: release
+    if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v')
+    needs: [android, windows]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Attached to the tag's Release, when it has one
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name || github.ref_name }}
+        run: |
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            # This run's own two artifacts; no download action needed.
+            gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --dir builds
+            gh release upload "$TAG" builds/*/* --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            echo "No Release for $TAG: a chapter tag is a pre-release without one, and its builds are this run's artifacts."
+          fi

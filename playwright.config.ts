@@ -55,6 +55,8 @@ export default defineConfig({
     {
       command: "npm run device:build && npm run device:preview",
       url: "http://localhost:4173",
+      // The label the page prints; `tests/e2e/device-stub.spec.ts` reads the same.
+      env: { FLUXNOOK_BUILD: process.env.FLUXNOOK_BUILD || "e2e" },
       reuseExistingServer: !ci,
       timeout: 120_000,
     },

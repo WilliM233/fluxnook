@@ -1,0 +1,19 @@
+[package]
+name = "fluxnook"
+# The app's version is package.json's, read by tauri.conf.json; this one is Cargo's own and never shown.
+version = "0.0.0"
+description = "Fluxnook, the shell around the device build"
+edition = "2024"
+rust-version = "1.90"
+publish = false
+
+[lib]
+name = "fluxnook_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+# Exact pins, as package.json's are; Cargo.lock holds the rest of the tree.
+[build-dependencies]
+tauri-build = { version = "=2.7.4", features = [] }
+
+[dependencies]
+tauri = { version = "=2.12.5", features = [] }

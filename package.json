@@ -1,6 +1,6 @@
 {
   "name": "fluxnook",
-  "version": "0.2.0-ch.1.1",
+  "version": "0.2.0-ch.1.2",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -24,6 +24,8 @@
     "openlibrary:record": "node --env-file-if-exists=.env.local --import tsx scripts/openlibrary-record.ts",
     "device:build": "vite build --config device/vite.config.ts",
     "device:preview": "vite preview --config device/vite.config.ts --port 4173 --strictPort",
+    "device:probe:build": "vite build --config device/vite.probe.config.ts",
+    "tauri": "tauri",
     "check": "npm run lint && npm run typecheck && npm test && npm run db:check && npm run test:db && npm run test:e2e"
   },
   "dependencies": {
@@ -48,6 +50,7 @@
     "@playwright/test": "1.64.1",
     "@tailwindcss/turbopack": "4.3.3",
     "@tailwindcss/vite": "4.3.3",
+    "@tauri-apps/cli": "2.12.4",
     "@types/node": "22.20.5",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
