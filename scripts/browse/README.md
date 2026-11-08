@@ -19,3 +19,5 @@ The report is what goes in the PR's Browse section, with anything that differed.
 `BROWSE_EMAIL` names the address to sign in with; without it the script asks. A script that starts with `npx supabase db reset` signs in again before loading the fixtures, since a reset drops every account.
 
 Writing one: a non-ASCII character (the middle dot in the counts lines, a section name) reaches curl and psql only as octal bytes (`DOT=$(printf '\302\267')`) or on stdin. Typed into an argument, Windows hands it over in the console's code page and the name comes out a different name (1.5.1, step 5). Write the script with an editor, not a heredoc, which mangles the backslashes on this machine.
+
+From 2.2 a check that reads a state which settles on its own (a process ending, a port closing, a server answering, an app's process gone after a swipe) polls with a cap, a few seconds unless the step says more, and on a fail prints its witness, the command's own output (`adb shell ps -A | grep app.fluxnook`, `tasklist`, the `curl` status), so a race reads as a race and not as a bug (House Rules step 7; 2.1.2: two of L's three fails were a teardown read once).
